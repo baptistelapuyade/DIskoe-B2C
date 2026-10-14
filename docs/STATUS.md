@@ -1,7 +1,7 @@
 # DISKOE B2C V1 — technischer Übergabestand
 
 **Stand:** 2026-10-14
-**Phase:** Repository-Grundlage und Dokumentation eingerichtet.
+**Phase:** Repository-Grundlage und S3-Fragenpool dokumentiert.
 **Implementierung:** nicht begonnen und nicht autorisiert.
 
 ## Tatsächlicher Stand
@@ -11,6 +11,8 @@
 - Cursor-Regel verweist auf `AGENTS.md`; keine widersprüchliche zweite Regelbasis.
 - GSD ist lokal verfügbar. Eigene B2C-Planung ist grob angelegt; automatisches Fortschreiten zur Implementierung ist deaktiviert.
 - Kein Anwendungscode, `package.json`, Lockfile, Schema, Migration, Build, Test-Runner oder Deployment angelegt.
+- S3-Fragenpool für Live-/DJ-, Offspace-/Vernissage- und Filmabende in `docs/QUESTION_POOL_B2C_V1.md` ausgearbeitet: Basispool, Formatfragen, Prioritäten, Zustände, Ebenen, Beratung und vier ausdrücklich fiktive Auswahlfälle.
+- Aktuellen Notion-Build-Stand mit der Repo-Lesefassung abgeglichen; neue Detailheuristiken und UI-nahe Optionen bleiben als Vorschläge markiert.
 
 ## Gelesene und geprüfte Quellen
 
@@ -23,13 +25,13 @@
 
 **Bestätigt/dokumentiert:** V1-Scope R01–R12; zahlreiche Regeln Q01–Q21; separate Datenvertragslesefassung; manuelle Storyvalidierung; frische Codebasis.
 
-**Offen:** vollständiger formatabhängiger Fragenpool, finale Angebots-/Bestätigungstexte, Organizerprofilminimum, einzelne Discovery-/Sonderfallregeln, mobiler Publishing-Flow, öffentliche Seitendesigns, technische Architektur Q23–Q25, Messschema/Betrieb und Pilot S8.
+**Offen:** gemeinsame Prüfung der fünf in der S3-Lesefassung markierten Detailentscheidungen, finale Angebots-/Bestätigungstexte, Organizerprofilminimum, einzelne Discovery-/Sonderfallregeln, mobiler Publishing-Flow, öffentliche Seitendesigns, technische Architektur Q23–Q25, Messschema/Betrieb und Pilot S8.
 
 **Nicht geprüft:** echte Organizer-Materialien/Nutzerverständnis, Softwarelaufzeit, Auth, Datenbank, Medienverarbeitung, Analytics, SEO-Ausgabe, Deployment und externe Dienste.
 
 ## Nächste autorisierte Aufgabe
 
-Keine Entwicklung starten. Empfohlen: vollständigen Fragenpool für Live/DJ, Offspace/Vernissage und Filmabend mit Nutzenhinweisen sowie verbleibenden Produktdetails ausarbeiten; danach Publishing-Flow, Organizerprofil und Eventseite designen.
+Keine Entwicklung starten. Empfohlen: die wenigen offenen S3-Detailentscheidungen gemeinsam prüfen; danach Publishing-Flow, Organizerprofil und Eventseite designen.
 
 ## Übergabeformat
 
