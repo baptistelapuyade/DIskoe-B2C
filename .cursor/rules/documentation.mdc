@@ -1,0 +1,12 @@
+---
+description: Keep DISKOE B2C documentation aligned with confirmed decisions and actual evidence
+alwaysApply: true
+---
+
+Follow the canonical instructions in `AGENTS.md` and the verified context in
+`docs/PROJECT.md` and `docs/STATUS.md`. Do not duplicate or override those rules
+here.
+
+Before completing a task, inspect the real diff and update affected technical
+documentation. Keep proposals, confirmed product decisions, implementation,
+static checks, software tests, and runtime evidence explicitly separated.
