@@ -1,6 +1,6 @@
 # Requirements: DISKOE B2C V1
 
-**Defined:** 2026-10-14; extended 2026-10-15 (Nutzerübergabe, kein direkter Notion-Abgleich)
+**Defined:** 2026-10-14; extended 2026-10-15 (Scope-Erweiterung) and aligned the same day with decisions Q29–Q36/S3 from the directly read Notion decision page. Product decisions only; no implementation authorized.
 **Core Value:** Organizer veröffentlichen, teilen und pflegen bestätigte Events mit weniger Aufwand; DISKOE gewinnt nachvollziehbare Katalogdaten.
 
 ## v1 Requirements
@@ -31,21 +31,25 @@
 - [ ] **PUBLISH-05**: Änderung, Verschiebung, Absage, Entfernung und Archivierung folgen dem B2C-Datenvertrag.
 - [ ] **PUBLISH-06**: Duplizieren erzeugt eine neue private Eventidentität und verlangt erneute Prüfung eventabhängiger Angaben.
 
-### Profilgestaltung und Follow (Scope-Erweiterung 2026-10-15; Ausgestaltung offen, Vorschlagsstatus)
+### Profilgestaltung, Follow und Einladungen (Produktentscheidungen 2026-10-15; Designs und Technik offen)
 
-- [ ] **PROFILE-01**: Organizer kann ein begrenzt modulares öffentliches Profil (gewählte Gestaltungsrichtung, optionale Module, mobile Vorschau, gute Defaults) gestalten; Eventseiten übernehmen die Identität bei stabiler Informationshierarchie. Module, Limits und Anbieter sind offen (Q29–Q31, Q35).
-- [ ] **FOLLOW-01**: Besucher kann einem Organizerprojekt per E-Mail mit Bestätigung, Verwaltung und Abmeldung folgen; Abodaten bleiben privat, Abonnenten erhalten keine Organizerrechte. Umfang, Versandregeln und Aufbewahrung sind offen (Q32, Q33, Q36).
+- [ ] **PROFILE-01**: Organizer gestaltet ein begrenzt modulares Profil: feste Identität und kommende Events, fünf optionale Module (Musik, Bilder/Flyer, Über uns/Manifest, Von uns empfohlen, vergangene Events; je eine Instanz, umsortierbar), Links/Kontakt am Ende, drei Richtungen (Poster, Editorial, Mixtape) mit kuratierten Paletten/Schriftkombinationen, nur einfarbige Hintergründe, mobile Vorschau (Q29/Q30). Musikslot SoundCloud oder Spotify mit Aktivierung und Linkfallback, kein Autoplay, kein Upload (Q31).
+- [ ] **PROFILE-02**: Profil ist erst mit Projektname, Kurzvorstellung, eindeutiger URL, mindestens einem offiziellen Link oder Kontakt und einem Cover oder Anzeigebild veröffentlichbar; Änderungen bleiben privater Entwurf bis zur expliziten Veröffentlichung; Offline-Nehmen ist eine eigene Aktion ohne automatische Eventabsage (Q35). Sonderfälle offen.
+- [ ] **EVENTDESIGN-01**: Eventseiten besitzen eine vom Profil unabhängige Gestaltung (Palette, vorgegebene Schriftkombination, optionaler Flyer/Cover) bei fester Informationshierarchie ohne Event-Moduleditor; „Profilgestaltung übernehmen" ist nur Starthilfe; Profiländerungen verändern bestehende Events nicht; Duplizieren übernimmt die Gestaltung; der verantwortliche Organizer ist verlinkt (Q35).
+- [ ] **FOLLOW-01**: Besucher kann einem Organizerprojekt per E-Mail-Adresse folgen (Bestätigungslink, Verwaltung über zeitlich begrenzten Link, Abmeldung in jeder Mail, Missbrauchsbegrenzung); kein Consumerkonto, keine Organizerrechte, getrennt von DISKOE-Newsletter; Organizer sehen nur die bestätigte Aboanzahl (Q32).
+- [ ] **FOLLOW-02**: Aktive Abonnenten erhalten neue veröffentlichte Events gebündelt (höchstens eine reguläre Ankündigung je Organizer in 24 Stunden, je Event und Abo einmal), gesonderte Updates bei Änderung von Datum/Beginn/Ort und bestätigter Absage; Tippfehler lösen nichts aus; Entwürfe, zurückgezogene und gesperrte Veröffentlichungen lösen nichts aus (Q33). Versandwerte offen.
 
 ### Sharing und Kuration
 
 - [ ] **SHARE-01**: Ein veröffentlichter Eventstand liefert stabilen Link, bestätigte Linkvorschau, editierbaren Nachrichtentext und QR-Code.
 - [ ] **SHARE-02**: Manuelle Story-Muster können mit realen freigegebenen Events getestet werden, ohne automatische Generierung vorauszusetzen.
-- [ ] **CURATE-01**: Organizer kann eine bestätigte kleine Auswahl vorhandener DISKOE-Events mit eigener Urheberschaft zeigen; inaktive Empfehlungen verschwinden aus aktiven Flächen. Persönliche Kommentare werden ausdrücklich bestätigt und von eigenen Angeboten getrennt; Empfehlungen anderer Organizerprofile sind offen (Q34).
+- [ ] **CURATE-01**: Organizer kann eine bestätigte kleine Auswahl vorhandener DISKOE-Events mit eigener Urheberschaft zeigen; inaktive Empfehlungen verschwinden aus aktiven Flächen. Persönliche Kommentare werden ausdrücklich bestätigt und von eigenen Angeboten getrennt (Q34).
+- [ ] **CURATE-02**: Organizer kann bis zu drei veröffentlichte DISKOE-Events oder -Organizerprofile mit erforderlichem Kommentar empfehlen; vergangene, abgesagte und entfernte Ziele werden ausgeblendet; für fehlende Ziele entstehen ein privater Vormerk und ein selbst zu versendender Einladungslink, die Verknüpfung nach Registrierung bestätigt der Empfehlende (Q34). Kein DISKOE-Versand an Fremde, keine Erinnerungen, keine Belohnungen.
 
 ### Redaktion und Messung
 
 - [ ] **OPS-01**: Interne Redaktion sieht Status/Datenlücken, kann Erstfreigabe bearbeiten und problematische Veröffentlichungen sperren/zurücknehmen.
-- [ ] **OPS-02**: Messung trennt Aktivierung, tatsächliches Teilen, Wiederveröffentlichung, Katalogbestand/-tiefe, Aufwand und Besucheraktionen mit ihren Grenzen. Ergänzend (Q36 offen): Profilverwendung/-teilung, Gestaltungswiederverwendung, bestätigte Abos/Wiederkehr, Empfehlungswirkung, Betreuungsaufwand; Reichweite, Wiederkehr und Netzwerkeffekte getrennt.
+- [ ] **OPS-02**: Messung trennt Aktivierung, tatsächliches Teilen, Wiederveröffentlichung, Katalogbestand/-tiefe, Aufwand und Besucheraktionen mit ihren Grenzen. Ergänzend (Q36 beschlossen): Profilverwendung über den Testpost hinaus, Gestaltungswiederverwendung, zweites reales Event, Veröffentlichung ohne persönliche Hilfe, bestätigte Abos/Abmeldungen/Rückkehr, Einladung→Registrierung→Veröffentlichung, Betreuungsaufwand; Richtwerte nur als Lernsignale, Nenner sichtbar, Organizer sehen nur Aggregate; Reichweite, Wiederkehr und Netzwerkeffekte getrennt. Fragenpool-Lernen (S3): wöchentliche qualitative Prüfung, Antworten/Überspringen/Korrekturen/Abbruch/Zeit je Frage.
 
 ## v2 / Later
 
@@ -61,6 +65,9 @@
 |---|---|
 | Freier Seiteneditor/Canvas/HTML-CSS/Website-Builder | Begrenzte Gestaltungsrichtungen und Module sind vorgesehen (PROFILE-01), freies Layout nicht. |
 | Social Feed, Freundesgraph, Chat, Gästebuch, komplexes Empfehlungsmodell | Nicht Teil des Follow-Tests. |
+| Hintergrundmuster, ganzseitiges Hintergrundbild, Schriftuploads, Modulstile, Animationen/Autoplay | In der Alpha ausgeschlossen (Q30); Muster höchstens spätere unbeschlossene Premiumoption. |
+| Audio-Uploads, beliebige Embed-Codes, Musik auf Eventseiten, andere Anbieter als SoundCloud/Spotify als Player | Nicht beschlossen (Q31); andere Anbieter nur als normale Links. |
+| Kontaktimport, DISKOE-Mails an fremde Organizer, Einladungserinnerungen/-belohnungen, Adressliste/Export für Organizer | In der Alpha ausgeschlossen (Q32/Q34). |
 | Universalimport/Instagram-Automation | Verlässlichkeit und Rechte sind für V1 nicht geklärt. |
 | Social-Autopublishing | Sharing bleibt explizite Organizerhandlung. |
 | Eigenes Ticketing | Bestehende Ticket-/RSVP-Ziele bleiben Hauptaktion. |
@@ -88,12 +95,16 @@
 | SHARE-01 | Phase 2 — Zusammenhängendes Experience Design | Pending; implementation unauthorized |
 | SHARE-02 | Phase 2 — Zusammenhängendes Experience Design | Pending; implementation unauthorized |
 | CURATE-01 | Phase 1 — Produktvertrag und Fragenpool | Pending; implementation unauthorized |
-| FOLLOW-01 | Phase 1 — Produktvertrag und Fragenpool | Pending; proposal, details open; implementation unauthorized |
-| PROFILE-01 | Phase 2 — Zusammenhängendes Experience Design | Pending; proposal, details open; implementation unauthorized |
+| FOLLOW-01 | Phase 1 — Produktvertrag und Fragenpool | Product rules decided; designs/technical details open; implementation unauthorized |
+| FOLLOW-02 | Phase 1 — Produktvertrag und Fragenpool | Product rules decided; send values open; implementation unauthorized |
+| CURATE-02 | Phase 1 — Produktvertrag und Fragenpool | Product rules decided; assignment/states open; implementation unauthorized |
+| PROFILE-02 | Phase 1 — Produktvertrag und Fragenpool | Product rules decided; special cases open; implementation unauthorized |
+| PROFILE-01 | Phase 2 — Zusammenhängendes Experience Design | Product rules decided; designs open; implementation unauthorized |
+| EVENTDESIGN-01 | Phase 2 — Zusammenhängendes Experience Design | Product rules decided; designs open; implementation unauthorized |
 | OPS-01 | Phase 3 — Architektur und Lieferplanung | Pending; implementation unauthorized |
 | OPS-02 | Phase 1 — Produktvertrag und Fragenpool | Pending; implementation unauthorized |
 
-**Coverage:** 21/21 V1 requirements (19 ursprünglich + PROFILE-01, FOLLOW-01) are mapped exactly once. No plan may execute automatically, and no implementation is authorized.
+**Coverage:** 25/25 V1 requirements (19 ursprünglich + PROFILE-01, PROFILE-02, EVENTDESIGN-01, FOLLOW-01, FOLLOW-02, CURATE-02) are mapped exactly once. No plan may execute automatically, and no implementation is authorized.
 
 ---
-*Requirements defined: 2026-10-14 from current Notion build and outcome documents; PROFILE-01/FOLLOW-01 added 2026-10-15 from user handover (not compared with Notion)*
+*Requirements defined: 2026-10-14 from current Notion build and outcome documents; PROFILE-01/02, EVENTDESIGN-01, FOLLOW-01/02, CURATE-02 added 2026-10-15; product rules per `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md`. Acceptance signals (proposal until design approval) are listed there.*

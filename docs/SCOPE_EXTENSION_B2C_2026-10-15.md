@@ -2,6 +2,8 @@
 
 **Herkunft:** Nutzerübergabe aus dem Developer-Chat vom 15.10.2026. Es gab keinen direkten Notion-Abgleich und es gibt keinen Auto-Sync. Die Notion-Seiten wurden laut Nutzer in einem anderen Chat aktualisiert; ihr aktueller Inhalt wurde in dieser Session nicht unabhängig geprüft (Zugriff lieferte 404). Ein gezielter Abgleich mit Notion bleibt **offen**.
 
+**Überholungshinweis (später am 2026-10-15):** Q29–Q36 und die fünf S3-Entscheidungen wurden beschlossen; Notion wurde danach direkt gelesen. Maßgeblich sind jetzt [PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md](PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md). Dieses Dokument bleibt als Vorschlagshistorie erhalten; seine Vorschläge zu Modulen, Limits, Bildoptionalität, Hintergründen, Musikanbieter, Follow und Empfehlungen sind dort, wo sie abweichen, überholt. Der Hinweis „Notion-Zugriff lieferte 404" oben beschreibt nur den damaligen Stand.
+
 **Kennzeichnung:** **[Richtung]** = vom Nutzer übergebene verbindliche Produktrichtung. **[Vorschlag]** = Diskussionsvorschlag, keine Freigabe. **[Offen]** = zu entscheiden. **[Schätzung]** = ungeprüfte Planungshypothese.
 
 Dieses Dokument ergänzt `docs/PROJECT.md` und überschreibt keine früheren Entscheidungsprotokolle. Überholte Aussagen sind in den jeweiligen Dokumenten als „überholt durch" markiert, nicht gelöscht.
@@ -76,11 +78,11 @@ Materialbasierte Eventerfassung, editierbare KI-Entwürfe, relevante Rückfragen
 
 Ticketklicks sind keine Verkäufe. Reichweite, Wiederkehr und mögliche Netzwerkeffekte werden getrennt ausgewertet.
 
-## 9. Neue offene Entscheidungen Q29–Q36 [Offen]
+## 9. Fragenstand Q29–Q36 — ursprünglich offen, inzwischen beschlossen (siehe Beschlussfassung)
 
 | ID | Gegenstand |
 |---|---|
-| Q29 | Module, Pflicht-/optionale Bereiche, Medienlimits, Reihenfolgegrenzen; kleinstes Profilangebot. **Nächste gemeinsame Entscheidung.** |
+| Q29 | Module, Pflicht-/optionale Bereiche, Medienlimits, Reihenfolgegrenzen; kleinstes Profilangebot. |
 | Q30 | Drei Gestaltungsrichtungen; Farb-, Schrift- und Hintergrundoptionen. |
 | Q31 | Erster Musikanbieter, Link/Player, externe Inhalte, Rechte, Fallback. |
 | Q32 | Follow-Zweck, Kanal, Bestätigung, Verwaltung, Missbrauchsschutz. |
@@ -89,7 +91,7 @@ Ticketklicks sind keine Verkäufe. Reichweite, Wiederkehr und mögliche Netzwerk
 | Q35 | Profilminimum, private/öffentliche Bearbeitungsstände, Auswirkung von Stiländerungen auf bestehende Events. |
 | Q36 | Alpha-Messung, Schwellen/Nenner, Aufbewahrung von Abodaten, neu geprüfter Aufwand. |
 
-Weiter offen bleiben die fünf S3-Entscheidungen (`docs/QUESTION_POOL_B2C_V1.md`, Abschnitt 8): Karten/Abschnitte/Mischform, erneute Nachfrage bei bewusst unbekannten Angaben, Zugänglichkeitsdetailtiefe, Mischformate, Anpassung anhand von Alpha-Signalen.
+Auch die fünf S3-Entscheidungen (Mischform, erneute Nachfrage, Zugänglichkeitstiefe, Mischformate, Alpha-Auswertung) sind beschlossen; Inhalt in [PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md](PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md).
 
 ## 10. Neue Spec- und Designreferenzen
 
@@ -101,7 +103,7 @@ Lokal existierte kein Register mit diesen Kennungen; die IDs waren damit frei un
 
 ## 11. Kleinster Alpha-Vorschlag und Schätzungen [Vorschlag / Schätzung]
 
-**Vorschlag:** gemeinsame Komponenten mit drei Gestaltungsrichtungen, begrenzte optionale Module, mobile Vorschau, bestehende betreute Kuration, kleiner bestätigter E-Mail-Follow-Test für neue Events. Ein Musikslot, bis zu sechs Galeriebilder und SoundCloud als erster Kandidat sind ausschließlich Diskussionsvorschläge.
+**Vorschlag (historisch):** gemeinsame Komponenten mit drei Gestaltungsrichtungen, begrenzte optionale Module, mobile Vorschau, bestehende betreute Kuration, kleiner bestätigter E-Mail-Follow-Test für neue Events. Ein Musikslot, bis zu sechs Galeriebilder und SoundCloud waren Diskussionsvorschläge; Musikslot und sechs Bilder sind inzwischen beschlossen, SoundCloud und Spotify sind beide vorgesehen (Q29/Q31).
 
 **Schätzungen (ungeprüft, nicht abgenommen):**
 
@@ -109,6 +111,7 @@ Lokal existierte kein Register mit diesen Kennungen; die IDs waren damit frei un
 - einfacher E-Mail-Follow-Test: separat grob +24–40 Stunden;
 - zusätzliche Empfehlungslogik und Billing nicht enthalten;
 - die frühere 6–8-Wochen-Schätzung ist für den erweiterten Scope neu zu prüfen.
+- Stand nach den Beschlüssen: Spotify zusätzlich grob 4–8 Stunden (ungeprüft); Eventgestaltung unabhängig vom Profil ist zusätzlicher, noch ungeschätzter Aufwand; die Follow-Schätzung setzte einfachere Versandregeln voraus und ist nicht unverändert belastbar. Neu schätzen erst nach restlichen Specs, Design-/Bestands-/Providerabgleich.
 
 ## 12. Nicht freigegeben
 

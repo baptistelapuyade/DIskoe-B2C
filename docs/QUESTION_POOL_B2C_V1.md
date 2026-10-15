@@ -1,7 +1,7 @@
 # DISKOE B2C V1 — formatabhängiger Fragenpool S3
 
 **Stand:** 2026-10-14
-**Status:** Arbeitsgrundlage für S3. Q08–Q11, Publikationsminimum und Formatpflichten sind bestätigt. Neue Detailauswahlen, Antwortoptionen und Auswahlheuristiken sind **Vorschläge zur gemeinsamen Prüfung**. Kein UI, Datenmodell oder KI-System ist implementiert.
+**Status:** Arbeitsgrundlage für S3. Q08–Q11, Publikationsminimum und Formatpflichten sind bestätigt; die fünf Detailentscheidungen aus Abschnitt 8 sind am 2026-10-15 beschlossen (siehe Abschnitt 8b und [PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md](./PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md)). Detailauswahlen, Antwortoptionen und Auswahlheuristiken in den Abschnitten 1–7 bleiben **Vorschläge**, soweit nicht durch 8b präzisiert. Kein UI, Datenmodell oder KI-System ist implementiert.
 
 ## 1. Zweck und verbindliche Auswahlregeln
 
@@ -361,7 +361,7 @@ Alle Namen, Orte, Termine, Preise, Links und Inhalte sind **frei erfunden**. Es 
 
 Zulässige Gesamtformulierung: „Mehr bestätigter Kontext kann DISKOE später helfen, den Event passenden Suchsituationen zuzuordnen. Klare öffentliche Angaben können außerdem das maschinelle Verständnis unterstützen. Eine bestimmte Platzierung oder zusätzliche Reichweite ist damit nicht garantiert.“
 
-## 8. Noch offene Entscheidungen
+## 8. Ursprünglich offene Entscheidungen (inzwischen beschlossen, siehe 8b)
 
 1. **UI-Form:** Karten, Abschnittsliste oder Mischform; Darstellung von Herkunft und konkurrierenden Werten.
 2. **Nachpflege:** wann ausdrücklich unbekannte Angaben später erneut angeboten werden dürfen, ohne Frage-Loop.
@@ -371,7 +371,19 @@ Zulässige Gesamtformulierung: „Mehr bestätigter Kontext kann DISKOE später 
 
 ## 8a. Ergänzung 2026-10-15: Abgrenzung zu Profil und Follow
 
-Nutzerübergabe aus dem Developer-Chat vom 15.10.2026; kein direkter Notion-Abgleich. Die 32 Eventfragen B01–B12, L01–L06, O01–O07, F01–F07, die vier fiktiven Auswahlfälle und die fünf offenen Entscheidungen oben bleiben unverändert. Profilgestaltung und Follow erzeugen **keinen zusätzlichen Pflichtfragebogen beim Eventpublizieren**; Profil-/Follow-Entscheidungen Q29–Q36 stehen in `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`, Abschnitt 9. Q29 (Module und kleinstes Profilangebot) ist als Nächstes zu entscheiden.
+Nutzerübergabe aus dem Developer-Chat vom 15.10.2026; kein direkter Notion-Abgleich. Die 32 Eventfragen B01–B12, L01–L06, O01–O07, F01–F07, die vier fiktiven Auswahlfälle und die fünf offenen Entscheidungen oben bleiben unverändert. Profilgestaltung und Follow erzeugen **keinen zusätzlichen Pflichtfragebogen beim Eventpublizieren**; Profil-/Follow-Entscheidungen Q29–Q36 sind beschlossen und stehen in [PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md](./PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md); die Vorschlagshistorie liegt in `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`.
+
+## 8b. Beschlüsse zu den fünf Entscheidungen (2026-10-15)
+
+Quelle: Notion-Beschlussseite vom 2026-10-15, direkt gelesen; Vollfassung in der verlinkten Beschlussdatei. Die Abschnitte 1–7 bleiben unverändert als Historie; wo 8b präzisiert, gilt 8b.
+
+1. **UI-Form (Punkt 1):** Mischform. Zuerst editierbarer Entwurf, dann Pflichtlücken/Widersprüche einzeln, danach etwa fünf Zusatzfragen (mehr bei Bedarf), jederzeit Formularansicht, Abschlussvorschau, manueller Fallback.
+2. **Nachpflege (Punkt 2):** bewusst unbekannte Angaben im selben Vorgang nicht erneut fragen; später nur auf Wunsch, bei neuen widersprechenden Informationen oder beim nächsten Event bei eventspezifischen Angaben.
+3. **Zugänglichkeitstiefe (Punkt 3):** Bereichszugang (stufenlos / nur Stufen / teilweise / unbekannt) mit Folgefragen zu WC, Aufzug/Rampe, Hilfe, Kontakt; keine Pflicht, kein Barrierefreiheitslabel. Präzisiert B10; ob die Folgefragen eigene Pool-IDs erhalten, ist **nicht festgelegt**, die 32 Fragen bleiben unverändert.
+4. **Mischformate (Punkt 4):** Hauptformat plus optionale Ergänzungen; unabhängig besuchbare Teile als eigene, verlinkte Einträge. Präzisiert B02 „Mischform/anderes"; Art der Verlinkung offen.
+5. **Alpha-Auswertung (Punkt 5):** wöchentliche qualitative Prüfung, versionierte Änderungen, keine automatischen Prozentgrenzen, keine stillen neuen Pflichtfragen.
+
+Weiterhin offen: konkrete UI/Texte, technische Auswahlheuristik, reale Validierung, Discovery-Minimum.
 
 ## 9. Verifikationsstand
 

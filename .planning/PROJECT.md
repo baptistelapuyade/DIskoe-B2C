@@ -4,7 +4,7 @@
 
 Eine mobile-first Arbeitsgrundlage für kleine Berliner Kulturveranstalter: eigene Organizer-/Eventseiten, leichteres wiederholtes Publishing und teilbare Materialien. Bestätigte Events bilden zugleich den verlässlichen Katalog für eine spätere DISKOE-Discovery-Webapp.
 
-Seit 2026-10-15 (Nutzerübergabe, kein direkter Notion-Abgleich) richtet sich die Produktrichtung auf eine persönliche digitale Heimat mit begrenzten modularen Profilen und frühem E-Mail-Follow-Test; der bestätigte Eventkatalog bleibt gleichrangig. Siehe `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`.
+Seit 2026-10-15 richtet sich die Produktrichtung auf eine persönliche digitale Heimat mit begrenzten modularen Profilen und frühem E-Mail-Follow-Test; der bestätigte Eventkatalog bleibt gleichrangig. Q29–Q36 und fünf S3-Detailentscheidungen sind als Produktentscheidungen beschlossen (keine Entwicklungsfreigabe), siehe `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md`; Vorschlagshistorie in `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`.
 
 ## Core Value
 
@@ -25,8 +25,10 @@ Organizer können einen bestätigten Eventstand mit deutlich weniger Pflegeaufwa
 - [ ] Veröffentlichung, Änderung, Absage, Entfernung und Duplizieren bleiben versioniert und nachvollziehbar.
 - [ ] Sharing über Link, Vorschau, Nachrichtentext und QR basiert auf bestätigten Daten.
 - [ ] Kuration, Redaktion, Messung und SEO-/GEO-Grundlagen folgen den beschlossenen Grenzen.
-- [ ] Organizer gestalten ein begrenzt modulares Profil als eigenen öffentlichen Auftritt (Ausgestaltung offen, Q29–Q31, Q35). *(Vorschlag, nicht freigegeben)*
-- [ ] Besucher können einem Organizerprojekt per E-Mail folgen (kleiner Alpha-Test; Umfang offen, Q32–Q33, Q36). *(Vorschlag, nicht freigegeben)*
+- [ ] Organizer gestalten ein begrenzt modulares Profil (drei Richtungen, fünf optionale Module, Bildpflicht für die Veröffentlichung) als eigenen öffentlichen Auftritt (Q29–Q31, Q35 beschlossen; Designs offen).
+- [ ] Besucher können einem Organizerprojekt per bestätigter E-Mail folgen und erhalten neue Events sowie definierte Änderungs-/Absage-Updates (Q32/Q33 beschlossen; Versandwerte und Designs offen).
+- [ ] Organizer können Events/Organizerprofile empfehlen und Nicht-DISKOE-Ziele privat einladen (Q34 beschlossen; Zuordnung und Designs offen).
+- [ ] Eventgestaltung ist unabhängig vom Profil und wird beim Duplizieren übernommen (Q35 beschlossen).
 
 ### Out of Scope
 
@@ -45,7 +47,7 @@ Notion hält den aktuellen Outcome-, Scope- und Spec-Stand. Q01–Q21 enthalten 
 - **Trust:** keine öffentlichen Entwürfe oder ungeprüften KI-Fakten.
 - **Source of truth:** Produkt in Notion; Technik und Belege im Repo; kein automatischer Sync.
 - **Greenfield:** Stack, Datenmodell, Auth, Hosting und Anbieter sind noch nicht gewählt.
-- **Pilot:** geschlossene/betreute Berlin-Alpha; Zielwerte und Beobachtungsfenster noch zu prüfen.
+- **Pilot:** Berlin-Alpha mit offener Registrierung ohne festes Testerlimit; 5–8 Organizer nur erste betreute Lerngruppe; Beobachtungsfenster zunächst vier Wochen; Richtwerte sind Lernsignale, keine Gates (Q36). Ersetzt die frühere Formulierung „geschlossene/betreute Berlin-Alpha".
 
 ## Key Decisions
 
@@ -62,4 +64,4 @@ Notion hält den aktuellen Outcome-, Scope- und Spec-Stand. Q01–Q21 enthalten 
 Dieses Dokument wird an Phasen- und Milestone-Grenzen überprüft. Anforderungen werden erst nach Implementierung und echter Prüfung als validiert geführt; neue Produktentscheidungen werden zuerst in Notion und danach gezielt hier abgeglichen.
 
 ---
-*Last updated: 2026-10-15 after scope extension documentation sync (user handover, no Notion comparison)*
+*Last updated: 2026-10-15 after syncing decisions Q29–Q36/S3 from the Notion decision page (read directly; no auto-sync)*

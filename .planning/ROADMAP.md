@@ -15,27 +15,28 @@ Diese bewusst grobe Roadmap bringt DISKOE B2C V1 ausschließlich bis zu einer be
 ### Phase 1: Produktvertrag und Fragenpool
 **Goal**: Organizer und Redaktion verfügen über einen vollständigen, abgestimmten Produktvertrag für Erfassung, Prüfung, Bestätigung, Lebenszyklus, Kuration und Erfolgsmessung der drei V1-Formate.
 **Depends on**: Nothing (first phase)
-**Requirements**: OFFER-01, OFFER-02, PUBLISH-01, PUBLISH-02, PUBLISH-03, PUBLISH-04, PUBLISH-05, PUBLISH-06, CURATE-01, FOLLOW-01, OPS-02
+**Requirements**: OFFER-01, OFFER-02, PUBLISH-01, PUBLISH-02, PUBLISH-03, PUBLISH-04, PUBLISH-05, PUBLISH-06, CURATE-01, CURATE-02, PROFILE-02, FOLLOW-01, FOLLOW-02, OPS-02
 **Success Criteria** (what must be TRUE):
   1. Ein Organizer kann für Live/DJ, Offspace/Vernissage und Filmabend erkennen, welche Fragen wann gestellt werden, warum sie nützlich sind und ob eine Antwort erforderlich, optional, unbekannt oder nicht zutreffend ist.
   2. Ein Organizer kann anhand der freigegebenen Regeln einen privaten Entwurf manuell oder aus Text beziehungsweise bis zu drei Flyerbildern vervollständigen, KI-Ableitungen korrigieren und kritische Lücken oder Widersprüche vor der Bestätigung erkennen.
   3. Ein Organizer kann klar unterscheiden, was Speichern, Vorschau, Bestätigung, erste Freigabe, Veröffentlichung, Änderung, Verschiebung, Absage, Entfernung, Archivierung und Duplizieren bewirken.
   4. Ein Organizer versteht Angebot, Alpha-Grenzen und den konkret zu bestätigenden Daten-/Medienumfang für Seiten, Sharing und spätere Discovery; offene Rechts- oder Produkttexte sind sichtbar als offen markiert.
   5. Redaktion und Produktverantwortung können Kuration und Messgrößen einschließlich ihrer Aussagegrenzen anhand eindeutiger Regeln beurteilen.
-  6. Die offenen Entscheidungen Q29–Q36 und die Follow-Spec S9 sind gemeinsam entschieden oder ausdrücklich als offen geführt; Vorschläge gelten nicht als freigegeben.
+  6. Q29–Q36 und die fünf S3-Detailentscheidungen sind als Produktregeln dokumentiert und von offenen Designs/Technik getrennt; Profilminimum, Follow-, Versand-, Änderungs-/Absage- und Einladungsregeln sind für Organizer und Redaktion nachvollziehbar.
+  7. Discovery-Eignung mit prüfbaren Regeln und der separate typisierte B2C-Datenvertrag sowie die Follow-Spec S9 sind ausgearbeitet; bis dahin als offen gekennzeichnet. Keine Versandwerte oder Felder werden vorab festgelegt.
 **Plans**: TBD — Produktplanung erst interaktiv nach Review; keine Implementierung
 **UI hint**: yes
 
 ### Phase 2: Zusammenhängendes Experience Design
 **Goal**: Organizer und Besucher können den vollständigen V1-Ablauf in abgestimmten Mobile-first-Designs nachvollziehen und gegen alle relevanten Status-, Leer- und Fehlerzustände prüfen.
 **Depends on**: Phase 1
-**Requirements**: PUBLIC-01, PUBLIC-02, PROFILE-01, SHARE-01, SHARE-02
+**Requirements**: PUBLIC-01, PUBLIC-02, PROFILE-01, EVENTDESIGN-01, SHARE-01, SHARE-02
 **Success Criteria** (what must be TRUE):
   1. Ein Organizer kann im Prototyp den Weg von Material oder manueller Eingabe über Rückfragen, Korrektur, Vorschau und Bestätigung bis zum Teilen ohne konzeptionelle Lücke durchlaufen.
   2. Ein Besucher kann auf responsiven Organizer- und Eventseiten bestätigte Entscheidungsinformationen, Herkunft/Aktualität sowie aktive, geänderte, abgesagte, entfernte, vergangene und leere Zustände eindeutig verstehen.
   3. Ein Organizer kann aus einem veröffentlichten Stand stabilen Link, Linkvorschau, editierbaren Nachrichtentext und QR-Code prüfen, ohne dass öffentliche Entwürfe oder abweichende Datenstände entstehen.
   4. Manuelle Story-Muster können mit realen freigegebenen Eventbeispielen getestet werden, ohne eine automatische Story-Generierung als beschlossen oder implementiert darzustellen.
-  5. Profileditor (D9) mit mobiler Vorschau und Follow-Zustände (D10) sind als prüfbare Mobile-first-Designs in den begrenzten, entschiedenen Grenzen beschrieben; Eventseiten behalten eine stabile Informationshierarchie.
+  5. Profileditor (D9) mit mobiler Vorschau, unabhängige Eventgestaltung sowie Follow- und Einladungszustände (D10) sind als prüfbare Mobile-first-Designs innerhalb der beschlossenen Grenzen (drei Richtungen, fünf Module, einfarbige Hintergründe, Bildpflicht) beschrieben; Eventseiten behalten eine stabile Informationshierarchie.
 **Plans**: TBD — Designplanung erst interaktiv nach Review; keine Implementierung
 **UI hint**: yes
 
@@ -74,11 +75,15 @@ Diese bewusst grobe Roadmap bringt DISKOE B2C V1 ausschließlich bis zu einer be
 | SHARE-02 | Phase 2 |
 | CURATE-01 | Phase 1 |
 | FOLLOW-01 | Phase 1 |
+| FOLLOW-02 | Phase 1 |
+| CURATE-02 | Phase 1 |
+| PROFILE-02 | Phase 1 |
 | PROFILE-01 | Phase 2 |
+| EVENTDESIGN-01 | Phase 2 |
 | OPS-01 | Phase 3 |
 | OPS-02 | Phase 1 |
 
-**Coverage:** 21/21 V1 requirements mapped exactly once. Implementation remains unauthorized and pending.
+**Coverage:** 25/25 V1 requirements mapped exactly once. Implementation remains unauthorized and pending.
 
 ## Progress
 

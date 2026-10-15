@@ -35,11 +35,14 @@
 9. SEO-Metadaten, strukturierte Eventdaten, Sitemap, Crawler-/Trainingszugriff und Statusaktualisierung.
 10. Teststrategie, Betriebsbeobachtung, Backup/Recovery und Deploymentweg.
 
-**Ergänzt 2026-10-15 (Nutzerübergabe, siehe `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`), ebenfalls offen:**
+**Ergänzt 2026-10-15 (fachliche Beschlüsse in `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md`; technische Umsetzung weiterhin offen):**
 
 11. Speicherung begrenzter Profilmodule und Stile; getrennter privater/öffentlicher Profilstand; Wirkung von Stiländerungen auf bestehende Events.
 12. Einbindung externer Musikanbieter ohne eigenes Audio-/Videohosting (Rechte, Fallback, Datenschutz).
 13. E-Mail-Follow: Bestätigungsverfahren, Trennung privater Abodaten von öffentlichen Inhalten, Versandkanal, Missbrauchsschutz, Aufbewahrung. Kein Consumerkonto vorausgesetzt; Abonnenten ohne Organizerrechte.
+14. Fachlich beschlossene, technisch offene Werte: Versandzeit, Zeitzone, Bündelungsfenster, Kurzfristfälle, Deduplizierung je Abo/Event, Zustellversuche und Sperren, Löschung unbestätigter Anmeldungen nach sieben Tagen.
+15. Einbettung von SoundCloud/Spotify: Aktivierung vor Laden externer Inhalte, Linkfallback, Anbieterbedingungen, Verhalten in echten Browser-/Geräteumgebungen.
+16. Private Einladungen und spätere bestätigte Verknüpfung; unabhängige Eventgestaltung und Profil-Offline-Zustand.
 
 ## Vorläufige Systemgrenzen, keine Architekturentscheidung
 
