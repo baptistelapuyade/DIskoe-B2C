@@ -1,6 +1,6 @@
 # DISKOE B2C V1 — Architekturstand
 
-**Stand:** 2026-10-15 (Ergänzung Profil/Follow; weiterhin keine technische Entscheidung)
+**Stand:** 2026-10-15 (Ergänzung Profil/Follow und Datenvertrag-v0.3-Entwurf; weiterhin keine technische Entscheidung)
 **Status:** Architektur offen; keine technische Lösung ausgewählt oder implementiert.
 
 ## Nachgewiesene Ausgangslage
@@ -40,9 +40,10 @@
 11. Speicherung begrenzter Profilmodule und Stile; getrennter privater/öffentlicher Profilstand; Wirkung von Stiländerungen auf bestehende Events.
 12. Einbindung externer Musikanbieter ohne eigenes Audio-/Videohosting (Rechte, Fallback, Datenschutz).
 13. E-Mail-Follow: Bestätigungsverfahren, Trennung privater Abodaten von öffentlichen Inhalten, Versandkanal, Missbrauchsschutz, Aufbewahrung. Kein Consumerkonto vorausgesetzt; Abonnenten ohne Organizerrechte.
-14. Fachlich beschlossene, technisch offene Werte: Versandzeit, Zeitzone, Bündelungsfenster, Kurzfristfälle, Deduplizierung je Abo/Event, Zustellversuche und Sperren, Löschung unbestätigter Anmeldungen nach sieben Tagen.
+14. Versandwerte sind beschlossen (10:00 Europe/Berlin, 15-Minuten-Fenster für kurzfristige Events und wichtige Änderungen, 24-Stunden-Grenze mit Kurzfrist-Ausnahme). Technisch offen sind Deduplizierung je Abo/Event, Zustellversuche, Sperren und Zustandsübergänge sowie die Löschung unbestätigter Anmeldungen nach sieben Tagen.
 15. Einbettung von SoundCloud/Spotify: Aktivierung vor Laden externer Inhalte, Linkfallback, Anbieterbedingungen, Verhalten in echten Browser-/Geräteumgebungen.
 16. Private Einladungen und spätere bestätigte Verknüpfung; unabhängige Eventgestaltung und Profil-Offline-Zustand.
+17. Geocoding-Anbieter und Genauigkeitskriterium; Medien-Verarbeitung und Eventbild-Freigabe für Discovery; Backup-Anbieterfähigkeit für höchstens 30 Tage; Founder-Support-Löschprozess mit Folgen für geteilte Orte und Medien; Aufbewahrung von Nachweisen.
 
 ## Vorläufige Systemgrenzen, keine Architekturentscheidung
 

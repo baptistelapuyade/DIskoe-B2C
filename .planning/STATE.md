@@ -12,7 +12,7 @@ See: `.planning/PROJECT.md` (updated 2026-10-15)
 Phase: 1 of 3 (Produktvertrag und Fragenpool)
 Plan: Not created (TBD after interactive review)
 Status: Ready for product-spec planning; implementation unauthorized
-Last activity: 2026-10-15 — Decisions Q29–Q36 and five S3 details synced from the directly read Notion decision page; 25/25 requirements mapped; no implementation authorized.
+Last activity: 2026-10-15 — Notion handoff reconciled: atmosphere publication rule (B13, 33 questions), send times 10:00 Europe/Berlin with 15-minute window, invitation/deletion/retention rules, contract v0.3 draft documented; 25/25 requirements mapped; no implementation authorized.
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -49,9 +49,9 @@ Decisions are logged in `.planning/PROJECT.md` and authoritative product decisio
 
 ### Pending Todos
 
-- Complete the format-dependent question pool for Live/DJ, Offspace/Vernissage and film evenings, including priority, rationale and answer/unknown/not-applicable states.
+- Question pool documented with 33 questions (B13 atmosphere added); open: Listening-Session question mapping, UI texts and real validation.
 - Resolve the remaining product details and confirmation texts in the authoritative product source before design.
-- Work out discovery eligibility rules and the separate typed B2C data contract; then spec S9 and designs D1–D10.
+- Review the typed B2C data contract v0.3 draft and finish discovery search details; then spec S9, retention matrix and designs D1–D10.
 
 - 2026-10-15: Q29–Q36 and five S3 details decided (product decisions only). Next domain task: discovery eligibility and a separate typed B2C data contract; then remaining specs (S9) and designs D1–D10. Effort must be re-estimated; old 6–8 weeks is no commitment.
 
@@ -65,5 +65,5 @@ Decisions are logged in `.planning/PROJECT.md` and authoritative product decisio
 ## Session Continuity
 
 Last session: 2026-10-15
-Stopped at: Decisions synced into docs/.planning; Phase 1 continues with discovery eligibility and the typed data contract; no implementation plan exists.
+Stopped at: Notion handoff reconciled into docs/.planning; Phase 1 continues with contract review, discovery search details and remaining specs; no implementation plan exists.
 Resume file: None

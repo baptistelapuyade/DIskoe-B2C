@@ -23,7 +23,7 @@ Diese bewusst grobe Roadmap bringt DISKOE B2C V1 ausschließlich bis zu einer be
   4. Ein Organizer versteht Angebot, Alpha-Grenzen und den konkret zu bestätigenden Daten-/Medienumfang für Seiten, Sharing und spätere Discovery; offene Rechts- oder Produkttexte sind sichtbar als offen markiert.
   5. Redaktion und Produktverantwortung können Kuration und Messgrößen einschließlich ihrer Aussagegrenzen anhand eindeutiger Regeln beurteilen.
   6. Q29–Q36 und die fünf S3-Detailentscheidungen sind als Produktregeln dokumentiert und von offenen Designs/Technik getrennt; Profilminimum, Follow-, Versand-, Änderungs-/Absage- und Einladungsregeln sind für Organizer und Redaktion nachvollziehbar.
-  7. Discovery-Eignung mit prüfbaren Regeln und der separate typisierte B2C-Datenvertrag sowie die Follow-Spec S9 sind ausgearbeitet; bis dahin als offen gekennzeichnet. Keine Versandwerte oder Felder werden vorab festgelegt.
+  7. Discovery-Grundlogik ist beschlossen, Suchdetails sind offen. Der typisierte B2C-Datenvertrag liegt als Entwurf v0.3 vor und ist nicht abgenommen; die Follow-Spec S9 ist offen. Feldnamen, Enums und technische Werte werden nicht als final ausgegeben.
 **Plans**: TBD — Produktplanung erst interaktiv nach Review; keine Implementierung
 **UI hint**: yes
 

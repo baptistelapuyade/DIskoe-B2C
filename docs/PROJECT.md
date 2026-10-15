@@ -1,6 +1,6 @@
 # DISKOE B2C V1 — Projektgrundlage
 
-**Stand:** 2026-10-15 (Scope-Erweiterung und Beschlüsse Q29–Q36/S3 gegen Notion-Seiten des 15.10.2026 abgeglichen; kein Auto-Sync)
+**Stand:** 2026-10-15 (Scope-Erweiterung, Beschlüsse Q29–Q36/S3 sowie Notion-Übergabe mit Nachtrag und Datenvertrag-v0.3-Entwurf gegen Notion-Seiten des 15.10.2026 abgeglichen; kein Auto-Sync)
 **Status:** Dokumentations- und Spec-Phase; Implementierung nicht begonnen.
 
 ## Ziel und Nutzer
@@ -38,7 +38,7 @@ Der Kernflow lautet: berechtigter Organizer → Material/Angaben → Entwurf und
 ## Produkt- und Nachweisstand
 
 - Outcome und V1-Arbeitsumfang sind dokumentiert; der frühere Hinweis „Pilotziele 5–8 Organizer, Beobachtungsfenster noch zu prüfen" ist durch Q36 präzisiert (erste betreute Lerngruppe, vier Wochen Beobachtung, keine Testerobergrenze).
-- Q01–Q21 enthalten zahlreiche festgelegte Produktprinzipien; Specs S1–S6 bleiben insgesamt in Ausarbeitung, S7/S8 offen. Q29–Q36 und die fünf S3-Detailentscheidungen sind beschlossen. Offen bleiben Follow-Spec S9, Designs D1–D10 (u. a. D9 Profileditor, D10 Follow-/Einladungszustände), Discovery-Eignung, typisierter Datenvertrag, Betriebs-/Technikdetails und der neu zu schätzende Aufwand (alte 6–8 Wochen keine Zusage). Pilot: offene Registrierung ohne Testerlimit; 5–8 Organizer sind nur die erste betreute Lerngruppe (Q36).
+- Q01–Q21 enthalten zahlreiche festgelegte Produktprinzipien; Specs S1–S6 bleiben insgesamt in Ausarbeitung, S7/S8 offen. Q29–Q36 und die fünf S3-Detailentscheidungen sind beschlossen. Offen bleiben Follow-Spec S9, Designs D1–D10 (u. a. D9 Profileditor, D10 Follow-/Einladungszustände), Discovery-Suchdetails, Gesamtabnahme des Datenvertrags v0.3, Betriebs-/Technikdetails und der neu zu schätzende Aufwand (alte 6–8 Wochen keine Zusage). Pilot: offene Registrierung ohne Testerlimit; 5–8 Organizer sind nur die erste betreute Lerngruppe (Q36).
 - Figma enthält nutzbare Eventseiten, mobile Flows, Komponenten und Foundations, aber keinen fertigen B2C-Publishing-Ablauf.
 - Vier n8n-Exporte liefern Fachlogik/Taxonomie, keinen fertigen Organizer-Workflow.
 - Das DMO-Repo ist Referenz und enthält keine vorhandene B2C-Webapp.
@@ -50,6 +50,7 @@ Produktentscheidungen, Outcome, Scope, offene Specs und Designs: Notion. Technis
 
 - [Produktbeschlüsse Q29–Q36/S3 (lokale Lesefassung)](PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md)
 - [Scope-Erweiterung (Vorschlagshistorie)](SCOPE_EXTENSION_B2C_2026-10-15.md)
+- [Datenvertrag v0.3 (Entwurf, Lesefassung)](DATA_CONTRACT_B2C_V1_V03_ENTWURF_2026-10-15.md)
 - [Datenvertrag-Ergänzung A1](DATA_CONTRACT_B2C_V1_ADDENDUM_2026-10-15.md)
 - [Outcome Brief](https://app.notion.com/p/3f9b1cce8b738139af3aca7cea84bcad)
 - [Build, Specs & LLM-Übergabe](https://app.notion.com/p/3f9b1cce8b73813285dcd1df4ab0cbd5)
@@ -60,4 +61,4 @@ Produktentscheidungen, Outcome, Scope, offene Specs und Designs: Notion. Technis
 
 ## Nächste Produktarbeit
 
-Discovery-Eignung und den separaten typisierten B2C-Datenvertrag ausarbeiten, danach Rest-Specs (u. a. S9). Anschließend den mobilen Publishing-Ablauf sowie Organizerprofil und Eventseite als zusammenhängenden Flow designen. Anwendung erst nach separater Autorisierung beginnen.
+Den Datenvertrag v0.3 gesamt durchsehen und die Discovery-Suchdetails ausarbeiten (Grundlogik beschlossen), danach Rest-Specs (u. a. S9, Aufbewahrungsmatrix). Anschließend den mobilen Publishing-Ablauf sowie Organizerprofil und Eventseite als zusammenhängenden Flow designen. Anwendung erst nach separater Autorisierung beginnen.

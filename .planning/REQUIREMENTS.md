@@ -1,6 +1,6 @@
 # Requirements: DISKOE B2C V1
 
-**Defined:** 2026-10-14; extended 2026-10-15 (Scope-Erweiterung) and aligned the same day with decisions Q29–Q36/S3 from the directly read Notion decision page. Product decisions only; no implementation authorized.
+**Defined:** 2026-10-14; extended 2026-10-15 (Scope-Erweiterung) and aligned the same day with decisions Q29–Q36/S3 from the directly read Notion decision page; updated again for the Notion handoff (Atmosphärenpflicht, Versandwerte, Listening-Session, Datenvertrag v0.3). Product decisions only; no implementation authorized.
 **Core Value:** Organizer veröffentlichen, teilen und pflegen bestätigte Events mit weniger Aufwand; DISKOE gewinnt nachvollziehbare Katalogdaten.
 
 ## v1 Requirements
@@ -25,7 +25,7 @@
 ### Erfassung und Publikation
 
 - [ ] **PUBLISH-01**: Organizer kann ein Event per Text, bis zu drei unterstützten Flyerbildern oder vollständig manuell als privaten Entwurf anlegen.
-- [ ] **PUBLISH-02**: Extraktion und adaptive Rückfragen markieren Pflichtlücken, Unsicherheit und Widersprüche ohne Fakten zu erfinden.
+- [ ] **PUBLISH-02**: Extraktion und adaptive Rückfragen markieren Pflichtlücken, Unsicherheit und Widersprüche ohne Fakten zu erfinden. Atmosphäre ist Publikationspflicht (mindestens ein bestätigter Begriff oder eigene Beschreibung); Listening-Session braucht musikalisches Konzept und Besuchsmodus (Fragenpool B13, Nachtrag 2026-10-15).
 - [ ] **PUBLISH-03**: Organizer kann bei KI-Fehlern ohne Datenverlust manuell weiterarbeiten und eine Vorschau korrigieren.
 - [ ] **PUBLISH-04**: Nur ein bestätigter vollständiger Versionsstand wird atomar öffentlich; Speichern oder Login publiziert nicht.
 - [ ] **PUBLISH-05**: Änderung, Verschiebung, Absage, Entfernung und Archivierung folgen dem B2C-Datenvertrag.
@@ -37,7 +37,7 @@
 - [ ] **PROFILE-02**: Profil ist erst mit Projektname, Kurzvorstellung, eindeutiger URL, mindestens einem offiziellen Link oder Kontakt und einem Cover oder Anzeigebild veröffentlichbar; Änderungen bleiben privater Entwurf bis zur expliziten Veröffentlichung; Offline-Nehmen ist eine eigene Aktion ohne automatische Eventabsage (Q35). Sonderfälle offen.
 - [ ] **EVENTDESIGN-01**: Eventseiten besitzen eine vom Profil unabhängige Gestaltung (Palette, vorgegebene Schriftkombination, optionaler Flyer/Cover) bei fester Informationshierarchie ohne Event-Moduleditor; „Profilgestaltung übernehmen" ist nur Starthilfe; Profiländerungen verändern bestehende Events nicht; Duplizieren übernimmt die Gestaltung; der verantwortliche Organizer ist verlinkt (Q35).
 - [ ] **FOLLOW-01**: Besucher kann einem Organizerprojekt per E-Mail-Adresse folgen (Bestätigungslink, Verwaltung über zeitlich begrenzten Link, Abmeldung in jeder Mail, Missbrauchsbegrenzung); kein Consumerkonto, keine Organizerrechte, getrennt von DISKOE-Newsletter; Organizer sehen nur die bestätigte Aboanzahl (Q32).
-- [ ] **FOLLOW-02**: Aktive Abonnenten erhalten neue veröffentlichte Events gebündelt (höchstens eine reguläre Ankündigung je Organizer in 24 Stunden, je Event und Abo einmal), gesonderte Updates bei Änderung von Datum/Beginn/Ort und bestätigter Absage; Tippfehler lösen nichts aus; Entwürfe, zurückgezogene und gesperrte Veröffentlichungen lösen nichts aus (Q33). Versandwerte offen.
+- [ ] **FOLLOW-02**: Aktive Abonnenten erhalten neue veröffentlichte Events gebündelt (höchstens eine reguläre Ankündigung je Organizer in 24 Stunden, je Event und Abo einmal), gesonderte Updates bei Änderung von Datum/Beginn/Ort und bestätigter Absage; Tippfehler lösen nichts aus; Entwürfe, zurückgezogene und gesperrte Veröffentlichungen lösen nichts aus (Q33). Versand regulär 10:00 Europe/Berlin, 15-Minuten-Fenster für kurzfristige Events und wichtige Änderungen (Nachtrag 2026-10-15); Zustellmechanik, Deduplizierung und Zustellversuche offen.
 
 ### Sharing und Kuration
 
@@ -74,6 +74,17 @@
 | Eigenes Audio-/Videohosting | Offizielle externe Links genügen für V1. |
 | Anwendung/DB/Deployment in der Einrichtungsphase | Noch nicht autorisiert. |
 
+## Startvoraussetzungen vor produktiver Verarbeitung (keine Requirements, nicht beschlossen)
+
+Diese Punkte sind vor einer produktiven Verarbeitung echter Organizer- oder Besucherdaten zu klären. Sie werden hier nicht stellvertretend entschieden.
+
+- Aufbewahrung und Löschung: Einwilligungs-, Sperr- und Versandnachweise nach Aboende; nie veröffentlichte oder verwaiste Uploads; alte Inhaltsversionen; minimale Sperrinformationen.
+- Backup: tatsächliche Anbieterfähigkeit für höchstens 30 Tage Rotation und Löschung nach Restore.
+- Rechte- und Einwilligungstexte für Medien, Galerie, Eventbild und Follow.
+- Anbieter und Betrieb: Geocoding mit Genauigkeitskriterium, E-Mail-Versand mit Zustellung und Deduplizierung, Medien-Verarbeitung.
+- Technische Vertragsnormalisierung (Feldnamen, Enums, Längen- und Dateigrenzen, Tokens) und Gesamtabnahme des Datenvertrags v0.3.
+- Architektur, Sicherheit, Betrieb, Messschema und Aufwandsschätzung.
+
 ## Traceability
 
 | Requirement | Phase | Status |
@@ -96,7 +107,7 @@
 | SHARE-02 | Phase 2 — Zusammenhängendes Experience Design | Pending; implementation unauthorized |
 | CURATE-01 | Phase 1 — Produktvertrag und Fragenpool | Pending; implementation unauthorized |
 | FOLLOW-01 | Phase 1 — Produktvertrag und Fragenpool | Product rules decided; designs/technical details open; implementation unauthorized |
-| FOLLOW-02 | Phase 1 — Produktvertrag und Fragenpool | Product rules decided; send values open; implementation unauthorized |
+| FOLLOW-02 | Phase 1 — Produktvertrag und Fragenpool | Product rules decided incl. send times (Nachtrag 2026-10-15); delivery mechanics open; implementation unauthorized |
 | CURATE-02 | Phase 1 — Produktvertrag und Fragenpool | Product rules decided; assignment/states open; implementation unauthorized |
 | PROFILE-02 | Phase 1 — Produktvertrag und Fragenpool | Product rules decided; special cases open; implementation unauthorized |
 | PROFILE-01 | Phase 2 — Zusammenhängendes Experience Design | Product rules decided; designs open; implementation unauthorized |
@@ -107,4 +118,4 @@
 **Coverage:** 25/25 V1 requirements (19 ursprünglich + PROFILE-01, PROFILE-02, EVENTDESIGN-01, FOLLOW-01, FOLLOW-02, CURATE-02) are mapped exactly once. No plan may execute automatically, and no implementation is authorized.
 
 ---
-*Requirements defined: 2026-10-14 from current Notion build and outcome documents; PROFILE-01/02, EVENTDESIGN-01, FOLLOW-01/02, CURATE-02 added 2026-10-15; product rules per `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md`. Acceptance signals (proposal until design approval) are listed there.*
+*Requirements defined: 2026-10-14 from current Notion build and outcome documents; PROFILE-01/02, EVENTDESIGN-01, FOLLOW-01/02, CURATE-02 added 2026-10-15; product rules per `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md`. Acceptance signals (proposal until design approval) are listed there. Nachtrag 2026-10-15: PUBLISH-02 und FOLLOW-02 präzisiert; Datenvertrag v0.3 als Entwurf in `docs/DATA_CONTRACT_B2C_V1_V03_ENTWURF_2026-10-15.md`.*

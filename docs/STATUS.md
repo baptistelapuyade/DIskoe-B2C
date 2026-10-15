@@ -1,7 +1,7 @@
 # DISKOE B2C V1 — technischer Übergabestand
 
 **Stand:** 2026-10-15
-**Phase:** Repository-Grundlage, S3-Fragenpool, Scope-Erweiterung und Produktbeschlüsse Q29–Q36/S3 dokumentiert.
+**Phase:** Repository-Grundlage, S3-Fragenpool (33 Fragen), Scope-Erweiterung, Produktbeschlüsse Q29–Q36/S3, Nachtrag-Beschlüsse und Datenvertrag-v0.3-Entwurf dokumentiert.
 **Implementierung:** nicht begonnen und nicht autorisiert.
 
 ## Tatsächlicher Stand
@@ -15,10 +15,12 @@
 - 2026-10-15: Scope-Erweiterung aus Nutzerübergabe (Developer-Chat vom 15.10.2026) dokumentiert: `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`, `docs/DATA_CONTRACT_B2C_V1_ADDENDUM_2026-10-15.md`, Anpassungen in README, PROJECT, ARCHITECTURE, Fragenpool und `.planning/`. Notion war in dieser Session nicht zugänglich (404); es gab keinen Notion-Abgleich, dieser bleibt offen.
 - 2026-10-15 (später): Beschlüsse Q29–Q36 und fünf S3-Detailentscheidungen aus der direkt gelesenen Notion-Beschlussseite (plus Scope- und S3-Seite) in `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md` dokumentiert; abhängige Dokumente und `.planning/` abgeglichen. Gelesen wurde nicht die übergeordnete Build-Seite und nicht der Outcome Brief; Auto-Sync gibt es nicht. Zugriff bestand erst nach erneuter Connector-Verbindung des Nutzers.
 - Aktuellen Notion-Build-Stand (Stand 2026-10-14) mit der Repo-Lesefassung abgeglichen; neue Detailheuristiken und UI-nahe Optionen bleiben als Vorschläge markiert.
+- 2026-10-15 (Notion-Übergabe „Datenvertrag v0.3 & Abschlussbeschlüsse"): Nachtrag in `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md` ergänzt; Datenvertrag v0.3 als Entwurf in `docs/DATA_CONTRACT_B2C_V1_V03_ENTWURF_2026-10-15.md` angelegt; B13 (Atmosphärenpflicht) im Fragenpool ergänzt; Roadmap, Requirements, Architektur, README und Planungsstand abgeglichen. v0.1 und Ergänzung A1 unverändert erhalten. Keine Entwicklung.
 
 ## Gelesene und geprüfte Quellen
 
 - Notion: Outcome Brief, Build/Specs/LLM-Übergabe und strategischer Hintergrund, jeweils Stand 2026-10-14.
+- Notion am 2026-10-15 direkt gelesen: Build-Seite (vollständig), Scope-Erweiterung, S3-Fragenpool, Beschlussseite Q29–Q36/S3, Datenvertrag v0.2 und v0.3 sowie Claude-Übergabe. Nicht erneut gelesen: Outcome Brief und Strategie (im Abgleich nicht als betroffen markiert) sowie die Taxonomie-Quellen des v0.2-Zwischenstands. Kein Auto-Sync.
 - DMO-Referenz: lokales `AGENTS.md`, `.cursor/rules/documentation.mdc`, `docs/PROJECT.md`, `docs/STATUS.md` und `.planning/`-Struktur; DMO-Arbeitsbaum blieb unverändert.
 - Bestandsprüfung: Build-Q22 und Draft-PR-Link; der GitHub-Webabruf war in dieser Sitzung nicht direkt verfügbar, der lokale DMO-Stand und die Notion-Auditfassung waren zugänglich.
 - Figma: Metadaten des Screen-Canvas `7:13`, der Foundations `4:11` und ein Übersichtsscreenshot. Keine vollständige Library-/Designabnahme.
@@ -29,13 +31,15 @@
 
 **Beschlossen (2026-10-15):** Q29–Q36 (Module, Gestaltungsrahmen, Musik SoundCloud/Spotify, Follow, Versand-/Änderungs-/Absageregeln, Empfehlungen/Einladungen, Profilminimum mit Bildpflicht und unabhängiger Eventgestaltung, offene Alpha ohne Testerlimit) und die fünf S3-Detailentscheidungen. Produktentscheidungen, keine Entwicklungsfreigabe.
 
-**Offen:** Discovery-Eignung und typisierter B2C-Datenvertrag, Follow-Spec S9, D1–D10 mobile Designs, Versandzeiten/Zeitzone/Kurzfristfälle, Einladungszuordnung, Offline-/Entfernungszustände, Medien-/Einwilligungs-/Freigabetexte, Aufbewahrung, technische Architektur Q23–Q25, Messschema/Betrieb, Pilotorganisation und neu zu schätzender Aufwand.
+**Nachtrag beschlossen (2026-10-15):** Atmosphärenpflicht (B13), Versand 10:00 Europe/Berlin mit 15-Minuten-Fenster, Einladungs-, Profilpausen-, Lösch- und Produktfristregeln; Discovery-Grundlogik mit Bildpflicht für Discovery.
+
+**Offen:** Discovery-Suchdetails und Schwellen; Gesamtdurchsicht des Datenvertrags v0.3 (Entwurf, nicht abgenommen); Startvoraussetzungen (Aufbewahrung, Backup, Rechtetexte, Anbieter); Follow-Spec S9; D1–D10 mobile Designs; Einladungszuordnung-Details; Offline-/Entfernungszustände; Zustellmechanik; technische Architektur Q23–Q25; Messschema/Betrieb; Pilotorganisation und neu zu schätzender Aufwand.
 
 **Nicht geprüft:** echte Organizer-Materialien/Nutzerverständnis, Softwarelaufzeit, Auth, Datenbank, Medienverarbeitung, Analytics, SEO-Ausgabe, Deployment und externe Dienste.
 
 ## Nächste autorisierte Aufgabe
 
-Keine Entwicklung starten. Nächste fachliche Aufgabe: Discovery-Eignung und separaten typisierten B2C-Datenvertrag ausarbeiten; danach Rest-Specs und Designs (Publishing-Flow, Profileditor D9, Eventgestaltung, Follow-/Einladungszustände D10).
+Keine Entwicklung starten. Nächste fachliche Aufgabe: Gesamtdurchsicht des Datenvertrags v0.3 (Entwurf) und Discovery-Suchdetails; danach Rest-Specs (S9, Aufbewahrungsmatrix) und Designs (Publishing-Flow, Profileditor D9, Eventgestaltung, Follow-/Einladungszustände D10).
 
 ## Übergabeformat
 

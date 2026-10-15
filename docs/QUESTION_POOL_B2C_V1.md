@@ -1,7 +1,7 @@
 # DISKOE B2C V1 — formatabhängiger Fragenpool S3
 
-**Stand:** 2026-10-14
-**Status:** Arbeitsgrundlage für S3. Q08–Q11, Publikationsminimum und Formatpflichten sind bestätigt; die fünf Detailentscheidungen aus Abschnitt 8 sind am 2026-10-15 beschlossen (siehe Abschnitt 8b und [PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md](./PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md)). Detailauswahlen, Antwortoptionen und Auswahlheuristiken in den Abschnitten 1–7 bleiben **Vorschläge**, soweit nicht durch 8b präzisiert. Kein UI, Datenmodell oder KI-System ist implementiert.
+**Stand:** 2026-10-15 (Nachtrag B13)
+**Status:** Arbeitsgrundlage für S3; seit dem Nachtrag 2026-10-15 mit B13 Atmosphäre (Publikationspflicht) insgesamt 33 Fragen. Q08–Q11, Publikationsminimum und Formatpflichten sind bestätigt; die fünf Detailentscheidungen aus Abschnitt 8 sind am 2026-10-15 beschlossen (siehe Abschnitt 8b und [PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md](./PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md)). Detailauswahlen, Antwortoptionen und Auswahlheuristiken in den Abschnitten 1–7 bleiben **Vorschläge**, soweit nicht durch 8b präzisiert. Kein UI, Datenmodell oder KI-System ist implementiert.
 
 ## 1. Zweck und verbindliche Auswahlregeln
 
@@ -128,6 +128,16 @@ Jede Beratung erklärt Besucher- und Matchingnutzen konkret. Mehr bestätigter K
 - **Frage/Nutzen/Antwort:** „Gibt es eine Altersgrenze oder andere Bedingungen für den Einlass?“ Vermeidet unnötige Anreise und verbessert Zielgruppenpassung. Keine bekannten Bedingungen; ab 18; anderes Alter; Ausweis/Mitgliedschaft/Anmeldung; Freitext.
 - **Zustände:** unbekannt/überspringen nur ohne bekannte Bedingung; nicht zutreffend entspricht „keine Bedingungen“.
 - **Ebene:** Event; Ortsregel erneut prüfen.
+
+### B13 — Atmosphäre, Publikationspflicht (Nachtrag 2026-10-15)
+
+- **Information/Feld:** bestätigte Atmosphärenbegriffe oder eigene kurze Beschreibung.
+- **Wann:** keine bestätigte passende Atmosphärenangabe im Material oder Entwurf. Passende vorhandene Beschreibungsteile vorschlagen und bestätigen lassen, statt doppelt schreiben zu lassen.
+- **Priorität:** Publikationspflicht. Die frühere allgemeine Optionalität von Mood/Vibe bedeutet weiterhin keine Moodpflicht, ersetzt aber diese Atmosphärenpflicht nicht.
+- **Frage/Nutzen/Antwort:** „Wie würdet ihr die Atmosphäre dieses Abends beschreiben?“ Mindestens ein, höchstens drei passende Begriffe ODER ein eigener kurzer Satz. Nutzen: Erwartung vor dem Besuch und spätere belegte Kontextpassung. Keine vorausgewählten KI-Antworten.
+- **Auswahl:** Gemütlich; Intim/persönlich; Entspannt; Lebhaft; Ungezwungen; Experimentell; Underground/DIY; Alternativ/unabhängig; Community-geprägt; Immersiv. Optional konkrete Erläuterung anbieten, keine zusätzliche Belegpflicht.
+- **Zustände:** unbekannt, nicht zutreffend und Überspringen erfüllen das Publikationsminimum nicht. Eine bestätigte eigene Beschreibung genügt auch ohne Tags.
+- **Ebene:** Event. Organizeridentität oder Ortsstimmung nicht blind übernehmen. Energie und soziale Interaktion sind separat optional und nicht Teil der Atmosphärenpflicht.
 
 ## 3. Live-/DJ-Abend
 
@@ -384,6 +394,14 @@ Quelle: Notion-Beschlussseite vom 2026-10-15, direkt gelesen; Vollfassung in der
 5. **Alpha-Auswertung (Punkt 5):** wöchentliche qualitative Prüfung, versionierte Änderungen, keine automatischen Prozentgrenzen, keine stillen neuen Pflichtfragen.
 
 Weiterhin offen: konkrete UI/Texte, technische Auswahlheuristik, reale Validierung, Discovery-Minimum.
+
+## 8c. Nachtrag 2026-10-15: B13 und Historienhinweis
+
+- Die Atmosphärenpflicht ist beschlossen und als Frage **B13** ergänzt. Der Pool umfasst damit 33 Fragen (B01–B13, L01–L06, O01–O07, F01–F07). Die übrigen 32 Fragen bleiben unverändert.
+- Die vier fiktiven Auswahlfälle in Abschnitt 6 wurden vor B13 erstellt. Für sie gilt zusätzlich: Ohne bestätigte Atmosphäre ist B13 eine Pflichtfrage. Sie bleiben Dokumentationsfälle und keine realen Tests.
+- **Listening-Session:** Musikalisches Konzept und Besuchsmodus sind Pflicht. Die Zuordnung zu bestehenden IDs ist noch nicht festgelegt (L01 für das Konzept; für den Besuchsmodus eine Frage nach dem Muster von O02). Keine neue Hauptformat-ID ohne Prüfung.
+- Ergänzende Programmteile (Live-Musik, DJ-Set, Screening, Talk, Lesung, Performance) bleiben getrennte Ergänzungen.
+- Weiterhin offen: UI-Texte, technische Auswahlheuristik, reale Validierung, Discovery-Suchabdeckung.
 
 ## 9. Verifikationsstand
 

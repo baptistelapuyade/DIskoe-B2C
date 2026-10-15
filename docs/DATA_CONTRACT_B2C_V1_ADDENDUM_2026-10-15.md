@@ -1,5 +1,7 @@
 # DISKOE B2C V1 — Datenvertrag-Ergänzung A1 (Profil und Follow)
 
+> **Hinweis (Dokumentationsabgleich 2026-10-15):** Die aktuelle Feld-Lesefassung ist [`DATA_CONTRACT_B2C_V1_V03_ENTWURF_2026-10-15.md`](DATA_CONTRACT_B2C_V1_V03_ENTWURF_2026-10-15.md). Diese Ergänzung bleibt als Historie erhalten; wo sie abweicht, gilt v0.3 bzw. die [Beschlussdatei](PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md).
+
 **Stand:** 2026-10-15
 **Status:** Entwurf zur Prüfung; am 2026-10-15 an die Beschlüsse Q29–Q36/S3 angepasst, aber weiterhin kein typisierter Vertrag; Ergänzung zu `docs/DATA_CONTRACT_B2C_V1.md` (v0.1, unverändert erhalten). Kein DB-Schema, keine Implementierung.
 **Herkunft:** zunächst Nutzerübergabe aus dem Developer-Chat vom 15.10.2026, danach gegen die direkt gelesene Notion-Beschlussseite vom 15.10.2026 abgeglichen (kein Auto-Sync). Produktkontext: [PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md](PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md); Vorschlagshistorie: `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`.
