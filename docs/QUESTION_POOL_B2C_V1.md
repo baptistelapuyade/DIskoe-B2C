@@ -369,6 +369,10 @@ Zulässige Gesamtformulierung: „Mehr bestätigter Kontext kann DISKOE später 
 4. **Mischformate:** Hauptformat plus Ergänzung oder eigene kombinierte Pflichtregeln.
 5. **Alpha-Auswertung:** Kriterien zum Entfernen, Umformulieren oder Hochstufen von Zusatzfragen; zunächst Antworten, Überspringen, Korrekturen, Abbrüche und gewonnene bestätigte Daten je Format messen.
 
+## 8a. Ergänzung 2026-10-15: Abgrenzung zu Profil und Follow
+
+Nutzerübergabe aus dem Developer-Chat vom 15.10.2026; kein direkter Notion-Abgleich. Die 32 Eventfragen B01–B12, L01–L06, O01–O07, F01–F07, die vier fiktiven Auswahlfälle und die fünf offenen Entscheidungen oben bleiben unverändert. Profilgestaltung und Follow erzeugen **keinen zusätzlichen Pflichtfragebogen beim Eventpublizieren**; Profil-/Follow-Entscheidungen Q29–Q36 stehen in `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`, Abschnitt 9. Q29 (Module und kleinstes Profilangebot) ist als Nächstes zu entscheiden.
+
 ## 9. Verifikationsstand
 
 Inhaltlich gegen `docs/DATA_CONTRACT_B2C_V1.md` und den aktuellen Notion-Build-Stand mit Q08–Q11 geprüft; vier synthetische Auswahlpfade dokumentiert. Nicht geprüft sind echte Organizer-Materialien, Nutzerverständnis, UI, KI-Ausgabe, Softwarelaufzeit, Speicherung oder Veröffentlichung.

@@ -1,6 +1,6 @@
 # DISKOE B2C V1 — Datenvertrag v0.1
 
-**Stand:** 2026-10-14
+**Stand:** 2026-10-14 (Version v0.1 unverändert; Ergänzung vom 2026-10-15 separat in `DATA_CONTRACT_B2C_V1_ADDENDUM_2026-10-15.md`)
 **Status:** Lesefassung beschlossener Produkt-/Publikationsregeln; S2 insgesamt noch in Ausarbeitung. Kein DB-Schema und keine Implementierung.
 
 Diese B2C-Fassung ersetzt oder überschreibt keinen früheren Consumer- oder DMO-Vertrag. Sie gilt zunächst für einzelne datierte Berliner Präsenz-Kulturveranstaltungen an einem Ort: Live-/DJ-Abend, Offspace-/Vernissage-Abend und Filmabend.

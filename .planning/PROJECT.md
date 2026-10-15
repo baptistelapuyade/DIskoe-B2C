@@ -4,6 +4,8 @@
 
 Eine mobile-first Arbeitsgrundlage für kleine Berliner Kulturveranstalter: eigene Organizer-/Eventseiten, leichteres wiederholtes Publishing und teilbare Materialien. Bestätigte Events bilden zugleich den verlässlichen Katalog für eine spätere DISKOE-Discovery-Webapp.
 
+Seit 2026-10-15 (Nutzerübergabe, kein direkter Notion-Abgleich) richtet sich die Produktrichtung auf eine persönliche digitale Heimat mit begrenzten modularen Profilen und frühem E-Mail-Follow-Test; der bestätigte Eventkatalog bleibt gleichrangig. Siehe `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`.
+
 ## Core Value
 
 Organizer können einen bestätigten Eventstand mit deutlich weniger Pflegeaufwand veröffentlichen, teilen und aktuell halten, während DISKOE nachvollziehbare Katalogdaten gewinnt.
@@ -23,12 +25,14 @@ Organizer können einen bestätigten Eventstand mit deutlich weniger Pflegeaufwa
 - [ ] Veröffentlichung, Änderung, Absage, Entfernung und Duplizieren bleiben versioniert und nachvollziehbar.
 - [ ] Sharing über Link, Vorschau, Nachrichtentext und QR basiert auf bestätigten Daten.
 - [ ] Kuration, Redaktion, Messung und SEO-/GEO-Grundlagen folgen den beschlossenen Grenzen.
+- [ ] Organizer gestalten ein begrenzt modulares Profil als eigenen öffentlichen Auftritt (Ausgestaltung offen, Q29–Q31, Q35). *(Vorschlag, nicht freigegeben)*
+- [ ] Besucher können einem Organizerprojekt per E-Mail folgen (kleiner Alpha-Test; Umfang offen, Q32–Q33, Q36). *(Vorschlag, nicht freigegeben)*
 
 ### Out of Scope
 
-- Consumer-Discovery, persönliche Consumer-Sammlungen, Polls/Pläne und Follow/Updates — nach V1.
+- Consumer-Discovery, persönliche Consumer-Sammlungen und Polls/Pläne — nach V1. (Pauschale Follow-Grenze durch Scope-Erweiterung 2026-10-15 überholt.)
 - Teamrechte, Premium, externe Events in privaten Shortlists — nach V1.
-- Seiteneditor, Universalimport, Social-Autopublishing, eigenes Ticketing und eigenes Audio-/Videohosting — ausdrücklich ausgeschlossen.
+- Freier Seiteneditor/Canvas/Website-Builder (begrenzte Module sind kein Seiteneditor), Universalimport, Social-Autopublishing, eigenes Ticketing und eigenes Audio-/Videohosting — ausdrücklich ausgeschlossen.
 - Anwendungscode, Abhängigkeiten, Datenbank, Deployment und Live-Dienste — für die aktuelle Einrichtungsaufgabe nicht autorisiert.
 
 ## Context
@@ -58,4 +62,4 @@ Notion hält den aktuellen Outcome-, Scope- und Spec-Stand. Q01–Q21 enthalten 
 Dieses Dokument wird an Phasen- und Milestone-Grenzen überprüft. Anforderungen werden erst nach Implementierung und echter Prüfung als validiert geführt; neue Produktentscheidungen werden zuerst in Notion und danach gezielt hier abgeglichen.
 
 ---
-*Last updated: 2026-10-14 after repository initialization*
+*Last updated: 2026-10-15 after scope extension documentation sync (user handover, no Notion comparison)*

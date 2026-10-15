@@ -6,7 +6,8 @@ Frische Arbeitsgrundlage für DISKOE B2C V1. Der aktuelle Stand umfasst ausschli
 
 1. [`AGENTS.md`](AGENTS.md) lesen.
 2. [`docs/PROJECT.md`](docs/PROJECT.md) und [`docs/STATUS.md`](docs/STATUS.md) lesen.
-3. Für Daten- oder Architekturarbeit [`docs/DATA_CONTRACT_B2C_V1.md`](docs/DATA_CONTRACT_B2C_V1.md) und [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) hinzunehmen.
+3. Für Daten- oder Architekturarbeit [`docs/DATA_CONTRACT_B2C_V1.md`](docs/DATA_CONTRACT_B2C_V1.md), die [Ergänzung A1](docs/DATA_CONTRACT_B2C_V1_ADDENDUM_2026-10-15.md) und [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) hinzunehmen.
+   Für die Scope-Erweiterung Profil/Follow (2026-10-15) [`docs/SCOPE_EXTENSION_B2C_2026-10-15.md`](docs/SCOPE_EXTENSION_B2C_2026-10-15.md) lesen.
 4. Aktuellen Git-Status und die jeweils relevante Notion-/Figma-Spec prüfen.
 
 ## Maßgebliche Quellen
@@ -22,4 +23,4 @@ Notion hält Produktentscheidungen und offene Specs. Dieses Repository hält tec
 
 ## Status
 
-Produktentscheidungen S1–S6 sind weit fortgeschritten, aber nicht alle Texte, Detailregeln und Designs sind abgenommen. S7/S8 bleiben offen. Die empfohlene nächste Aufgabe ist der vollständige formatabhängige Fragenpool mit Nutzenhinweisen und verbleibenden Produktdetails; danach folgen der mobile Publishing-Ablauf sowie Organizerprofil und Eventseite. Noch keine Entwicklung starten.
+Produktentscheidungen S1–S6 sind weit fortgeschritten, aber nicht alle Texte, Detailregeln und Designs sind abgenommen. S7/S8 bleiben offen. Seit 2026-10-15 (Nutzerübergabe, nicht direkt mit Notion abgeglichen) umfasst die Richtung begrenzte modulare Profile und einen frühen E-Mail-Follow-Test; offen sind Q29–Q36. Die nächste gemeinsame Entscheidung ist Q29: Module und kleinstes Profilangebot. Danach folgen der mobile Publishing-Ablauf sowie Profileditor und Eventseite. Noch keine Entwicklung starten.

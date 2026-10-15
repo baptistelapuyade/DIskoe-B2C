@@ -1,6 +1,6 @@
 # DISKOE B2C V1 — Architekturstand
 
-**Stand:** 2026-10-14
+**Stand:** 2026-10-15 (Ergänzung Profil/Follow; weiterhin keine technische Entscheidung)
 **Status:** Architektur offen; keine technische Lösung ausgewählt oder implementiert.
 
 ## Nachgewiesene Ausgangslage
@@ -34,6 +34,12 @@
 8. Analyticschema, Bot-/Testfilter, Attribution und Datenschutzgrenzen.
 9. SEO-Metadaten, strukturierte Eventdaten, Sitemap, Crawler-/Trainingszugriff und Statusaktualisierung.
 10. Teststrategie, Betriebsbeobachtung, Backup/Recovery und Deploymentweg.
+
+**Ergänzt 2026-10-15 (Nutzerübergabe, siehe `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`), ebenfalls offen:**
+
+11. Speicherung begrenzter Profilmodule und Stile; getrennter privater/öffentlicher Profilstand; Wirkung von Stiländerungen auf bestehende Events.
+12. Einbindung externer Musikanbieter ohne eigenes Audio-/Videohosting (Rechte, Fallback, Datenschutz).
+13. E-Mail-Follow: Bestätigungsverfahren, Trennung privater Abodaten von öffentlichen Inhalten, Versandkanal, Missbrauchsschutz, Aufbewahrung. Kein Consumerkonto vorausgesetzt; Abonnenten ohne Organizerrechte.
 
 ## Vorläufige Systemgrenzen, keine Architekturentscheidung
 
