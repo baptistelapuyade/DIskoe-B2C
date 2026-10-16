@@ -3,6 +3,7 @@
 **Stand:** 2026-10-15
 **Status:** Fachlicher Entwurf zur Gesamtdurchsicht. Produktregeln sind beschlossen (jeweils mit Herkunft gekennzeichnet). Feldnamen, Enum-Vollständigkeit, Längen-/Dateigrenzen, Typisierung und Gesamtabnahme sind **Vorschlag** und **nicht abgenommen**.
 **Keine Umsetzung:** kein Schema, keine Datenbanktabellen, keine Migration, kein Code, keine ausgeführten Tests, keine Entwicklungsfreigabe.
+**Ergänzt durch Produktdelta v0.4 (2026-10-16):** [`PRODUCT_DECISIONS_DELTA_V04_2026-10-16.md`](PRODUCT_DECISIONS_DELTA_V04_2026-10-16.md) — Plus Alpha, Besucheridentität, Eventänderungsabo, eigene Nachrichten, Feedback, Vorlagen, Assistentenkontingent, Fristen. Dieser Entwurf bleibt unverändert; wo das Delta präzisiert, gilt das Delta.
 
 **Herkunft:** Notion „B2C-Datenvertrag v0.3 — Felddefinitionen & Prüfmatrix / Entwurf" (`3fab1cce8b73810799acd5a04ee72327`, Seitenstand 2026-10-15 13:34 UTC). Vorstufe „B2C-Datenvertrag v0.2" (`3fab1cce8b7381efbf71ce1bf718d89d`, Stand 2026-10-15 13:37 UTC), Beschlussseite (`3fab1cce8b738184ae44d857ecb9b999`) und Claude-Übergabe (`3fab1cce8b7381bc8f9bd5915138d91b`) wurden am 2026-10-15 über die Notion-Verbindung direkt gelesen.
 

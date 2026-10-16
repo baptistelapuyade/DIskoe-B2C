@@ -12,7 +12,7 @@ See: `.planning/PROJECT.md` (updated 2026-10-15)
 Phase: 1 of 3 (Produktvertrag und Fragenpool)
 Plan: Not created (TBD after interactive review)
 Status: Ready for product-spec planning; implementation unauthorized
-Last activity: 2026-10-15 — Notion handoff reconciled: atmosphere publication rule (B13, 33 questions), send times 10:00 Europe/Berlin with 15-minute window, invitation/deletion/retention rules, contract v0.3 draft documented; 25/25 requirements mapped; no implementation authorized.
+Last activity: 2026-10-16 — Produktdelta v0.4 (Notion, inkl. Abschnitte 14–15) als Lesefassung dokumentiert; Requirements 38/38 gemappt (13 neu: Plus-Alpha-Testzugang, Downgrade, gemeinsamer Login, Eventänderungsabo, eigene Nachrichten, Feedback, Vorlagen, Assistentenkontingent, Besucher, Messung, Fristen); Roadmap-Abnahmefälle ergänzt; keine Umsetzung.
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -53,6 +53,7 @@ Decisions are logged in `.planning/PROJECT.md` and authoritative product decisio
 - Resolve the remaining product details and confirmation texts in the authoritative product source before design.
 - Review the typed B2C data contract v0.3 draft and finish discovery search details; then spec S9, retention matrix and designs D1–D10.
 
+- 2026-10-16: Produktdelta v0.4 gelesen und dokumentiert (`docs/PRODUCT_DECISIONS_DELTA_V04_2026-10-16.md`). Offen: Discovery-Suchdetails, Gesamtabnahme Datenvertrag v0.3 + Delta, S9-Restspecs, D1–D10 (inkl. Vorlagen-, Nachrichten-, Feedback- und Besucheroberflächen), Billing-/Steuerklärung vor Angebot.
 - 2026-10-15: Q29–Q36 and five S3 details decided (product decisions only). Next domain task: discovery eligibility and a separate typed B2C data contract; then remaining specs (S9) and designs D1–D10. Effort must be re-estimated; old 6–8 weeks is no commitment.
 
 ### Blockers/Concerns
@@ -64,6 +65,6 @@ Decisions are logged in `.planning/PROJECT.md` and authoritative product decisio
 
 ## Session Continuity
 
-Last session: 2026-10-15
-Stopped at: Notion handoff reconciled into docs/.planning; Phase 1 continues with contract review, discovery search details and remaining specs; no implementation plan exists.
+Last session: 2026-10-16
+Stopped at: Produktdelta v0.4 in docs/.planning abgeglichen; Phase 1 continues mit Vertragsdurchsicht, Discovery-Suchdetails und Restspecs; kein Implementierungsplan.
 Resume file: None

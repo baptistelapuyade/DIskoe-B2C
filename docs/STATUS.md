@@ -1,7 +1,7 @@
 # DISKOE B2C V1 — technischer Übergabestand
 
-**Stand:** 2026-10-15
-**Phase:** Repository-Grundlage, S3-Fragenpool (33 Fragen), Scope-Erweiterung, Produktbeschlüsse Q29–Q36/S3, Nachtrag-Beschlüsse und Datenvertrag-v0.3-Entwurf dokumentiert.
+**Stand:** 2026-10-16
+**Phase:** Repository-Grundlage, S3-Fragenpool (33 Fragen), Scope-Erweiterung, Produktbeschlüsse Q29–Q36/S3, Nachtrag-Beschlüsse, Datenvertrag-v0.3-Entwurf und Produktdelta v0.4 dokumentiert.
 **Implementierung:** nicht begonnen und nicht autorisiert.
 
 ## Tatsächlicher Stand
@@ -16,6 +16,9 @@
 - 2026-10-15 (später): Beschlüsse Q29–Q36 und fünf S3-Detailentscheidungen aus der direkt gelesenen Notion-Beschlussseite (plus Scope- und S3-Seite) in `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md` dokumentiert; abhängige Dokumente und `.planning/` abgeglichen. Gelesen wurde nicht die übergeordnete Build-Seite und nicht der Outcome Brief; Auto-Sync gibt es nicht. Zugriff bestand erst nach erneuter Connector-Verbindung des Nutzers.
 - Aktuellen Notion-Build-Stand (Stand 2026-10-14) mit der Repo-Lesefassung abgeglichen; neue Detailheuristiken und UI-nahe Optionen bleiben als Vorschläge markiert.
 - 2026-10-15 (Notion-Übergabe „Datenvertrag v0.3 & Abschlussbeschlüsse"): Nachtrag in `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md` ergänzt; Datenvertrag v0.3 als Entwurf in `docs/DATA_CONTRACT_B2C_V1_V03_ENTWURF_2026-10-15.md` angelegt; B13 (Atmosphärenpflicht) im Fragenpool ergänzt; Roadmap, Requirements, Architektur, README und Planungsstand abgeglichen. v0.1 und Ergänzung A1 unverändert erhalten. Keine Entwicklung.
+
+- 2026-10-16: Produktdelta v0.4 (Notion „B2C-Datenvertrag — Delta v0.4“, vollständig inkl. Abschnitte 14–15, Seitenstand 16.10.2026 11:42 UTC) als Lesefassung in `docs/PRODUCT_DECISIONS_DELTA_V04_2026-10-16.md` dokumentiert. Abgeglichen: `docs/PROJECT.md`, `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md` (Verweis), `docs/DATA_CONTRACT_B2C_V1_V03_ENTWURF_2026-10-15.md` (Verweis; Inhalt unverändert), `.planning/REQUIREMENTS.md` (38 statt 25 Anforderungen, Traceability), `.planning/ROADMAP.md` (Phasenzuordnung, Abnahmefälle), `.planning/PROJECT.md`, `.planning/STATE.md`. Die Premium-Grenze „nach V1“ ist präzisiert: Plus Alpha als manueller achtwöchiger Testzugang; Billing nicht autorisiert.
+- Keine Umsetzung, keine Softwaretests; die Abnahmefälle D01–D15 sind Papierspezifikationen. Keine Entwicklungsfreigabe.
 
 ## Gelesene und geprüfte Quellen
 
@@ -39,7 +42,7 @@
 
 ## Nächste autorisierte Aufgabe
 
-Keine Entwicklung starten. Nächste fachliche Aufgabe: Gesamtdurchsicht des Datenvertrags v0.3 (Entwurf) und Discovery-Suchdetails; danach Rest-Specs (S9, Aufbewahrungsmatrix) und Designs (Publishing-Flow, Profileditor D9, Eventgestaltung, Follow-/Einladungszustände D10).
+Keine Entwicklung starten. Nächste fachliche Aufgabe: Gesamtdurchsicht des Datenvertrags v0.3 zusammen mit dem Produktdelta v0.4 und Discovery-Suchdetails; danach Rest-Specs (S9, Aufbewahrungsmatrix, Vorlagen-/Nachrichten-/Feedbackzustände) und Designs (Publishing-Flow, Profileditor D9, Eventgestaltung, Follow-/Einladungszustände D10, Besucher-Merkliste).
 
 ## Übergabeformat
 

@@ -1,6 +1,6 @@
 # DISKOE B2C V1 — Projektgrundlage
 
-**Stand:** 2026-10-15 (Scope-Erweiterung, Beschlüsse Q29–Q36/S3 sowie Notion-Übergabe mit Nachtrag und Datenvertrag-v0.3-Entwurf gegen Notion-Seiten des 15.10.2026 abgeglichen; kein Auto-Sync)
+**Stand:** 2026-10-16 (Produktdelta v0.4 gegen Notion-Seite vom 16.10.2026 inkl. Abschnitte 14–15 abgeglichen; zuvor 2026-10-15 Scope-Erweiterung, Q29–Q36/S3, Datenvertrag-v0.3-Entwurf; kein Auto-Sync)
 **Status:** Dokumentations- und Spec-Phase; Implementierung nicht begonnen.
 
 ## Ziel und Nutzer
@@ -12,6 +12,10 @@ Primär richtet sich V1 an regelmäßig oder halbregelmäßig veranstaltende Kol
 ## Scope-Erweiterung 2026-10-15
 
 Quelle zunächst Nutzerübergabe, danach direkt gelesene Notion-Beschlussseite vom 15.10.2026: DISKOE wird als persönliche digitale Heimat für unabhängige Kulturveranstalter ausgerichtet; begrenzte modulare Profile und ein früher E-Mail-Follow-Test sind vorgesehen, der bestätigte Eventkatalog bleibt gleichrangig. Q29–Q36 und die fünf S3-Entscheidungen sind **beschlossen** (Produktentscheidung, keine Entwicklungsfreigabe): [`PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md`](PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md). Vorschlagshistorie: [`SCOPE_EXTENSION_B2C_2026-10-15.md`](SCOPE_EXTENSION_B2C_2026-10-15.md). Die Abschnitte „Bestätigter V1-Scope" und „Festgelegte Grenzen" gelten weiter, soweit unten nicht als überholt markiert.
+
+## Produktdelta v0.4 (2026-10-16)
+
+Notion-Delta mit Plus Alpha, Besucheridentität, Kommunikation und Feedback, gelesen inkl. Abschnitte 14–15: [`PRODUCT_DECISIONS_DELTA_V04_2026-10-16.md`](PRODUCT_DECISIONS_DELTA_V04_2026-10-16.md). Es präzisiert die Beschlüsse Q29–Q36/S3 (Q33: kein Eventalarm, Eventänderungsabo nur bewusst) und ersetzt die frühere Grenze „Premium nach V1“ durch einen achtwöchigen manuellen Plus-Alpha-Testzugang (19 EUR als Hypothese, manuelle Rechnung, keine Autozahlung). Pro, Teamrechte und Billing-Umsetzung bleiben außerhalb der Alpha.
 
 ## Bestätigter V1-Scope
 
@@ -29,7 +33,7 @@ Der Kernflow lautet: berechtigter Organizer → Material/Angaben → Entwurf und
 
 ## Festgelegte Grenzen
 
-- Consumer-Discovery, persönliche Consumer-Sammlungen, Polls/Pläne, Teamrechte, externe Events in privaten Shortlists und Premium bleiben nach V1. *(Follow/Updates: pauschale Grenze überholt; E-Mail-Follow für neue Events mit Bestätigung/Abmeldung beschlossen, Q32/Q33; kein Consumerkonto, kein Feed.)*
+- Consumer-Discovery, persönliche Consumer-Sammlungen, Polls/Pläne, Teamrechte, externe Events in privaten Shortlists und Pro bleiben nach V1. Plus Alpha ist als manueller Testzugang Teil der V1-Produktentscheidung (Delta v0.4), keine Billing-Umsetzung. *(Follow/Updates: pauschale Grenze überholt; E-Mail-Follow für neue Events mit Bestätigung/Abmeldung beschlossen, Q32/Q33; kein Consumerkonto, kein Feed.)*
 - Kein freier Seiteneditor/Website-Builder (begrenzte Module sind davon unterschieden), kein Universalimport, Social-Autopublishing, eigenes Ticketing oder eigenes Audio-/Videohosting.
 - Mehrtägige Ausstellungsöffnungszeiten, Festivals, mehrere Orte und komplexe Terminserien sind nicht der normale erste Eventausschnitt.
 - Entwürfe sind nicht öffentlich. Keine Veröffentlichung ohne vollständige zutreffende Pflichtangaben, geklärte kritische Widersprüche und Bestätigung.
@@ -50,6 +54,7 @@ Produktentscheidungen, Outcome, Scope, offene Specs und Designs: Notion. Technis
 
 - [Produktbeschlüsse Q29–Q36/S3 (lokale Lesefassung)](PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md)
 - [Scope-Erweiterung (Vorschlagshistorie)](SCOPE_EXTENSION_B2C_2026-10-15.md)
+- [Produktdelta v0.4 (Lesefassung, 16.10.2026)](PRODUCT_DECISIONS_DELTA_V04_2026-10-16.md)
 - [Datenvertrag v0.3 (Entwurf, Lesefassung)](DATA_CONTRACT_B2C_V1_V03_ENTWURF_2026-10-15.md)
 - [Datenvertrag-Ergänzung A1](DATA_CONTRACT_B2C_V1_ADDENDUM_2026-10-15.md)
 - [Outcome Brief](https://app.notion.com/p/3f9b1cce8b738139af3aca7cea84bcad)
@@ -61,4 +66,4 @@ Produktentscheidungen, Outcome, Scope, offene Specs und Designs: Notion. Technis
 
 ## Nächste Produktarbeit
 
-Den Datenvertrag v0.3 gesamt durchsehen und die Discovery-Suchdetails ausarbeiten (Grundlogik beschlossen), danach Rest-Specs (u. a. S9, Aufbewahrungsmatrix). Anschließend den mobilen Publishing-Ablauf sowie Organizerprofil und Eventseite als zusammenhängenden Flow designen. Anwendung erst nach separater Autorisierung beginnen.
+Den Datenvertrag v0.3 zusammen mit dem Produktdelta v0.4 gesamt durchsehen und die Discovery-Suchdetails ausarbeiten (Grundlogik beschlossen), danach Rest-Specs (u. a. S9, Aufbewahrungsmatrix, Vorlagen-, Nachrichten- und Feedbackoberflächen). Anschließend den mobilen Publishing-Ablauf sowie Organizerprofil und Eventseite als zusammenhängenden Flow designen. Anwendung erst nach separater Autorisierung beginnen.

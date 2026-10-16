@@ -2,6 +2,8 @@
 
 **Herkunft:** Notion-Seite „Beschlüsse Q29–Q36 & S3 — 15.10.2026 / Claude-Übergabe" (`3fab1cce8b738184ae44d857ecb9b999`), am 2026-10-15 über die Notion-Verbindung direkt gelesen (Seitenstand 2026-10-15 10:41 UTC). Ebenfalls gelesen: die Scope-Seite `3fab1cce8b73812aa1b4e69387f145df` und die S3-Seite `3f9b1cce8b73818e8fb2cc20b325009d`. **Später ebenfalls gelesen (Nachtrag):** Build-Seite, Datenvertrag v0.2/v0.3 und Claude-Übergabe (13:34–13:37 UTC). Der Outcome Brief wurde im Nachtrag nicht erneut gelesen. Es gibt keinen Auto-Sync; diese Datei ist eine manuell erstellte Lesefassung, Notion bleibt für Produktentscheidungen führend.
 
+**Fortschreibung:** Präzisiert und teils ersetzt durch das [Produktdelta v0.4 (16.10.2026)](PRODUCT_DECISIONS_DELTA_V04_2026-10-16.md); die Punkte Q33 (Eventalarm), Q36 (Premium/Plus-Umfang) und das Nachtrags-Versand-Detail bleiben hier unverändert erhalten.
+
 **Einordnung:** Dies sind Produktentscheidungen, **keine Entwicklungsfreigabe**. Designs (D1–D10), technische Spezifikation, Implementierung und reale Validierung stehen aus. Frühere Vorschläge in `SCOPE_EXTENSION_B2C_2026-10-15.md` und `DATA_CONTRACT_B2C_V1_ADDENDUM_2026-10-15.md` bleiben als Historie erhalten; wo sie hier widersprochen werden, gilt dieses Dokument.
 
 **Kennzeichnung:** **[Beschlossen]** = Produktregel. **[Design offen]** = Produktregel steht, Gestaltung/Texte fehlen. **[Technisch offen]** = Werte, Mechanik, Anbieter, Schema nicht festgelegt. **[Schätzung]** = ungeprüft.

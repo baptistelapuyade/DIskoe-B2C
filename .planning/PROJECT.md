@@ -25,6 +25,7 @@ Organizer können einen bestätigten Eventstand mit deutlich weniger Pflegeaufwa
 - [ ] Veröffentlichung, Änderung, Absage, Entfernung und Duplizieren bleiben versioniert und nachvollziehbar.
 - [ ] Sharing über Link, Vorschau, Nachrichtentext und QR basiert auf bestätigten Daten.
 - [ ] Kuration, Redaktion, Messung und SEO-/GEO-Grundlagen folgen den beschlossenen Grenzen.
+- [ ] Plus Alpha als achtwöchiger manueller Testzugang mit Free/Plus-Matrix und Downgrade-Regeln; Besucher mit gemeinsamem E-Mail-Login, privater Merkliste und Kalenderexport; Eventänderungsabo, eigene Nachrichten (Limits 1/24 h, 2/Event), Feedbackumfrage, fünf Vorlagen und Assistentenkontingent 50 Läufe/30 Tage (Produktdelta v0.4, 2026-10-16; Designs und Technik offen).
 - [ ] Organizer gestalten ein begrenzt modulares Profil (drei Richtungen, fünf optionale Module, Bildpflicht für die Veröffentlichung) als eigenen öffentlichen Auftritt (Q29–Q31, Q35 beschlossen; Designs offen).
 - [ ] Besucher können einem Organizerprojekt per bestätigter E-Mail folgen und erhalten neue Events sowie definierte Änderungs-/Absage-Updates (Q32/Q33 beschlossen; Versandwerte und Designs offen).
 - [ ] Organizer können Events/Organizerprofile empfehlen und Nicht-DISKOE-Ziele privat einladen (Q34 beschlossen; Zuordnung und Designs offen).
@@ -33,7 +34,7 @@ Organizer können einen bestätigten Eventstand mit deutlich weniger Pflegeaufwa
 ### Out of Scope
 
 - Consumer-Discovery, persönliche Consumer-Sammlungen und Polls/Pläne — nach V1. (Pauschale Follow-Grenze durch Scope-Erweiterung 2026-10-15 überholt.)
-- Teamrechte, Premium, externe Events in privaten Shortlists — nach V1.
+- Teamrechte, Pro, Reihenabo-Oberfläche, externe Events in privaten Shortlists — nach V1. Plus Alpha als achtwöchiger manueller Testzugang ist V1-Produktentscheidung (Delta v0.4); Billing-Umsetzung nicht autorisiert.
 - Freier Seiteneditor/Canvas/Website-Builder (begrenzte Module sind kein Seiteneditor), Universalimport, Social-Autopublishing, eigenes Ticketing und eigenes Audio-/Videohosting — ausdrücklich ausgeschlossen.
 - Anwendungscode, Abhängigkeiten, Datenbank, Deployment und Live-Dienste — für die aktuelle Einrichtungsaufgabe nicht autorisiert.
 
@@ -64,4 +65,4 @@ Notion hält den aktuellen Outcome-, Scope- und Spec-Stand. Q01–Q21 enthalten 
 Dieses Dokument wird an Phasen- und Milestone-Grenzen überprüft. Anforderungen werden erst nach Implementierung und echter Prüfung als validiert geführt; neue Produktentscheidungen werden zuerst in Notion und danach gezielt hier abgeglichen.
 
 ---
-*Last updated: 2026-10-15 after syncing decisions Q29–Q36/S3 from the Notion decision page (read directly; no auto-sync)*
+*Last updated: 2026-10-16 after syncing the Notion Produktdelta v0.4 (read directly incl. Abschnitte 14–15; no auto-sync). Earlier: 2026-10-15 Q29–Q36/S3.*
