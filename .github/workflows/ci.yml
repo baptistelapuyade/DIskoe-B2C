@@ -59,3 +59,22 @@ jobs:
 
       - name: Run homepage smoke test
         run: npm run test:e2e
+
+  audit:
+    name: Dependency audit (high and critical)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Use pinned npm version
+        run: npm install --global npm@10.8.2
+
+      # npm audit reads package-lock.json; no install needed.
+      - name: Fail on unaccepted high or critical advisories
+        run: npm run audit:check

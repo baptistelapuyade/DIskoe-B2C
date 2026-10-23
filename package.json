@@ -18,7 +18,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "audit:check": "node scripts/check-audit.mjs"
   },
   "dependencies": {
     "@sentry/nextjs": "11.9.0",
