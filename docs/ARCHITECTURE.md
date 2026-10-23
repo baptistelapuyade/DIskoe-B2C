@@ -1,7 +1,19 @@
 # DISKOE B2C V1 — Architekturstand
 
-**Stand:** 2026-10-15 (Ergänzung Profil/Follow und Datenvertrag-v0.3-Entwurf; weiterhin keine technische Entscheidung)
-**Status:** Architektur offen; keine technische Lösung ausgewählt oder implementiert.
+**Stand:** 2026-10-23 (Startpaket ergänzt)
+**Status:** Architektur teilweise bestätigt, nicht implementiert. Ergänzende Architekturentscheidungen, Vorschläge und offene technische Fragen stehen in [`docs/startpaket/01-architektur.md`](startpaket/01-architektur.md).
+
+## Bestätigte Architekturentscheidungen aus dem Startpaket
+
+- AWS Amplify Hosting in `eu-central-1`; Domain und DNS verbleiben beim externen Anbieter.
+- Amazon SES für Produkt-E-Mails.
+- Ein Google-Modell für die KI-Erfassung hinter einer eigenen Schnittstelle; konkretes Modell, Region und Datenverarbeitung bleiben offen.
+- Next.js (App Router, TypeScript) mit fest gepinnter Version.
+- Supabase (Postgres, Auth, Storage, Row Level Security) in Frankfurt.
+- Login per E-Mail-Code für Besucher und Organizer; Google-Login ist optional und nicht Teil der Alpha.
+- Ein Branch pro Aufgabe, kleine Pull Requests und Review durch den Founder.
+
+Diese Architekturentscheidungen wurden durch den Founder am 2026-10-23 bestätigt. Ausdrücklich offene Detailfragen bleiben unverändert offen.
 
 ## Nachgewiesene Ausgangslage
 
@@ -24,9 +36,9 @@
 
 ## Offene Entscheidungen vor Entwicklung
 
-1. Web-Stack, Runtime und Hosting einschließlich Versionen und Lockfile.
+1. Web-Stack, Runtime und Hosting einschließlich Versionen und Lockfile. (entschieden, siehe oben)
 2. Datenbank-/Speichermodell für Organizer, Ort, optionale Reihe, Event, Entwurf/Version, Freigabe, Medien, Kuration und Messereignisse.
-3. Passwortloser E-Mail-Code, Sitzungen, Ratenbegrenzung und Recovery; erster redaktioneller Freigabeschritt.
+3. Passwortloser E-Mail-Code, Sitzungen, Ratenbegrenzung und Recovery; erster redaktioneller Freigabeschritt. (entschieden, siehe oben)
 4. Rollen-/Rechtematrix und Schutz vor Zugriff auf fremde Organizer oder private Entwürfe.
 5. Medien-Upload, Transformation, Rechte-/Freigabebeleg, Entfernung, Cache und Backup-Aufbewahrung.
 6. KI-Anbieter/-Grenze, strukturierte Extraktionsausgabe, Unsicherheit, Retry/Timeout, Kostenlimits und manueller Fallback.
