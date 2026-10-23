@@ -19,7 +19,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "audit:check": "node scripts/check-audit.mjs"
+    "audit:check": "node scripts/check-audit.mjs",
+    "test:rls": "bash scripts/test-rls.sh"
   },
   "dependencies": {
     "@sentry/nextjs": "11.9.0",
