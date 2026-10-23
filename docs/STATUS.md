@@ -1,8 +1,8 @@
 # DISKOE B2C V1 — technischer Übergabestand
 
 **Stand:** 2026-10-23
-**Phase:** Repository-Grundlage und Verträge dokumentiert; Phase 4 „Durchstich (Alpha-Kern)“ geplant und verifiziert, Ausführung nicht begonnen.
-**Implementierung:** Freigegeben durch den Founder am 23.10.2026, Umfang laut `AGENTS.md`; noch kein Code geschrieben.
+**Phase:** Phase 4 „Durchstich (Alpha-Kern)“ geplant; technisches Projektgerüst als separater Schritt umgesetzt, Fach-Slices nicht begonnen.
+**Implementierung:** Freigegeben durch den Founder am 23.10.2026, Umfang laut `AGENTS.md`; Scaffold auf `feat/scaffold`, noch keine Fachfunktion.
 
 ## Tatsächlicher Stand
 
@@ -10,7 +10,8 @@
 - Verbindliche Arbeitsregeln, Einstieg, Projektstatus, separater B2C-Datenvertrag, offene Architektur und Entscheidungsverfahren angelegt.
 - Cursor-Regel verweist auf `AGENTS.md`; keine widersprüchliche zweite Regelbasis.
 - GSD ist lokal verfügbar. Eigene B2C-Planung ist grob angelegt; automatisches Fortschreiten zur Implementierung ist deaktiviert.
-- Kein Anwendungscode, `package.json`, Lockfile, Schema, Migration, Build, Test-Runner oder Deployment angelegt.
+- Next.js-App-Router-Gerüst mit strikt typisiertem TypeScript, Default-Design-Tokens/Space Grotesk, shadcn/ui-Basis, Supabase-Client-Hüllen und datensparsamer, ohne DSN inaktiver Sentry-Vorbereitung angelegt.
+- Tooling umfasst exakt gepinnte npm-Abhängigkeiten, ESLint, Prettier, Vitest, Playwright und Pull-Request-CI. Supabase enthält nur `config.toml`; keine Tabellen oder Migrationen. Kein Deployment und keine Cloud-Konten.
 - S3-Fragenpool für Live-/DJ-, Offspace-/Vernissage- und Filmabende in `docs/QUESTION_POOL_B2C_V1.md` ausgearbeitet: Basispool, Formatfragen, Prioritäten, Zustände, Ebenen, Beratung und vier ausdrücklich fiktive Auswahlfälle.
 - 2026-10-15: Scope-Erweiterung aus Nutzerübergabe (Developer-Chat vom 15.10.2026) dokumentiert: `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`, `docs/DATA_CONTRACT_B2C_V1_ADDENDUM_2026-10-15.md`, Anpassungen in README, PROJECT, ARCHITECTURE, Fragenpool und `.planning/`. Notion war in dieser Session nicht zugänglich (404); es gab keinen Notion-Abgleich, dieser bleibt offen.
 - 2026-10-15 (später): Beschlüsse Q29–Q36 und fünf S3-Detailentscheidungen aus der direkt gelesenen Notion-Beschlussseite (plus Scope- und S3-Seite) in `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md` dokumentiert; abhängige Dokumente und `.planning/` abgeglichen. Gelesen wurde nicht die übergeordnete Build-Seite und nicht der Outcome Brief; Auto-Sync gibt es nicht. Zugriff bestand erst nach erneuter Connector-Verbindung des Nutzers.
@@ -21,7 +22,7 @@
 - 2026-10-23: Startpaket unter `docs/startpaket/` aufgenommen. Architekturentscheidungen und weiterhin offene Punkte sind in `docs/startpaket/01-architektur.md` festgehalten; es wurde keine Entwicklung begonnen.
 - 2026-10-23: Entwicklungsfreigabe durch den Founder erteilt; Umfang siehe `AGENTS.md`.
 - 2026-10-23: Umsetzungsplan unter `.planning/phases/04-durchstich/PLAN.md` erstellt. Er gliedert den autorisierten Durchstich in sieben Slices (Migrationen/RLS, Login, Profil, Event/Lückenprüfung, Publizieren/Absagen, öffentliche Seiten/JSON-LD, Playwright), enthält die 38er-Inventur (37 V1-IDs plus separat geführtes `PREMIUM-01`) und wurde im GSD-Planprüflauf nach zwei Korrekturschleifen bestanden. Kein Code, keine Abhängigkeit und keine Installation.
-- Keine Umsetzung, keine Softwaretests; die Abnahmefälle D01–D15 sind Papierspezifikationen. Entwicklungsfreigabe siehe `AGENTS.md`.
+- Das technische Gerüst besitzt Unit-/Smoke-Prüfungen; die fachlichen Abnahmefälle D01–D15 bleiben Papierspezifikationen und kein Requirement gilt als umgesetzt. Entwicklungsfreigabe siehe `AGENTS.md`.
 
 ## Gelesene und geprüfte Quellen
 
@@ -41,11 +42,11 @@
 
 **Offen:** Discovery-Suchdetails und Schwellen; Gesamtdurchsicht des Datenvertrags v0.3 (Entwurf, nicht abgenommen); Startvoraussetzungen (Aufbewahrung, Backup, Rechtetexte, Anbieter); Follow-Spec S9; D1–D10 mobile Designs; Einladungszuordnung-Details; Offline-/Entfernungszustände; Zustellmechanik; technische Architektur Q23–Q25; Messschema/Betrieb; Pilotorganisation und neu zu schätzender Aufwand.
 
-**Nicht geprüft:** echte Organizer-Materialien/Nutzerverständnis, Softwarelaufzeit, Auth, Datenbank, Medienverarbeitung, Analytics, SEO-Ausgabe, Deployment und externe Dienste.
+**Nicht geprüft:** echte Organizer-Materialien/Nutzerverständnis, Auth-Funktion, Datenbankfachschema/RLS, Medienverarbeitung, Analytics, SEO-Ausgabe, Deployment und externe Dienste.
 
 ## Nächste autorisierte Aufgabe
 
-Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig. Der Durchstich-Plan ist reviewbereit; Ausführung erst nach bewusster Founder-Freigabe des Plans und weiterhin ohne Auto-Advance. Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
+Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig. Nach Review des Scaffold-PRs ist Slice 1 (Datenbankmigration/RLS) der nächste technische Schritt; weiterhin kein Auto-Advance. Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
 
 ## Übergabeformat
 

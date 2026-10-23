@@ -5,14 +5,14 @@
 See: `.planning/PROJECT.md` (updated 2026-10-15)
 
 **Core value:** Organizer können einen bestätigten Eventstand mit deutlich weniger Pflegeaufwand veröffentlichen, teilen und aktuell halten, während DISKOE nachvollziehbare Katalogdaten gewinnt.
-**Current focus:** Phase 4 — Durchstich (Alpha-Kern), Planung im freigegebenen Umfang
+**Current focus:** Phase 4 — Durchstich (Alpha-Kern), technisches Gerüst vor den Fach-Slices
 
 ## Current Position
 
 Phase: 4 of 4 (Durchstich — Alpha-Kern)
 Plan: `.planning/phases/04-durchstich/PLAN.md` erstellt und per GSD-Planprüfung verifiziert
-Status: Plan ready; execution not started. Anwendungscode, Abhängigkeiten und Installationen in diesem Auftrag ausdrücklich nicht ausgeführt.
-Last activity: 2026-10-23 — Umsetzungsplan für den begrenzten Durchstich in sieben Slices erstellt; SQL/RLS, Founder-Provisionierung/-Erstfreigabe, Routen und P/E/D-Testzuordnung geprüft. Phasen 1–3 bleiben offene Spec-/Design-/Architekturphasen.
+Status: Preliminary scaffold implemented on `feat/scaffold`; none of the seven domain slices or requirements is complete.
+Last activity: 2026-10-23 — Next.js-/Tailwind-/shadcn-Grundgerüst, Supabase- und Sentry-Vorbereitung sowie lokale/CI-Testwerkzeuge angelegt. Keine Fachfunktionen, Tabellen, Migrationen oder Deployments.
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -66,5 +66,5 @@ Decisions are logged in `.planning/PROJECT.md` and authoritative product decisio
 ## Session Continuity
 
 Last session: 2026-10-23
-Stopped at: Phase 4 geplant und verifiziert; vor Ausführung bewusst angehalten (`workflow.auto_advance=false`). Phasen 1–3 und fachliche Restarbeit bleiben offen.
+Stopped at: Technisches Gerüst als separater Schritt umgesetzt; nächster Schritt bleibt bewusster Review vor Slice 1. `workflow.auto_advance=false`; Phase 4 und alle fachlichen Requirements bleiben offen.
 Resume file: None
