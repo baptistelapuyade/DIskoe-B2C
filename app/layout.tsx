@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
 
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+// Self-hosted so builds need no network access (Space Grotesk 2.000, SIL OFL 1.1,
+// see app/fonts/SpaceGrotesk-OFL.txt). Variable weight axis 300–700.
+const spaceGrotesk = localFont({
+  src: "./fonts/SpaceGrotesk-Variable.woff2",
   display: "swap",
-  subsets: ["latin"],
+  weight: "300 700",
   variable: "--font-space-grotesk",
 });
 
