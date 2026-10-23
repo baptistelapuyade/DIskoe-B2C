@@ -105,6 +105,7 @@ Output: Eine spätere Umsetzung auf Next.js App Router/TypeScript, Supabase Fran
 2. **Backups:** Während der Alpha genügen die täglichen Supabase-Backups. Point-in-Time-Recovery (PITR) ist vor der Verarbeitung echter Nutzerdaten verpflichtend erneut zu entscheiden und einzurichten; die dann anfallenden Kosten werden zu diesem Zeitpunkt freigegeben oder abgelehnt. Restore-Probe und Wiederanwendung zwischenzeitlicher Lösch-/Abmeldevorgänge bleiben vor echtem Betrieb Nachweispflichten.
 3. **Monitoring:** Sentry wird in einer EU-Region eingesetzt. Fehler dürfen keinen personenbezogenen Inhalt enthalten; PII-Scrubbing, serverseitige Filter und synthetische Testereignisse sind Abnahmekriterien. Die Einrichtung gehört in Slice 2 (Scaffold/Login), nicht in die Datenmodell-Migration. Sampling und Aufbewahrungsdauer werden dort datensparsam festgelegt.
 4. **Geschlossene Alpha:** Profile werden ausschließlich durch den Founder über `provision_profile_owner` angelegt und einem bestehenden Auth-Nutzer zugeordnet. Es gibt keine Selbstregistrierung und keinen allgemeinen Profil-Insert im Durchstich. Die erste Veröffentlichung eines Profils **und** die erste Veröffentlichung jedes Events benötigen Founder-Freigabe; spätere gültige Revisionen darf der freigegebene Owner selbst veröffentlichen, solange keine Sperre vorliegt.
+5. **Kleine revisionsgebundene Erstfreigabe:** Es gibt keine Queue und keinen Ablehnungs-/Sperrzustandsautomaten. Eine Founder-Funktion setzt für Profil oder Event unter Row Lock atomar `first_approved_revision_id`, `approved_by` und `approved_at` auf die exakt geprüfte Draft-Revision und schreibt ein schlankes append-only Freigabe-Audit. Owner-Selbstfreigabe bleibt verboten.
 
 Damit sind die bisherigen offenen Fragen zu Umgebungen, Alpha-Backup, Monitoring-Anbieter/-Region und Zugangsmodell für diesen Plan geschlossen. PITR-Kosten/Fähigkeit vor echten Nutzern sowie Sentry-Sampling/-Aufbewahrung bleiben zeitlich benannte Betriebsentscheidungen, keine offenen Durchstich-Produktregeln.
 
@@ -175,8 +176,7 @@ app/
   (organizer)/organizer/events/new/page.tsx
   (organizer)/organizer/events/[eventId]/edit/page.tsx
   (organizer)/organizer/events/[eventId]/preview/page.tsx
-  (internal)/internal/review/page.tsx
-  (internal)/internal/review/actions.ts
+  (internal)/internal/approvals/actions.ts
   e/[slug]/page.tsx
   [profileSlug]/page.tsx
   sitemap.ts
@@ -196,7 +196,7 @@ supabase/
 tests/
   unit/{answers,profile-publication,event-publication,event-status,time,money,json-ld}.test.ts
 e2e/
-  auth.spec.ts  profile.spec.ts  event.spec.ts  review.spec.ts  publication.spec.ts  public-pages.spec.ts
+  auth.spec.ts  profile.spec.ts  event.spec.ts  approval.spec.ts  publication.spec.ts  public-pages.spec.ts
 ```
 
 Ordnernamen sind ausführbare Zielpfade, keine heute anzulegenden Dateien. Next.js-Version bei Gerüstbau fest pinnen und vorab gegen Amplify-Kompatibilität prüfen. Neue Abhängigkeiten je PR begründen.
@@ -209,9 +209,6 @@ Der SQL-Entwurf normalisiert ausschließlich den Durchstich. Feldnamen aus v0.3 
 create type public.answer_state as enum
   ('provided','unknown','not_applicable','skipped','unanswered');
 create type public.profile_kind as enum ('veranstalter');
--- Nur bei Wahl der vollständigen Review-Variante:
-create type public.review_state as enum
-  ('draft','in_review','approved','rejected','blocked');
 create type public.publication_state as enum
   ('private','published','withdrawn');
 create type public.event_status as enum
@@ -236,10 +233,9 @@ create table public.profiles (
   slug text not null unique,
   draft_revision_id uuid,
   published_revision_id uuid,
-  review_state public.review_state not null default 'draft',
-  review_reason text,
-  reviewed_at timestamptz,
-  reviewed_by uuid references auth.users(id),
+  first_approved_revision_id uuid,
+  approved_by uuid references auth.users(id),
+  approved_at timestamptz,
   publication_state public.publication_state not null default 'private',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -267,12 +263,12 @@ create table public.events (
   slug text not null unique,
   draft_revision_id uuid,
   published_revision_id uuid,
-  review_state public.review_state not null default 'draft',
-  review_reason text,
-  reviewed_at timestamptz,
-  reviewed_by uuid references auth.users(id),
+  first_approved_revision_id uuid,
+  approved_by uuid references auth.users(id),
+  approved_at timestamptz,
   publication_state public.publication_state not null default 'private',
   public_status public.event_status not null default 'scheduled',
+  state_version bigint not null default 0,
   cancelled_at timestamptz,
   cancelled_by uuid references auth.users(id),
   created_at timestamptz not null default now(),
@@ -351,18 +347,16 @@ create table public.publication_audit (
   entity_id uuid not null,
   revision_id uuid,
   action text not null check (action in
-    ('provision_owner','submit_review','approve_first','reject_first','publish','reschedule','cancel','withdraw','block')),
+    ('provision_owner','approve_first','publish','reschedule','cancel','withdraw')),
   created_at timestamptz not null default now()
 );
 ```
 
-Nach Anlage der Revisionstabellen werden die zyklischen Fremdschlüssel `profiles.draft_revision_id/published_revision_id` und `events.draft_revision_id/published_revision_id` per `alter table` ergänzt. Zusätzliche Constraints/Trigger stellen sicher, dass referenzierte Revision und Entität zusammengehören. `provided` verlangt einen typgültigen Wert; andere Antwortzustände dürfen keinen Ersatzwert (`''`, `0`, `false`) tragen. Diese Invarianten werden, soweit SQL-tauglich, als `check`/Trigger und zusätzlich in Domain-Tests abgebildet.
-
-Die skizzierten `review_state`-/`review_*`-Felder und darauf bezogenen View-Filter zeigen nur die vollständige Review-Variante und entfallen bzw. werden durch `first_approved_revision_id`, `approved_by`, `approved_at` und den revisionsgebundenen Public-Filter der kleinen Variante ersetzt. Sie sind noch **keine** Entscheidung für den großen Review-Zustandsautomaten. Unabhängig von der unten offenen Variantenwahl muss eine Freigabe immer die konkret geprüfte Revision referenzieren; ein bloßes `approved` am Profil/Event ist unzulässig, weil sonst nachträglich ein anderer Draft unter derselben Freigabe veröffentlicht werden könnte.
+Nach Anlage der Revisionstabellen werden die zyklischen Fremdschlüssel `profiles.draft_revision_id/published_revision_id/first_approved_revision_id` und `events.draft_revision_id/published_revision_id/first_approved_revision_id` per `alter table` ergänzt. Zusätzliche Constraints/Trigger stellen sicher, dass jede referenzierte Revision zur jeweiligen Entität gehört, die drei Freigabefelder nur gemeinsam NULL oder gemeinsam gesetzt sind und eine erstfreigegebene Revision unveränderlich ist. `first_approved_revision_id` ist nach dem ersten Setzen unveränderlich und muss bei der Erstpublikation exakt `expected_draft_revision_id` und `draft_revision_id` entsprechen. `provided` verlangt einen typgültigen Wert; andere Antwortzustände dürfen keinen Ersatzwert (`''`, `0`, `false`) tragen. Diese Invarianten werden, soweit SQL-tauglich, als `check`/Trigger und zusätzlich in Domain-Tests abgebildet.
 
 ### Austauschbare Anlage- und Erstfreigaberegel
 
-Die Zugangsregel wird an genau einer serverseitigen Policy-Grenze gebündelt, vorläufig `lib/domain/onboarding-policy.ts` plus gleichnamige, transaktional durchgesetzte Datenbankfunktionen. Ihre beiden getrennten Entscheidungen heißen `canProvisionProfile(actor, targetUser)` und `requiresFirstPublicationApproval(entity, actor)`. UI, Server Actions und Tests konsumieren diese Regel; Tabellen, RLS-Policies und einzelne Seiten dürfen keine eigenen Produktvarianten ableiten. RLS bleibt unabhängig davon die letzte Zugriffsschranke. Für die geschlossene Alpha liefert die Policy ausschließlich „Founder darf provisionieren“ und „erste Profil- sowie Eventpublikation braucht Founder-Approval“.
+Die Zugangsregel wird an genau einer serverseitigen Policy-Grenze gebündelt, vorläufig `lib/domain/onboarding-policy.ts` plus gleichnamige, transaktional durchgesetzte Datenbankfunktionen. Ihre beiden getrennten Entscheidungen heißen `canProvisionProfile(actor, targetUser)` und `requiresFirstPublicationApproval(entity, actor)`. UI, Server Actions und Tests konsumieren diese Regel; Tabellen, RLS-Policies und einzelne Seiten dürfen keine eigenen Produktvarianten ableiten. RLS bleibt unabhängig davon die letzte Zugriffsschranke. Für die geschlossene Alpha liefert die Policy ausschließlich „Founder darf provisionieren“ und „erste Profil- sowie Eventpublikation braucht Founder-Freigabe“.
 
 Spätere Varianten sind Erweiterungspunkte, **nicht Teil des Durchstichs**:
 
@@ -374,7 +368,7 @@ Spätere Varianten sind Erweiterungspunkte, **nicht Teil des Durchstichs**:
 
 ### Verbindliche anonyme Lesearchitektur, Grants und RLS
 
-Der Durchstich verwendet **ausschließlich schmale `security_invoker` Views** `public_profiles` und `public_events`; keine Public-Projection-Tabellen und keine öffentlichen Getter-Funktionen als zweite Architektur. Die Views joinen Basiszeile und exakt die über `published_revision_id` referenzierte Revision und filtern `publication_state = 'published'`, Profil zusätzlich `review_state = 'approved'`. Sie exponieren nur sichtbare Felder; niemals `owner_id`, `created_by`, private Objektpfade, interne Notizen oder Draft-IDs. `anon` erhält `SELECT` nur auf diesen Views und die dafür notwendigen, einzeln benannten public-safe Basisspalten; `anon` erhält **kein** Tabellen-`SELECT *` und keinerlei INSERT/UPDATE/DELETE-Rechte. Weil die Views `security_invoker` sind, erzwingen die Basistabellen-RLS zusätzlich die Published-/Approved-Zeilenfilter. Direkte Abfragen derselben freigegebenen Basisspalten liefern höchstens dieselben öffentlichen Zeilen, nie Drafts.
+Der Durchstich verwendet **ausschließlich schmale `security_invoker` Views** `public_profiles` und `public_events`; keine Public-Projection-Tabellen und keine öffentlichen Getter-Funktionen als zweite Architektur. Die Views joinen Basiszeile und exakt die über `published_revision_id` referenzierte Revision und filtern `publication_state = 'published'` sowie eine vorhandene revisionsgebundene Erstfreigabe. Sie exponieren nur sichtbare Felder; niemals `owner_id`, `created_by`, private Objektpfade, interne Notizen oder Draft-IDs. `anon` erhält `SELECT` nur auf diesen Views und die dafür notwendigen, einzeln benannten public-safe Basisspalten; `anon` erhält **kein** Tabellen-`SELECT *` und keinerlei INSERT/UPDATE/DELETE-Rechte. Weil die Views `security_invoker` sind, erzwingen die Basistabellen-RLS zusätzlich dieselben Public-Filter. Direkte Abfragen derselben freigegebenen Basisspalten liefern höchstens dieselben öffentlichen Zeilen, nie Drafts.
 
 ```sql
 create view public.public_profiles with (security_invoker = true) as
@@ -384,7 +378,8 @@ select p.id, p.slug, r.name, r.short_intro, r.official_url,
 from public.profiles p
 join public.profile_revisions r on r.id = p.published_revision_id
 join public.media_uses mu on mu.id = r.profile_image_use_id and mu.confirmed_at is not null
-where p.publication_state = 'published' and p.review_state = 'approved';
+where p.publication_state = 'published'
+  and p.first_approved_revision_id is not null;
 
 create view public.public_events with (security_invoker = true) as
 select e.id, e.slug, e.organizer_id, e.public_status,
@@ -399,8 +394,9 @@ join public.profiles p on p.id = e.organizer_id
 join public.event_revisions r on r.id = e.published_revision_id
 join public.media_uses mu on mu.id = r.event_image_use_id and mu.confirmed_at is not null
 where e.publication_state = 'published'
-  and e.review_state = 'approved'
-  and p.publication_state = 'published' and p.review_state = 'approved';
+  and e.first_approved_revision_id is not null
+  and p.publication_state = 'published'
+  and p.first_approved_revision_id is not null;
 
 revoke all on public.public_profiles, public.public_events from public;
 grant select on public.public_profiles, public.public_events to anon, authenticated;
@@ -413,32 +409,27 @@ Hilfsprädikate `is_founder()` und `owns_profile(profile_id)` werden als stabile
 | Tabelle | SELECT `USING` | INSERT `WITH CHECK` | UPDATE `USING` / `WITH CHECK` | DELETE `USING` | Grants |
 |---|---|---|---|---|---|
 | `app_roles` | `auth.uid() = user_id OR is_founder()` | keine Client-Policy | keine Client-Policy | keine Client-Policy | `authenticated`: SELECT eigene erlaubte Spalten; kein anon; Verwaltung nur Migration/Adminpfad. |
-| `profiles` | Owner: `owner_id=auth.uid()`; Founder: `is_founder()`; anon/alle: zusätzlich nur `publication_state='published' AND review_state='approved'` | **keine Client-Policy**; ausschließlich Founder-Funktion `provision_profile_owner` | Owner/Founder sieht Zeile; `WITH CHECK` Owner/Slug/Kind unverändert und Owner darf `published_revision_id`, Review-/Publikationszustand nicht direkt setzen; Review nur über Founder-Funktion | **keine Client-Policy im Durchstich** | `authenticated`: SELECT und begrenztes UPDATE, **kein INSERT**; `anon`: SELECT ausschließlich benannte View-Spalten der published/approved Zeilen; kein DELETE. |
-| `profile_revisions` | Owner über Parent oder Founder; anon nur `id = profiles.published_revision_id` bei published/approved Parent | Owner, `created_by=auth.uid()`, Revision gehört eigenem Profil, `confirmed_* IS NULL` | Owner/Founder nur wenn `id <> parent.published_revision_id`; `WITH CHECK` Parent/Creator unverändert | **keine Client-Policy im Durchstich** | `authenticated`: SELECT/INSERT/UPDATE auf Draftspalten; `anon`: nur public-safe View-Spalten aktueller Revision; kein DELETE. |
-| `events` | Owner über `organizer_id`, Founder oder anon nur published/approved Event mit published/approved Organizer | Owner des bereits provisionierten Organizers; ausschließlich private/scheduled/draft Ausgangswerte | Owner/Founder; `WITH CHECK` Organizer unverändert, `published_revision_id`, `publication_state`, `public_status`, `review_*`, `cancelled_*` nicht direkt clientseitig änderbar | **keine Client-Policy im Durchstich** | `authenticated`: SELECT/INSERT/UPDATE editierbarer Spalten; `anon`: benannte View-Spalten published/approved Zeilen; kein DELETE. |
-| `event_revisions` | Owner über Event→Profil, Founder oder anon nur `id=events.published_revision_id` eines öffentlichen Events | Owner, `created_by=auth.uid()`, Revision gehört eigenem Event, unbestätigt | Owner/Founder nur wenn nicht published; Parent/Creator unverändert | **keine Client-Policy im Durchstich** | `authenticated`: SELECT/INSERT/UPDATE Draftspalten; `anon`: public-safe View-Spalten aktueller Revision; kein DELETE. |
+| `profiles` | Owner: `owner_id=auth.uid()`; Founder: `is_founder()`; anon/alle: zusätzlich nur `publication_state='published' AND first_approved_revision_id IS NOT NULL` | **keine Client-Policy**; ausschließlich Founder-Funktion `provision_profile_owner` | Owner/Founder sieht Zeile; `WITH CHECK` Owner/Slug/Kind unverändert und Owner darf `published_revision_id`, Freigabe-/Publikationsfelder nicht direkt setzen; Erstfreigabe nur über Founder-Funktion | **keine Client-Policy im Durchstich** | `authenticated`: SELECT und begrenztes UPDATE, **kein INSERT**; `anon`: SELECT ausschließlich benannte View-Spalten öffentlicher Zeilen; kein DELETE. |
+| `profile_revisions` | Owner über Parent oder Founder; anon nur `id = profiles.published_revision_id` bei öffentlichem, erstfreigegebenem Parent | Owner, `created_by=auth.uid()`, Revision gehört eigenem Profil, `confirmed_* IS NULL` | Owner/Founder nur wenn weder publiziert noch `first_approved_revision_id`; `WITH CHECK` Parent/Creator unverändert | **keine Client-Policy im Durchstich** | `authenticated`: SELECT/INSERT/UPDATE auf Draftspalten; `anon`: nur public-safe View-Spalten aktueller Revision; kein DELETE. |
+| `events` | Owner über `organizer_id`, Founder oder anon nur öffentliches, erstfreigegebenes Event mit öffentlichem, erstfreigegebenem Organizer | Owner des bereits provisionierten Organizers; ausschließlich private/scheduled Ausgangswerte, Freigabefelder NULL, `state_version=0` | Owner/Founder; `WITH CHECK` Organizer unverändert, `published_revision_id`, `publication_state`, `public_status`, `state_version`, Freigabe- und `cancelled_*`-Felder nicht direkt clientseitig änderbar | **keine Client-Policy im Durchstich** | `authenticated`: SELECT/INSERT/UPDATE editierbarer Spalten; `anon`: benannte View-Spalten öffentlicher Zeilen; kein DELETE. |
+| `event_revisions` | Owner über Event→Profil, Founder oder anon nur `id=events.published_revision_id` eines öffentlichen Events | Owner, `created_by=auth.uid()`, Revision gehört eigenem Event, unbestätigt | Owner/Founder nur wenn weder publiziert noch `first_approved_revision_id`; Parent/Creator unverändert | **keine Client-Policy im Durchstich** | `authenticated`: SELECT/INSERT/UPDATE Draftspalten; `anon`: public-safe View-Spalten aktueller Revision; kein DELETE. |
 | `media_assets` | `uploader_id=auth.uid() OR is_founder()` | `uploader_id=auth.uid()` und privater Pfad im eigenen Storage-Präfix | Uploader nur solange keine bestätigte/publizierte Nutzung; Uploader/Pfad unverändert | **keine Client-Policy im Durchstich** | `authenticated`: SELECT/INSERT/begrenztes UPDATE; kein anon, kein DELETE. Storage-Bucket privat. |
 | `media_uses` | Owner des referenzierten Profils/Events oder Founder; anon nur bestätigte Use-ID, die in aktueller öffentlicher Revision referenziert ist | Asset gehört `auth.uid()`, genau ein eigenes Parentobjekt, `confirmed_* IS NULL`, `public_object_path IS NULL` | Owner nur solange nicht veröffentlicht; Parent/Asset unverändert | **keine Client-Policy im Durchstich** | `authenticated`: SELECT/INSERT/begrenztes UPDATE; anon nur `public_object_path`, `alt_text`, `crop`, `role` für öffentlich referenzierte Uses; kein DELETE. |
 | `publication_audit` | Owner der referenzierten Entität oder Founder | keine direkte Client-Policy; nur gesicherte Funktionen | keine | keine | `authenticated`: SELECT gemäß Policy; INSERT/UPDATE/DELETE entzogen; kein anon. |
 
 Nach Erstellung: `revoke all on all tables in schema public from anon, authenticated;` und danach nur die oben genannten Tabellen-/Spaltenrechte zurückgeben; `grant select on public_profiles, public_events to anon, authenticated`. Tests prüfen zusätzlich `information_schema.role_column_grants`, damit spätere Migrationen nicht versehentlich breite Rechte ergänzen.
 
-`publish_profile`, `publish_event`, `cancel_event` und `reschedule_event` sind die einzigen privilegierten Mutationspfade. Jede Funktion ist `security definer set search_path = pg_catalog, public`; nach Erstellung gilt `revoke all on function ... from public, anon` und `grant execute ... to authenticated`. Jede Funktion liest `auth.uid()` einmal, verwirft NULL, sperrt die Zielzeile `FOR UPDATE`, prüft Ownerzuordnung und bei Erstpublikation zusätzlich `is_founder()` beziehungsweise einen bereits founder-freigegebenen Reviewstand, validiert Vollständigkeit und `expected_draft_revision_id`, qualifiziert alle Objekte schematisch und schreibt Audit atomar. `cancel_event` ändert ausschließlich `events.public_status/cancelled_*` und Audit, niemals `published_revision_id`; damit bleibt ein neuer privater Flyer/Text privat (P23). Keine Funktion akzeptiert Actor-/Owner-ID vom Client.
+`provision_profile_owner`, `approve_first_profile`, `approve_first_event`, `publish_profile`, `publish_event`, `cancel_event` und `reschedule_event` sind die einzigen privilegierten Mutationspfade. Jede Funktion ist `security definer set search_path = pg_catalog, public`; nach Erstellung gilt `revoke all on function ... from public, anon` und nur die minimal nötigen EXECUTE-Grants werden vergeben. Jede Funktion liest `auth.uid()` einmal, verwirft NULL, sperrt die Zielzeile `FOR UPDATE`, qualifiziert alle Objekte schematisch und schreibt Audit atomar. Die beiden Erstfreigabefunktionen prüfen `is_founder()`, verlangen `first_approved_revision_id IS NULL`, vergleichen `draft_revision_id` mit `expected_draft_revision_id`, validieren Vollständigkeit und setzen atomar `first_approved_revision_id`, `approved_by`, `approved_at` plus Audit. Owner können diese Funktionen weder über RLS noch per Direktaufruf erfolgreich ausführen.
 
-Der Alpha-Bootstrap ist ebenfalls eindeutig: `provision_profile_owner(target_user_id uuid, target_slug text)` ist `security definer set search_path = pg_catalog, public`, prüft als erste Operation `is_founder()` und bricht andernfalls ab, prüft danach existierenden `auth.users`-Datensatz und eindeutigen/reservierten Slug, legt genau eine private Veranstalter-Profilhülle mit `owner_id=target_user_id`, `review_state='draft'` an und schreibt `publication_audit(action='provision_owner')`. Optional dürfen Shell-Felder wie ein vorab abgestimmter Name als nullable Parameter mitgegeben werden; sie gelten nie als bestätigt. `revoke all ... from public, anon`; `grant execute ... to authenticated`, wobei die interne Founderprüfung jeden anderen authenticated Aufruf verweigert. Die founder-only Server-Action ruft die Funktion mit der echten Founder-Session auf, niemals mit einem allgemeinen Service-Role-Bypass. Es gibt keine allgemeine `profiles`-INSERT-Policy. Playwright-Seeds provisionieren Owner A/B über diese Funktion im lokalen Founder-Kontext; sie schreiben nie direkt an RLS vorbei. Ein Besucherlogin kann daher weder per UI noch direktem Insert ein Profil erzeugen.
+Die Publish-Funktionen prüfen Ownerzuordnung und Vollständigkeit. Bei Erstpublikation muss `first_approved_revision_id = expected_draft_revision_id = draft_revision_id` gelten; spätere Publikationen bleiben ohne erneute Founder-Freigabe möglich. `publish_event`, `cancel_event` und `reschedule_event` sperren dieselbe Eventzeile und verlangen neben erwarteter Published-/Draft-Revision auch `expected_state_version` und erwarteten Status; jede erfolgreiche Mutation erhöht `state_version`. `cancel_event` ändert ausschließlich `events.public_status/cancelled_*`, `state_version` und Audit, niemals `published_revision_id`; damit bleibt ein neuer privater Flyer/Text privat (P23). Nach einer Absage gibt es im Durchstich keinen stillen Reaktivierungspfad. Keine Funktion akzeptiert Actor-/Owner-ID vom Client.
+
+Der Alpha-Bootstrap ist ebenfalls eindeutig: `provision_profile_owner(target_user_id uuid, target_slug text)` ist `security definer set search_path = pg_catalog, public`, prüft als erste Operation `is_founder()` und bricht andernfalls ab, prüft danach existierenden `auth.users`-Datensatz und eindeutigen/reservierten Slug, legt genau eine private Veranstalter-Profilhülle mit `owner_id=target_user_id` und noch leeren Freigabefeldern an und schreibt `publication_audit(action='provision_owner')`. Optional dürfen Shell-Felder wie ein vorab abgestimmter Name als nullable Parameter mitgegeben werden; sie gelten nie als bestätigt. `revoke all ... from public, anon`; `grant execute ... to authenticated`, wobei die interne Founderprüfung jeden anderen authenticated Aufruf verweigert. Die founder-only Server-Action ruft die Funktion mit der echten Founder-Session auf, niemals mit einem allgemeinen Service-Role-Bypass. Es gibt keine allgemeine `profiles`-INSERT-Policy. Playwright-Seeds provisionieren Owner A/B über diese Funktion im lokalen Founder-Kontext; sie schreiben nie direkt an RLS vorbei. Ein Besucherlogin kann daher weder per UI noch direktem Insert ein Profil erzeugen.
 
 `is_founder` wird nicht aus E-Mail, Client-Metadaten oder einem frei setzbaren Claim abgeleitet. Bootstrap je Supabase-Projekt: (1) Founder meldet sich einmal per E-Mail-Code an, (2) die Auth-UUID wird in der geschützten Supabase-Adminoberfläche gegen den erwarteten Account geprüft, (3) eine dokumentierte einmalige Admin-SQL-Anweisung setzt für genau diese UUID `app_roles.is_founder=true`, ohne UUID oder E-Mail ins Repo zu schreiben, (4) ein Read-back bestätigt genau einen Founder und schreibt einen Bootstrap-Auditeintrag. Nur ein bestehender Founder darf später Rollen ändern; eine Rollenverwaltungsfunktion ist nicht Teil des Durchstichs. Preview und Production werden getrennt gebootstrapped, niemals durch kopierte Nutzerdaten. Lokale Tests verwenden eine synthetische Founder-UUID.
 
-### Noch zu entscheidende Implementierungsvarianten der Erstfreigabe
+### Spätere Erweiterungen
 
-Die Founder-Entscheidung **dass** Profil und Event vor ihrer ersten Veröffentlichung freigegeben werden müssen, ist verbindlich. **Wie groß** der Review-Workflow im Durchstich wird, bleibt bewusst unentschieden:
-
-| Variante | Umfang | Risiko |
-|---|---|---|
-| Voller Review-Zustandsautomat + Audit | `draft/rejected -> in_review -> approved/rejected/blocked`, eingefrorene `submitted_revision_id`, begründete Ablehnung, Reviewer/Zeitpunkt und append-only Audit; minimale Queue im Founder-Bereich. Höherer Schema-, UI- und Testaufwand. | Geringeres Betriebs-/Nachweisrisiko und klarere Parallelitätsregeln; dafür mehr Zustände und Fehlerpfade im ersten Slice. |
-| Kleine zulässige Erstfreigabe | Founder-Funktion setzt atomar `first_approved_revision_id`, `approved_by`, `approved_at`; keine Review-Queue, kein Reject-/Block-Zustandsautomat. Ein schlanker append-only Freigabe-Auditeintrag bleibt nötig. Niedrigerer Schema-/UI-Aufwand. | Manuelle Koordination und Ablehnungsgründe liegen außerhalb der App; schlechtere Nachvollziehbarkeit/Skalierung, höhere Supportgefahr. Sicher nur, wenn ausschließlich die exakt freigegebene Revision erstpubliziert werden kann. |
-
-Vor Slice 1 muss der Founder eine Variante wählen. Beide Varianten sperren die konkret geprüfte Revision gegen Mutation, vergleichen beim Publish `expected_draft_revision_id` mit der freigegebenen Revision und erlauben keine Freigabe eines später ausgetauschten Drafts. Der Plan darf bis zu dieser Wahl weder die volle Review-UI noch deren Wegfall als beschlossen behandeln.
+Ein voller redaktioneller Zustandsautomat mit Queue, Rückfragen, Ablehnungs-/Sperrgründen und erweitertem Audit kann später ergänzt werden; er ist nicht Teil des Durchstichs.
 
 ## Seiten, Routen und öffentliche Daten
 
@@ -449,11 +440,10 @@ Vor Slice 1 muss der Founder eine Variante wählen. Beide Varianten sperren die 
 | `/organizer` | authenticated + provisionierte Zuordnung | Profilwechsel/-übersicht; ohne Founder-Provisionierung neutrale „keine Zuordnung“-Ansicht, niemals Profilanlage. |
 | `/organizer/profiles/setup` | Owner einer provisionierten Profilhülle | Vorhandene Veranstalterhülle vervollständigen; keine neue Profilzeile und keine Venue-/Artist-Option. |
 | `/organizer/profiles/[profileId]/edit` | Owner | private Revision bearbeiten. |
-| `/organizer/profiles/[profileId]/preview` | Owner/Founder | private Vorschau, `no-store`, keine öffentliche URL. |
+| `/organizer/profiles/[profileId]/preview` | Owner/Founder | private Vorschau, `no-store`, keine öffentliche URL; Founder kann exakt die geladene Revision über `approve_first_profile` erstfreigeben. |
 | `/organizer/events/new` | Owner | manueller Eventdraft. |
 | `/organizer/events/[eventId]/edit` | Owner | Draft/Lücken, Publizieren, Verschieben, Absagen. |
-| `/organizer/events/[eventId]/preview` | Owner/Founder | private Vorschau, serverseitig autorisiert. |
-| `/internal/review` | Founder only | Nur bei voller Review-Variante: minimale Liste eingereichter Profil-/Event-Erstfreigaben; approve/reject mit Pflichtgrund bei Ablehnung. Bei kleiner Variante lediglich geschützte Freigabeaktion an geeigneter interner Stelle, keine Queue. |
+| `/organizer/events/[eventId]/preview` | Owner/Founder | private Vorschau, serverseitig autorisiert; Founder kann exakt die geladene Revision über `approve_first_event` erstfreigeben. |
 | `/e/[slug]` | öffentlich bei published | Eventseite inkl. Status; Draft/unpublished `notFound()`. |
 | `/[profileSlug]` | öffentlich bei published | Veranstalterprofil, kommende veröffentlichte Events, nächstes hervorgehoben, sonst „Neue Termine folgen“. Reservierte Top-Level-Slugs sperren. |
 | `/sitemap.xml` (`app/sitemap.ts`) | öffentlich | nur veröffentlichte Profile/Events; keine Preview-/Draft-URLs. |
@@ -469,11 +459,11 @@ Test-IDs bleiben auf ihr Quelldokument qualifiziert (`v0.3:Pxx`, `Delta-v0.4:Dxx
 
 | Slice | Vitest (Domain/Rendering) | Supabase RLS/SQL | Playwright | Abnahmesignal |
 |---|---|---|---|---|
-| 1 Migrationen + RLS | Antwortzustands-Mapper; Geld/UTC-IANA-Serialisierung | Owner A/B/anonym/founder; authenticated `profiles INSERT` verweigert; Founder-Provisionierung; gewählte Erstfreigabevariante; Draft vs published; anonymer und fremder Direktzugriff auf **jede** Tabelle und **jede** View | – | Lokale Migration frisch anwendbar; nur Founder kann Profilhülle zuordnen und Erstfreigaben entscheiden; kein nicht inventarisiertes DB-Objekt erweitert Rechte. |
+| 1 Migrationen + RLS | Antwortzustands-Mapper; Geld/UTC-IANA-Serialisierung | Owner A/B/anonym/founder; authenticated `profiles INSERT` verweigert; Founder-Provisionierung; revisionsgebundene Erstfreigabe; Draft vs published; anonymer und fremder Direktzugriff auf **jede** Tabelle und **jede** View | – | Lokale Migration frisch anwendbar; nur Founder kann Profilhülle zuordnen und exakte Revisionen erstfreigeben; kein nicht inventarisiertes DB-Objekt erweitert Rechte. |
 | 2 Login | Guard: Session ohne provisionierte Zuordnung → kein Organizerzugriff | User ohne `profiles.owner_id` sieht/erzeugt keine Organizerzeile; Owner sieht nur eigenes Profil | `Delta-v0.4:D01` **teilweise**: keine Organizerrechte; Besucher kann kein Profil erzeugen; lokale Merkliste ausgeschlossen | Login funktioniert, erzeugt aber keine Rolle/Profilhülle; Fremdzugriff endet 403/404. |
-| 3 Profil | Publikationsminimum/Slug/Link/Kontakt/Bild (`v0.3:P06`) | Draft privat; gewählte revisionsgebundene Erstfreigabe; Owner-Selbstfreigabe verweigert | Provisioniertes Setup vervollständigen, private Vorschau, Founder-Freigabe, Publikation blockiert ohne Approval/Bild | Öffentliche Profil-URL erscheint erst nach vollständiger Founder-Freigabe und Owner-Publikation. |
+| 3 Profil | Publikationsminimum/Slug/Link/Kontakt/Bild (`v0.3:P06`) | Draft privat; `approve_first_profile` bindet die exakte Revision; Owner-Selbstfreigabe verweigert | Provisioniertes Setup vervollständigen, private Vorschau, Founder-Freigabe, Publikation blockiert ohne Erstfreigabe/Bild | Öffentliche Profil-URL erscheint erst nach vollständiger Founder-Freigabe und Owner-Publikation. |
 | 4 Event + Lückenprüfung | Nur die unten ID-genau als vollständig/teilweise geführten P-Fälle; `provided/unknown/...`; Cent/Zeitzone | Eventdraft nur Owner; Revisionen unveränderlich nach Publikation | Manuell anlegen; konkrete Lücken; unbekannter Preis; Onlinezugang ohne URL; Nachttermin | Vollständiger Draft publizierbar vorbereitet; unvollständiger bleibt speicher-/previewbar, aber blockiert. |
-| 5 Publizieren/Absagen | `v0.3:P23`; Statusübergänge; stale revision rejected. `P39` ausdrücklich später. | Gewählte revisionsgebundene Event-Erstfreigabe; Owner-Selbstfreigabe verweigert; atomare Publikation und status-only Absage | Founder-Erstfreigabe, Vorschau + Owner-Bestätigung; Draftänderung privat; Absage sofort; Verschiebung erst bestätigt | Erstpublikation ohne Founder-Approval unmöglich; spätere öffentliche Revision stabil; Absage veröffentlicht keine Draftänderung. |
+| 5 Publizieren/Absagen | `v0.3:P23`; Statusübergänge; veraltete Revision wird abgewiesen. `P39` ausdrücklich später. | `approve_first_event` bindet die exakte Revision; Owner-Selbstfreigabe verweigert; atomare Publikation und status-only Absage | Founder-Erstfreigabe, Vorschau + Owner-Bestätigung; Draftänderung privat; Absage sofort; Verschiebung erst bestätigt | Erstpublikation ohne Founder-Freigabe unmöglich; spätere öffentliche Revision stabil; Absage veröffentlicht keine Draftänderung. |
 | 6 öffentliche Seiten + JSON-LD | `v0.3:P07`, `P11–P12`; DTO/Meta/JSON-LD/Sitemap-Snapshots | Anonym bekommt nur published projection; private Slugs liefern keine Daten | `/e/[slug]`, `/[profileSlug]`, Meta, Sitemap, Draft 404/403; Statusdarstellung | Sichtseite, Metadata und JSON-LD stimmen mit derselben published Revision überein. |
 | 7 Playwright-Flows | – | RLS-Suite erneut als Gate | alle sechs Abnahmen aus `02-durchstich.md`, Desktop + Mobile-Kernbreiten | `lint`, `typecheck`, Vitest, RLS-Suite und Playwright grün; Preview-Deployment nur nach Freigabe und ohne echte Daten. |
 
@@ -483,7 +473,7 @@ Die SQL-Teststrategie inventarisiert nach der Migration `pg_tables`, `pg_views`,
 
 | Schweregrad | Fund | Planmaßnahme |
 |---|---|---|
-| **Kritisch** | `review_state='approved'` am Entity bindet die Freigabe nicht an die geprüfte Revision. Ein Owner könnte nach Approval den Draft wechseln und eine ungeprüfte Revision erstpublizieren. | Unveränderliche `submitted_revision_id`/`first_approved_revision_id` oder Approval-Datensatz; Publish vergleicht diese ID unter Row Lock mit `expected_draft_revision_id`. Gilt für beide Varianten. |
+| **Kritisch** | Ein allgemeines Freigabe-Flag am Entity würde die Freigabe nicht an die geprüfte Revision binden. Ein Owner könnte danach den Draft wechseln und eine ungeprüfte Revision erstpublizieren. | Unveränderliche `first_approved_revision_id`; Publish vergleicht diese ID unter Row Lock mit `expected_draft_revision_id` und `draft_revision_id`. |
 | **Hoch** | Breite bzw. überlappende RLS-Policies können öffentliche SELECT-Prädikate unbeabsichtigt mit Owner-UPDATE-Rechten kombinieren; neue Tabellen/Views/Funktionen könnten Default-Grants erben. | Separate Rollen-/Operations-Policies, `ALTER DEFAULT PRIVILEGES ... REVOKE`, vollständige Objektinventur und negative Tests je Tabelle/View/Funktion/Sequenz. |
 | **Hoch** | `publish_event`, `cancel_event` und `reschedule_event` konkurrieren auf derselben öffentlichen Zeile. Ohne erwarteten Status/Version kann ein später serialisierter Publish eine Absage oder Verschiebung logisch überschreiben. | Einheitlicher Entity-Row-Lock, monotone `state_version`, erwartete Published-Revision **und** erwarteter Status; Publish nach Cancel nur über ausdrücklichen Reaktivierungsflow, der nicht im Durchstich liegt. |
 | **Hoch** | `SECURITY DEFINER`-Funktionen sind ein RLS-Bypass. Unvollständige EXECUTE-Rechte, unqualifizierte Objekte oder vom Client gelieferte Actor-/Owner-IDs führen zur Rechteausweitung. | Fester `search_path`, schemaqualifizierte Objekte, Actor nur aus einmal gelesenem `auth.uid()`, `PUBLIC`/`anon` entziehen, minimale Signaturen und negative Direktaufruftests für jede Funktion. |
@@ -541,7 +531,7 @@ Damit wird kein E-Fall still als abgedeckt oder ausgeschlossen behauptet, dessen
   <files>supabase/migrations/*_alpha_core.sql, supabase/tests/rls_alpha_core.sql, lib/db/types.ts</files>
   <objective>Das Datenmodell, seine Invarianten und die Entwurf/Öffentlich-Grenze vor jeder UI herstellen.</objective>
   <read_first>ADR-004/005/008; Datenvertrag v0.3 §§1–8, 11, 13–18; AGENTS.md technische Regeln.</read_first>
-  <action>Vor Start Founder-Entscheidung zwischen vollem Review-Zustandsautomaten und kleiner Erstfreigabe dokumentieren. Dann SQL-Typen, Tabellen, zyklische Revision-FKs, Indizes, Storage-Policies, RLS und transaktionale Funktionen gemäß gewählter Variante implementieren. `profiles` hat keine authenticated INSERT-Policy; `provision_profile_owner` ist der einzige Alpha-Bootstrap. Freigaben revisionsgebunden und samt schlankem Mindest-Audit anlegen. Für jede Nutzerdatentabelle RLS explizit aktivieren und Grants minimieren. Seed-/Testhelfer ausschließlich im Testschema halten und Profilhüllen über den echten Founder-Funktionspfad provisionieren. SQL-RLS-Tests mit anonym, Besucher ohne Zuordnung, Owner A, Owner B und Founder schreiben; jede Tabelle, jede View und jede privilegierte Funktion inventarisieren und positive wie negative Direktabfragen/Mutationen prüfen. Generierte DB-Typen erst nach erfolgreicher lokaler Migration erzeugen.</action>
+  <action>SQL-Typen, Tabellen, zyklische Revision-FKs, Indizes, Storage-Policies, RLS und transaktionale Funktionen gemäß der kleinen revisionsgebundenen Erstfreigabe implementieren. `profiles` hat keine authenticated INSERT-Policy; `provision_profile_owner` ist der einzige Alpha-Bootstrap. `approve_first_profile` und `approve_first_event` setzen unter Row Lock atomar `first_approved_revision_id`, `approved_by`, `approved_at` und einen append-only Auditeintrag; Owner-Selbstfreigabe wird verweigert. Für jede Nutzerdatentabelle RLS explizit aktivieren und Grants minimieren. Seed-/Testhelfer ausschließlich im Testschema halten und Profilhüllen über den echten Founder-Funktionspfad provisionieren. SQL-RLS-Tests mit anonym, Besucher ohne Zuordnung, Owner A, Owner B und Founder schreiben; jede Tabelle, jede View und jede privilegierte Funktion inventarisieren und positive wie negative Direktabfragen/Mutationen prüfen. Generierte DB-Typen erst nach erfolgreicher lokaler Migration erzeugen.</action>
   <acceptance_criteria>Draft und published Revision sind getrennt; Besucher/authenticated kann kein Profil inserten; nur Founder provisioniert; Owner kann sich nie selbst freigeben; ausschließlich die konkret founder-freigegebene Revision ist erstpublizierbar; publizierte Revisionen sind unveränderlich und öffentliche Views kennen keine privaten Spalten.</acceptance_criteria>
   <verify><automated>supabase db reset &amp;&amp; supabase test db supabase/tests/rls_alpha_core.sql</automated></verify>
   <done>Frische Datenbank migriert; jede RLS-Matrixzeile ist mit mindestens einem erlaubten und einem verweigerten Test belegt.</done>
@@ -560,11 +550,11 @@ Damit wird kein E-Fall still als abgedeckt oder ausgeschlossen behauptet, dessen
 
 <task type="auto" tdd="true">
   <name>Slice 3: Veranstalterprofil als privater und bestätigter Stand</name>
-  <files>lib/domain/profile-publication.ts, app/(organizer)/organizer/profiles/setup/page.tsx, app/(organizer)/organizer/profiles/[profileId]/edit/page.tsx, app/(organizer)/organizer/profiles/[profileId]/preview/page.tsx, app/(internal)/internal/review/page.tsx, app/(internal)/internal/review/actions.ts, components/profile/**, tests/unit/profile-publication.test.ts, e2e/profile.spec.ts, e2e/review.spec.ts</files>
+  <files>lib/domain/profile-publication.ts, app/(organizer)/organizer/profiles/setup/page.tsx, app/(organizer)/organizer/profiles/[profileId]/edit/page.tsx, app/(organizer)/organizer/profiles/[profileId]/preview/page.tsx, app/(internal)/internal/approvals/actions.ts, components/profile/**, tests/unit/profile-publication.test.ts, e2e/profile.spec.ts, e2e/approval.spec.ts</files>
   <objective>Ein minimales Veranstalterprofil speichern, prüfen, erstmals freigeben und ausdrücklich veröffentlichen.</objective>
   <read_first>Datenvertrag v0.3 §3 und P06; Delta v0.4 §17.7; v0.5 §4.1; `02-durchstich.md` Punkt 2.</read_first>
-  <action>Nur die bereits Founder-provisionierte Veranstalter-Profilhülle vervollständigen; keine Profilanlage durch den Owner. Name, Kurzvorstellung, eindeutigen und nicht reservierten Slug, mindestens offiziellen Link oder öffentlichen Kontakt und bestätigte Profilbild-Nutzung erfassen. Unvollständige Drafts speichern; private Preview mit `no-store`. Die in Slice 1 gewählte Erstfreigabevariante umsetzen: entweder Einreichung/Founder-Review mit Ablehnungsgrund oder kleine founder-only Freigabe der exakten Revision ohne Review-Queue. Owner-Selbstfreigabe immer abweisen, Mindest-Audit sichtbar halten. Nach Approval publiziert der Owner ausdrücklich; spätere valide Revisionen benötigen keine neue Erstfreigabe. Keine Module oder Gestaltungssteuerung.</action>
-  <acceptance_criteria>P06 blockiert öffentlich, nicht privat; unprovisionierter Login kann Setup nicht öffnen; die gewählte revisionsgebundene Erstfreigabe ist erzwungen; nur Founder entscheidet; veröffentlichter Stand ändert sich nicht beim weiteren Editieren.</acceptance_criteria>
+  <action>Nur die bereits Founder-provisionierte Veranstalter-Profilhülle vervollständigen; keine Profilanlage durch den Owner. Name, Kurzvorstellung, eindeutigen und nicht reservierten Slug, mindestens offiziellen Link oder öffentlichen Kontakt und bestätigte Profilbild-Nutzung erfassen. Unvollständige Drafts speichern; private Preview mit `no-store`. Founder kann aus der exakten privaten Vorschau `approve_first_profile(profile_id, expected_draft_revision_id)` auslösen; die Funktion setzt Freigabefelder und Mindest-Audit atomar. Owner-Selbstfreigabe immer abweisen. Nach Erstfreigabe publiziert der Owner ausdrücklich; spätere valide Revisionen benötigen keine neue Erstfreigabe. Keine Queue, Ablehnungs-/Sperrzustände, Module oder Gestaltungssteuerung.</action>
+  <acceptance_criteria>P06 blockiert öffentlich, nicht privat; unprovisionierter Login kann Setup nicht öffnen; die konkrete erstfreigegebene Revision ist erzwungen; nur Founder entscheidet; veröffentlichter Stand ändert sich nicht beim weiteren Editieren.</acceptance_criteria>
   <verify><automated>npm run test -- profile-publication &amp;&amp; npm run test:e2e -- profile.spec.ts</automated></verify>
   <done>Vollständiges freigegebenes Profil wird öffentlich; fehlendes Bild oder fehlender Link/Kontakt bleibt privater Draft.</done>
 </task>
@@ -582,11 +572,11 @@ Damit wird kein E-Fall still als abgedeckt oder ausgeschlossen behauptet, dessen
 
 <task type="auto" tdd="true">
   <name>Slice 5: Vorschau, atomare Veröffentlichung, Verschiebung und sofortige Absage</name>
-  <files>app/(organizer)/organizer/events/[eventId]/preview/page.tsx, app/(internal)/internal/review/page.tsx, app/(internal)/internal/review/actions.ts, lib/domain/event-status.ts, components/event/publish-dialog.tsx, components/event/status-actions.tsx, tests/unit/event-status.test.ts, e2e/review.spec.ts, e2e/publication.spec.ts</files>
+  <files>app/(organizer)/organizer/events/[eventId]/preview/page.tsx, app/(internal)/internal/approvals/actions.ts, lib/domain/event-status.ts, components/event/publish-dialog.tsx, components/event/status-actions.tsx, tests/unit/event-status.test.ts, e2e/approval.spec.ts, e2e/publication.spec.ts</files>
   <objective>Bestätigung und Statuswechsel so verdrahten, dass kein privater Inhalt still öffentlich wird.</objective>
   <read_first>v0.3 §§4, 11 und P23; `02-durchstich.md` Punkte 4/7 und Abnahmen. P39 bleibt später, da Draft-Löschung nicht im Durchstich steht.</read_first>
-  <action>Private Vorschau, die in Slice 1 gewählte revisionsgebundene Erstfreigabevariante, expliziten Publish-Dialog und Server-Action mit expected revision implementieren. Founder-Freigabe nur für die exakte Eventrevision; Owner-Selbstfreigabe und ungültige Transitionen ablehnen und auditieren. Erst nach Approval kann der Owner die Erstpublikation ausdrücklich auslösen. Absage als separate Bestätigung an `cancel_event`, Ticketaktion ausblenden und Draft unangetastet lassen. Verschiebung erzeugt/ändert einen Draft und wird erst mit eigener Bestätigung veröffentlicht; bei Ersatztermin Status rescheduled. Publish/Cancel/Reschedule sperren dieselbe Eventzeile und prüfen `state_version`, erwartete Published-Revision und Status, damit kein konkurrierender Vorgang einen neueren Zustand überschreibt.</action>
-  <acceptance_criteria>Erstpublikation ohne Founder-Approval scheitert; bei voller Review-Variante benötigt Ablehnung einen Grund; stale Draft kann nicht publiziert werden; Absage zeigt sofort den Status der bisherigen published Revision; privates Bild/Text bleibt privat.</acceptance_criteria>
+  <action>Private Vorschau, `approve_first_event(event_id, expected_draft_revision_id)`, expliziten Publish-Dialog und Server-Action mit erwarteter Revision implementieren. Founder-Freigabe gilt nur für die exakte Eventrevision; Owner-Selbstfreigabe und ungültige Transitionen abweisen und auditieren. Erst danach kann der Owner die Erstpublikation ausdrücklich auslösen. Absage als separate Bestätigung an `cancel_event`, Ticketaktion ausblenden und Draft unangetastet lassen. Verschiebung erzeugt/ändert einen Draft und wird erst mit eigener Bestätigung veröffentlicht; bei Ersatztermin Status rescheduled. Publish/Cancel/Reschedule sperren dieselbe Eventzeile und prüfen `state_version`, erwartete Published-/Draft-Revision und Status, damit kein konkurrierender Vorgang einen neueren Zustand überschreibt.</action>
+  <acceptance_criteria>Erstpublikation ohne Founder-Freigabe scheitert; veralteter oder nach Freigabe ausgetauschter Draft kann nicht erstpubliziert werden; Absage zeigt sofort den Status der bisherigen published Revision; privates Bild/Text bleibt privat.</acceptance_criteria>
   <verify><automated>npm run test -- event-status &amp;&amp; npm run test:e2e -- publication.spec.ts</automated></verify>
   <done>P23 sowie Absage-/Verschiebungsabnahmen sind grün; Audit enthält Akteur, Aktion, Revision und Zeitpunkt. P39 bleibt ausdrücklich später und wird nicht als abgedeckt gemeldet.</done>
 </task>
@@ -596,18 +586,18 @@ Damit wird kein E-Fall still als abgedeckt oder ausgeschlossen behauptet, dessen
   <files>lib/public/profiles.ts, lib/public/events.ts, lib/public/json-ld.ts, lib/public/metadata.ts, app/e/[slug]/page.tsx, app/[profileSlug]/page.tsx, app/sitemap.ts, app/robots.ts, components/public/**, tests/unit/json-ld.test.ts, e2e/public-pages.spec.ts</files>
   <objective>Alle öffentlichen Darstellungen deterministisch aus demselben bestätigten Stand rendern.</objective>
   <read_first>`02-durchstich.md` Punkte 5/6; v0.3 §§4–7; v0.5 §6.7/6.8; Figma-Screen-Index.</read_first>
-  <action>Mobile-first Eventseite mit Format-Tag, Faktenblock, relevanten „Gut zu wissen“-Balken, Beschreibung, Atmosphäre, Organizerlink und Herkunftszeile bauen. Profilseite zeigt kommende veröffentlichte, nicht abgesagte Events, nächstes hervorgehoben, sonst exakten Leertext. Metadata/OG, sitemap und schema.org Event aus Public DTO ableiten. Unpublished/withdrawn/blocked und private Preview-Slugs nie listen oder rendern. Standard-Theme/Tokens verwenden; kein Theme-Editor.</action>
+  <action>Mobile-first Eventseite mit Format-Tag, Faktenblock, relevanten „Gut zu wissen“-Balken, Beschreibung, Atmosphäre, Organizerlink und Herkunftszeile bauen. Profilseite zeigt kommende veröffentlichte, nicht abgesagte Events, nächstes hervorgehoben, sonst exakten Leertext. Metadata/OG, sitemap und schema.org Event aus Public DTO ableiten. Private/withdrawn und private Preview-Slugs nie listen oder rendern. Standard-Theme/Tokens verwenden; kein Theme-Editor.</action>
   <acceptance_criteria>P07 unknown zeigt „Preis noch offen“, niemals „Frei“/0; P11 korrekt über Mitternacht; P12 ohne endDate; Sitemap enthält nur öffentliche URLs; abgesagt korrekt markiert und ohne Ticketaktion.</acceptance_criteria>
   <verify><automated>npm run test -- json-ld &amp;&amp; npm run test:e2e -- public-pages.spec.ts</automated></verify>
   <done>Sichtseite, Meta und JSON-LD teilen eine DTO-Quelle; Draftzugriffe ergeben 404/403 statt nur noindex.</done>
 </task>
 
 <task type="checkpoint:human-verify" gate="blocking">
-  <name>Slice 7: Playwright-Gesamtabnahme und Founder-Review</name>
-  <files>e2e/auth.spec.ts, e2e/profile.spec.ts, e2e/event.spec.ts, e2e/review.spec.ts, e2e/publication.spec.ts, e2e/public-pages.spec.ts, playwright.config.ts</files>
+  <name>Slice 7: Playwright-Gesamtabnahme und Founder-Abnahme</name>
+  <files>e2e/auth.spec.ts, e2e/profile.spec.ts, e2e/event.spec.ts, e2e/approval.spec.ts, e2e/publication.spec.ts, e2e/public-pages.spec.ts, playwright.config.ts</files>
   <objective>Den vollständigen Durchstich automatisiert prüfen und die visuelle/fachliche Abnahme einholen, ohne automatisch weiterzugehen.</objective>
   <read_first>`02-durchstich.md` Abnahme; Figma-Knoten aus `03-screens-figma.md`; alle Slice-Summaries.</read_first>
-  <action>Playwright-Flows für unprovisionierten Besucherlogin, Founder-Provisionierung, Owner-Setup, Profil-/Event-Einreichung, Founder-Approve/Reject, Owner-Publikation, öffentliche Seiten, Verschiebung und Absage konsolidieren. Owner-Selbstfreigabe als negativen Pfad führen. Die sechs Abnahmen aus 02 exakt benennen. Desktop und Mobile testen; Screenshots/Traces nur mit synthetischen Daten. CI-Gates lint/typecheck/Vitest/RLS/Playwright ausführen. Development-/Preview-Deployment erst bei gesonderter Ausführungsfreigabe und innerhalb Gratis-/Guthabenrahmen.</action>
+  <action>Playwright-Flows für unprovisionierten Besucherlogin, Founder-Provisionierung, Owner-Setup, revisionsgebundene Profil-/Event-Erstfreigabe, Owner-Publikation, öffentliche Seiten, Verschiebung und Absage konsolidieren. Owner-Selbstfreigabe, Freigabe einer fremden oder veralteten Revision und Publikation eines nach Freigabe ausgetauschten Drafts als negative Pfade führen. Die sechs Abnahmen aus 02 exakt benennen. Desktop und Mobile testen; Screenshots/Traces nur mit synthetischen Daten. CI-Gates lint/typecheck/Vitest/RLS/Playwright ausführen. Development-/Preview-Deployment erst bei gesonderter Ausführungsfreigabe und innerhalb Gratis-/Guthabenrahmen.</action>
   <acceptance_criteria>Alle automatisierten Gates grün; keine ausgeschlossene Funktion im Build; visuelle Prüfung gegen Figma-Referenzen und deutsche UI-Texte dokumentiert.</acceptance_criteria>
   <verify><automated>npm run lint &amp;&amp; npm run typecheck &amp;&amp; npm run test &amp;&amp; supabase test db supabase/tests/rls_alpha_core.sql &amp;&amp; npm run test:e2e</automated></verify>
   <done>Founder bestätigt den lokalen/Preview-Durchstich oder dokumentiert konkrete Abweichungen; keine automatische nächste Phase und kein Merge/Production-Deploy.</done>
@@ -623,12 +613,10 @@ Damit wird kein E-Fall still als abgedeckt oder ausgeschlossen behauptet, dessen
 4. **Sentry-Feinwerte:** Anbieter, EU-Region, PII-Scrubbing und Einrichtung in Slice 2 sind entschieden. Sampling und konkrete Aufbewahrungsdauer werden beim Scaffold datensparsam festgelegt und dokumentiert; kein personenbezogener Fehlerinhalt.
 5. **Backups vor echten Nutzern:** Tägliche Supabase-Backups genügen für die Alpha. Vor echten Nutzerdaten bleiben PITR-Fähigkeit, Kostenfreigabe, Restore-Probe und Wiederanwendung von Lösch-/Abmeldevorgängen verpflichtend zu entscheiden/nachzuweisen.
 6. **Umgebungsbetrieb:** Branch-Preview plus Production ist entschieden, Staging später. Offen bleiben nur konkrete Projekt-/Secret-Namen, Seed-Regeln und die gesonderte Freigabe, bevor Production echte Organizerdaten erhält.
-7. **Review-Umfang:** Founder-Erstfreigabe ist entschieden; vor Slice 1 muss der Founder zwischen vollem Zustandsautomaten und kleiner revisionsgebundener Erstfreigabe wählen.
-8. **Vollständige D8-UX:** Nur bei Wahl des vollen Zustandsautomaten enthält der Durchstich eine minimale `/internal/review`-Queue mit Approve/Reject und Pflichtgrund. Bei kleiner Variante genügt eine founder-only Freigabeaktion ohne Queue. Filter, Rückfragen, Sperrworkflow und redaktionelle Komfortfunktionen bleiben später.
-9. **Medienrechtstexte und Limits:** Bestätigungstext, MIME-/Größenlimits, Crop/Ableitungen, Alttextpflicht und öffentliche Bucket-Promotion finalisieren.
-10. **v0.3-Feldtypisierung:** Datenvertrag ist nicht gesamt abgenommen. Nur explizite Durchstichfelder normalisieren; jede darüber hinausgehende Enum-/Längenentscheidung bleibt `TODO(spec)`.
-11. **Eventende und Verschiebung ohne Termin:** Durchstich-Abnahme fordert Nachtende und Verschiebung. Exakte UI für `postponed_undated` nur bauen, wenn im Slice freigegeben; sonst Schema vorbereiten und UI als `TODO(spec)` markieren.
-12. **Öffentliche Herkunftszeile:** finaler deutscher Wortlaut/Aktualitätsformat offen; keine internen Bestätigungsdaten oder E-Mail zeigen.
+7. **Medienrechtstexte und Limits:** Bestätigungstext, MIME-/Größenlimits, Crop/Ableitungen, Alttextpflicht und öffentliche Bucket-Promotion finalisieren.
+8. **v0.3-Feldtypisierung:** Datenvertrag ist nicht gesamt abgenommen. Nur explizite Durchstichfelder normalisieren; jede darüber hinausgehende Enum-/Längenentscheidung bleibt `TODO(spec)`.
+9. **Eventende und Verschiebung ohne Termin:** Durchstich-Abnahme fordert Nachtende und Verschiebung. Exakte UI für `postponed_undated` nur bauen, wenn im Slice freigegeben; sonst Schema vorbereiten und UI als `TODO(spec)` markieren.
+10. **Öffentliche Herkunftszeile:** finaler deutscher Wortlaut/Aktualitätsformat offen; keine internen Bestätigungsdaten oder E-Mail zeigen.
 
 ## Risiken und Reihenfolge
 
