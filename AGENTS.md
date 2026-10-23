@@ -4,7 +4,7 @@
 
 Stand 2026-10-14 (Ausgangslage): Autorisiert waren ausschließlich Projektvorbereitung, Dokumentation und grobe Planung.
 
-**Entwicklungsfreigabe (Founder, zu bestätigen):** `[x] erteilt am 23.10.2026` mit folgendem Umfang, bis dahin gilt der Ausgangsstand weiter:
+**Entwicklungsfreigabe (Founder):** `[x] erteilt am 23.10.2026` mit folgendem Umfang:
 - Autorisiert: Anwendungscode und Abhängigkeiten für den Durchstich aus `docs/startpaket/02-durchstich.md`, Datenbankschema und Migrationen für Supabase, Entwicklungs- und Preview-Deployments auf AWS Amplify (Region `eu-central-1`) und Supabase (Frankfurt) im Rahmen des Gratis-/Guthabenrahmens.
 - Weiterhin nicht autorisiert: Produktions-Deployment mit echten Organizern, kostenpflichtige Dienste über den Guthabenrahmen hinaus, Live-KI-Verarbeitung echter Nutzerdaten, Versand echter E-Mails an Dritte, Billing/Checkout, Änderungen an bestehenden Projekten (DMO, MVP).
 Eine spätere ausdrückliche Nutzerfreigabe hat Vorrang; Umfang und Datum werden in `docs/STATUS.md` festgehalten.
