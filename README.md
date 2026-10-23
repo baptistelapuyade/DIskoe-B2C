@@ -31,7 +31,7 @@ Voraussetzung ist [Node.js](https://nodejs.org/) `24.22.1` (LTS; Node 20 ist sei
 4. `npm run dev` ausführen.
 5. Im Browser `http://localhost:3000` öffnen.
 
-Den lokalen Server beendet man im Terminal mit `Ctrl+C`. Die wichtigsten Prüfungen sind `npm run lint`, `npm run typecheck`, `npm test`, `npm run test:e2e` und `npm run build`.
+Den lokalen Server beendet man im Terminal mit `Ctrl+C`. Die wichtigsten Prüfungen sind `npm run lint`, `npm run typecheck`, `npm test`, `npm run test:e2e` und `npm run build`. `npm run audit:check` prüft Abhängigkeiten auf High/Critical-Funde; akzeptierte Ausnahmen stehen befristet in `.github/audit-allowlist.json`.
 
 ## Status
 
