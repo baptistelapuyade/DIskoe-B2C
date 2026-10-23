@@ -23,7 +23,7 @@ Notion hält Produktentscheidungen und offene Specs. Dieses Repository hält tec
 
 ## Lokal starten
 
-Voraussetzung ist [Node.js](https://nodejs.org/) `20.20.2`. Wer `nvm` installiert hat, kann die im Projekt festgelegte Version mit `nvm use` auswählen.
+Voraussetzung ist [Node.js](https://nodejs.org/) `24.22.1` (LTS; Node 20 ist seit 30.04.2026 End-of-Life). Wer `nvm` installiert hat, kann die im Projekt festgelegte Version mit `nvm use` auswählen.
 
 1. Repository herunterladen beziehungsweise klonen und den Projektordner im Terminal öffnen.
 2. `npm install` ausführen. Das installiert ausschließlich die in `package-lock.json` festgeschriebenen Pakete.
