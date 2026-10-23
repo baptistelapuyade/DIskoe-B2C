@@ -5,14 +5,14 @@
 See: `.planning/PROJECT.md` (updated 2026-10-15)
 
 **Core value:** Organizer können einen bestätigten Eventstand mit deutlich weniger Pflegeaufwand veröffentlichen, teilen und aktuell halten, während DISKOE nachvollziehbare Katalogdaten gewinnt.
-**Current focus:** Phase 1 — Produktvertrag und Fragenpool
+**Current focus:** Phase 4 — Durchstich (Alpha-Kern), Planung im freigegebenen Umfang
 
 ## Current Position
 
-Phase: 1 of 3 (Produktvertrag und Fragenpool)
-Plan: Not created (TBD after interactive review)
-Status: Ready for product-spec planning; implementation unauthorized
-Last activity: 2026-10-16 — Produktdelta v0.4 (Notion, inkl. Abschnitte 14–15) als Lesefassung dokumentiert; Requirements 38/38 gemappt (13 neu: Plus-Alpha-Testzugang, Downgrade, gemeinsamer Login, Eventänderungsabo, eigene Nachrichten, Feedback, Vorlagen, Assistentenkontingent, Besucher, Messung, Fristen); Roadmap-Abnahmefälle ergänzt; keine Umsetzung.
+Phase: 4 of 4 (Durchstich — Alpha-Kern)
+Plan: `.planning/phases/04-durchstich/PLAN.md` erstellt und per GSD-Planprüfung verifiziert
+Status: Plan ready; execution not started. Anwendungscode, Abhängigkeiten und Installationen in diesem Auftrag ausdrücklich nicht ausgeführt.
+Last activity: 2026-10-23 — Umsetzungsplan für den begrenzten Durchstich in sieben Slices erstellt; SQL/RLS, Founder-Provisionierung/-Erstfreigabe, Routen und P/E/D-Testzuordnung geprüft. Phasen 1–3 bleiben offene Spec-/Design-/Architekturphasen.
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -42,7 +42,7 @@ Progress: [░░░░░░░░░░] 0%
 Decisions are logged in `.planning/PROJECT.md` and authoritative product decisions remain in Notion.
 
 - Roadmap granularity is coarse: product specification → experience design → architecture/planning.
-- Automatic advancement is disabled; no roadmap phase authorizes implementation.
+- Automatic advancement is disabled. Phase 4 besitzt eine begrenzte Entwicklungsfreigabe gemäß `AGENTS.md`; dieser Auftrag endet dennoch nach Planung und Draft-PR ohne Implementierung.
 - One confirmed public content state must later supply page, catalog and sharing consistently.
 - AI remains optional assistance; manual completion and correction must remain possible.
 - Story graphics are validated manually before any automation decision.
@@ -58,13 +58,13 @@ Decisions are logged in `.planning/PROJECT.md` and authoritative product decisio
 
 ### Blockers/Concerns
 
-- Current authorization covers only preparation, documentation and coarse planning; application work, dependencies, schema/migrations, deployment and live or paid services are not authorized.
+- Die frühere reine Planungsgrenze ist überholt: Anwendungscode, Abhängigkeiten, Supabase-Schema/Migrationen und Development-/Preview-Deployments sind ausschließlich für den Durchstich autorisiert. Produktionsbetrieb, echte Organizer, Live-KI, echte E-Mail, Billing und kostenpflichtige Dienste außerhalb des Guthabenrahmens bleiben nicht autorisiert.
 - Notion is the product source of truth and has no automatic repository sync; affected decisions require a targeted comparison.
 - Existing Figma material is reference material, not an approved end-to-end B2C publishing flow.
-- Stack, auth, data model, media, AI boundary, analytics, SEO operations and deployment remain undecided until Phase 3.
+- Stack, Auth-Grundrichtung, Hosting, Medienbasis und Tests sind im Startpaket entschieden; Detailfragen zu Monitoring, Backup, Löschung, Umgebungen und KI-Anbieterbetrieb bleiben offen. KI, Analytics und E-Mail liegen außerhalb des Durchstichs.
 
 ## Session Continuity
 
-Last session: 2026-10-16
-Stopped at: Produktdelta v0.4 in docs/.planning abgeglichen; Phase 1 continues mit Vertragsdurchsicht, Discovery-Suchdetails und Restspecs; kein Implementierungsplan.
+Last session: 2026-10-23
+Stopped at: Phase 4 geplant und verifiziert; vor Ausführung bewusst angehalten (`workflow.auto_advance=false`). Phasen 1–3 und fachliche Restarbeit bleiben offen.
 Resume file: None
