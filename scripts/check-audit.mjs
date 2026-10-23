@@ -123,6 +123,11 @@ function main() {
     );
   }
   if (errors.length > 0) {
+    if (process.env.GITHUB_ACTIONS === "true") {
+      for (const error of errors) {
+        console.log(`::error title=npm audit gate::${error}`);
+      }
+    }
     console.error(`npm audit gate failed:\n- ${errors.join("\n- ")}`);
     process.exit(1);
   }
