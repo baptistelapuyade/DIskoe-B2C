@@ -8,8 +8,12 @@
 - AWS Amplify Hosting in `eu-central-1`; Domain und DNS verbleiben beim externen Anbieter.
 - Amazon SES für Produkt-E-Mails.
 - Ein Google-Modell für die KI-Erfassung hinter einer eigenen Schnittstelle; konkretes Modell, Region und Datenverarbeitung bleiben offen.
+- Next.js (App Router, TypeScript) mit fest gepinnter Version.
+- Supabase (Postgres, Auth, Storage, Row Level Security) in Frankfurt.
+- Login per E-Mail-Code für Besucher und Organizer; Google-Login ist optional und nicht Teil der Alpha.
+- Ein Branch pro Aufgabe, kleine Pull Requests und Review durch den Founder.
 
-Alle übrigen Vorschläge und offenen Punkte aus dem Startpaket bleiben entsprechend ihrer Kennzeichnung unbestätigt. Die nachfolgende Liste offener Entscheidungen wird dadurch nicht geändert.
+Diese Architekturentscheidungen wurden durch den Founder am 2026-10-23 bestätigt. Ausdrücklich offene Detailfragen bleiben unverändert offen.
 
 ## Nachgewiesene Ausgangslage
 
@@ -32,9 +36,9 @@ Alle übrigen Vorschläge und offenen Punkte aus dem Startpaket bleiben entsprec
 
 ## Offene Entscheidungen vor Entwicklung
 
-1. Web-Stack, Runtime und Hosting einschließlich Versionen und Lockfile.
+1. Web-Stack, Runtime und Hosting einschließlich Versionen und Lockfile. (entschieden, siehe oben)
 2. Datenbank-/Speichermodell für Organizer, Ort, optionale Reihe, Event, Entwurf/Version, Freigabe, Medien, Kuration und Messereignisse.
-3. Passwortloser E-Mail-Code, Sitzungen, Ratenbegrenzung und Recovery; erster redaktioneller Freigabeschritt.
+3. Passwortloser E-Mail-Code, Sitzungen, Ratenbegrenzung und Recovery; erster redaktioneller Freigabeschritt. (entschieden, siehe oben)
 4. Rollen-/Rechtematrix und Schutz vor Zugriff auf fremde Organizer oder private Entwürfe.
 5. Medien-Upload, Transformation, Rechte-/Freigabebeleg, Entfernung, Cache und Backup-Aufbewahrung.
 6. KI-Anbieter/-Grenze, strukturierte Extraktionsausgabe, Unsicherheit, Retry/Timeout, Kostenlimits und manueller Fallback.

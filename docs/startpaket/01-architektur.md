@@ -1,9 +1,9 @@
-# 01 — Architektur (Vorschlag, vom Founder zu bestätigen)
+# 01 — Architektur (Bestätigt durch den Founder am 2026-10-23)
 
 Ausgangslage: Ein Entwickler (Founder) mit Claude, Codex und Cursor, grüne Wiese, Alpha mit offener Registrierung aber betreuten ersten Organizern, Daten in der EU. AWS-Guthaben vorhanden (ca. 1000 €, Ablaufdatum prüfen).
 
 ## ADR-001 — Stack
-**Entscheidung (Vorschlag):** TypeScript-Fullstack mit Next.js (App Router, SSR/ISR für öffentliche Seiten), Supabase (Postgres, Auth, Storage, Row Level Security) in Frankfurt.
+**Entscheidung — Bestätigt (Founder, 2026-10-23):** TypeScript-Fullstack mit Next.js (App Router, SSR/ISR für öffentliche Seiten), Supabase (Postgres, Auth, Storage, Row Level Security) in Frankfurt.
 **Gründe:** öffentliche Event-/Profilseiten brauchen SSR und strukturierte Daten (R11); Supabase liefert E-Mail-Code-Login (Delta v0.4 §14.1), Dateispeicher und Zugriffsregeln ohne eigenes Backend; ein Stack für Claude und Codex.
 **Verworfen:** eigenes Backend (mehr Aufbau), SvelteKit (kleineres Agenten-Ökosystem).
 
@@ -13,7 +13,7 @@ Ausgangslage: Ein Entwickler (Founder) mit Claude, Codex und Cursor, grüne Wies
 **Bestätigt (Founder, 23.10.2026):** AWS-Guthaben ist ein Jahr gültig, Hosting läuft über Amplify. Die Domain liegt bei einem externen Anbieter; DNS dort auf Amplify verweisen (CNAME/ALIAS laut Amplify-Anleitung), Zertifikat über Amplify. **Offen:** Umgebungen (`preview` pro Branch, `staging`, `production`), AWS-Zugang (Root-Zugriff klären, eigener Admin-Zugang, MFA).
 
 ## ADR-003 — Login und Rollen
-E-Mail-Code für Besucher und Organizer (kein Passwort). Google-Login ist Option, nicht Alpha-Pflicht. Organizerrechte nur über ausdrückliche Zuordnung (`owner_id` je Profil), nie über gleiche E-Mail (Delta v0.4 §14.1). Eine Person kann mehrere Profile verantworten, Wechsel im Organizerbereich. Founder-Rolle für interne Prüfseite (D8) über eine Allowlist.
+**Bestätigt (Founder, 2026-10-23):** E-Mail-Code für Besucher und Organizer (kein Passwort). Google-Login ist Option, nicht Alpha-Pflicht. Organizerrechte nur über ausdrückliche Zuordnung (`owner_id` je Profil), nie über gleiche E-Mail (Delta v0.4 §14.1). Eine Person kann mehrere Profile verantworten, Wechsel im Organizerbereich. Founder-Rolle für interne Prüfseite (D8) über eine Allowlist.
 
 ## ADR-004 — Daten
 Postgres in Supabase. Row Level Security auf allen Tabellen mit Nutzerdaten. Öffentliche Leseprojektion (View oder materialisierte Tabelle) für veröffentlichte Stände; Entwurf und veröffentlichter Stand getrennt (`draft_revision` / `published_revision`, v0.3 §3). Antworten als `A(T)` mit Zustand (v0.3 §2). Migrationen als SQL im Repo (`supabase/migrations`). Typen aus dem Schema generieren.

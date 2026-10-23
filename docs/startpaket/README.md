@@ -4,8 +4,8 @@ Stand: 23.10.2026. Dieses Paket übergibt Produktentscheidungen und Design an di
 
 ## Status
 - Repo: `baptistelapuyade/DIskoe-B2C`, frische Codebasis, Dokumentation und `.planning/` vorhanden, kein Anwendungscode.
-- Specs und Designs sind laut Build-Doc nicht insgesamt abgenommen. **Entwicklungsfreigabe:** ausdrücklich durch den Founder, eintragen in `AGENTS.md` (Abschnitt „Aktuelle Autorisierung“) und `docs/STATUS.md`: `[ ] erteilt am ____`.
-- Architektur: `01-architektur.md`. Im Chat am 23.10. bestätigt: Next.js + Supabase, Hosting Amplify (AWS-Guthaben 1 Jahr), E-Mail Amazon SES, KI Google-Modell (Google-Guthaben), Domain extern. Noch zu bestätigen: Login (E-Mail-Code, Google optional), Workflow (Branch + PR).
+- Specs und Designs sind laut Build-Doc nicht insgesamt abgenommen. **Entwicklungsfreigabe:** siehe `AGENTS.md` (Abschnitt „Aktuelle Autorisierung“).
+- Architektur: `01-architektur.md`. Alle genannten Architekturpunkte wurden durch den Founder am 23.10.2026 bestätigt: Next.js + Supabase, Hosting Amplify (AWS-Guthaben 1 Jahr), E-Mail Amazon SES, KI Google-Modell (Google-Guthaben), externe Domain, Login per E-Mail-Code (Google optional, nicht Teil der Alpha) und Workflow mit einem Branch pro Aufgabe, kleinen Pull Requests und Founder-Review. Ausdrücklich offene Detailfragen bleiben offen.
 
 ## Inhalt
 | Datei | Zweck |
