@@ -1,7 +1,15 @@
 # DISKOE B2C V1 — Architekturstand
 
-**Stand:** 2026-10-15 (Ergänzung Profil/Follow und Datenvertrag-v0.3-Entwurf; weiterhin keine technische Entscheidung)
-**Status:** Architektur offen; keine technische Lösung ausgewählt oder implementiert.
+**Stand:** 2026-10-23 (Startpaket ergänzt)
+**Status:** Architektur teilweise bestätigt, nicht implementiert. Ergänzende Architekturentscheidungen, Vorschläge und offene technische Fragen stehen in [`docs/startpaket/01-architektur.md`](startpaket/01-architektur.md).
+
+## Bestätigte Architekturentscheidungen aus dem Startpaket
+
+- AWS Amplify Hosting in `eu-central-1`; Domain und DNS verbleiben beim externen Anbieter.
+- Amazon SES für Produkt-E-Mails.
+- Ein Google-Modell für die KI-Erfassung hinter einer eigenen Schnittstelle; konkretes Modell, Region und Datenverarbeitung bleiben offen.
+
+Alle übrigen Vorschläge und offenen Punkte aus dem Startpaket bleiben entsprechend ihrer Kennzeichnung unbestätigt. Die nachfolgende Liste offener Entscheidungen wird dadurch nicht geändert.
 
 ## Nachgewiesene Ausgangslage
 
