@@ -2,13 +2,14 @@
 
 ## Overview
 
-Diese bewusst grobe Roadmap bringt DISKOE B2C V1 ausschließlich bis zu einer belastbaren, freigabefähigen Arbeitsgrundlage: zuerst werden der formatabhängige Fragenpool und die verbleibenden Produktdetails abgeschlossen, danach die zusammenhängenden mobilen und öffentlichen Nutzerflüsse gestaltet und schließlich Architekturentscheidungen sowie vertikale Lieferpakete vorbereitet. Sie autorisiert weder Anwendungscode noch Abhängigkeiten, Datenbankarbeiten, Migrationen, Deployment, Live-API-/LLM-Verarbeitung oder kostenpflichtige Dienste. Jede spätere Implementierung bleibt bis zu einer ausdrücklichen, in `docs/STATUS.md` dokumentierten Freigabe ausstehend.
+Diese bewusst grobe Roadmap begann als reine Spec-/Design-/Architekturplanung. Die Phasen 1–3 bleiben in dieser Rolle erhalten und werden nicht rückwirkend als abgeschlossen dargestellt. Seit der in `AGENTS.md` und `docs/STATUS.md` am 23.10.2026 dokumentierten Founder-Freigabe ist zusätzlich ein eng begrenzter Alpha-Durchstich autorisiert: Anwendungscode und Abhängigkeiten, Supabase-Schema/Migrationen sowie Development-/Preview-Deployments im Umfang von `docs/startpaket/02-durchstich.md`. Produktionsbetrieb mit echten Organizern, Live-KI, echter E-Mail-Versand, Billing und alle nicht ausdrücklich genannten Produktteile bleiben ausgeschlossen.
 
 ## Phases
 
 - [ ] **Phase 1: Produktvertrag und Fragenpool** - Formatabhängige Fragen, Pflichtregeln, Texte und verbleibende Produktdetails werden entscheidungsreif festgelegt.
 - [ ] **Phase 2: Zusammenhängendes Experience Design** - Publishing-Flow, Organizerprofil, Eventseite und Sharing werden als prüfbarer Mobile-first-Gesamtfluss gestaltet.
 - [ ] **Phase 3: Architektur und Lieferplanung** - Sicherheits-, Daten-, Betriebs- und Auslieferungsentscheidungen werden als ADRs und vertikale Liefergrenzen vorbereitet.
+- [ ] **Phase 4: Durchstich (Alpha-Kern)** - Der freigegebene vertikale Kern von Login über private Profil-/Evententwürfe bis zu bestätigten öffentlichen Seiten und Absage/Verschiebung wird implementierbar geplant und später sliceweise geliefert.
 
 ## Phase Details
 
@@ -56,6 +57,23 @@ Diese bewusst grobe Roadmap bringt DISKOE B2C V1 ausschließlich bis zu einer be
 **Plans**: TBD — Architekturplanung erst nach Abschluss der Produkt- und Designphasen; Umsetzung nicht autorisiert
 **UI hint**: yes
 
+### Phase 4: Durchstich (Alpha-Kern)
+**Goal**: Ein berechtigter Organizer kann sich per E-Mail-Code anmelden, ein privates Veranstalterprofil und einen privaten manuellen Evententwurf vervollständigen, beide ausdrücklich veröffentlichen und Eventstatus sicher ändern; Besucher sehen ausschließlich bestätigte veröffentlichte Stände auf stabilen Profil-/Eventseiten mit korrekten Meta-, Sitemap- und JSON-LD-Daten.
+**Depends on**: Beschlossene Regeln und Architekturentscheidungen aus dem Startpaket; die weiterhin offenen Gesamtphasen 1–3 werden nicht als abgeschlossen vorausgesetzt. Offene Details außerhalb des Durchstichs bleiben `TODO(spec)`.
+**Requirements**: ACCESS-01, ACCESS-02, ACCESS-03, PUBLIC-01, PUBLIC-02, PUBLIC-03, PUBLISH-01, PUBLISH-02, PUBLISH-03, PUBLISH-04, PUBLISH-05, PROFILE-02, SHARE-01, OPS-01
+**Scope note**: Mehrere Requirements werden im Durchstich nur in dem in `docs/startpaket/02-durchstich.md` ausdrücklich genannten Teil erfüllt; die 38/38-Zuordnung und Restanteile stehen im Phase-04-Plan. Kein Requirement wird allein durch Planung oder Teilerfüllung als validiert markiert.
+**Success Criteria** (what must be TRUE):
+  1. RLS und öffentliche Lesegrenzen stellen sicher, dass fremde/private Entwürfe weder über App-Routen noch direkte Datenbankabfragen öffentlich erreichbar sind; veröffentlichte Revisionen bleiben vom aktuellen Entwurf getrennt.
+  2. E-Mail-Code-Login erzeugt keine Organizerrechte; Organizerzugriff entsteht nur durch eine explizite Profilzuordnung, und Founder-Erstfreigabe ist als eigene Rolle/Aktion nachvollziehbar.
+  3. Ein Veranstalterprofil kann unvollständig privat gespeichert und erst mit Name, Kurzvorstellung, eindeutiger URL, offiziellem Link oder Kontakt sowie Bild ausdrücklich veröffentlicht werden.
+  4. Ein Event kann manuell als privater Entwurf gespeichert werden; die Veröffentlichung prüft die Durchstich-Pflichtfelder einschließlich Antwortzuständen, `Europe/Berlin`, Centbeträgen, Zugangsweg, Bild und Atmosphäre und publiziert atomar genau die bestätigte Revision.
+  5. Absage wirkt sofort auf den öffentlichen Status, ohne sonstige private Änderungen zu veröffentlichen; Verschiebungen bleiben als privater Änderungsstand bis zur ausdrücklichen Bestätigung vom öffentlichen Stand getrennt.
+  6. `/e/[slug]`, das öffentliche Profil, Meta-Tags, Sitemap und JSON-LD beziehen sich deterministisch auf denselben sichtbaren veröffentlichten Stand; unbekannter Preis wird nie als kostenlos und ein unbekanntes Ende nie als erfundenes `endDate` ausgegeben.
+  7. Vitest-, Supabase-RLS- und Playwright-Prüfungen decken die zugeordneten P-/E-/D-Vertragsfälle sowie alle Abnahmepunkte aus `docs/startpaket/02-durchstich.md` mit einem benannten Abnahmesignal je Slice ab.
+  8. Kein Teil außerhalb des Durchstichs wird implementiert; offene Schriftpaare, Radiuswerte, KI-Datenschutzhinweis, Monitoring, Backups und Umgebungsgrenzen bleiben sichtbar als `TODO(spec)` beziehungsweise Betriebsentscheidung markiert.
+**Plans**: `.planning/phases/04-durchstich/PLAN.md`
+**UI hint**: yes — vorhandene Figma-Referenzen gemäß `docs/startpaket/03-screens-figma.md`; keine neue Produktentscheidung im Plan.
+
 ## Coverage
 
 | Requirement | Phase |
@@ -98,14 +116,15 @@ Diese bewusst grobe Roadmap bringt DISKOE B2C V1 ausschließlich bis zu einer be
 | VISIT-02 | Phase 2 |
 | DEL-01 | Phase 3 |
 
-**Coverage:** 38/38 V1 requirements mapped exactly once. Implementation remains unauthorized and pending.
+**Coverage:** Die historische Traceability mappt laut Datei 38/38, obwohl der V1-Abschnitt tatsächlich 37 eindeutige IDs enthält; die Abweichung und die separate `PREMIUM-01`-Einordnung sind im Phase-04-Plan dokumentiert. Umsetzung ist ausschließlich für den begrenzten Durchstich autorisiert und noch nicht begonnen.
 
 ## Progress
 
-**Execution Order:** Phase 1 → Phase 2 → Phase 3. No phase advances automatically; each transition requires review, and implementation requires separate authorization.
+**Execution Order:** Phasen 1–3 bleiben offene Spec-/Design-/Architekturarbeit. Phase 4 ist als ausdrücklich freigegebener, begrenzter Durchstich separat planbar und später sliceweise ausführbar. Keine Phase schreitet automatisch fort; `workflow.auto_advance` bleibt `false`.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Produktvertrag und Fragenpool | 0/TBD | Not started (Delta v0.4 dokumentiert 2026-10-16) | - |
 | 2. Zusammenhängendes Experience Design | 0/TBD | Not started | - |
 | 3. Architektur und Lieferplanung | 0/TBD | Not started | - |
+| 4. Durchstich (Alpha-Kern) | 1/1 planned | Plan verified; execution not started | - |
