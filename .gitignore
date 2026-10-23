@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+
+# Local environment files (the documented template remains versioned)
+.env*
+!.env.example
+
+# Sentry build artifacts
+.sentryclirc
+
+# Local tooling and operating-system files
+*.log
+.DS_Store
+
+# TypeScript incremental state
+*.tsbuildinfo

@@ -1,0 +1,11 @@
+.next
+node_modules
+playwright-report
+test-results
+package-lock.json
+diskoe-startpaket-v2.zip
+
+# Existing product and planning documents are governed separately.
+*.md
+.planning
+docs

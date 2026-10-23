@@ -1,6 +1,6 @@
 # DISKOE B2C V1
 
-Frische Arbeitsgrundlage für DISKOE B2C V1. Der aktuelle Stand umfasst ausschließlich Projektregeln, Produkt-/Technikdokumentation und eine grobe GSD-Planung. Es gibt noch keine Anwendung, installierten Projektabhängigkeiten, Datenbankmigrationen oder Deployments.
+Arbeitsgrundlage für DISKOE B2C V1. Das technische Projektgerüst ist vorhanden; Fachfunktionen, Datenbanktabellen, Migrationen und Deployments sind noch nicht umgesetzt.
 
 ## Einstieg
 
@@ -21,6 +21,18 @@ Frische Arbeitsgrundlage für DISKOE B2C V1. Der aktuelle Stand umfasst ausschli
 
 Notion hält Produktentscheidungen und offene Specs. Dieses Repository hält technische Verträge, Architekturentscheidungen, Arbeitsregeln und später Implementierungsbelege. Ein automatischer Sync ist nicht eingerichtet.
 
+## Lokal starten
+
+Voraussetzung ist [Node.js](https://nodejs.org/) `24.22.1` (LTS; Node 20 ist seit 30.04.2026 End-of-Life). Wer `nvm` installiert hat, kann die im Projekt festgelegte Version mit `nvm use` auswählen.
+
+1. Repository herunterladen beziehungsweise klonen und den Projektordner im Terminal öffnen.
+2. `npm install` ausführen. Das installiert ausschließlich die in `package-lock.json` festgeschriebenen Pakete.
+3. `.env.example` als `.env.local` kopieren. Für die Startseite sind noch keine echten Zugangsdaten nötig; Platzhalter dürfen nicht durch echte Schlüssel im Git-Repository ersetzt werden.
+4. `npm run dev` ausführen.
+5. Im Browser `http://localhost:3000` öffnen.
+
+Den lokalen Server beendet man im Terminal mit `Ctrl+C`. Die wichtigsten Prüfungen sind `npm run lint`, `npm run typecheck`, `npm test`, `npm run test:e2e` und `npm run build`. `npm run audit:check` prüft Abhängigkeiten auf High/Critical-Funde; akzeptierte Ausnahmen stehen befristet in `.github/audit-allowlist.json`.
+
 ## Status
 
-Produktentscheidungen S1–S6 sind weit fortgeschritten, aber nicht alle Texte, Detailregeln und Designs sind abgenommen. S7/S8 bleiben offen. Seit 2026-10-15 umfasst die Richtung begrenzte modulare Profile und einen frühen E-Mail-Follow-Test; Q29–Q36 und die fünf S3-Detailentscheidungen sind als Produktentscheidungen beschlossen (gegen Notion-Seiten desselben Tages abgeglichen, kein Auto-Sync). Der typisierte B2C-Datenvertrag liegt als Entwurf v0.3 vor (nicht abgenommen); Gesamtdurchsicht und Discovery-Suchdetails sind die nächsten fachlichen Aufgaben. Designs, Technik und Implementierung stehen aus; noch keine Entwicklung starten.
+Produktentscheidungen S1–S6 sind weit fortgeschritten, aber nicht alle Texte, Detailregeln und Designs sind abgenommen. S7/S8 bleiben offen. Seit 2026-10-15 umfasst die Richtung begrenzte modulare Profile und einen frühen E-Mail-Follow-Test; Q29–Q36 und die fünf S3-Detailentscheidungen sind als Produktentscheidungen beschlossen (gegen Notion-Seiten desselben Tages abgeglichen, kein Auto-Sync). Der typisierte B2C-Datenvertrag liegt als Entwurf v0.3 vor (nicht abgenommen); Gesamtdurchsicht und Discovery-Suchdetails sind die nächsten fachlichen Aufgaben. Das Projektgerüst ist implementiert, aber noch keine Fachfunktion.
