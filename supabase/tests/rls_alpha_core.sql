@@ -859,6 +859,50 @@ select tests.expect_error(format($q$insert into storage.objects (bucket_id, name
   '42501', 'an unpublished profile cannot copy its image to the public bucket');
 
 -- ===========================================================================
+-- 7c. Submission for the founder's first review
+-- ===========================================================================
+select tests.as_user(:'uid_b');
+select tests.expect_error(format('select public.submit_profile_for_review(%L, %L, true, true)', :'pb', :'rb1'),
+  'DK002', 'an incomplete draft cannot be submitted', 'name');
+select tests.expect_affected(
+  format($q$update public.profile_revisions set name = 'Beta Events', short_intro = 'Beta nights.', official_url = 'https://beta.example.test' where id = %L$q$, :'rb1'),
+  1, 'B completes the draft details');
+select tests.expect_error(format('select public.submit_profile_for_review(%L, %L, true, false)', :'pb', :'rb1'),
+  '22023', 'both declarations are mandatory (usage missing)');
+select tests.expect_error(format('select public.submit_profile_for_review(%L, %L, false, true)', :'pb', :'rb1'),
+  '22023', 'both declarations are mandatory (rights missing)');
+select tests.expect_error(format('select public.submit_profile_for_review(%L, %L, null, true)', :'pb', :'rb1'),
+  '22023', 'a null declaration is not a confirmation');
+select tests.expect_error(format('select public.submit_profile_for_review(%L, %L, true, true)', :'pb', gen_random_uuid()),
+  'DK001', 'a stale revision cannot be submitted');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.submit_profile_for_review(%L, %L, true, true)', :'pb', :'rb1'),
+  '42501', 'A cannot submit B''s profile');
+select tests.expect_error(format('select public.submit_profile_for_review(%L, %L, true, true)', :'pa', :'r2'),
+  'DK003', 'an already approved profile cannot be submitted again');
+select tests.as_user(:'uid_v');
+select tests.expect_error(format('select public.submit_profile_for_review(%L, %L, true, true)', :'pb', :'rb1'),
+  '42501', 'a visitor cannot submit');
+select tests.as_anon();
+select tests.expect_error(format('select public.submit_profile_for_review(%L, %L, true, true)', :'pb', :'rb1'),
+  '42501', 'anon cannot execute submit_profile_for_review');
+select tests.as_user(:'uid_b');
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id = %L and action = 'submit_for_review'$q$, :'pb'),
+  0, 'failed submissions leave no audit row');
+select public.submit_profile_for_review(:'pb', :'rb1', true, true);
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id = %L and action = 'submit_for_review' and revision_id = %L$q$, :'pb', :'rb1'),
+  1, 'the submission is audited for the exact revision');
+select tests.as_user(:'uid_f');
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id = %L and action = 'submit_for_review'$q$, :'pb'),
+  1, 'the founder can see the submission');
+select tests.as_user(:'uid_a');
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id = %L and action = 'submit_for_review'$q$, :'pb'),
+  0, 'A cannot see B''s submission');
+select tests.as_superuser();
+select tests.expect_true(format($q$select actor_id = %L from public.publication_audit where entity_id = %L and action = 'submit_for_review'$q$, :'uid_b', :'pb'),
+  'the audit row names the submitting owner');
+
+-- ===========================================================================
 -- 8. Privilege snapshot and object inventory (a new object fails the run)
 -- ===========================================================================
 select tests.as_superuser();
@@ -965,7 +1009,7 @@ select tests.expect_count($q$
           or has_sequence_privilege(ro, c.oid, 'UPDATE'))
 $q$, 0, 'client roles have no sequence privileges');
 
--- 8d. Function EXECUTE: exactly the four helpers and seven privileged
+-- 8d. Function EXECUTE: exactly the four helpers and eight privileged
 -- functions for authenticated, nothing for anon or PUBLIC.
 create table tests.expected_exec (nspname text, proname text);
 insert into tests.expected_exec values
@@ -975,7 +1019,8 @@ insert into tests.expected_exec values
   ('public', 'provision_profile_owner'), ('public', 'approve_first_profile'),
   ('public', 'approve_first_event'), ('public', 'publish_profile'),
   ('public', 'publish_event'), ('public', 'reschedule_event'),
-  ('public', 'cancel_event');
+  ('public', 'cancel_event'),
+  ('public', 'submit_profile_for_review');
 select tests.expect_count($q$
   select n.nspname, p.proname
     from pg_proc p join pg_namespace n on n.oid = p.pronamespace
@@ -1086,7 +1131,8 @@ insert into tests.expected_objects values
   ('function', 'app_private', 'guard_event_revision_frozen'),
   ('function', 'app_private', 'audit_append_only'),
   ('function', 'app_private', 'stamp_media_use_confirmation'),
-  ('function', 'app_private', 'is_publishable_media_path');
+  ('function', 'app_private', 'is_publishable_media_path'),
+  ('function', 'public', 'submit_profile_for_review');
 
 select tests.expect_count($q$
   select case c.relkind when 'r' then 'table' when 'v' then 'view'
