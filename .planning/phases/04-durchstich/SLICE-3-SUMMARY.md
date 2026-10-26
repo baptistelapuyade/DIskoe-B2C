@@ -13,3 +13,17 @@ Migration `20261026160000_media_storage.sql`:
 Prüfung: `npm run test:rls` lokal 242 Zusicherungen grün (Postgres 16 mit Shim, dessen `storage`-Teil nur die Tabellen nachbildet). Gegenprobe: acht absichtliche Fehler in Migrationskopien (Pfadprüfung entfernen, Präfix entfernen, Owner-Prüfung entfernen, Entwurfsrevision als veröffentlicht zählen, Alt-Text-Pflicht entfernen, privates Lesen öffnen, Public-Lesen auf alle Buckets, Endung ignorieren); jeder wurde erkannt. Zusätzlich läuft dieselbe Datei im CI-Job `rls-supabase` auf dem echten lokalen Supabase-Stack (grün). Die echte Storage-API (Kopie zwischen Buckets mit der Session des Owners) wird erst in 3c end-to-end gezeigt; die Policies sind hier mit direktem SQL und im CI-Job `rls-supabase` gegen den lokalen Supabase-Stack geprüft.
 
 Offen: Rückfall auf einen serverseitigen Secret-Key nur, falls die Cross-Bucket-Kopie per Policy in 3c nicht trägt.
+
+## 3b — Owner-Editor, private Vorschau, Einreichen (Branch `feat/slice-3b-profile-editor`, Draft-PR #8)
+
+Migration `20261026180000_profile_submit_for_review.sql` (auf dem Dev-Projekt **noch nicht angewendet**): `public.submit_profile_for_review(profile, erwartete Entwurfsrevision, Rechte, Nutzung)`. Nur der zugeordnete Owner; beide Erklärungen müssen `true` sein (22023); Stand muss der aktuelle Entwurf sein (DK001), vollständig (DK002 mit Lückencodes), noch nicht erstfreigegeben (DK003). Ergebnis ist ausschließlich ein Audit-Eintrag `submit_for_review` für genau diese Revision. „In Prüfung“ wird daraus abgeleitet; es gibt keine neue Statusspalte.
+
+App:
+
+- Reine Regeln: `lib/domain/profile-publication.ts` (Eingaben, Lückentexte, Status, Bildprüfung per Magic Bytes, 5 MB). Längenlimits sind Vorschläge (`TODO(spec)`).
+- Seiten `/organizer/profiles/[profileId]/edit` und `/preview` (privat, `no-store`; fremde oder ungültige ID liefert 404; ohne Zuordnung Weiterleitung auf `/organizer`). Server Actions für Speichern, Bild hochladen (Alt-Text und Rechte-Bestätigung Pflicht, Original unverändert nach `private-media`) und Einreichen.
+- Ein eingefrorener Entwurf (bestätigt, erstfreigegeben oder bereits eingereicht) wird nie verändert: Bearbeiten legt eine neue Revision an (Bild wird übernommen) und setzt sie als Entwurf. Dadurch endet auch eine laufende Einreichung.
+
+Abweichungen zum Plan: Slug nur angezeigt; keine eigene `setup`-Seite (Startseite verlinkt auf „Bearbeiten“); Gestaltung/Module nicht enthalten. Bei Teilfehlern bleiben unbenutzte private Dateien liegen (Clients dürfen nicht löschen).
+
+Prüfung: SQL-Tests lokal grün (Abschnitt 7c), sechs Mutationsproben (Erklärungen ignoriert, jeder darf einreichen, freigegebenes Profil erneut einreichbar, unvollständig akzeptiert, veraltete Revision akzeptiert, anon darf ausführen) wurden erkannt. Unit-Tests und `e2e/profile.spec.ts` (Editor, ungültige Eingabe, Bild-Prüfungen, Einreichen, neue Revision nach Einreichen, Zugriff anderer Konten) laufen in der CI; lokal nicht ausführbar (Registry gesperrt).
