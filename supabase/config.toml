@@ -24,6 +24,32 @@ port = 54324
 [auth]
 enabled = true
 site_url = "http://127.0.0.1:3000"
-additional_redirect_urls = ["http://127.0.0.1:3000"]
+# Cookies are bound to the host, so both spellings of the local address are allowed.
+additional_redirect_urls = ["http://127.0.0.1:3000/**", "http://localhost:3000/**"]
 jwt_expiry = 3600
-enable_signup = false
+# Open registration: anyone may sign in. Signing in grants no organizer rights;
+# those come only from founder provisioning (provision_profile_owner).
+enable_signup = true
+
+[auth.rate_limit]
+# Local and CI only. The hosted limits are configured in the dashboard.
+email_sent = 100
+sign_in_sign_ups = 100
+token_verifications = 100
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+max_frequency = "1s"
+otp_length = 6
+otp_expiry = 3600
+
+# New users receive the "confirmation" template, returning users "magic_link".
+# Both carry the code ({{ .Token }}) and the link ({{ .ConfirmationURL }}).
+[auth.email.template.magic_link]
+subject = "Dein DISKOE-Anmeldecode"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.confirmation]
+subject = "Dein DISKOE-Anmeldecode"
+content_path = "./supabase/templates/confirmation.html"
