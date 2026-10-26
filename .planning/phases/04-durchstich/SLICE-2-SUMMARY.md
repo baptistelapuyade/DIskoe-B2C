@@ -14,10 +14,17 @@ Stand: 2026-10-26. Branch `feat/slice-2-login`. Kein Requirement ist dadurch als
 | Tests | Vitest: Guards, Redirect-Prüfung, Eingaben, Scrubbing. Playwright `e2e/auth.spec.ts` gegen lokalen Supabase-Stack |
 | CI | Jobs `rls-supabase` (gleiche SQL-Tests gegen den echten Supabase-Stack) und `e2e-auth`; Smoke-Job nur noch `home.spec.ts` |
 
+## Wie geprüft wurde
+
+- CI auf Draft-PR #5 (Stand nach den Korrekturen): Lint/Typecheck/Unit, Audit, `rls` (209 Zusicherungen auf PG 16 mit Shim), `rls-supabase` (gleiche Datei gegen den lokalen Supabase-Stack), Smoke und `e2e-auth` grün. Erste Runde fand drei Fehler in meinem Code bzw. den Tests (Alias in Vitest, Middleware ohne Supabase-Variablen, Locator auf die Next-Route-Ansage); alle behoben.
+- E2E-Fälle: Anonyme werden zu `/login?next=…` geleitet; Besucher ohne Zuordnung und Founder ohne eigenes Profil sehen die neutrale Ansicht ohne Anlegen-Schaltfläche; Owner A sieht nur sein Profil; API-Zugriff mit echten Tokens liefert A nur eigene Daten, Besucher kann weder Profil einfügen noch `provision_profile_owner` ausführen; Link-Login; kaputter Callback leitet nicht aus der Site hinaus; Abmelden.
+- Gegenprobe der Guard-Logik (Kopie, per Node ausgeführt): Entfernen der Organizerbereich-Prüfung in `safeNextPath` lässt `/login` und `/organizerx` durch; Entfernen der Anonym-Prüfung und „Founder ist Owner“ in `resolveAccess` werden beide erkannt. Die Vitest-Fälle prüfen dieselben Eingaben.
+
 ## Grenzen und offene Punkte
 
 - Texte der Login- und „keine Zuordnung“-Ansicht sind Vorschläge (`TODO(spec)`), es gibt keinen Figma-Screen.
 - Code-Mail im Dev-Projekt erst nach SES/Custom SMTP; bis dahin Link-Login.
 - Node-Middleware auf Amplify ist unbestätigt bis zum ersten Preview. Rückfall: Sitzungsauffrischung über eine Route ohne Middleware.
 - In der Entwicklungssitzung war die npm-Registry gesperrt: Lint, Typecheck, Vitest und Playwright liefen nicht lokal. Die erste echte Ausführung ist die CI.
+- Sentry: `npm run sentry:synthetic` ist noch nicht gegen das echte Projekt gelaufen (braucht `.env.local` des Founders).
 - Nicht enthalten: Merkliste/Abos, Profil anlegen durch Owner, Profilwechsel-UI, Google-Login, eigenes Rate-Limit.
