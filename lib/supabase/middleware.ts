@@ -7,6 +7,18 @@ import type { Database } from "@/lib/db/types";
 // unauthenticated visitors out of the organizer area early. The pages check
 // access again themselves; this is a second layer, not the only one.
 export async function updateSession(request: NextRequest) {
+  // If the auth provider falls back to the Site URL instead of our callback
+  // (redirect target not on its allow-list), the PKCE code arrives on "/".
+  // Hand it to the callback instead of dropping the sign-in.
+  if (
+    request.nextUrl.pathname === "/" &&
+    request.nextUrl.searchParams.has("code")
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    return NextResponse.redirect(url);
+  }
+
   let response = NextResponse.next({ request });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
