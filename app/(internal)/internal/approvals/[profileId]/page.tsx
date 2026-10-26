@@ -90,7 +90,7 @@ export default async function ApprovalDetailPage({
       ) : (
         <p role="note">
           {view.alreadyApproved
-            ? "Dieses Profil ist bereits freigegeben."
+            ? "Freigegeben. Der Organizer kann das Profil jetzt selbst veröffentlichen."
             : "Dieser Stand kann nicht freigegeben werden."}
         </p>
       )}
