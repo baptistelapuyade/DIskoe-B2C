@@ -7,7 +7,9 @@
 // script). The message contains a fake e-mail address, token and login code;
 // all of them must arrive as "[Filtered]". Nothing real is sent and no value
 // from the environment is printed.
-import * as Sentry from "@sentry/nextjs";
+// @sentry/nextjs is a server-side wrapper around @sentry/node; a plain Node
+// script needs the Node entry point directly.
+import * as Sentry from "@sentry/node";
 
 import {
   getEuSentryDsn,
