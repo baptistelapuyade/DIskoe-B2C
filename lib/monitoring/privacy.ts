@@ -3,11 +3,13 @@ import type { Breadcrumb, ErrorEvent } from "@sentry/nextjs";
 const FILTERED = "[Filtered]";
 const EMAIL_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
 const SENSITIVE_VALUE_PATTERN =
-  /\b(authorization|cookie|password|secret|token|code)(\s*[:=]\s*)([^\s,;&]+)/gi;
+  /\b((?:[a-z_]*token|authorization|cookie|password|secret|code)(?:_hash)?)(\s*[:=]\s*)([^\s,;&]+)/gi;
+const JWT_PATTERN = /\beyJ[\w-]+\.[\w-]+\.[\w-]*/g;
 
 export function scrubText(value: string) {
   return value
     .replace(EMAIL_PATTERN, FILTERED)
+    .replace(JWT_PATTERN, FILTERED)
     .replace(SENSITIVE_VALUE_PATTERN, `$1$2${FILTERED}`);
 }
 
@@ -19,7 +21,14 @@ export function scrubSentryEvent(event: ErrorEvent): ErrorEvent {
     delete event.request.data;
     delete event.request.headers;
     delete event.request.query_string;
+
+    if (event.request.url) {
+      // Login links and callbacks carry codes in the query or fragment.
+      event.request.url = event.request.url.split(/[?#]/)[0];
+    }
   }
+
+  delete event.extra;
 
   if (event.message) {
     event.message = scrubText(event.message);

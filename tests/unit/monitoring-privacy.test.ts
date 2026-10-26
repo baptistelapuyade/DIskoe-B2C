@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { getEuSentryDsn, scrubSentryEvent } from "../../lib/monitoring/privacy";
+import {
+  getEuSentryDsn,
+  scrubSentryEvent,
+  scrubText,
+} from "../../lib/monitoring/privacy";
 
 describe("monitoring privacy", () => {
   it("removes request payloads, user data, and personal text", () => {
@@ -28,5 +32,31 @@ describe("monitoring privacy", () => {
     expect(
       getEuSentryDsn("https://public@o1.ingest.us.sentry.io/1"),
     ).toBeUndefined();
+  });
+
+  it("filters login codes, token hashes and JWTs in text", () => {
+    expect(scrubText("verify failed code=123456 for a@b.de")).toBe(
+      "verify failed code=[Filtered] for [Filtered]",
+    );
+    expect(scrubText("access_token=abc.def refresh_token: xyz")).toBe(
+      "access_token=[Filtered] refresh_token: [Filtered]",
+    );
+    expect(scrubText("token_hash=pkce_abc123")).toBe("token_hash=[Filtered]");
+    expect(scrubText("bad eyJhbGciOi.eyJzdWIiOi.c2ln here")).toBe(
+      "bad [Filtered] here",
+    );
+  });
+
+  it("strips query strings and fragments from the request URL", () => {
+    const event = scrubSentryEvent({
+      type: undefined,
+      request: {
+        url: "http://127.0.0.1:3000/auth/callback?code=abc&next=%2Forganizer#x",
+      },
+      extra: { email: "person@example.org" },
+    });
+
+    expect(event.request?.url).toBe("http://127.0.0.1:3000/auth/callback");
+    expect(event.extra).toBeUndefined();
   });
 });
