@@ -117,8 +117,15 @@ jobs:
 
       - name: Run RLS tests
         run: |
+          set +e
           psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
-            -X -v ON_ERROR_STOP=1 -f supabase/tests/rls_alpha_core.sql
+            -X -v ON_ERROR_STOP=1 -f supabase/tests/rls_alpha_core.sql \
+            2> "$RUNNER_TEMP/psql-errors.log"
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            echo "::error title=RLS tests on Supabase failed::$(tail -n 5 "$RUNNER_TEMP/psql-errors.log" | tr '\n' ' ' | cut -c1-900)"
+          fi
+          exit "$status"
 
   e2e-auth:
     name: Playwright sign-in and organizer access
