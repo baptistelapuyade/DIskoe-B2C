@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveAccess, type AssignedProfile } from "@/lib/auth/guards";
+import { resolveAccess, type AssignedProfile } from "../../lib/auth/guards";
 
 const profile: AssignedProfile = {
   id: "11111111-1111-1111-1111-111111111111",

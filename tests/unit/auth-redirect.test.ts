@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { normalizeEmail, normalizeOtp } from "@/lib/auth/input";
-import { ORGANIZER_HOME, safeNextPath } from "@/lib/auth/guards";
+import { normalizeEmail, normalizeOtp } from "../../lib/auth/input";
+import { ORGANIZER_HOME, safeNextPath } from "../../lib/auth/guards";
 
 describe("safeNextPath", () => {
   it("keeps organizer paths", () => {
