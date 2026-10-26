@@ -33,6 +33,13 @@ export default async function EditProfilePage({
         <ProfileNav profileId={profileId} active="edit" />
       </header>
 
+      {view.locked ? (
+        <p role="note" className="bg-[var(--warning-soft)] rounded-md p-4">
+          DISKOE hat dieses Profil freigegeben. Veröffentliche es zuerst auf der
+          Vorschau-Seite; danach kannst du es weiterbearbeiten.
+        </p>
+      ) : null}
+
       <GapList gaps={view.gaps} />
 
       <section aria-labelledby="details-heading" className="space-y-4">

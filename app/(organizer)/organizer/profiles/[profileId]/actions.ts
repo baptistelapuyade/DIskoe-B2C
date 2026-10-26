@@ -12,7 +12,12 @@ import {
   parseProfileInput,
   type FieldErrors,
 } from "@/lib/domain/profile-publication";
-import { ensureEditableDraft, loadProfileState } from "@/lib/profile/draft";
+import {
+  ensureEditableDraft,
+  isEditLocked,
+  loadProfileState,
+} from "@/lib/profile/draft";
+import { copyPublishedImage } from "@/lib/profile/publish";
 import { requireOwnedProfileId } from "@/lib/profile/load";
 
 export type FormState = {
@@ -21,6 +26,9 @@ export type FormState = {
   errors?: FieldErrors & { image?: string; altText?: string; rights?: string };
   gaps?: string[];
 };
+
+const LOCKED_MESSAGE =
+  "Das Profil ist freigegeben. Bitte veröffentliche es zuerst; danach kannst du es weiterbearbeiten.";
 
 const GENERIC_ERROR =
   "Das hat leider nicht geklappt. Bitte versuche es noch einmal.";
@@ -60,6 +68,10 @@ export async function saveDetails(
 
   if (!userId || !profile) {
     return { ok: false, message: GENERIC_ERROR };
+  }
+
+  if (isEditLocked(profile)) {
+    return { ok: false, message: LOCKED_MESSAGE };
   }
 
   try {
@@ -129,6 +141,10 @@ export async function uploadImage(
 
   if (!userId || !profile) {
     return { ok: false, message: GENERIC_ERROR };
+  }
+
+  if (isEditLocked(profile)) {
+    return { ok: false, message: LOCKED_MESSAGE };
   }
 
   const path = `${userId}/${crypto.randomUUID()}.${extensionFor(checked.type)}`;
@@ -277,4 +293,100 @@ export async function submitForReview(
     message:
       "Eingereicht. DISKOE prüft den Entwurf. Veröffentlicht wird erst nach der Freigabe und deiner Bestätigung.",
   };
+}
+
+function publishFailure(code: string | undefined, details?: string | null): FormState {
+  switch (code) {
+    case "DK001":
+      return {
+        ok: false,
+        message:
+          "Das Profil hat sich zwischenzeitlich geändert. Bitte lade die Seite neu und prüfe die Vorschau noch einmal.",
+      };
+    case "DK002":
+      return {
+        ok: false,
+        message: "Es fehlen noch Angaben.",
+        gaps: describeGaps(parseGapDetail(details)).map((gap) => gap.message),
+      };
+    case "DK003":
+      return {
+        ok: false,
+        message:
+          "Veröffentlichen ist gerade nicht möglich: Das Profil braucht zuerst die Freigabe von DISKOE oder hat nichts Neues.",
+      };
+    default:
+      return { ok: false, message: GENERIC_ERROR };
+  }
+}
+
+export async function publishProfile(
+  profileId: string,
+  _previous: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  await requireOwnedProfileId(
+    profileId,
+    `/organizer/profiles/${profileId}/preview`,
+  );
+
+  // The client asks once more before sending this value.
+  if (formData.get("confirmed") !== "yes") {
+    return { ok: false, message: "Bitte bestätige das Veröffentlichen." };
+  }
+
+  const supabase = await createClient();
+  const profile = await loadProfileState(supabase, profileId);
+
+  if (!profile || !profile.draftRevisionId) {
+    return { ok: false, message: GENERIC_ERROR };
+  }
+
+  const { error } = await supabase.rpc("publish_profile", {
+    p_profile_id: profileId,
+    p_expected_draft_revision_id: profile.draftRevisionId,
+    p_expected_published_revision_id: profile.publishedRevisionId ?? undefined,
+  });
+
+  if (error) {
+    return publishFailure(error.code, error.details);
+  }
+
+  // The data is public from here on; the image file follows. A failure is
+  // shown and can be repeated, the profile is not complete until it worked.
+  const copied = await copyPublishedImage(supabase, profileId);
+
+  revalidatePath(`/organizer/profiles/${profileId}/preview`);
+  revalidatePath(`/organizer/profiles/${profileId}/edit`);
+  revalidatePath("/organizer");
+
+  return copied === "copied"
+    ? { ok: true, message: "Dein Profil ist veröffentlicht." }
+    : {
+        ok: true,
+        message:
+          "Dein Profil ist veröffentlicht, aber das Bild ist noch nicht öffentlich. Bitte versuche es noch einmal.",
+      };
+}
+
+export async function retryImagePublish(
+  profileId: string,
+  _previous: FormState,
+): Promise<FormState> {
+  await requireOwnedProfileId(
+    profileId,
+    `/organizer/profiles/${profileId}/preview`,
+  );
+
+  const supabase = await createClient();
+  const copied = await copyPublishedImage(supabase, profileId);
+
+  revalidatePath(`/organizer/profiles/${profileId}/preview`);
+
+  return copied === "copied"
+    ? { ok: true, message: "Das Bild ist jetzt öffentlich." }
+    : {
+        ok: false,
+        message: "Das Bild konnte noch nicht veröffentlicht werden. Bitte versuche es später noch einmal.",
+      };
 }

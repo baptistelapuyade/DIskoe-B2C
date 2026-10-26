@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import {
   resolveAccess,
@@ -90,6 +90,20 @@ export async function requireOwner(
 
   if (access.kind !== "owner") {
     redirect("/organizer");
+  }
+
+  return access;
+}
+
+// Internal pages (founder review). A signed-in non-founder gets a 404 so that
+// the existence of the pages is not revealed.
+export async function requireFounder(
+  currentPath: string = "/internal/approvals",
+): Promise<SignedInAccess> {
+  const access = await requireAccess(currentPath);
+
+  if (!access.isFounder) {
+    notFound();
   }
 
   return access;

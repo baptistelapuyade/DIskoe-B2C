@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/organizer", headers: noStore },
       { source: "/organizer/:path*", headers: noStore },
+      { source: "/internal/:path*", headers: noStore },
       { source: "/login", headers: noStore },
       { source: "/auth/:path*", headers: noStore },
     ];

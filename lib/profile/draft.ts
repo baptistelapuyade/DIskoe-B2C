@@ -45,6 +45,16 @@ export function toRevisionFields(row: {
   };
 }
 
+// After the founder's first approval and before the first publication the
+// draft must remain exactly the approved revision: the first publication only
+// accepts that revision. Editing is paused in that window.
+export function isEditLocked(profile: ProfileState): boolean {
+  return (
+    profile.firstApprovedRevisionId !== null &&
+    profile.publishedRevisionId === null
+  );
+}
+
 export async function loadProfileState(
   supabase: Client,
   profileId: string,

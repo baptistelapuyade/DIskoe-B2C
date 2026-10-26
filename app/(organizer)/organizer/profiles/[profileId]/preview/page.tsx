@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { SubmitForm } from "@/components/profile/forms";
+import { PublishForm, RetryImageForm, SubmitForm } from "@/components/profile/forms";
 import { GapList, ProfileNav, STATUS_LABEL } from "@/components/profile/status";
 import { loadOwnerProfileView } from "@/lib/profile/load";
 
-import { submitForReview } from "../actions";
+import { publishProfile, retryImagePublish, submitForReview } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +19,12 @@ export default async function PreviewProfilePage({
   );
   const { revision, image } = view;
   const canSubmit = view.status === "ready";
+  const canPublish =
+    view.status === "approved" &&
+    view.profile.draftRevisionId !== view.profile.publishedRevisionId;
+  const imageMissingPublicly =
+    view.profile.publishedRevisionId !== null &&
+    view.publishedImagePublic === false;
 
   return (
     <main className="mx-auto max-w-3xl space-y-10 px-6 py-12">
@@ -70,11 +76,37 @@ export default async function PreviewProfilePage({
           </p>
           <SubmitForm action={submitForReview.bind(null, profileId)} />
         </section>
+      ) : canPublish ? (
+        <section aria-labelledby="publish-heading" className="space-y-4">
+          <h2 id="publish-heading" className="text-xl font-semibold">
+            {view.profile.publishedRevisionId
+              ? "Änderungen veröffentlichen"
+              : "Veröffentlichen"}
+          </h2>
+          <p className="text-muted-foreground">
+            {view.profile.publishedRevisionId
+              ? "Bis du veröffentlichst, bleibt der bisherige öffentliche Stand sichtbar."
+              : "DISKOE hat diesen Stand freigegeben. Öffentlich wird er erst, wenn du ihn selbst veröffentlichst."}
+          </p>
+          <PublishForm
+            action={publishProfile.bind(null, profileId)}
+            update={view.profile.publishedRevisionId !== null}
+          />
+        </section>
       ) : view.status === "in_review" ? (
         <p role="status">
           Eingereicht. DISKOE prüft den Entwurf. Veröffentlicht wird erst nach
           der Freigabe und deiner Bestätigung.
         </p>
+      ) : null}
+
+      {imageMissingPublicly ? (
+        <section aria-labelledby="retry-heading" className="space-y-3">
+          <h2 id="retry-heading" className="text-xl font-semibold">
+            Bild noch nicht öffentlich
+          </h2>
+          <RetryImageForm action={retryImagePublish.bind(null, profileId)} />
+        </section>
       ) : null}
     </main>
   );
