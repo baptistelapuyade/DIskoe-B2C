@@ -20,11 +20,16 @@ Stand: 2026-10-26. Branch `feat/slice-2-login`. Kein Requirement ist dadurch als
 - E2E-Fälle: Anonyme werden zu `/login?next=…` geleitet; Besucher ohne Zuordnung und Founder ohne eigenes Profil sehen die neutrale Ansicht ohne Anlegen-Schaltfläche; Owner A sieht nur sein Profil; API-Zugriff mit echten Tokens liefert A nur eigene Daten, Besucher kann weder Profil einfügen noch `provision_profile_owner` ausführen; Link-Login; kaputter Callback leitet nicht aus der Site hinaus; Abmelden.
 - Gegenprobe der Guard-Logik (Kopie, per Node ausgeführt): Entfernen der Organizerbereich-Prüfung in `safeNextPath` lässt `/login` und `/organizerx` durch; Entfernen der Anonym-Prüfung und „Founder ist Owner“ in `resolveAccess` werden beide erkannt. Die Vitest-Fälle prüfen dieselben Eingaben.
 
+## Abnahme am Dev-Projekt (2026-10-26)
+
+- Sentry: synthetisches Ereignis kam in der EU an; E-Mail, Token und Code als `[Filtered]`, kein `user`, keine Cookies/Header (geprüft über den Sentry-Connector).
+- Login: Der Link-Login scheiterte zuerst, weil der Link in einem anderen Browser geöffnet wurde (fehlender PKCE-Schlüssel); dazu kam das Mail-Limit des Standardversands. Nach der SES-Einrichtung klappte der Code-Login im Browser: danach 1 Nutzer, 1 Sitzung, 0 Profile, 0 Rollen, Ansicht „Noch kein Organizer-Profil zugeordnet“. Zusätzlich leitet die Middleware einen verirrten Code von `/` an den Callback weiter.
+- SES siehe `docs/runbooks/supabase-auth-setup.md`.
+
 ## Grenzen und offene Punkte
 
 - Texte der Login- und „keine Zuordnung“-Ansicht sind Vorschläge (`TODO(spec)`), es gibt keinen Figma-Screen.
-- Code-Mail im Dev-Projekt erst nach SES/Custom SMTP; bis dahin Link-Login.
+- SES läuft im Sandbox-Modus; Produktionszugang nicht beantragt (Freigabe offen).
 - Node-Middleware auf Amplify ist unbestätigt bis zum ersten Preview. Rückfall: Sitzungsauffrischung über eine Route ohne Middleware.
 - In der Entwicklungssitzung war die npm-Registry gesperrt: Lint, Typecheck, Vitest und Playwright liefen nicht lokal. Die erste echte Ausführung ist die CI.
-- Sentry: `npm run sentry:synthetic` ist noch nicht gegen das echte Projekt gelaufen (braucht `.env.local` des Founders).
 - Nicht enthalten: Merkliste/Abos, Profil anlegen durch Owner, Profilwechsel-UI, Google-Login, eigenes Rate-Limit.
