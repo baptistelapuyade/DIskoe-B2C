@@ -93,6 +93,8 @@ export default async function PreviewProfilePage({
             update={view.profile.publishedRevisionId !== null}
           />
         </section>
+      ) : view.status === "published" && !imageMissingPublicly ? (
+        <p role="status">Dein Profil ist veröffentlicht.</p>
       ) : view.status === "in_review" ? (
         <p role="status">
           Eingereicht. DISKOE prüft den Entwurf. Veröffentlicht wird erst nach

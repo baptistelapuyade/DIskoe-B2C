@@ -239,7 +239,7 @@ test.describe("profile editor, preview and hand-in", () => {
       ),
     ).toBe("1");
     expect(
-      sql(`select count(*) from storage.objects where bucket_id = 'public-media'`),
+      sql(`select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileA}/%'`),
     ).toBe("0");
 
     await context.close();

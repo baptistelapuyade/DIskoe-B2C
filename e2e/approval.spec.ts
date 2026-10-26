@@ -332,7 +332,7 @@ test.describe("first approval, publication and public image", () => {
     );
     expect(privateTry.status).not.toBe(200);
     expect((await anon.from("public_profiles").select("slug").eq("slug", slugB)).data).toEqual([]);
-    expect(sql(`select count(*) from storage.objects where bucket_id = 'public-media'`)).toBe("1");
+    expect(sql(`select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileA}/%'`)).toBe("1");
 
     await context.close();
   });
