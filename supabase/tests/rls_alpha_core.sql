@@ -159,11 +159,37 @@ begin
   insert into public.media_assets (uploader_id, private_object_path, mime_type)
   values (auth.uid(), auth.uid()::text || '/' || gen_random_uuid() || '.jpg', 'image/jpeg')
   returning id into v_asset;
-  insert into public.media_uses (asset_id, profile_id, role)
-  values (v_asset, p_profile, 'profile_image') returning id into v_use;
+  insert into public.media_uses (asset_id, profile_id, role, alt_text)
+  values (v_asset, p_profile, 'profile_image', 'Test image') returning id into v_use;
   if p_confirm then
     update public.media_uses set confirmed_at = now() where id = v_use;
   end if;
+  return v_use;
+end $$;
+
+-- Confirmation without alt text must fail (called as the owner).
+create function tests.confirm_without_alt(p_profile uuid, p_mime text default 'image/jpeg')
+returns void language plpgsql as $$
+declare v_asset uuid; v_use uuid;
+begin
+  insert into public.media_assets (uploader_id, private_object_path, mime_type)
+  values (auth.uid(), auth.uid()::text || '/' || gen_random_uuid() || '.jpg', p_mime)
+  returning id into v_asset;
+  insert into public.media_uses (asset_id, profile_id, role)
+  values (v_asset, p_profile, 'profile_image') returning id into v_use;
+  update public.media_uses set confirmed_at = now() where id = v_use;
+end $$;
+
+create function tests.new_profile_image_use_mime(p_profile uuid, p_mime text)
+returns uuid language plpgsql as $$
+declare v_asset uuid; v_use uuid;
+begin
+  insert into public.media_assets (uploader_id, private_object_path, mime_type)
+  values (auth.uid(), auth.uid()::text || '/' || gen_random_uuid() || '.bin', p_mime)
+  returning id into v_asset;
+  insert into public.media_uses (asset_id, profile_id, role, alt_text)
+  values (v_asset, p_profile, 'profile_image', 'Test image') returning id into v_use;
+  update public.media_uses set confirmed_at = now() where id = v_use;
   return v_use;
 end $$;
 
@@ -174,8 +200,8 @@ begin
   insert into public.media_assets (uploader_id, private_object_path, mime_type)
   values (auth.uid(), auth.uid()::text || '/' || gen_random_uuid() || '.jpg', 'image/jpeg')
   returning id into v_asset;
-  insert into public.media_uses (asset_id, event_id, role)
-  values (v_asset, p_event, 'event_image') returning id into v_use;
+  insert into public.media_uses (asset_id, event_id, role, alt_text)
+  values (v_asset, p_event, 'event_image', 'Test image') returning id into v_use;
   if p_confirm then
     update public.media_uses set confirmed_at = now() where id = v_use;
   end if;
@@ -284,7 +310,13 @@ select tests.expect_error(format('update public.profiles set owner_id = %L where
 -- Media: only the uploader's own prefix, only for own parents
 select tests.expect_error(format($q$insert into public.media_assets (uploader_id, private_object_path, mime_type) values (%L, 'other/x.jpg', 'image/jpeg')$q$, :'uid_a'),
   '42501', 'asset path must sit under the uploader prefix');
+select tests.expect_error(format($q$insert into public.media_assets (uploader_id, private_object_path, mime_type) values (%L, %L, 'image/gif')$q$, :'uid_a', :'uid_a' || '/x.gif'),
+  '23514', 'only jpeg, png and webp assets are accepted');
+select tests.expect_error(format('select tests.confirm_without_alt(%L)', :'pa'),
+  '23514', 'an image use cannot be confirmed without alt text');
 select tests.new_profile_image_use(:'pa', false) as use_a \gset
+select tests.expect_true(format('select public_object_path is null and confirmed_at is null from public.media_uses where id = %L', :'use_a'),
+  'an unconfirmed image use has no public path');
 select tests.expect_error(format('update public.media_uses set public_object_path = %L where id = %L', 'public/x.jpg', :'use_a'),
   '42501', 'client cannot write public_object_path');
 select tests.expect_affected(format('update public.media_uses set confirmed_at = now() where id = %L', :'use_a'),
@@ -292,6 +324,8 @@ select tests.expect_affected(format('update public.media_uses set confirmed_at =
 select tests.as_superuser();
 select tests.expect_true(format('select confirmed_by = %L and confirmed_at is not null from public.media_uses where id = %L', :'uid_a', :'use_a'),
   'confirmation is stamped with the confirming user');
+select tests.expect_true(format($q$select public_object_path = 'profiles/' || profile_id || '/' || id || '.jpg' from public.media_uses where id = %L$q$, :'use_a'),
+  'confirmation reserves the public path (a path, not a file)');
 select tests.as_user(:'uid_a');
 select tests.expect_affected(format('update public.media_uses set confirmed_by = %L where id = %L', :'uid_b', :'use_a'),
   1, 'attempt to rewrite confirmed_by is accepted but neutralised');
@@ -314,13 +348,11 @@ select tests.expect_affected(format('update public.profile_revisions set profile
 select tests.as_user(:'uid_a');
 select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pa', :'r1'),
   '42501', 'owner cannot approve (not a founder)');
-select tests.as_user(:'uid_f');
-select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pa', :'r1'),
-  'DK002', 'approval refuses an incomplete revision', 'profile_image');
-
--- Simulate the controlled promotion that publishes the image.
 select tests.as_superuser();
-update public.media_uses set public_object_path = 'public/profiles/' || id where id = :'use_a';
+select draft_revision_id as rb1 from public.profiles where id = :'pb' \gset
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pb', :'rb1'),
+  'DK002', 'approval refuses an incomplete revision (no image)', 'profile_image');
 
 select tests.as_user(:'uid_f');
 select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pa', gen_random_uuid()),
@@ -338,7 +370,6 @@ select tests.expect_error(format('select public.approve_first_profile(%L, %L)', 
 -- Self-approval: even a founder cannot approve a profile he owns.
 select tests.as_superuser();
 insert into public.app_roles (user_id, is_founder) values (:'uid_b', true);
-select draft_revision_id as rb1 from public.profiles where id = :'pb' \gset
 select tests.as_user(:'uid_b');
 select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pb', :'rb1'),
   '42501', 'founder cannot approve his own profile');
@@ -739,6 +770,95 @@ select tests.expect_true(format($q$select count(*) = 0 from public.my_profiles w
   'my_profiles never lists foreign profiles');
 
 -- ===========================================================================
+-- 7b. Media storage: private originals, public bucket only for published images
+-- ===========================================================================
+select tests.as_superuser();
+select public_object_path as pp from public.media_uses where id = :'use_a' \gset
+select tests.expect_true($q$select public and file_size_limit = 5242880 from storage.buckets where id = 'public-media'$q$,
+  'public-media is public with a size limit');
+select tests.expect_true($q$select not public and file_size_limit = 5242880 from storage.buckets where id = 'private-media'$q$,
+  'private-media is private with a size limit');
+select tests.expect_true($q$select allowed_mime_types = array['image/jpeg','image/png','image/webp'] from storage.buckets where id in ('private-media','public-media') group by allowed_mime_types$q$,
+  'both buckets accept only jpeg, png and webp');
+select tests.expect_true($q$select array_agg(policyname::text order by policyname::text) = array['private_media_insert_own','private_media_select','public_media_insert_published_profile_image','public_media_select'] from pg_policies where schemaname = 'storage' and tablename = 'objects'$q$,
+  'storage.objects carries exactly our four policies (no update, no delete)');
+
+-- private originals: own prefix only
+select tests.as_user(:'uid_a');
+select tests.expect_affected(format($q$insert into storage.objects (bucket_id, name) values ('private-media', %L)$q$, :'uid_a' || '/original-a.jpg'),
+  1, 'A uploads below the own prefix');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('private-media', %L)$q$, :'uid_b' || '/planted.jpg'),
+  '42501', 'A cannot upload below B''s prefix');
+select tests.expect_error($q$insert into storage.objects (bucket_id, name) values ('private-media', 'no-prefix.jpg')$q$,
+  '42501', 'an upload without the user prefix is refused');
+select tests.expect_count($q$select id from storage.objects where bucket_id = 'private-media'$q$, 1, 'A sees the own original');
+select tests.expect_affected($q$update storage.objects set name = name || 'x' where bucket_id = 'private-media'$q$,
+  0, 'clients cannot rename objects');
+select tests.expect_affected($q$delete from storage.objects where bucket_id = 'private-media'$q$,
+  0, 'clients cannot delete objects');
+select tests.as_user(:'uid_b');
+select tests.expect_count($q$select id from storage.objects where bucket_id = 'private-media'$q$, 0, 'B cannot see A''s original');
+select tests.as_user(:'uid_v');
+select tests.expect_count($q$select id from storage.objects where bucket_id = 'private-media'$q$, 0, 'a visitor cannot see A''s original');
+select tests.as_user(:'uid_f');
+select tests.expect_count($q$select id from storage.objects where bucket_id = 'private-media'$q$, 1, 'the founder can read originals');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('private-media', %L)$q$, :'uid_a' || '/founder-plant.jpg'),
+  '42501', 'the founder cannot write into A''s prefix');
+select tests.as_anon();
+select tests.expect_count($q$select id from storage.objects where bucket_id = 'private-media'$q$, 0, 'anon cannot see originals');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('private-media', %L)$q$, :'uid_a' || '/anon.jpg'),
+  '42501', 'anon cannot upload');
+
+-- public bucket: only the path reserved by the published revision, only its owner
+select tests.as_user(:'uid_b');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'pp'),
+  '42501', 'B cannot write A''s published image path');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, 'profiles/' || :'pa' || '/other.jpg'),
+  '42501', 'A cannot write any other public path');
+select tests.expect_error($q$insert into storage.objects (bucket_id, name) values ('public-media', 'anything.jpg')$q$,
+  '42501', 'A cannot write an arbitrary public path');
+select tests.expect_affected(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'pp'),
+  1, 'A copies the published image to its reserved public path');
+select tests.as_anon();
+select tests.expect_count($q$select id from storage.objects where bucket_id = 'public-media'$q$, 1, 'anon reads the published image');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'pp' || '.copy'),
+  '42501', 'anon cannot write to the public bucket');
+
+-- a new draft image of a published profile stays out of the public bucket
+select tests.as_user(:'uid_a');
+select tests.new_profile_image_use(:'pa', true) as use_a2 \gset
+select tests.new_profile_image_use_mime(:'pa', 'image/webp') as use_a3 \gset
+select tests.as_superuser();
+select public_object_path as ppa2 from public.media_uses where id = :'use_a2' \gset
+select tests.expect_true(format($q$select public_object_path like '%%.webp' from public.media_uses where id = %L$q$, :'use_a3'),
+  'the reserved path carries the extension of the asset type');
+select tests.as_user(:'uid_a');
+select tests.expect_affected(
+  format($q$insert into public.profile_revisions (profile_id, name, short_intro, public_contact, profile_image_use_id, created_by) values (%L, 'Next draft', 'New image', 'x@example.test', %L, %L)$q$, :'pa', :'use_a2', :'uid_a'),
+  1, 'A starts a new revision with a new image');
+select id as r3 from public.profile_revisions where profile_id = :'pa' and revision_no = 3 \gset
+select tests.expect_affected(format('update public.profiles set draft_revision_id = %L where id = %L', :'r3', :'pa'),
+  1, 'A points the draft at the new revision');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppa2'),
+  '42501', 'the draft image of a published profile cannot be copied to the public bucket');
+select tests.expect_affected(format('update public.profiles set draft_revision_id = %L where id = %L', :'r2', :'pa'),
+  1, 'A restores the previous draft pointer');
+
+-- a draft image never reaches the public bucket
+select tests.as_user(:'uid_b');
+select tests.new_profile_image_use(:'pb', true) as use_b \gset
+select tests.as_superuser();
+select public_object_path as ppb from public.media_uses where id = :'use_b' \gset
+select tests.as_user(:'uid_b');
+select tests.expect_true(format($q$select public_object_path is not null from public.media_uses where id = %L$q$, :'use_b'),
+  'B''s confirmed draft image has a reserved path');
+select tests.expect_affected(format('update public.profile_revisions set profile_image_use_id = %L where id = %L', :'use_b', :'rb1'),
+  1, 'B links the image to the draft revision');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppb'),
+  '42501', 'an unpublished profile cannot copy its image to the public bucket');
+
+-- ===========================================================================
 -- 8. Privilege snapshot and object inventory (a new object fails the run)
 -- ===========================================================================
 select tests.as_superuser();
@@ -845,12 +965,13 @@ select tests.expect_count($q$
           or has_sequence_privilege(ro, c.oid, 'UPDATE'))
 $q$, 0, 'client roles have no sequence privileges');
 
--- 8d. Function EXECUTE: exactly the three helpers and seven privileged
+-- 8d. Function EXECUTE: exactly the four helpers and seven privileged
 -- functions for authenticated, nothing for anon or PUBLIC.
 create table tests.expected_exec (nspname text, proname text);
 insert into tests.expected_exec values
   ('app_private', 'is_founder'), ('app_private', 'owns_profile'),
   ('app_private', 'owns_event'),
+  ('app_private', 'is_publishable_media_path'),
   ('public', 'provision_profile_owner'), ('public', 'approve_first_profile'),
   ('public', 'approve_first_event'), ('public', 'publish_profile'),
   ('public', 'publish_event'), ('public', 'reschedule_event'),
@@ -964,7 +1085,8 @@ insert into tests.expected_objects values
   ('function', 'app_private', 'guard_profile_revision_frozen'),
   ('function', 'app_private', 'guard_event_revision_frozen'),
   ('function', 'app_private', 'audit_append_only'),
-  ('function', 'app_private', 'stamp_media_use_confirmation');
+  ('function', 'app_private', 'stamp_media_use_confirmation'),
+  ('function', 'app_private', 'is_publishable_media_path');
 
 select tests.expect_count($q$
   select case c.relkind when 'r' then 'table' when 'v' then 'view'

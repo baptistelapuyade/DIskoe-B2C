@@ -48,3 +48,29 @@ alter default privileges for role postgres in schema public
   grant all on sequences to anon, authenticated, service_role;
 alter default privileges for role postgres in schema public
   grant all on functions to anon, authenticated, service_role;
+
+-- Minimal stand-in for Supabase Storage: the tables our policies attach to.
+-- The storage API itself is not reproduced; the tests exercise the policies
+-- with direct SQL, which is what the API does on behalf of the user. The real
+-- behaviour is covered by the rls-supabase CI job against the local stack.
+create schema storage;
+
+create table storage.buckets (
+  id text primary key,
+  name text not null unique,
+  public boolean not null default false,
+  file_size_limit bigint,
+  allowed_mime_types text[]
+);
+
+create table storage.objects (
+  id uuid primary key default gen_random_uuid(),
+  bucket_id text references storage.buckets (id),
+  name text,
+  owner uuid,
+  created_at timestamptz not null default now()
+);
+alter table storage.objects enable row level security;
+
+grant usage on schema storage to anon, authenticated, service_role;
+grant all on all tables in schema storage to anon, authenticated, service_role;
