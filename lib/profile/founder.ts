@@ -6,7 +6,6 @@ import {
   type GapCode,
 } from "@/lib/domain/profile-publication";
 import {
-  loadProfileState,
   loadRevision,
   type ProfileState,
   type RevisionFields,
@@ -87,11 +86,31 @@ export async function loadFounderProfileView(
   supabase: Client,
   profileId: string,
 ): Promise<FounderProfileView | null> {
-  const profile = await loadProfileState(supabase, profileId);
+  // my_profiles lists only the caller's own profiles; the founder reads the
+  // base table, which the founder policy opens.
+  const { data: row, error } = await supabase
+    .from("profiles")
+    .select(
+      "id, slug, draft_revision_id, first_approved_revision_id, published_revision_id",
+    )
+    .eq("id", profileId)
+    .maybeSingle();
 
-  if (!profile) {
+  if (error) {
+    throw new Error("Profile lookup failed");
+  }
+
+  if (!row) {
     return null;
   }
+
+  const profile: ProfileState = {
+    id: row.id,
+    slug: row.slug,
+    draftRevisionId: row.draft_revision_id,
+    firstApprovedRevisionId: row.first_approved_revision_id,
+    publishedRevisionId: row.published_revision_id,
+  };
 
   const revision = profile.draftRevisionId
     ? await loadRevision(supabase, profile.draftRevisionId)
