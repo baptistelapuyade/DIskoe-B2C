@@ -119,7 +119,9 @@ test.describe("sign-in and organizer assignment", () => {
     await page.goto("/login");
     await page.getByLabel("E-Mail-Adresse").fill("not-an-address");
     await page.getByRole("button", { name: "Code senden" }).click();
-    await expect(page.getByRole("alert")).toContainText("gültige E-Mail");
+    await expect(
+      page.getByText("Bitte gib eine gültige E-Mail-Adresse ein."),
+    ).toBeVisible();
   });
 
   test("a signed-in user without assignment gets no organizer rights", async ({
