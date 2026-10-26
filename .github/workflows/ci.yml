@@ -78,3 +78,22 @@ jobs:
       # npm audit reads package-lock.json; no install needed.
       - name: Fail on unaccepted high or critical advisories
         run: npm run audit:check
+
+  rls:
+    name: Database migrations and RLS tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # The script starts its own throwaway cluster, so only the server
+      # binaries are needed. Install them if the runner image lacks them.
+      - name: Ensure PostgreSQL server binaries
+        run: |
+          if ! ls /usr/lib/postgresql/*/bin/initdb >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y postgresql
+          fi
+
+      - name: Apply migrations and run RLS tests
+        run: bash scripts/test-rls.sh

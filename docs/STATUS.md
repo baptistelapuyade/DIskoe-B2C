@@ -15,6 +15,7 @@
 - Toolchain ist Node `24.22.1` (LTS; Node 20 ist seit 2026-04-30 End-of-Life, Amplify unterstützt 20, 22 und 24) mit npm `10.8.2`. Space Grotesk ist selbst gehostet (`app/fonts/`, Lizenz OFL 1.1), der Build braucht kein Netz für Schriften. `@types/node` steht noch auf `20.19.43`; Anhebung auf 24.x braucht einen Lauf mit Registry-Zugriff.
 - CI-Job `audit` (`npm run audit:check`) lässt Pull Requests bei High/Critical-Funden fehlschlagen. Akzeptierte Funde stehen befristet in `.github/audit-allowlist.json`: zwei PostCSS-Funde (`GHSA-r28c-9q8g-f849`, `GHSA-6g55-p6wh-862q`) im von Next 15 gebündelten PostCSS 8.4.31, nur Build-Zeit, bis 2027-01-31. Behebung nur über Next 16, sobald AWS Amplify SSR es dokumentiert unterstützt.
 - Nicht lokal geprüft: `npm ci` und Build der Node-24-Umstellung (Registry in der Sitzung gesperrt); belegt ist nur der grüne CI-Lauf auf `47dee9f`.
+- Slice 1 (Datenbank): Zwei Supabase-Migrationen (Schema, Sicherheit) mit Revisionsmodell, revisionsgebundener Founder-Erstfreigabe, RLS, den Views `public_profiles`/`public_events` und sieben privilegierten Funktionen sowie 198 SQL-Zusicherungen (`npm run test:rls`, CI-Job `rls`) auf Branch `feat/slice-1-alpha-core`. Geprüft gegen PostgreSQL 16 mit Supabase-Nachbildung; 25 absichtlich eingebaute Sicherheitslücken wurden alle erkannt. Am 2026-10-26 auf einem neuen Dev-Projekt (Frankfurt, Postgres 17) angewendet und mit 50 Live-Prüfungen sowie Rechteinventur bestätigt (die volle Testdatei lief dort nicht); `lib/db/types.ts` ist generiert. Storage-Policies fehlen. Details und Abweichungen: `.planning/phases/04-durchstich/SLICE-1-SUMMARY.md`, Founder-Einrichtung: `docs/runbooks/founder-bootstrap.md`.
 - S3-Fragenpool für Live-/DJ-, Offspace-/Vernissage- und Filmabende in `docs/QUESTION_POOL_B2C_V1.md` ausgearbeitet: Basispool, Formatfragen, Prioritäten, Zustände, Ebenen, Beratung und vier ausdrücklich fiktive Auswahlfälle.
 - 2026-10-15: Scope-Erweiterung aus Nutzerübergabe (Developer-Chat vom 15.10.2026) dokumentiert: `docs/SCOPE_EXTENSION_B2C_2026-10-15.md`, `docs/DATA_CONTRACT_B2C_V1_ADDENDUM_2026-10-15.md`, Anpassungen in README, PROJECT, ARCHITECTURE, Fragenpool und `.planning/`. Notion war in dieser Session nicht zugänglich (404); es gab keinen Notion-Abgleich, dieser bleibt offen.
 - 2026-10-15 (später): Beschlüsse Q29–Q36 und fünf S3-Detailentscheidungen aus der direkt gelesenen Notion-Beschlussseite (plus Scope- und S3-Seite) in `docs/PRODUCT_DECISIONS_Q29_Q36_S3_2026-10-15.md` dokumentiert; abhängige Dokumente und `.planning/` abgeglichen. Gelesen wurde nicht die übergeordnete Build-Seite und nicht der Outcome Brief; Auto-Sync gibt es nicht. Zugriff bestand erst nach erneuter Connector-Verbindung des Nutzers.
@@ -45,11 +46,11 @@
 
 **Offen:** Discovery-Suchdetails und Schwellen; Gesamtdurchsicht des Datenvertrags v0.3 (Entwurf, nicht abgenommen); Startvoraussetzungen (Aufbewahrung, Backup, Rechtetexte, Anbieter); Follow-Spec S9; D1–D10 mobile Designs; Einladungszuordnung-Details; Offline-/Entfernungszustände; Zustellmechanik; technische Architektur Q23–Q25; Messschema/Betrieb; Pilotorganisation und neu zu schätzender Aufwand.
 
-**Nicht geprüft:** echte Organizer-Materialien/Nutzerverständnis, Auth-Funktion, Datenbankfachschema/RLS, Medienverarbeitung, Analytics, SEO-Ausgabe, Deployment und externe Dienste.
+**Nicht geprüft:** echte Organizer-Materialien/Nutzerverständnis, Auth-Funktion, Medienverarbeitung, Analytics, SEO-Ausgabe, Deployment und externe Dienste.
 
 ## Nächste autorisierte Aufgabe
 
-Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig. Nach Review des Scaffold-PRs ist Slice 1 (Datenbankmigration/RLS) der nächste technische Schritt; weiterhin kein Auto-Advance. Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
+Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig. Nach Review des Slice-1-PRs (Abnahme gegen echtes Supabase am 2026-10-26 erfolgt, siehe Slice-1-Summary) ist Slice 2 (Login, Organizerzuordnung) der nächste technische Schritt; weiterhin kein Auto-Advance. Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
 
 ## Übergabeformat
 
