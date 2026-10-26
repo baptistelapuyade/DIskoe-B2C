@@ -58,7 +58,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run homepage smoke test
-        run: npm run test:e2e
+        run: npx playwright test e2e/home.spec.ts
 
   audit:
     name: Dependency audit (high and critical)
@@ -97,3 +97,75 @@ jobs:
 
       - name: Apply migrations and run RLS tests
         run: bash scripts/test-rls.sh
+
+  # The same assertions as the rls job, but against the real Supabase stack
+  # (default grants and ACLs, Postgres 17) instead of the local shim.
+  rls-supabase:
+    name: RLS tests on the local Supabase stack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v3
+        with:
+          version: 2.122.0
+
+      - name: Start local Supabase
+        run: supabase start
+
+      - name: Run RLS tests
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -X -v ON_ERROR_STOP=1 -f supabase/tests/rls_alpha_core.sql
+
+  e2e-auth:
+    name: Playwright sign-in and organizer access
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Use pinned npm version
+        run: npm install --global npm@10.8.2
+
+      - name: Install exact dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Ensure PostgreSQL client
+        run: |
+          if ! command -v psql >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+          fi
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v3
+        with:
+          version: 2.122.0
+
+      # Inbucket (mail catcher) stays enabled: the tests read the sign-in codes
+      # from it. No mail leaves the runner.
+      - name: Start local Supabase
+        run: supabase start
+
+      - name: Export local connection settings
+        run: |
+          supabase status -o env > "$RUNNER_TEMP/supabase.env"
+          value() { grep -E "^$1=" "$RUNNER_TEMP/supabase.env" | head -1 | cut -d= -f2- | sed -e 's/^"//' -e 's/"$//'; }
+          echo "NEXT_PUBLIC_SUPABASE_URL=$(value API_URL)" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$(value ANON_KEY)" >> "$GITHUB_ENV"
+          echo "::add-mask::$(value ANON_KEY)"
+
+      - name: Run sign-in and access tests
+        run: npx playwright test e2e/auth.spec.ts

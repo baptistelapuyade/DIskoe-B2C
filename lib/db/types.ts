@@ -1,8 +1,9 @@
 // GENERATED FILE. Do not edit by hand.
 //
 // Source: Supabase dev project (eu-central-1, Postgres 17) after the migrations
-// 20261023120000_alpha_core_schema.sql and 20261023120100_alpha_core_security.sql,
-// generated on 2026-10-26 with the Supabase MCP `generate_typescript_types`.
+// 20261023120000_alpha_core_schema.sql, 20261023120100_alpha_core_security.sql
+// and 20261026140000_my_profiles_view.sql, generated on 2026-10-26 with the
+// Supabase MCP `generate_typescript_types`.
 // Regenerate after every schema change (see docs/STATUS.md).
 //
 // Caution: these types describe table columns, not column privileges. Clients
@@ -247,6 +248,13 @@ export type Database = {
             foreignKeyName: "events_organizer_id_fkey"
             columns: ["organizer_id"]
             isOneToOne: false
+            referencedRelation: "my_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -353,6 +361,13 @@ export type Database = {
             foreignKeyName: "media_uses_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "my_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_uses_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -415,6 +430,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "media_uses"
             referencedColumns: ["id", "profile_id"]
+          },
+          {
+            foreignKeyName: "profile_revisions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "my_profiles"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "profile_revisions_profile_id_fkey"
@@ -531,6 +553,42 @@ export type Database = {
       }
     }
     Views: {
+      my_profiles: {
+        Row: {
+          draft_name: string | null
+          draft_revision_id: string | null
+          first_approved_revision_id: string | null
+          id: string | null
+          publication_state:
+            | Database["public"]["Enums"]["publication_state"]
+            | null
+          published_revision_id: string | null
+          slug: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_draft_revision_fk"
+            columns: ["draft_revision_id", "id"]
+            isOneToOne: false
+            referencedRelation: "profile_revisions"
+            referencedColumns: ["id", "profile_id"]
+          },
+          {
+            foreignKeyName: "profiles_first_approved_revision_fk"
+            columns: ["first_approved_revision_id", "id"]
+            isOneToOne: false
+            referencedRelation: "profile_revisions"
+            referencedColumns: ["id", "profile_id"]
+          },
+          {
+            foreignKeyName: "profiles_published_revision_fk"
+            columns: ["published_revision_id", "id"]
+            isOneToOne: false
+            referencedRelation: "profile_revisions"
+            referencedColumns: ["id", "profile_id"]
+          },
+        ]
+      }
       public_events: {
         Row: {
           access_routes: Json | null
@@ -560,6 +618,13 @@ export type Database = {
           title: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "events_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "my_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "events_organizer_id_fkey"
             columns: ["organizer_id"]

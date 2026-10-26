@@ -1,0 +1,73 @@
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+
+import type { Database } from "@/lib/db/types";
+
+// Refreshes the auth session cookies on every matched request and keeps
+// unauthenticated visitors out of the organizer area early. The pages check
+// access again themselves; this is a second layer, not the only one.
+export async function updateSession(request: NextRequest) {
+  // If the auth provider falls back to the Site URL instead of our callback
+  // (redirect target not on its allow-list), the PKCE code arrives on "/".
+  // Hand it to the callback instead of dropping the sign-in.
+  if (
+    request.nextUrl.pathname === "/" &&
+    request.nextUrl.searchParams.has("code")
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    return NextResponse.redirect(url);
+  }
+
+  let response = NextResponse.next({ request });
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  // Without Supabase settings (for example the plain smoke test) there is no
+  // session to refresh. Pages that need access still check it themselves and
+  // fail closed.
+  if (!url || !key) {
+    return response;
+  }
+
+  const supabase = createServerClient<Database>(
+    url,
+    key,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          );
+        },
+      },
+    },
+  );
+
+  const { data } = await supabase.auth.getUser();
+
+  const { pathname, search } = request.nextUrl;
+  const inOrganizerArea =
+    pathname === "/organizer" || pathname.startsWith("/organizer/");
+
+  if (!data.user && inOrganizerArea) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.search = `?next=${encodeURIComponent(`${pathname}${search}`)}`;
+    const redirect = NextResponse.redirect(url);
+    response.cookies
+      .getAll()
+      .forEach((cookie) => redirect.cookies.set(cookie));
+    return redirect;
+  }
+
+  return response;
+}

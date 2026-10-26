@@ -712,6 +712,32 @@ select tests.expect_error(format('select app_private.event_gaps(%L)', :'ev1'), '
 select tests.as_anon();
 select tests.expect_error('select app_private.is_founder()', '42501', 'anon cannot call is_founder');
 
+-- my_profiles: the only way for a client to learn its own assignment.
+select tests.as_user(:'uid_a');
+select tests.expect_count('select id from public.my_profiles', 1, 'owner A sees exactly one assigned profile');
+select tests.expect_true(format($q$select id = %L from public.my_profiles$q$, :'pa'),
+  'owner A sees the own profile in my_profiles');
+select tests.as_user(:'uid_b');
+select tests.expect_count('select id from public.my_profiles', 1, 'owner B sees exactly one assigned profile');
+select tests.expect_true(format($q$select id = %L from public.my_profiles$q$, :'pb'),
+  'owner B sees the own profile in my_profiles');
+select tests.as_user(:'uid_v');
+select tests.expect_count('select id from public.my_profiles', 0,
+  'visitor without assignment sees no profile in my_profiles');
+select tests.as_user(:'uid_f');
+select tests.expect_count('select id from public.my_profiles', 0,
+  'founder owns no profile and so sees none in my_profiles');
+select tests.as_anon();
+select tests.expect_error('select id from public.my_profiles', '42501', 'anon cannot read my_profiles');
+select tests.as_user(:'uid_a');
+select tests.expect_error('select owner_id from public.my_profiles', '42703', 'my_profiles exposes no owner_id');
+select tests.expect_error(format($q$update public.my_profiles set slug = 'x' where id = %L$q$, :'pa'),
+  '55000', 'my_profiles is not updatable (join view, and no UPDATE privilege either)');
+-- The public published profile of another organizer is visible in profiles,
+-- but never counts as "mine".
+select tests.expect_true(format($q$select count(*) = 0 from public.my_profiles where id <> %L$q$, :'pa'),
+  'my_profiles never lists foreign profiles');
+
 -- ===========================================================================
 -- 8. Privilege snapshot and object inventory (a new object fails the run)
 -- ===========================================================================
@@ -803,6 +829,10 @@ select tests.expect_true($q$
     from unnest(array['anon','authenticated']) ro,
          unnest(array['public_profiles','public_events']) v
 $q$, 'both roles can read both public views');
+select tests.expect_true($q$
+  select has_table_privilege('authenticated', 'public.my_profiles', 'SELECT')
+     and not has_table_privilege('anon', 'public.my_profiles', 'SELECT')
+$q$, 'my_profiles is readable by authenticated only');
 
 -- 8c. Sequences
 select tests.expect_count($q$
@@ -917,6 +947,7 @@ insert into tests.expected_objects values
   ('table', 'public', 'event_revisions'), ('table', 'public', 'media_assets'),
   ('table', 'public', 'media_uses'), ('table', 'public', 'publication_audit'),
   ('view', 'public', 'public_profiles'), ('view', 'public', 'public_events'),
+  ('view', 'public', 'my_profiles'),
   ('sequence', 'public', 'publication_audit_id_seq'),
   ('function', 'public', 'provision_profile_owner'),
   ('function', 'public', 'approve_first_profile'),

@@ -20,7 +20,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "audit:check": "node scripts/check-audit.mjs",
-    "test:rls": "bash scripts/test-rls.sh"
+    "test:rls": "bash scripts/test-rls.sh",
+    "sentry:synthetic": "node --env-file-if-exists=.env.local scripts/sentry-synthetic.mjs"
   },
   "dependencies": {
     "@sentry/nextjs": "11.9.0",

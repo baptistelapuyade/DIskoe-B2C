@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="de">
+  <body style="font-family: Arial, sans-serif; color: #343432; background: #ffffff; margin: 0; padding: 24px;">
+    <!-- TODO(spec): wording is a proposal until the sign-in mail is specified. -->
+    <h1 style="font-size: 20px; margin: 0 0 16px;">Dein Anmeldecode für DISKOE</h1>
+    <p style="margin: 0 0 8px;">Gib diesen Code im Anmeldefenster ein:</p>
+    <p style="font-size: 28px; letter-spacing: 4px; font-weight: bold; margin: 0 0 24px;">{{ .Token }}</p>
+    <p style="margin: 0 0 8px;">Oder öffne diesen Link in demselben Browser:</p>
+    <p style="margin: 0 0 24px;"><a href="{{ .ConfirmationURL }}">Jetzt anmelden</a></p>
+    <p style="color: #676762; font-size: 14px; margin: 0;">
+      Der Code ist eine Stunde gültig. Wenn du dich nicht anmelden wolltest, kannst du diese E-Mail ignorieren.
+    </p>
+  </body>
+</html>
