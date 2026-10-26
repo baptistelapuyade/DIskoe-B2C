@@ -1,10 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+import type { Database } from "@/lib/db/types";
+
 export async function createClient() {
   const cookieStore = await cookies();
 
-  return createServerClient(
+  return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
@@ -18,8 +20,8 @@ export async function createClient() {
               cookieStore.set(name, value, options);
             });
           } catch {
-            // Server Components cannot write cookies. A later auth boundary will
-            // refresh sessions in a context where response cookies are writable.
+            // Server Components cannot write cookies. The middleware refreshes
+            // sessions in a context where response cookies are writable.
           }
         },
       },
