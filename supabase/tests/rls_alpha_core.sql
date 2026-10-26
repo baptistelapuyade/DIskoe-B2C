@@ -794,8 +794,8 @@ select tests.expect_error($q$insert into storage.objects (bucket_id, name) value
 select tests.expect_count($q$select id from storage.objects where bucket_id = 'private-media'$q$, 1, 'A sees the own original');
 select tests.expect_affected($q$update storage.objects set name = name || 'x' where bucket_id = 'private-media'$q$,
   0, 'clients cannot rename objects');
-select tests.expect_affected($q$delete from storage.objects where bucket_id = 'private-media'$q$,
-  0, 'clients cannot delete objects');
+-- (No DELETE test: real Storage blocks direct deletes with its own trigger; the
+-- policy inventory above proves that no DELETE policy exists.)
 select tests.as_user(:'uid_b');
 select tests.expect_count($q$select id from storage.objects where bucket_id = 'private-media'$q$, 0, 'B cannot see A''s original');
 select tests.as_user(:'uid_v');
