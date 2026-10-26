@@ -20,16 +20,24 @@ Stand: 2026-10-23. Branch `feat/slice-1-alpha-core`. Plan: `PLAN.md`, Abschnitt 
 - **Gegenprobe:** 25 absichtlich eingebaute Sicherheitslücken in Kopien der Migrationen (zum Beispiel Selbstfreigabe-Prüfung entfernt, Bindung der Erstpublikation an die freigegebene Revision entfernt, `cancel_event` veröffentlicht den Draft, `coalesce` im Preis-Constraint entfernt, Trigger entfernt, zusätzliche Policy/Tabelle/Funktion, `owner_id` freigegeben). Alle 25 ließen die Suite fehlschlagen.
 - Beim Schreiben der Tests fielen drei Testfehler auf (falsch interpolierte Variable, leere Unterabfrage, falsche Erwartung bei 0 betroffenen Zeilen). Sie lagen in den Tests, nicht in den Migrationen.
 
+## Abnahme gegen echtes Supabase (2026-10-26)
+
+Dev-Projekt `lbttgzffhvxvtqocyvao` (Frankfurt `eu-central-1`, Postgres 17.11, neu und leer; kein Produktions- oder MVP-Projekt). Beide Migrationen wurden unverändert angewendet (über den Supabase-Connector, daher dort mit eigenen Zeitstempeln `20261026112133` und `20261026112231`).
+
+- **Rechteinventur:** `anon`/`authenticated` haben nur SELECT; keine sensiblen Spalten für `anon`; kein EXECUTE für `anon`/`PUBLIC` auf Funktionen in `public`/`app_private`; RLS auf allen Tabellen. Die Standardrechte von `supabase_admin` in `public` (gewähren an `anon`/`authenticated`) betreffen nur Objekte, die `supabase_admin` anlegt, nicht die der Migrationsrolle `postgres`.
+- **Live-Prüfblock:** 50 Prüfungen, keine Abweichung (Direktzugriffe, Rollenangriffe, Selbstfreigabe, Freigabe/Veröffentlichung, Einfrieren der freigegebenen Revision, Entwurfsschutz, Audit append-only). Der Block endete absichtlich mit einem Fehler und wurde zurückgerollt; danach 0 Zeilen in Nutzer-, Profil-, Rollen-, Audit- und Medientabellen.
+- **Sicherheits-Advisor:** 7× `authenticated_security_definer_function_executable` (gewollt: die sieben privilegierten Funktionen prüfen den Aufrufer selbst). Keine weiteren Funde.
+- **Generierte Typen:** `lib/db/types.ts` aus diesem Schema.
+
 ## Grenzen (ausdrücklich)
 
-- **Nicht gegen echtes Supabase geprüft.** Weder Supabase CLI noch Docker stehen zur Verfügung. Der Shim ist eine Nachbildung. Abnahmepunkt vor Slice 2: einmal `supabase db reset` mit diesen Migrationen und derselben Testdatei gegen echtes Supabase.
-- Getestet gegen PostgreSQL 16, Zielversion in `supabase/config.toml` ist 17.
+- Die vollständige Testdatei (198 Zusicherungen) lief **nicht** auf Supabase, nur die 50 Prüfungen oben. Sie nutzt `psql`-Befehle und legt Hilfsschema und Hilfsrolle an. Vollständig geht das erst mit `supabase test db` (CLI/Docker).
+- Lokal getestet gegen PostgreSQL 16 mit Shim; echtes Supabase läuft auf 17.
 - Der im Plan genannte Befehl `supabase test db` wurde durch `npm run test:rls` ersetzt (kein pgTAP verfügbar).
 
 ## Bewusst nicht enthalten
 
-- **Storage-Buckets und -Policies** (`storage`-Schema existiert nur in echtem Supabase). Folge-PR. Bis dahin setzt die künftige kontrollierte Promotion `media_uses.public_object_path`; Publizieren verlangt einen gesetzten Pfad. `TODO(spec)`: Promotionsmechanismus, Bestätigungstext, MIME-/Größenlimits, Alt-Text-Pflicht.
-- **`lib/db/types.ts`**: braucht die CLI zur Generierung.
+- **Storage-Buckets und -Policies.** Das `storage`-Schema gibt es jetzt auf dem Dev-Projekt; Policies bleiben ein Folge-PR. Bis dahin setzt die künftige kontrollierte Promotion `media_uses.public_object_path`; Publizieren verlangt einen gesetzten Pfad. `TODO(spec)`: Promotionsmechanismus, Bestätigungstext, MIME-/Größenlimits, Alt-Text-Pflicht.
 - TS-Konstante der Reserved-Slugs (Slice 3), UI, Server Actions, Seeds.
 
 ## Abweichungen vom Plan (alle strenger)
