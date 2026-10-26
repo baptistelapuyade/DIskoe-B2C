@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { Database } from "@/lib/db/types";
+import type { Database, TablesInsert } from "@/lib/db/types";
 
 type Client = SupabaseClient<Database>;
 
@@ -136,17 +136,21 @@ export async function ensureEditableDraft(
     return { revisionId: current.id, created: false };
   }
 
+  // revision_no is assigned by a database trigger and is deliberately not
+  // grantable to clients; the generated type still lists it as required.
+  const row: Omit<TablesInsert<"profile_revisions">, "revision_no"> = {
+    profile_id: profile.id,
+    created_by: userId,
+    name: current?.name ?? null,
+    short_intro: current?.shortIntro ?? null,
+    official_url: current?.officialUrl ?? null,
+    public_contact: current?.publicContact ?? null,
+    profile_image_use_id: current?.profileImageUseId ?? null,
+  };
+
   const { data: inserted, error: insertError } = await supabase
     .from("profile_revisions")
-    .insert({
-      profile_id: profile.id,
-      created_by: userId,
-      name: current?.name ?? null,
-      short_intro: current?.shortIntro ?? null,
-      official_url: current?.officialUrl ?? null,
-      public_contact: current?.publicContact ?? null,
-      profile_image_use_id: current?.profileImageUseId ?? null,
-    })
+    .insert(row as TablesInsert<"profile_revisions">)
     .select("id")
     .single();
 
