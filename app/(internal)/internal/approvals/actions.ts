@@ -6,7 +6,7 @@ import { requireFounder } from "@/lib/auth/server";
 import { describeGaps, parseGapDetail } from "@/lib/domain/profile-publication";
 import { createClient } from "@/lib/supabase/server";
 
-import type { FormState } from "../../(organizer)/organizer/profiles/[profileId]/actions";
+import type { FormState } from "@/app/(organizer)/organizer/profiles/[profileId]/actions";
 
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
