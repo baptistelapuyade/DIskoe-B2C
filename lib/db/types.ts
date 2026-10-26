@@ -709,6 +709,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      submit_profile_for_review: {
+        Args: {
+          p_confirmed_rights: boolean
+          p_confirmed_usage: boolean
+          p_expected_draft_revision_id: string
+          p_profile_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       access_kind: "walk_in" | "door" | "online_ticket" | "online_registration"

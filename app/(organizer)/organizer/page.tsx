@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireAccess } from "@/lib/auth/server";
 import type { PublicationState } from "@/lib/auth/guards";
 
@@ -39,8 +40,16 @@ export default async function OrganizerHome() {
             <span className="font-medium">
               {profile.draftName ?? profile.slug}
             </span>
-            <span className="text-muted-foreground text-sm">
-              {STATE_LABEL[profile.publicationState]}
+            <span className="flex items-center gap-4 text-sm">
+              <span className="text-muted-foreground">
+                {STATE_LABEL[profile.publicationState]}
+              </span>
+              <Link
+                href={`/organizer/profiles/${profile.id}/edit`}
+                className="font-medium underline"
+              >
+                Bearbeiten
+              </Link>
             </span>
           </li>
         ))}

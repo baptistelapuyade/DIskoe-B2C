@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    // Profile image uploads go through a Server Action (limit is 5 MB plus form overhead).
+    serverActions: { bodySizeLimit: "6mb" },
+  },
   async headers() {
     const noStore = [{ key: "Cache-Control", value: "no-store" }];
 
