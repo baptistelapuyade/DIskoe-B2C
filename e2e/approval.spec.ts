@@ -221,7 +221,9 @@ test.describe("first approval, publication and public image", () => {
 
     await page.getByLabel("Deine Frage an den Organizer").fill("Der Link scheint nicht zu funktionieren.");
     await page.getByRole("button", { name: "Rückfrage stellen" }).click();
-    await expect(page.getByText("Rückfrage gespeichert. Das Profil bleibt privat.")).toBeVisible();
+    // The form disappears after the save; the page keeps the facts.
+    await expect(page.getByText("Zu diesem Stand ist eine Rückfrage gestellt.", { exact: false })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Gestellte Rückfrage" })).toBeVisible();
 
     expect(
       sql(`select count(*) from public.review_requests where profile_id = '${profileB}' and revision_id = '${revisionB}'`),
