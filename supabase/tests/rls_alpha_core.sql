@@ -357,12 +357,43 @@ select tests.expect_error(format('select public.approve_first_profile(%L, %L)', 
 select tests.as_user(:'uid_f');
 select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pa', gen_random_uuid()),
   'DK001', 'approval of a different revision is refused');
+select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pa', :'r1'),
+  'DK003', 'approval needs the owner''s submission of exactly this revision');
+select tests.as_superuser();
+select tests.expect_true(format($q$select first_approved_revision_id is null and published_revision_id is null and publication_state = 'private' from public.profiles where id = %L$q$, :'pa'),
+  'a refused approval changes nothing');
+
+-- The owner submits r1 (consent to publish), then tries to swap the draft
+-- before the founder decides. The approval stays bound to the submitted one.
+select tests.as_user(:'uid_a');
+select public.submit_profile_for_review(:'pa', :'r1', true, true);
+select tests.expect_affected(
+  format($q$insert into public.profile_revisions (profile_id, name, short_intro, public_contact, profile_image_use_id, created_by) values (%L, 'Unreviewed', 'Not seen by the founder', 'x@example.test', %L, %L)$q$, :'pa', :'use_a', :'uid_a'),
+  1, 'owner creates a second revision');
+select id as r2 from public.profile_revisions where profile_id = :'pa' and revision_no = 2 \gset
+select tests.expect_true(format('select revision_no = 2 from public.profile_revisions where id = %L', :'r2'),
+  'database assigns the next revision number');
+select tests.expect_affected(format('update public.profiles set draft_revision_id = %L where id = %L', :'r2', :'pa'),
+  1, 'owner points the draft at the unreviewed revision');
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pa', :'r1'),
+  'DK001', 'approval of the submitted revision is refused after a draft swap');
+select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pa', :'r2'),
+  'DK003', 'an unsubmitted revision cannot be approved');
+select tests.as_user(:'uid_a');
+select tests.expect_affected(format('update public.profiles set draft_revision_id = %L where id = %L', :'r1', :'pa'),
+  1, 'owner restores the submitted draft');
+select tests.as_user(:'uid_f');
 select public.approve_first_profile(:'pa', :'r1');
 select tests.as_superuser();
 select tests.expect_true(format('select first_approved_revision_id = %L and approved_by = %L and approved_at is not null from public.profiles where id = %L', :'r1', :'uid_f', :'pa'),
   'approval binds the exact revision and the founder');
-select tests.expect_true(format($q$select count(*) = 2 from public.publication_audit where entity_id = %L and action in ('provision_owner','approve_first')$q$, :'pa'),
-  'provisioning and approval are audited');
+select tests.expect_true(format($q$select published_revision_id = %L and publication_state = 'published' from public.profiles where id = %L$q$, :'r1', :'pa'),
+  'approval publishes the same revision');
+select tests.expect_true(format('select confirmed_by = %L and confirmed_at is not null from public.profile_revisions where id = %L', :'uid_a', :'r1'),
+  'the submitting owner is the confirming user of the published revision');
+select tests.expect_true(format($q$select count(*) = 4 from public.publication_audit where entity_id = %L and action in ('provision_owner','submit_for_review','approve_first','publish')$q$, :'pa'),
+  'provisioning, submission, approval and publication are audited');
 select tests.as_user(:'uid_f');
 select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pa', :'r1'),
   'DK003', 'second approval is refused');
@@ -395,23 +426,12 @@ select tests.as_user(:'uid_a');
 select tests.expect_error(format('select public.publish_profile(%L, %L, null)', :'pa', gen_random_uuid()),
   'DK001', 'stale draft expectation is refused');
 
--- Attack: swap the draft after the founder reviewed r1.
-select tests.expect_affected(
-  format($q$insert into public.profile_revisions (profile_id, name, short_intro, public_contact, profile_image_use_id, created_by) values (%L, 'Unreviewed', 'Not seen by the founder', 'x@example.test', %L, %L)$q$, :'pa', :'use_a', :'uid_a'),
-  1, 'owner creates a second revision');
-select id as r2 from public.profile_revisions where profile_id = :'pa' and revision_no = 2 \gset
-select tests.expect_true(format('select revision_no = 2 from public.profile_revisions where id = %L', :'r2'),
-  'database assigns the next revision number');
-select tests.expect_affected(format('update public.profiles set draft_revision_id = %L where id = %L', :'r2', :'pa'),
-  1, 'owner points the draft at the unreviewed revision');
-select tests.expect_error(format('select public.publish_profile(%L, %L, null)', :'pa', :'r2'),
-  'DK001', 'unreviewed revision cannot be first-published');
-select tests.expect_affected(format('update public.profiles set draft_revision_id = %L where id = %L', :'r1', :'pa'),
-  1, 'owner restores the approved draft');
+-- First publication is no longer an owner action: approval already did it.
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.publish_profile(%L, %L, null)', :'pa', :'r1'),
+  'DK001', 'the owner cannot repeat the first publication');
 select tests.expect_error(format('select public.publish_profile(%L, %L, %L)', :'pa', :'r1', gen_random_uuid()),
   'DK001', 'wrong published expectation is refused');
-
-select public.publish_profile(:'pa', :'r1', null);
 
 select tests.as_anon();
 select tests.expect_count('select id from public.public_profiles', 1, 'anon sees the published profile');
@@ -722,8 +742,8 @@ select tests.expect_error('select id from public.publication_audit', '42501', 'a
 
 -- Audit trail: visible to the owner without actor, never writable.
 select tests.as_user(:'uid_a');
-select tests.expect_true(format($q$select count(*) = 4 from public.publication_audit where entity_id = %L$q$, :'pa'),
-  'owner reads the complete audit trail of the own profile (provision, approve, 2x publish)');
+select tests.expect_true(format($q$select count(*) = 5 from public.publication_audit where entity_id = %L$q$, :'pa'),
+  'owner reads the complete audit trail of the own profile (provision, submit, approve, 2x publish)');
 select tests.expect_count(format('select id from public.publication_audit where entity_id = %L', :'pb'), 0,
   'owner does not see audit rows of other profiles');
 select tests.expect_error('select actor_id from public.publication_audit', '42501', 'actor_id is hidden from clients');
@@ -903,6 +923,193 @@ select tests.expect_true(format($q$select actor_id = %L from public.publication_
   'the audit row names the submitting owner');
 
 -- ===========================================================================
+-- 7d. The founder's question, the mail log, approval after a correction
+-- ===========================================================================
+-- State here: B submitted rb1 (7c), nothing decided yet.
+select tests.as_user(:'uid_b');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L)', :'pb', :'rb1', 'May I?'),
+  '42501', 'an owner cannot ask a question');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L)', :'pb', :'rb1', 'May I?'),
+  '42501', 'another owner cannot ask a question');
+select tests.as_user(:'uid_v');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L)', :'pb', :'rb1', 'May I?'),
+  '42501', 'a visitor cannot ask a question');
+select tests.as_anon();
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L)', :'pb', :'rb1', 'May I?'),
+  '42501', 'anon cannot execute request_profile_changes');
+
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L)', :'pb', :'rb1', '   '),
+  '22023', 'an empty question is refused');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L)', :'pb', :'rb1', repeat('x', 501)),
+  '22023', 'a question over 500 characters is refused');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L)', :'pb', gen_random_uuid(), 'May I?'),
+  'DK001', 'a question about a stale revision is refused');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L)', :'pa', :'r2', 'May I?'),
+  'DK003', 'an approved profile cannot get a first-review question');
+select tests.expect_count('select id from public.review_requests', 0, 'refused questions leave no row');
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id = %L and action = 'request_changes'$q$, :'pb'),
+  0, 'refused questions leave no audit row');
+
+-- Mails before any question or approval
+select tests.expect_error(format('select public.claim_profile_mail(%L, %L, %L)', :'pb', :'rb1', 'profile_question'),
+  'DK003', 'no question mail without a question');
+select tests.expect_error(format('select public.claim_profile_mail(%L, %L, %L)', :'pb', :'rb1', 'profile_live'),
+  'DK003', 'no live mail before approval');
+select tests.expect_error(format('select public.claim_profile_mail(%L, %L, %L)', :'pb', :'rb1', 'newsletter'),
+  '22023', 'only the two system mail kinds exist');
+
+select public.request_profile_changes(:'pb', :'rb1', '  Does the link work?  ');
+select tests.as_superuser();
+select tests.expect_true(format($q$select message = 'Does the link work?' and created_by = %L from public.review_requests where revision_id = %L$q$, :'uid_f', :'rb1'),
+  'the question is stored trimmed with the founder as author');
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L)', :'pb', :'rb1', 'Again?'),
+  'DK003', 'one question per submitted revision');
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id = %L and action = 'request_changes' and revision_id = %L$q$, :'pb', :'rb1'),
+  1, 'the question is audited');
+
+-- Who reads the question
+select tests.as_user(:'uid_b');
+select tests.expect_true(format($q$select message = 'Does the link work?' from public.review_requests where profile_id = %L$q$, :'pb'),
+  'the owner reads the question about the own profile');
+select tests.expect_error('select created_by from public.review_requests', '42501', 'the author of the question is hidden from the owner');
+select tests.expect_error(format($q$insert into public.review_requests (profile_id, revision_id, message, created_by) values (%L, %L, 'x', %L)$q$, :'pb', :'rb1', :'uid_b'),
+  '42501', 'clients cannot write questions directly');
+select tests.as_user(:'uid_a');
+select tests.expect_count('select id from public.review_requests', 0, 'another owner does not see the question');
+select tests.as_user(:'uid_v');
+select tests.expect_count('select id from public.review_requests', 0, 'a visitor does not see the question');
+select tests.as_anon();
+select tests.expect_error('select id from public.review_requests', '42501', 'anon cannot read questions');
+select tests.as_user(:'uid_f');
+select tests.expect_count('select id from public.review_requests', 1, 'the founder reads all questions');
+
+-- A revision with an open question cannot be submitted again unchanged.
+select tests.as_user(:'uid_b');
+select tests.expect_error(format('select public.submit_profile_for_review(%L, %L, true, true)', :'pb', :'rb1'),
+  'DK003', 'a revision with an open question cannot be resubmitted');
+
+-- Mail log: claim, retry, once only
+select tests.expect_error(format('select public.claim_profile_mail(%L, %L, %L)', :'pb', :'rb1', 'profile_question'),
+  '42501', 'an owner cannot claim a mail');
+select tests.expect_error(format('select public.finish_profile_mail(%L, %L, %L, true)', :'pb', :'rb1', 'profile_question'),
+  '42501', 'an owner cannot finish a mail');
+select tests.expect_count('select id from public.profile_mails', 0, 'the mail log shows nothing to owners');
+select tests.as_anon();
+select tests.expect_error(format('select public.claim_profile_mail(%L, %L, %L)', :'pb', :'rb1', 'profile_question'),
+  '42501', 'anon cannot claim a mail');
+select tests.expect_error('select id from public.profile_mails', '42501', 'anon cannot read the mail log');
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.finish_profile_mail(%L, %L, %L, true)', :'pb', :'rb1', 'profile_question'),
+  'DK003', 'nothing to finish before a claim');
+select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) = 'owner-b@example.test'$q$, :'pb', :'rb1', 'profile_question'),
+  'the first claim returns the owner address');
+select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) is null$q$, :'pb', :'rb1', 'profile_question'),
+  'a second claim while one is running returns nothing');
+select public.finish_profile_mail(:'pb', :'rb1', 'profile_question', false);
+select tests.expect_true(format($q$select status = 'failed' and attempts = 1 and finished_at is not null from public.profile_mails where revision_id = %L$q$, :'rb1'),
+  'a failed attempt is recorded');
+select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) = 'owner-b@example.test'$q$, :'pb', :'rb1', 'profile_question'),
+  'a failed mail can be claimed again');
+select public.finish_profile_mail(:'pb', :'rb1', 'profile_question', true, 'provider-id-1');
+select tests.as_superuser();
+select tests.expect_true(format($q$select status = 'sent' and attempts = 2 and provider_message_id = 'provider-id-1' from public.profile_mails where revision_id = %L$q$, :'rb1'),
+  'a sent mail is recorded with the provider id');
+select tests.as_user(:'uid_f');
+select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) is null$q$, :'pb', :'rb1', 'profile_question'),
+  'a sent mail is never claimed again');
+select tests.expect_error(format('select public.finish_profile_mail(%L, %L, %L, true)', :'pb', :'rb1', 'profile_question'),
+  'DK003', 'a finished mail cannot be finished twice');
+select tests.expect_count($q$select id from public.profile_mails$q$, 1, 'one mail row exists per profile, revision and kind');
+select tests.as_user(:'uid_b');
+select tests.expect_count('select id from public.profile_mails', 0, 'the owner does not see the mail log row about the own profile');
+select tests.as_user(:'uid_a');
+select tests.expect_count('select id from public.profile_mails', 0, 'another owner does not see the mail log');
+select tests.as_user(:'uid_f');
+
+-- The owner corrects: new revision (same image), submits again; the old
+-- question is no longer open for the new draft.
+select tests.as_user(:'uid_b');
+select tests.expect_affected(
+  format($q$insert into public.profile_revisions (profile_id, name, short_intro, official_url, profile_image_use_id, created_by) values (%L, 'Beta Events', 'Beta nights.', 'https://beta.example.test/fixed', %L, %L)$q$, :'pb', :'use_b', :'uid_b'),
+  1, 'B creates the corrected revision');
+select id as rb2 from public.profile_revisions where profile_id = :'pb' and revision_no = 2 \gset
+select tests.expect_affected(format('update public.profiles set draft_revision_id = %L where id = %L', :'rb2', :'pb'),
+  1, 'B points the draft at the corrected revision');
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L)', :'pb', :'rb2', 'Early?'),
+  'DK003', 'no question about an unsubmitted revision');
+select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pb', :'rb2'),
+  'DK003', 'the corrected revision cannot be approved before it is submitted');
+select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pb', :'rb1'),
+  'DK001', 'the old revision cannot be approved after the correction');
+select tests.expect_error(format('select public.claim_profile_mail(%L, %L, %L)', :'pb', :'rb1', 'profile_question'),
+  'DK003', 'the old question mail is no longer claimable');
+select tests.as_user(:'uid_b');
+select public.submit_profile_for_review(:'pb', :'rb2', true, true);
+
+-- Storage: before approval nobody may publish B's image; the founder may
+-- only write the reserved path afterwards.
+select tests.as_user(:'uid_f');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppb'),
+  '42501', 'the founder cannot write the public copy before approval');
+select tests.expect_error(format('select public.claim_profile_mail(%L, %L, %L)', :'pb', :'rb2', 'profile_live'),
+  'DK003', 'no live mail before approval of the corrected revision');
+select public.approve_first_profile(:'pb', :'rb2');
+select tests.as_superuser();
+select tests.expect_true(format($q$select published_revision_id = %L and first_approved_revision_id = %L and publication_state = 'published' from public.profiles where id = %L$q$, :'rb2', :'rb2', :'pb'),
+  'approving the corrected revision publishes it');
+select tests.expect_true(format('select confirmed_by = %L and confirmed_at is not null from public.profile_revisions where id = %L', :'uid_b', :'rb2'),
+  'the submitting owner confirmed the corrected revision');
+select tests.expect_true(format($q$select count(*) filter (where action = 'submit_for_review') = 2 and count(*) filter (where action = 'request_changes') = 1 and count(*) filter (where action = 'approve_first') = 1 and count(*) filter (where action = 'publish') = 1 from public.publication_audit where entity_id = %L$q$, :'pb'),
+  'the whole review of B is in the audit trail');
+select tests.as_anon();
+select tests.expect_true($q$select name = 'Beta Events' and official_url = 'https://beta.example.test/fixed' from public.public_profiles where slug = 'owner-b'$q$,
+  'the public sees the corrected revision of B');
+select tests.as_user(:'uid_f');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, 'profiles/' || :'pb' || '/not-reserved.jpg'),
+  '42501', 'the founder cannot write an unreserved public path');
+select tests.expect_ok(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppb'),
+  'the founder writes the reserved public copy after approval');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppb' || '.again'),
+  '42501', 'another owner still cannot write into the public bucket');
+
+-- Live mail for the approved revision, only for it
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.claim_profile_mail(%L, %L, %L)', :'pb', :'rb1', 'profile_live'),
+  'DK003', 'no live mail for a superseded revision');
+select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) = 'owner-b@example.test'$q$, :'pb', :'rb2', 'profile_live'),
+  'the live mail can be claimed for the published revision');
+select public.finish_profile_mail(:'pb', :'rb2', 'profile_live', true, null);
+select tests.expect_error(format('select public.approve_first_profile(%L, %L)', :'pb', :'rb2'),
+  'DK003', 'a profile cannot be approved twice');
+
+-- A claim stuck in pending for more than five minutes can be taken over;
+-- a fresh one cannot.
+select tests.as_superuser();
+update public.profile_mails
+   set status = 'pending', finished_at = null, claimed_at = now()
+ where profile_id = :'pb' and revision_id = :'rb2' and kind = 'profile_live';
+select tests.as_user(:'uid_f');
+select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) is null$q$, :'pb', :'rb2', 'profile_live'),
+  'a fresh pending claim is respected');
+select tests.as_superuser();
+update public.profile_mails set claimed_at = now() - interval '6 minutes'
+ where profile_id = :'pb' and revision_id = :'rb2' and kind = 'profile_live';
+select tests.as_user(:'uid_f');
+select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) = 'owner-b@example.test'$q$, :'pb', :'rb2', 'profile_live'),
+  'a stale pending claim is taken over');
+select public.finish_profile_mail(:'pb', :'rb2', 'profile_live', true, null);
+select tests.as_superuser();
+select tests.expect_error(format($q$insert into public.profile_mails (profile_id, revision_id, kind) values (%L, %L, 'profile_live')$q$, :'pb', :'rb2'),
+  '23505', 'the database allows one row per profile, revision and kind');
+select tests.expect_error(format($q$insert into public.profile_mails (profile_id, revision_id, kind) values (%L, %L, 'newsletter')$q$, :'pb', :'rb2'),
+  '23514', 'the database allows only the two system mail kinds');
+
+-- ===========================================================================
 -- 8. Privilege snapshot and object inventory (a new object fails the run)
 -- ===========================================================================
 select tests.as_superuser();
@@ -932,6 +1139,8 @@ insert into tests.expected_col_grants values
   ('authenticated', 'media_assets', 'SELECT', array['id','uploader_id','private_object_path','mime_type','created_at']),
   ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type']),
   ('authenticated', 'media_assets', 'UPDATE', array['mime_type']),
+  ('authenticated', 'review_requests', 'SELECT', array['id','profile_id','revision_id','message','created_at']),
+  ('authenticated', 'profile_mails', 'SELECT', array['id','profile_id','revision_id','kind','status','attempts','claimed_at','finished_at']),
   ('authenticated', 'media_uses', 'SELECT', array['id','asset_id','profile_id','event_id','role','public_object_path','alt_text','crop','confirmed_at']),
   ('authenticated', 'media_uses', 'INSERT', array['asset_id','profile_id','event_id','role','alt_text','crop']),
   ('authenticated', 'media_uses', 'UPDATE', array['alt_text','crop','confirmed_at','confirmed_by']),
@@ -1020,7 +1229,9 @@ insert into tests.expected_exec values
   ('public', 'approve_first_event'), ('public', 'publish_profile'),
   ('public', 'publish_event'), ('public', 'reschedule_event'),
   ('public', 'cancel_event'),
-  ('public', 'submit_profile_for_review');
+  ('public', 'submit_profile_for_review'),
+  ('public', 'request_profile_changes'), ('public', 'claim_profile_mail'),
+  ('public', 'finish_profile_mail');
 select tests.expect_count($q$
   select n.nspname, p.proname
     from pg_proc p join pg_namespace n on n.oid = p.pronamespace
@@ -1087,7 +1298,9 @@ insert into tests.expected_policies values
   ('media_uses', 'media_uses_select_public'), ('media_uses', 'media_uses_select_owner'),
   ('media_uses', 'media_uses_select_founder'), ('media_uses', 'media_uses_insert_owner'),
   ('media_uses', 'media_uses_update_owner'),
-  ('publication_audit', 'publication_audit_select');
+  ('publication_audit', 'publication_audit_select'),
+  ('review_requests', 'review_requests_select'),
+  ('profile_mails', 'profile_mails_select_founder');
 select tests.expect_count($q$
   select tablename, policyname from pg_policies where schemaname = 'public'
   except select tablename, policyname from tests.expected_policies
@@ -1114,7 +1327,10 @@ insert into tests.expected_objects values
   ('table', 'public', 'media_uses'), ('table', 'public', 'publication_audit'),
   ('view', 'public', 'public_profiles'), ('view', 'public', 'public_events'),
   ('view', 'public', 'my_profiles'),
+  ('table', 'public', 'review_requests'), ('table', 'public', 'profile_mails'),
   ('sequence', 'public', 'publication_audit_id_seq'),
+  ('sequence', 'public', 'review_requests_id_seq'),
+  ('sequence', 'public', 'profile_mails_id_seq'),
   ('function', 'public', 'provision_profile_owner'),
   ('function', 'public', 'approve_first_profile'),
   ('function', 'public', 'approve_first_event'),
@@ -1132,7 +1348,10 @@ insert into tests.expected_objects values
   ('function', 'app_private', 'audit_append_only'),
   ('function', 'app_private', 'stamp_media_use_confirmation'),
   ('function', 'app_private', 'is_publishable_media_path'),
-  ('function', 'public', 'submit_profile_for_review');
+  ('function', 'public', 'submit_profile_for_review'),
+  ('function', 'public', 'request_profile_changes'),
+  ('function', 'public', 'claim_profile_mail'),
+  ('function', 'public', 'finish_profile_mail');
 
 select tests.expect_count($q$
   select case c.relkind when 'r' then 'table' when 'v' then 'view'

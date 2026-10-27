@@ -51,3 +51,14 @@ Das Durchspielen mit zwei Testkonten (Organizer und Founder) funktionierte techn
 - **Startseite** zeigt pro Profil Status, nächsten Schritt und „Wie geht es weiter“.
 
 Umsetzung in drei PRs: Datenbank (neue `approve_first_profile`, `request_profile_changes`, Mail-Protokoll, Storage-Policy für den Founder), App (Ablauf, Rückfrage, Startseite), Mails (SMTP über SES, Versandprotokoll). Offene Text- und Fachpunkte bleiben als `TODO(spec)` markiert: Bearbeitungszeit, Rechte-Erklärungen, Absenderadresse.
+
+## Umbau auf Variante B, Teil 1: Datenbank (PR 1)
+
+Migration `20261027160000_review_flow.sql`, noch nicht auf dem Dev-Projekt angewendet (erst nach Review und grüner CI).
+
+- `approve_first_profile` verlangt jetzt, dass genau diese Revision eingereicht wurde (Audit-Zeile `submit_for_review`, sonst `DK003`). Sie setzt Erstfreigabe und Veröffentlichung in einer Transaktion. Bestätigender Nutzer der Revision ist der Einreicher. Audit: `approve_first` und `publish` (Akteur beide Male der Founder). Danach ist der Versuch des Owners, dieselbe Revision erstmals zu veröffentlichen, mit `DK001` abgewiesen; `publish_profile` bleibt für spätere Revisionen.
+- Neue Tabelle `review_requests` und Funktion `request_profile_changes` (nur Founder, 1 bis 500 Zeichen, eine Frage je eingereichter Revision, Audit `request_changes`). Der Owner liest die Frage zum eigenen Profil, nicht den Autor. `submit_profile_for_review` weist eine Revision mit offener Frage ab (`DK003`); der Owner ändert zuerst, dadurch entsteht eine neue Revision.
+- Neue Tabelle `profile_mails` plus `claim_profile_mail` und `finish_profile_mail` (nur Founder). Je Profil, Revision und Art genau eine Zeile. Der Claim prüft den Zustand direkt vor dem Versand (Profil live mit dieser Revision bzw. offene Frage), liefert die Empfängeradresse nur an den Founder und nie ein zweites Mal, wenn schon `sent` oder ein frischer Versuch (unter 5 Minuten) läuft. Die Tabelle speichert weder Adresse noch Text noch Fehlertext.
+- Storage: `is_publishable_media_path` erlaubt zusätzlich dem Founder, die öffentliche Bildkopie zu schreiben, weiterhin nur auf den reservierten Pfad einer veröffentlichten Revision.
+
+Prüfung: `npm run test:rls` lokal gegen PostgreSQL 16, 325 Zusicherungen (vorher 198 plus die 3b-Tests). Der Ablauf Einreichen, Rückfrage, Korrektur, erneut Einreichen, Freigabe ist durchgespielt. 19 gezielt eingebaute Fehler (fehlende Einreichungsprüfung, keine Veröffentlichung bei Freigabe, falscher bestätigender Nutzer, fehlende Founder-Prüfungen, doppelter Mailclaim, offene Policies, sichtbarer Autor) werden alle von den Tests erkannt. Nicht geprüft: echter Supabase-Lauf (CI-Job `rls-supabase`) und Dev-Projekt. `lib/db/types.ts` wird mit der App-Änderung nach dem Anwenden neu generiert.
