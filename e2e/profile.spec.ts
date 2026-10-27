@@ -94,6 +94,21 @@ test.describe("profile editor, preview and hand-in", () => {
     return { context, page: await context.newPage() };
   }
 
+  test("the start page names the next step for a new profile", async ({
+    browser,
+  }) => {
+    const { context, page } = await pageFor(browser, "ownerA");
+    await page.goto("/organizer");
+
+    await expect(page.getByRole("heading", { name: "Deine Profile" })).toBeVisible();
+    await expect(page.getByText("Dir fehlen noch Angaben.")).toBeVisible();
+    await expect(page.getByText("Ein bestätigtes Profilbild fehlt.")).toBeVisible();
+    await page.getByRole("link", { name: "Angaben vervollständigen" }).click();
+    await expect(page.getByRole("heading", { name: "Profil bearbeiten" })).toBeVisible();
+
+    await context.close();
+  });
+
   test("the editor shows what is missing and the fixed address", async ({
     browser,
   }) => {
@@ -225,7 +240,7 @@ test.describe("profile editor, preview and hand-in", () => {
     await page.getByLabel("Bildbeschreibung (Alternativtext)").fill("Bühne bei Nacht");
     await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
     await page.getByRole("button", { name: "Bild hochladen" }).click();
-    await expect(page.getByText("Das Bild ist gespeichert und bleibt bis zur Veröffentlichung privat.")).toBeVisible();
+    await expect(page.getByText("Das Bild ist gespeichert und bleibt bis zur Freigabe privat.")).toBeVisible();
 
     await page.goto(previewUrl());
     await expect(page.getByRole("img", { name: "Bühne bei Nacht" })).toBeVisible();
@@ -257,10 +272,10 @@ test.describe("profile editor, preview and hand-in", () => {
       sql(`select count(*) from public.publication_audit where entity_id = '${profileA}' and action = 'submit_for_review'`),
     ).toBe("0");
 
-    await page.getByLabel(/Rechte an allen Texten und Bildern/).check();
-    await page.getByLabel(/öffentlich angezeigt werden/).check();
+    await page.getByLabel(/Angaben geprüft und bin berechtigt/).check();
+    await page.getByLabel(/öffentlich wird/).check();
     await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
-    await expect(page.getByText("Eingereicht. DISKOE prüft den Entwurf.").first()).toBeVisible();
+    await expect(page.getByText("Eingereicht. DISKOE prüft dein Profil.").first()).toBeVisible();
 
     expect(
       sql(
@@ -271,6 +286,12 @@ test.describe("profile editor, preview and hand-in", () => {
     await page.reload();
     await expect(page.getByText(/In Prüfung/).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Zur Prüfung einreichen" })).toHaveCount(0);
+
+    // The start page says what is going on and that nothing is left to do.
+    await page.goto("/organizer");
+    await expect(page.getByText("Wir schauen uns dein Profil so schnell wie möglich an.")).toBeVisible();
+    await expect(page.getByText("Du musst nichts tun.")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Eingereichtes Profil ansehen" })).toBeVisible();
 
     await context.close();
   });

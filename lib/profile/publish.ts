@@ -2,19 +2,29 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database } from "@/lib/db/types";
 import { loadImage } from "@/lib/profile/image";
-import { loadProfileState, loadRevision } from "@/lib/profile/draft";
+import { loadRevision } from "@/lib/profile/draft";
 
 type Client = SupabaseClient<Database>;
 
 // The image of the *published* revision, as the public bucket should have it.
+// Reads the base table (not my_profiles) so that the owner and the founder can
+// both use it; Row Level Security decides who sees the row.
 async function publishedImage(supabase: Client, profileId: string) {
-  const profile = await loadProfileState(supabase, profileId);
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("published_revision_id")
+    .eq("id", profileId)
+    .maybeSingle();
 
-  if (!profile?.publishedRevisionId) {
+  if (error) {
+    throw new Error("Profile lookup failed");
+  }
+
+  if (!profile?.published_revision_id) {
     return null;
   }
 
-  const revision = await loadRevision(supabase, profile.publishedRevisionId);
+  const revision = await loadRevision(supabase, profile.published_revision_id);
 
   if (!revision?.profileImageUseId) {
     return null;
@@ -51,9 +61,9 @@ export async function isPublishedImagePublic(
 }
 
 // Copies the original into the public bucket at the path the database reserved
-// for it. Runs with the owner's own session: the storage policy allows exactly
-// this path, and only after publish_profile made the revision the published
-// one. Safe to repeat.
+// for it. Runs with the caller's own session (founder at approval, owner for a
+// later publication): the storage policy allows exactly this path, and only
+// once the revision is the published one. Safe to repeat.
 export async function copyPublishedImage(
   supabase: Client,
   profileId: string,

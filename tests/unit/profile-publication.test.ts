@@ -9,6 +9,9 @@ import {
   parseAltText,
   parseGapDetail,
   parseProfileInput,
+  parseQuestion,
+  progressStage,
+  QUESTION_MAX_LENGTH,
   reviewStatus,
   sniffImageType,
 } from "../../lib/domain/profile-publication";
@@ -144,6 +147,7 @@ describe("reviewStatus", () => {
     firstApprovedRevisionId: null,
     publishedRevisionId: null,
     submittedRevisionId: null,
+    questionRevisionId: null,
   };
 
   it("is incomplete while gaps remain", () => {
@@ -162,8 +166,35 @@ describe("reviewStatus", () => {
     expect(reviewStatus({ ...base, submittedRevisionId: "r1" })).toBe("ready");
   });
 
-  it("is approved once the founder approved a revision", () => {
-    expect(reviewStatus({ ...base, firstApprovedRevisionId: "r1" })).toBe("approved");
+  it("shows the founder's question for exactly this draft", () => {
+    expect(
+      reviewStatus({
+        ...base,
+        submittedRevisionId: "r2",
+        questionRevisionId: "r2",
+      }),
+    ).toBe("question");
+  });
+
+  it("is ready again after the owner changed a draft that had a question", () => {
+    expect(
+      reviewStatus({
+        ...base,
+        draftRevisionId: "r3",
+        submittedRevisionId: "r2",
+        questionRevisionId: "r2",
+      }),
+    ).toBe("ready");
+  });
+
+  it("needs the owner's confirmation for changes after the first publication", () => {
+    expect(
+      reviewStatus({
+        ...base,
+        firstApprovedRevisionId: "r1",
+        publishedRevisionId: "r1",
+      }),
+    ).toBe("update_ready");
   });
 
   it("is published when the draft is the published revision", () => {
@@ -176,7 +207,7 @@ describe("reviewStatus", () => {
     ).toBe("published");
   });
 
-  it("never shows approved or ready for an incomplete new draft", () => {
+  it("never shows update_ready or ready for an incomplete new draft", () => {
     expect(
       reviewStatus({
         ...base,
@@ -185,6 +216,40 @@ describe("reviewStatus", () => {
         publishedRevisionId: "r1",
       }),
     ).toBe("incomplete");
+  });
+});
+
+describe("progressStage", () => {
+  it("moves along the four steps before the first publication", () => {
+    expect(progressStage("incomplete", false)).toBe(0);
+    expect(progressStage("ready", false)).toBe(1);
+    expect(progressStage("in_review", false)).toBe(2);
+    expect(progressStage("question", false)).toBe(2);
+  });
+
+  it("is complete once the profile is live, whatever the new draft looks like", () => {
+    expect(progressStage("published", true)).toBe(4);
+    expect(progressStage("incomplete", true)).toBe(4);
+    expect(progressStage("update_ready", true)).toBe(4);
+  });
+});
+
+describe("parseQuestion", () => {
+  it("trims and accepts a normal question", () => {
+    expect(parseQuestion("  Funktioniert der Link?  ")).toEqual({
+      ok: true,
+      value: "Funktioniert der Link?",
+    });
+  });
+
+  it("rejects an empty question", () => {
+    expect(parseQuestion("   ").ok).toBe(false);
+    expect(parseQuestion(null).ok).toBe(false);
+  });
+
+  it("rejects a question over the limit", () => {
+    expect(parseQuestion("x".repeat(QUESTION_MAX_LENGTH)).ok).toBe(true);
+    expect(parseQuestion("x".repeat(QUESTION_MAX_LENGTH + 1)).ok).toBe(false);
   });
 });
 

@@ -1,18 +1,30 @@
 import Link from "next/link";
 import {
+  PROGRESS_STEPS,
   describeGaps,
+  progressStage,
   type GapCode,
   type ReviewStatus,
 } from "@/lib/domain/profile-publication";
 
-// TODO(spec): wording is a proposal.
+// TODO(spec): wording is a proposal (wireframes approved by the founder on
+// 2026-10-27, no Figma screens yet).
 export const STATUS_LABEL: Record<ReviewStatus, string> = {
   incomplete: "Entwurf – unvollständig",
-  ready: "Entwurf – bereit zum Einreichen",
+  ready: "Bereit zum Einreichen",
   in_review: "In Prüfung",
-  approved: "Freigegeben",
+  question: "Rückfrage von DISKOE",
+  update_ready: "Änderungen bereit zum Veröffentlichen",
   published: "Veröffentlicht",
 };
+
+// What the owner sees as the headline for a profile, depending on the draft
+// status and on whether something is already public.
+export function stateLabel(status: ReviewStatus, live: boolean): string {
+  if (live && status === "incomplete") return "Live – neue Fassung in Arbeit";
+  if (live && status === "published") return "Live";
+  return STATUS_LABEL[status];
+}
 
 export function ProfileNav({
   profileId,
@@ -56,5 +68,43 @@ export function GapList({ gaps }: { gaps: GapCode[] }) {
         ))}
       </ul>
     </div>
+  );
+}
+
+// Angaben – Eingereicht – Geprüft – Live. Text is part of the markup so that
+// the state is readable without colour or shapes.
+export function ProgressSteps({
+  status,
+  live,
+}: {
+  status: ReviewStatus;
+  live: boolean;
+}) {
+  const stage = progressStage(status, live);
+
+  return (
+    <ol
+      aria-label="Fortschritt"
+      className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-sm"
+    >
+      {PROGRESS_STEPS.map((step, index) => {
+        const done = index < stage;
+        const now = index === stage;
+
+        return (
+          <li
+            key={step}
+            aria-current={now ? "step" : undefined}
+            className={now ? "text-foreground font-medium" : undefined}
+          >
+            <span aria-hidden="true">{done ? "● " : now ? "◉ " : "○ "}</span>
+            {step}
+            <span className="sr-only">
+              {done ? " (erledigt)" : now ? " (jetzt)" : " (offen)"}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
