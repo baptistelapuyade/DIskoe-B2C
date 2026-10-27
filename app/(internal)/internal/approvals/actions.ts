@@ -1,13 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 
+import { getRequestOrigin } from "@/lib/auth/origin";
 import { requireFounder } from "@/lib/auth/server";
 import {
   describeGaps,
   parseGapDetail,
   parseQuestion,
 } from "@/lib/domain/profile-publication";
+import { mailOutcomeText, sendProfileMail } from "@/lib/mail/send";
+import { loadRevision } from "@/lib/profile/draft";
+import type { MailKind } from "@/lib/profile/founder";
 import { copyPublishedImage } from "@/lib/profile/publish";
 import { createClient } from "@/lib/supabase/server";
 
@@ -23,6 +28,27 @@ function refresh(profileId: string) {
   revalidatePath("/internal/approvals");
   revalidatePath(`/internal/approvals/${profileId}`);
   revalidatePath("/organizer");
+}
+
+// Sends the system mail for one revision. A failed or missing mail never
+// undoes the decision it follows; the result is reported to the founder, who
+// can send it again from the detail page.
+async function sendMail(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  profileId: string,
+  revisionId: string,
+  kind: MailKind,
+): Promise<string> {
+  const revision = await loadRevision(supabase, revisionId);
+  const outcome = await sendProfileMail(supabase, {
+    profileId,
+    revisionId,
+    kind,
+    name: revision?.name,
+    origin: getRequestOrigin(await headers()),
+  });
+
+  return mailOutcomeText(outcome);
 }
 
 function ids(formData: FormData): { profileId: string; revisionId: string } | null {
@@ -89,14 +115,19 @@ export async function approveFirst(
   }
 
   const copied = await copyPublishedImage(supabase, target.profileId);
+  const mail = await sendMail(
+    supabase,
+    target.profileId,
+    target.revisionId,
+    "profile_live",
+  );
   refresh(target.profileId);
 
   return copied === "copied"
-    ? { ok: true, message: "Freigegeben und veröffentlicht." }
+    ? { ok: true, message: `Freigegeben und veröffentlicht. ${mail}` }
     : {
         ok: true,
-        message:
-          "Freigegeben und veröffentlicht, aber das Bild ist noch nicht öffentlich. Bitte versuche es mit „Bild erneut veröffentlichen“ noch einmal.",
+        message: `Freigegeben und veröffentlicht, aber das Bild ist noch nicht öffentlich. Bitte versuche es mit „Bild erneut veröffentlichen“ noch einmal. ${mail}`,
       };
 }
 
@@ -149,11 +180,40 @@ export async function requestChanges(
     }
   }
 
+  const mail = await sendMail(
+    supabase,
+    target.profileId,
+    target.revisionId,
+    "profile_question",
+  );
   refresh(target.profileId);
+
   return {
     ok: true,
-    message: "Rückfrage gespeichert. Das Profil bleibt privat.",
+    message: `Rückfrage gespeichert. Das Profil bleibt privat. ${mail}`,
   };
+}
+
+// Sends a mail again after "failed" or when it was never sent (for example
+// because no SMTP settings existed at the time). The database refuses a second
+// mail once one was accepted.
+export async function resendMail(
+  _previous: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  await requireFounder();
+
+  const target = ids(formData);
+  const kind = String(formData.get("kind") ?? "");
+  if (!target || (kind !== "profile_live" && kind !== "profile_question")) {
+    return { ok: false, message: "Ungültige Anfrage." };
+  }
+
+  const supabase = await createClient();
+  const mail = await sendMail(supabase, target.profileId, target.revisionId, kind);
+  refresh(target.profileId);
+
+  return { ok: true, message: mail };
 }
 
 export async function retryImage(

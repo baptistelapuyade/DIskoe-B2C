@@ -106,3 +106,73 @@ export async function waitForLink(email: string): Promise<string> {
 
   return match[1].replace(/&amp;/g, "&");
 }
+
+export type CaughtMail = { subject: string; body: string };
+
+// All mails currently caught for one recipient (oldest first).
+export async function listMails(email: string): Promise<CaughtMail[]> {
+  if ((await flavor()) === "mailpit") {
+    const list = await fetch(
+      `${BASE}/api/v1/search?query=${encodeURIComponent(`to:${email}`)}`,
+    );
+    if (!list.ok) return [];
+
+    const { messages } = (await list.json()) as {
+      messages?: { ID: string; Subject: string }[];
+    };
+    const found: CaughtMail[] = [];
+
+    for (const entry of [...(messages ?? [])].reverse()) {
+      const detail = await fetch(`${BASE}/api/v1/message/${entry.ID}`);
+      const json = (await detail.json()) as { HTML?: string; Text?: string };
+      found.push({
+        subject: entry.Subject,
+        body: `${json.HTML ?? ""}\n${json.Text ?? ""}`,
+      });
+    }
+
+    return found;
+  }
+
+  const name = mailboxName(email);
+  const list = await fetch(`${BASE}/api/v1/mailbox/${name}`);
+  if (!list.ok) return [];
+
+  const headers = (await list.json()) as { id: string; subject: string }[];
+  const found: CaughtMail[] = [];
+
+  for (const entry of headers) {
+    const detail = await fetch(`${BASE}/api/v1/mailbox/${name}/${entry.id}`);
+    const json = (await detail.json()) as {
+      body: { html?: string; text?: string };
+    };
+    found.push({
+      subject: entry.subject,
+      body: `${json.body.html ?? ""}\n${json.body.text ?? ""}`,
+    });
+  }
+
+  return found;
+}
+
+export async function mailsWithSubject(
+  email: string,
+  subject: RegExp,
+): Promise<CaughtMail[]> {
+  return (await listMails(email)).filter((mail) => subject.test(mail.subject));
+}
+
+// Waits until a mail with a matching subject arrived and returns the first one.
+export async function waitForMail(
+  email: string,
+  subject: RegExp,
+): Promise<CaughtMail> {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    const [first] = await mailsWithSubject(email, subject);
+    if (first) return first;
+
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+
+  throw new Error("The expected system e-mail did not arrive in time");
+}

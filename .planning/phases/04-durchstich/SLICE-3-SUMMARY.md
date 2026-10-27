@@ -76,3 +76,15 @@ Baut auf der Migration aus Teil 1 auf (gestapelter PR, Basis `feat/review-flow-d
 Nicht Teil davon: Mailversand (Teil 3). Der Text „Du bekommst eine E-Mail“ stimmt daher erst mit Teil 3. Die öffentliche Profilseite gibt es noch nicht (Slice 6); die Live-Seite sagt das.
 
 Prüfung: lokal nur statische Durchsicht; Lint, Typecheck, Vitest und Playwright laufen erstmals in der CI (npm-Registry von hier nicht erreichbar). E2E angepasst: Rückfrage, Korrektur, erneutes Einreichen, Freigabe mit sofortiger Veröffentlichung und öffentlichem Bild, spätere Änderungen mit eigener Bestätigung.
+
+## Umbau auf Variante B, Teil 3: Mails (PR 3)
+
+Baut auf Teil 2 auf (gestapelter PR, Basis `feat/review-flow-app`).
+
+- **Versand:** `lib/mail/` (Konfiguration, Texte, Versand). Nach „Freigeben und veröffentlichen“ und nach „Rückfrage stellen“ ruft die Founder-Aktion `claim_profile_mail` → SMTP → `finish_profile_mail`. Ein Fehlschlag macht die Entscheidung nicht rückgängig; die Prüfseite zeigt „Mail fehlgeschlagen“ und „Mail erneut senden“ (auch „Mail senden“, wenn noch nie gesendet wurde). Bei „angenommen“ gibt es keinen zweiten Versand.
+- **Texte (Vorschlag, `TODO(spec)`):** „Dein Profil „…“ ist jetzt live“ und „Eine Frage zu deinem Profil „…““. Der Fragetext steht nicht in der Mail, nur ein Hinweis, dass die Frage nach der Anmeldung auf der Startseite steht. Der einzige Link führt auf `/organizer`. Abweichung zum Wireframe: der Fragetext fehlt bewusst in der Mail; wenn du ihn in der Mail willst, ist das eine kleine Änderung.
+- **Abhängigkeit:** `nodemailer` (+ `@types/nodemailer`), siehe PR-Beschreibung.
+- **Konfiguration:** `MAIL_SMTP_HOST`, `MAIL_SMTP_PORT`, `MAIL_SMTP_USER`, `MAIL_SMTP_PASSWORD`, `MAIL_FROM`. Ohne sie wird nichts gesendet. Einrichtung: `docs/runbooks/system-mails.md`.
+- **Datenschutz:** Die Adresse kommt nur aus `claim_profile_mail`, wird nicht geloggt, nicht gespeichert und steht in keinem Fehlertext; protokolliert werden nur Art und Fehlercode.
+
+Prüfung: Unit-Tests für Konfiguration und Texte (Escaping, keine Zeilenumbrüche im Betreff, ein Link). E2E gegen den Mail-Fänger des Supabase-Stacks (SMTP-Port 54325): genau eine Mail je Ereignis an den richtigen Empfänger, keine Mail an das andere Profil, Wiederholung nach „fehlgeschlagen“, kein zweiter Versand nach „angenommen“. Nicht geprüft: Versand über echtes SES und Zustellung an einen Posteingang. Das passiert nach dem Merge mit deinen SMTP-Zugangsdaten an verifizierte Testadressen.

@@ -215,6 +215,8 @@ export type FounderProfileView = {
   // Mail that belongs to the current state (live mail after approval,
   // question mail after a question).
   mail: MailState | null;
+  // The mail this page may send (again): kind and revision it belongs to.
+  mailTarget: { kind: MailKind; revisionId: string } | null;
   // null = nothing published yet.
   publishedImagePublic: boolean | null;
 };
@@ -284,7 +286,12 @@ export async function loadFounderProfileView(
   const question = questionOnDraft ?? latest;
 
   let mail: MailState | null = null;
+  let mailTarget: FounderProfileView["mailTarget"] = null;
   if (alreadyApproved && profile.firstApprovedRevisionId) {
+    mailTarget = {
+      kind: "profile_live",
+      revisionId: profile.firstApprovedRevisionId,
+    };
     mail = await loadMailState(
       supabase,
       profileId,
@@ -302,6 +309,11 @@ export async function loadFounderProfileView(
     mail = askedRevision
       ? await loadMailState(supabase, profileId, askedRevision, "profile_question")
       : null;
+    // Only the question that belongs to the current draft can be mailed: the
+    // database refuses a mail for an older one.
+    if (askedRevision && questionOnDraft) {
+      mailTarget = { kind: "profile_question", revisionId: askedRevision };
+    }
   }
 
   return {
@@ -322,6 +334,7 @@ export async function loadFounderProfileView(
     question,
     questionIsOnDraft: questionOnDraft !== null,
     mail,
+    mailTarget,
     publishedImagePublic: profile.publishedRevisionId
       ? await isPublishedImagePublic(supabase, profileId)
       : null,

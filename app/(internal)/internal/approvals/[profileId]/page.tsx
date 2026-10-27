@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import {
   ApproveForm,
   QuestionForm,
+  ResendMailForm,
   RetryImageFounderForm,
 } from "@/components/profile/approve-form";
 import { GapList } from "@/components/profile/status";
@@ -11,7 +12,7 @@ import { requireFounder } from "@/lib/auth/server";
 import { loadFounderProfileView, mailText } from "@/lib/profile/founder";
 import { createClient } from "@/lib/supabase/server";
 
-import { approveFirst, requestChanges, retryImage } from "../actions";
+import { approveFirst, requestChanges, resendMail, retryImage } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,9 @@ export default async function ApprovalDetailPage({
     !view.alreadyApproved &&
     !view.questionIsOnDraft &&
     view.gaps.length === 0;
+  // Offered while the mail was not accepted yet (failed, never sent, or stuck).
+  const canResend =
+    view.mailTarget !== null && view.mail?.status !== "sent";
   const imageMissingPublicly =
     view.alreadyApproved && view.publishedImagePublic === false;
 
@@ -108,6 +112,26 @@ export default async function ApprovalDetailPage({
             })}
             {view.mail ? ` · ${mailText(view.mail)}` : ""}
           </p>
+        </section>
+      ) : null}
+
+      {canResend && view.mailTarget ? (
+        <section aria-labelledby="mail-heading" className="border-border space-y-3 rounded-lg border p-4">
+          <h2 id="mail-heading" className="font-medium">
+            Mail an den Organizer
+          </h2>
+          <p className="text-sm">
+            {view.mail
+              ? `${mailText(view.mail)}.`
+              : "Noch keine Mail gesendet."}
+          </p>
+          <ResendMailForm
+            action={resendMail}
+            profileId={profileId}
+            revisionId={view.mailTarget.revisionId}
+            kind={view.mailTarget.kind}
+            label={view.mail?.status === "failed" ? "Mail erneut senden" : "Mail senden"}
+          />
         </section>
       ) : null}
 
