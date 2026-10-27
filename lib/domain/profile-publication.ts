@@ -175,15 +175,24 @@ export type ReviewStatus =
   | "incomplete"
   | "ready"
   | "in_review"
-  | "approved"
+  | "question"
+  | "update_ready"
   | "published";
 
+// Status of the current draft revision.
+//
+// Before the first publication the path is incomplete -> ready -> in_review
+// (-> question, then a changed draft starts again) -> published; the founder's
+// approval publishes the submitted revision. After the first publication a
+// draft is either incomplete, update_ready (complete, differs from the
+// published revision and needs the owner's confirmation) or published.
 export function reviewStatus(input: {
   gapCount: number;
   draftRevisionId: string | null;
   firstApprovedRevisionId: string | null;
   publishedRevisionId: string | null;
   submittedRevisionId: string | null;
+  questionRevisionId: string | null;
 }): ReviewStatus {
   if (
     input.publishedRevisionId !== null &&
@@ -197,7 +206,14 @@ export function reviewStatus(input: {
   }
 
   if (input.firstApprovedRevisionId !== null) {
-    return "approved";
+    return "update_ready";
+  }
+
+  if (
+    input.questionRevisionId !== null &&
+    input.questionRevisionId === input.draftRevisionId
+  ) {
+    return "question";
   }
 
   if (
@@ -208,6 +224,48 @@ export function reviewStatus(input: {
   }
 
   return "ready";
+}
+
+// Four steps shown to the owner: Angaben, Eingereicht, Geprüft, Live. The
+// returned number is the step that is "now"; steps before it are done and 4
+// means all four are done.
+export const PROGRESS_STEPS = ["Angaben", "Eingereicht", "Geprüft", "Live"] as const;
+
+export function progressStage(status: ReviewStatus, live: boolean): number {
+  if (live) return PROGRESS_STEPS.length;
+
+  switch (status) {
+    case "incomplete":
+      return 0;
+    case "ready":
+      return 1;
+    case "in_review":
+    case "question":
+      return 2;
+    default:
+      return PROGRESS_STEPS.length;
+  }
+}
+
+export const QUESTION_MAX_LENGTH = 500;
+
+export function parseQuestion(
+  raw: unknown,
+): { ok: true; value: string } | { ok: false; message: string } {
+  const value = text(raw);
+
+  if (value === "") {
+    return { ok: false, message: "Bitte schreibe deine Frage an den Organizer." };
+  }
+
+  if (value.length > QUESTION_MAX_LENGTH) {
+    return {
+      ok: false,
+      message: `Die Frage darf höchstens ${QUESTION_MAX_LENGTH} Zeichen lang sein.`,
+    };
+  }
+
+  return { ok: true, value };
 }
 
 export type ImageType = "image/jpeg" | "image/png" | "image/webp";

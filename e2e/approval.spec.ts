@@ -13,8 +13,8 @@ import { clearMailbox, waitForCode } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the
-// founder's first approval, the owner's explicit publication and the copy of
-// the image into the public bucket.
+// founder's decision (approval that publishes at once, or a question), the copy
+// of the image into the public bucket and the owner's later publication.
 
 const BASE_URL = "http://127.0.0.1:3000";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -141,6 +141,7 @@ test.describe("first approval, publication and public image", () => {
   let profileB = "";
   let revisionA = "";
   let revisionB = "";
+  let correctedB = "";
   let founderApi: Api;
   let ownerBApi: Api;
   let ownerAApi: Api;
@@ -212,34 +213,117 @@ test.describe("first approval, publication and public image", () => {
     await context.close();
   });
 
+  test("the founder asks a question instead of approving", async ({ browser }) => {
+    const { context, page } = await pageFor(browser, "founder");
+
+    await page.goto(`/internal/approvals/${profileB}`);
+    await expect(page.getByRole("heading", { name: "Beta Events", exact: true })).toBeVisible();
+
+    await page.getByLabel("Deine Frage an den Organizer").fill("Der Link scheint nicht zu funktionieren.");
+    await page.getByRole("button", { name: "Rückfrage stellen" }).click();
+    await expect(page.getByText("Rückfrage gespeichert. Das Profil bleibt privat.")).toBeVisible();
+
+    expect(
+      sql(`select count(*) from public.review_requests where profile_id = '${profileB}' and revision_id = '${revisionB}'`),
+    ).toBe("1");
+    expect(sql(`select publication_state from public.profiles where id = '${profileB}'`)).toBe("private");
+
+    // The question moves to its own tab.
+    await page.goto("/internal/approvals?tab=question");
+    await expect(page.getByText(`/${slugB} ·`)).toBeVisible();
+    await page.goto("/internal/approvals?tab=open");
+    await expect(page.getByText(`/${slugB} ·`)).toHaveCount(0);
+
+    await context.close();
+  });
+
+  test("the owner reads the question, cannot hand in the same revision again", async ({ browser }) => {
+    const resubmit = await ownerBApi.rpc("submit_profile_for_review", {
+      p_profile_id: profileB,
+      p_expected_draft_revision_id: revisionB,
+      p_confirmed_rights: true,
+      p_confirmed_usage: true,
+    });
+    expect(resubmit.error?.code).toBe("DK003");
+
+    const { context, page } = await pageFor(browser, "ownerB");
+    await page.goto("/organizer");
+    await expect(page.getByText("Der Link scheint nicht zu funktionieren.")).toBeVisible();
+    await expect(page.getByText("Das ist keine Absage.", { exact: false })).toBeVisible();
+    await page.getByRole("link", { name: "Angabe korrigieren" }).click();
+    await expect(page.getByRole("heading", { name: "Wir haben eine Frage zu deinem Profil" })).toBeVisible();
+    await expect(page.getByText("Der Link scheint nicht zu funktionieren.")).toBeVisible();
+
+    await context.close();
+  });
+
   test("the founder sees the queue and approves exactly the shown revision", async ({ browser }) => {
     const { context, page } = await pageFor(browser, "founder");
 
     await page.goto("/internal/approvals");
     await expect(page.getByText(`/${slugA} ·`)).toBeVisible();
-    await expect(page.getByText(`/${slugB} ·`)).toBeVisible();
 
     await page.goto(`/internal/approvals/${profileA}`);
-    await expect(page.getByRole("heading", { name: "Alpha Events" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Alpha Events", exact: true })).toBeVisible();
     await expect(page.getByRole("img", { name: "Bühne" })).toBeVisible();
-    await page.getByRole("button", { name: "Diesen Stand freigeben" }).click();
-    await expect(page.getByText("Freigegeben. Der Organizer kann das Profil jetzt selbst veröffentlichen.")).toBeVisible();
+
+    const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false },
+    });
+    expect((await anon.from("public_profiles").select("slug").eq("slug", slugA)).data).toEqual([]);
+
+    await page.getByRole("button", { name: "Freigeben und veröffentlichen" }).click();
+    await expect(page.getByText("Dieser Stand wird sofort öffentlich.", { exact: false })).toBeVisible();
+    // Still nothing public before the second confirmation.
+    expect((await anon.from("public_profiles").select("slug").eq("slug", slugA)).data).toEqual([]);
+    await page.getByRole("button", { name: "Ja, freigeben und veröffentlichen" }).click();
+    await expect(page.getByText("Freigegeben und veröffentlicht.").first()).toBeVisible();
 
     expect(
-      sql(`select count(*) from public.publication_audit where entity_id = '${profileA}' and action = 'approve_first' and revision_id = '${revisionA}'`),
-    ).toBe("1");
-    // Approval alone publishes nothing.
-    expect(sql(`select publication_state from public.profiles where id = '${profileA}'`)).toBe("private");
+      sql(`select count(*) from public.publication_audit where entity_id = '${profileA}' and action in ('approve_first', 'publish') and revision_id = '${revisionA}'`),
+    ).toBe("2");
+    expect(sql(`select publication_state from public.profiles where id = '${profileA}'`)).toBe("published");
+    expect(sql(`select published_revision_id = first_approved_revision_id from public.profiles where id = '${profileA}'`)).toBe("t");
 
-    await page.goto("/internal/approvals");
+    // Data and image are public; the original stays private.
+    const rows = await anon
+      .from("public_profiles")
+      .select("slug, name, profile_image_path")
+      .eq("slug", slugA);
+    expect(rows.data).toHaveLength(1);
+    expect(rows.data![0].name).toBe("Alpha Events");
+    const imagePath = rows.data![0].profile_image_path!;
+    expect(imagePath).toMatch(new RegExp(`^profiles/${profileA}/`));
+
+    const publicImage = await fetch(
+      `${SUPABASE_URL}/storage/v1/object/public/public-media/${imagePath}`,
+    );
+    expect(publicImage.status).toBe(200);
+
+    const privatePath = sql(
+      `select a.private_object_path from public.media_assets a join public.media_uses u on u.asset_id = a.id where u.profile_id = '${profileA}'`,
+    );
+    const privateTry = await fetch(
+      `${SUPABASE_URL}/storage/v1/object/public/private-media/${privatePath}`,
+    );
+    expect(privateTry.status).not.toBe(200);
+    expect(sql(`select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileA}/%'`)).toBe("1");
+
+    // The profile moved to the finished tab; the other one is still private.
+    await page.goto("/internal/approvals?tab=done");
+    await expect(page.getByText(`/${slugA} ·`)).toBeVisible();
+    await page.goto("/internal/approvals?tab=open");
     await expect(page.getByText(`/${slugA} ·`)).toHaveCount(0);
-    await expect(page.getByText(`/${slugB} ·`)).toBeVisible();
+    expect((await anon.from("public_profiles").select("slug").eq("slug", slugB)).data).toEqual([]);
 
     await context.close();
   });
 
   test("a changed draft cannot be approved on the old preview", async () => {
     // Owner B edits after the hand-in: the app creates a new revision.
+    const imageUse = sql(
+      `select profile_image_use_id from public.profile_revisions where id = '${revisionB}'`,
+    );
     const next = await ownerBApi
       .from("profile_revisions")
       .insert({
@@ -265,82 +349,70 @@ test.describe("first approval, publication and public image", () => {
     });
     expect(stale.error?.code).toBe("DK001");
 
-    // The new draft was never handed in and is not approvable: it also has
-    // no image yet.
+    // The new draft has no image yet, so it is incomplete.
     const incomplete = await founderApi.rpc("approve_first_profile", {
       p_profile_id: profileB,
       p_expected_draft_revision_id: next.data!.id,
     });
     expect(incomplete.error?.code).toBe("DK002");
-  });
 
-  test("after the approval the owner may publish, but not edit", async ({ browser }) => {
-    const { context, page } = await pageFor(browser, "ownerA");
+    // The owner completes the correction and hands it in again.
+    const linked = await ownerBApi
+      .from("profile_revisions")
+      .update({ profile_image_use_id: imageUse })
+      .eq("id", next.data!.id)
+      .select("id");
+    expect(linked.data).toHaveLength(1);
 
-    await page.goto(`/organizer/profiles/${profileA}/edit`);
-    await expect(page.getByText("DISKOE hat dieses Profil freigegeben.", { exact: false })).toBeVisible();
-    await page.getByLabel("Kurzvorstellung").fill("Sneaky change.");
-    await page.getByRole("button", { name: "Speichern" }).click();
-    await expect(page.getByText("Das Profil ist freigegeben. Bitte veröffentliche es zuerst", { exact: false })).toBeVisible();
-    expect(
-      sql(`select short_intro from public.profile_revisions where id = '${revisionA}'`),
-    ).toBe("Alpha Events nights.");
-
-    await page.goto(`/organizer/profiles/${profileA}/preview`);
-    await expect(page.getByRole("button", { name: "Veröffentlichen" })).toBeVisible();
-
-    await context.close();
-  });
-
-  test("publishing is explicit, makes the data and the image public", async ({ browser }) => {
-    const { context, page } = await pageFor(browser, "ownerA");
-    await page.goto(`/organizer/profiles/${profileA}/preview`);
-
-    // Nothing public yet.
-    const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
-      auth: { persistSession: false },
+    // Complete but not handed in yet: approval is refused.
+    const unsubmitted = await founderApi.rpc("approve_first_profile", {
+      p_profile_id: profileB,
+      p_expected_draft_revision_id: next.data!.id,
     });
-    expect((await anon.from("public_profiles").select("slug").eq("slug", slugA)).data).toEqual([]);
+    expect(unsubmitted.error?.code).toBe("DK003");
 
-    await page.getByRole("button", { name: "Veröffentlichen" }).click();
-    await expect(page.getByText("Dein Profil wird öffentlich sichtbar. Jetzt veröffentlichen?")).toBeVisible();
-    // Still nothing public before the second confirmation.
-    expect((await anon.from("public_profiles").select("slug").eq("slug", slugA)).data).toEqual([]);
-    await page.getByRole("button", { name: "Ja, jetzt veröffentlichen" }).click();
-    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible();
+    const submit = await ownerBApi.rpc("submit_profile_for_review", {
+      p_profile_id: profileB,
+      p_expected_draft_revision_id: next.data!.id,
+      p_confirmed_rights: true,
+      p_confirmed_usage: true,
+    });
+    expect(submit.error).toBeNull();
+    correctedB = next.data!.id;
+  });
 
-    const rows = await anon
-      .from("public_profiles")
-      .select("slug, name, profile_image_path")
-      .eq("slug", slugA);
-    expect(rows.data).toHaveLength(1);
-    expect(rows.data![0].name).toBe("Alpha Events");
-    const imagePath = rows.data![0].profile_image_path!;
-    expect(imagePath).toMatch(new RegExp(`^profiles/${profileA}/`));
+  test("the corrected profile is approved and published in one step", async ({ browser }) => {
+    const { context, page } = await pageFor(browser, "founder");
 
-    const publicImage = await fetch(
-      `${SUPABASE_URL}/storage/v1/object/public/public-media/${imagePath}`,
-    );
-    expect(publicImage.status).toBe(200);
+    await page.goto("/internal/approvals?tab=open");
+    await expect(page.getByText(`/${slugB} ·`)).toBeVisible();
 
-    // The original stays private; the other profile is not public.
-    const privatePath = sql(
-      `select a.private_object_path from public.media_assets a join public.media_uses u on u.asset_id = a.id where u.profile_id = '${profileA}'`,
-    );
-    const privateTry = await fetch(
-      `${SUPABASE_URL}/storage/v1/object/public/private-media/${privatePath}`,
-    );
-    expect(privateTry.status).not.toBe(200);
-    expect((await anon.from("public_profiles").select("slug").eq("slug", slugB)).data).toEqual([]);
-    expect(sql(`select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileA}/%'`)).toBe("1");
+    await page.goto(`/internal/approvals/${profileB}`);
+    await page.getByRole("button", { name: "Freigeben und veröffentlichen" }).click();
+    await page.getByRole("button", { name: "Ja, freigeben und veröffentlichen" }).click();
+    await expect(page.getByText("Freigegeben und veröffentlicht.").first()).toBeVisible();
+
+    expect(sql(`select published_revision_id = '${correctedB}' from public.profiles where id = '${profileB}'`)).toBe("t");
+    expect(sql(`select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileB}/%'`)).toBe("1");
 
     await context.close();
   });
 
-  test("editing after publishing leaves the public version unchanged", async ({ browser }) => {
+  test("after the approval the owner sees a live profile and may keep editing", async ({ browser }) => {
+    // The first publication is not an owner step any more.
+    const again = await ownerAApi.rpc("publish_profile", {
+      p_profile_id: profileA,
+      p_expected_draft_revision_id: revisionA,
+    });
+    expect(again.error?.code).toBe("DK001");
+
     const { context, page } = await pageFor(browser, "ownerA");
+    await page.goto("/organizer");
+    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible();
+    await expect(page.getByText("Änderungen bleiben privat, bis du sie selbst bestätigst.")).toBeVisible();
 
     await page.goto(`/organizer/profiles/${profileA}/edit`);
+    await expect(page.getByText("DISKOE hat dieses Profil freigegeben.", { exact: false })).toHaveCount(0);
     await page.getByLabel("Kurzvorstellung").fill("A new text that is not public yet.");
     await page.getByRole("button", { name: "Speichern" }).click();
     await expect(page.getByText("Gespeichert. Der Entwurf bleibt privat.")).toBeVisible();
@@ -353,6 +425,24 @@ test.describe("first approval, publication and public image", () => {
 
     await page.goto(`/organizer/profiles/${profileA}/preview`);
     await expect(page.getByRole("button", { name: "Änderungen veröffentlichen" })).toBeVisible();
+
+    await context.close();
+  });
+
+  test("later changes are published only after the owner's own confirmation", async ({ browser }) => {
+    const { context, page } = await pageFor(browser, "ownerA");
+    await page.goto(`/organizer/profiles/${profileA}/preview`);
+
+    await page.getByRole("button", { name: "Änderungen veröffentlichen" }).click();
+    await expect(page.getByText("Die geänderten Angaben werden öffentlich sichtbar. Jetzt veröffentlichen?")).toBeVisible();
+    await page.getByRole("button", { name: "Ja, jetzt veröffentlichen" }).click();
+    await expect(page.getByText("Deine Änderungen sind veröffentlicht.")).toBeVisible();
+
+    const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false },
+    });
+    const rows = await anon.from("public_profiles").select("short_intro").eq("slug", slugA);
+    expect(rows.data![0].short_intro).toBe("A new text that is not public yet.");
 
     await context.close();
   });

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PublishForm, RetryImageForm, SubmitForm } from "@/components/profile/forms";
-import { GapList, ProfileNav, STATUS_LABEL } from "@/components/profile/status";
+import { GapList, ProfileNav, stateLabel } from "@/components/profile/status";
 import { loadOwnerProfileView } from "@/lib/profile/load";
 
 import { publishProfile, retryImagePublish, submitForReview } from "../actions";
@@ -19,9 +19,7 @@ export default async function PreviewProfilePage({
   );
   const { revision, image } = view;
   const canSubmit = view.status === "ready";
-  const canPublish =
-    view.status === "approved" &&
-    view.profile.draftRevisionId !== view.profile.publishedRevisionId;
+  const canPublish = view.status === "update_ready";
   const imageMissingPublicly =
     view.profile.publishedRevisionId !== null &&
     view.publishedImagePublic === false;
@@ -34,8 +32,8 @@ export default async function PreviewProfilePage({
         </Link>
         <h1 className="text-3xl font-bold tracking-tight">Vorschau</h1>
         <p className="text-muted-foreground">
-          {STATUS_LABEL[view.status]} · Private Vorschau. Nur du und DISKOE
-          können sie sehen.
+          {stateLabel(view.status, view.live)} · Private Vorschau. Nur du und
+          DISKOE können sie sehen.
         </p>
         <ProfileNav profileId={profileId} active="preview" />
       </header>
@@ -72,33 +70,55 @@ export default async function PreviewProfilePage({
           </h2>
           <p className="text-muted-foreground">
             DISKOE prüft genau diesen Stand. Wenn du danach etwas änderst,
-            entsteht ein neuer Entwurf, der erneut eingereicht werden muss.
+            beginnt die Prüfung mit dem neuen Stand von vorn.
           </p>
+          <div className="bg-muted space-y-2 rounded-lg p-4">
+            <h3 className="font-medium">So geht es weiter</h3>
+            <ol className="list-decimal space-y-1 pl-5">
+              <li>
+                DISKOE prüft dein Profil. Wir melden uns so schnell wie
+                möglich und versuchen, jedes Profil noch am selben Tag zu
+                prüfen.
+              </li>
+              <li>
+                Du bekommst eine E-Mail: entweder die Freigabe oder eine
+                konkrete Frage.
+              </li>
+              <li>
+                Mit der Freigabe ist dein Profil sofort öffentlich. Du musst
+                nichts weiter bestätigen.
+              </li>
+            </ol>
+          </div>
           <SubmitForm action={submitForReview.bind(null, profileId)} />
         </section>
       ) : canPublish ? (
         <section aria-labelledby="publish-heading" className="space-y-4">
           <h2 id="publish-heading" className="text-xl font-semibold">
-            {view.profile.publishedRevisionId
-              ? "Änderungen veröffentlichen"
-              : "Veröffentlichen"}
+            Änderungen veröffentlichen
           </h2>
           <p className="text-muted-foreground">
-            {view.profile.publishedRevisionId
-              ? "Bis du veröffentlichst, bleibt der bisherige öffentliche Stand sichtbar."
-              : "DISKOE hat diesen Stand freigegeben. Öffentlich wird er erst, wenn du ihn selbst veröffentlichst."}
+            Bis du veröffentlichst, bleibt der bisherige öffentliche Stand
+            sichtbar.
           </p>
           <PublishForm
             action={publishProfile.bind(null, profileId)}
-            update={view.profile.publishedRevisionId !== null}
+            update
           />
         </section>
       ) : view.status === "published" && !imageMissingPublicly ? (
         <p role="status">Dein Profil ist veröffentlicht.</p>
       ) : view.status === "in_review" ? (
         <p role="status">
-          Eingereicht. DISKOE prüft den Entwurf. Veröffentlicht wird erst nach
-          der Freigabe und deiner Bestätigung.
+          Eingereicht. DISKOE prüft dein Profil. Mit der Freigabe wird es
+          öffentlich.
+        </p>
+      ) : view.status === "question" ? (
+        <p role="status">
+          DISKOE hat eine Frage zu diesem Stand:{" "}
+          <Link href={`/organizer/profiles/${profileId}/status`} className="underline">
+            Frage ansehen
+          </Link>
         </p>
       ) : null}
 
