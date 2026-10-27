@@ -20,6 +20,9 @@ const BASE_URL = "http://127.0.0.1:3000";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
 
+// The CI serves the app with `next dev`, which compiles routes on first use.
+const SLOW = { timeout: 20_000 };
+
 const run = `q${Date.now().toString(36)}`;
 const emails = {
   founder: `founder-${run}@example.test`,
@@ -222,7 +225,7 @@ test.describe("first approval, publication and public image", () => {
     await page.getByLabel("Deine Frage an den Organizer").fill("Der Link scheint nicht zu funktionieren.");
     await page.getByRole("button", { name: "Rückfrage stellen" }).click();
     // The form disappears after the save; the page keeps the facts.
-    await expect(page.getByText("Zu diesem Stand ist eine Rückfrage gestellt.", { exact: false })).toBeVisible();
+    await expect(page.getByText("Zu diesem Stand ist eine Rückfrage gestellt.", { exact: false })).toBeVisible(SLOW);
     await expect(page.getByRole("heading", { name: "Gestellte Rückfrage" })).toBeVisible();
 
     expect(
@@ -279,7 +282,7 @@ test.describe("first approval, publication and public image", () => {
     // Still nothing public before the second confirmation.
     expect((await anon.from("public_profiles").select("slug").eq("slug", slugA)).data).toEqual([]);
     await page.getByRole("button", { name: "Ja, freigeben und veröffentlichen" }).click();
-    await expect(page.getByText("Freigegeben und veröffentlicht.").first()).toBeVisible();
+    await expect(page.getByText("Freigegeben und veröffentlicht.").first()).toBeVisible(SLOW);
 
     expect(
       sql(`select count(*) from public.publication_audit where entity_id = '${profileA}' and action in ('approve_first', 'publish') and revision_id = '${revisionA}'`),
@@ -392,7 +395,7 @@ test.describe("first approval, publication and public image", () => {
     await page.goto(`/internal/approvals/${profileB}`);
     await page.getByRole("button", { name: "Freigeben und veröffentlichen" }).click();
     await page.getByRole("button", { name: "Ja, freigeben und veröffentlichen" }).click();
-    await expect(page.getByText("Freigegeben und veröffentlicht.").first()).toBeVisible();
+    await expect(page.getByText("Freigegeben und veröffentlicht.").first()).toBeVisible(SLOW);
 
     expect(sql(`select published_revision_id = '${correctedB}' from public.profiles where id = '${profileB}'`)).toBe("t");
     expect(sql(`select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileB}/%'`)).toBe("1");
@@ -410,14 +413,14 @@ test.describe("first approval, publication and public image", () => {
 
     const { context, page } = await pageFor(browser, "ownerA");
     await page.goto("/organizer");
-    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible();
+    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible(SLOW);
     await expect(page.getByText("Änderungen bleiben privat, bis du sie selbst bestätigst.")).toBeVisible();
 
     await page.goto(`/organizer/profiles/${profileA}/edit`);
     await expect(page.getByText("DISKOE hat dieses Profil freigegeben.", { exact: false })).toHaveCount(0);
     await page.getByLabel("Kurzvorstellung").fill("A new text that is not public yet.");
     await page.getByRole("button", { name: "Speichern" }).click();
-    await expect(page.getByText("Gespeichert. Der Entwurf bleibt privat.")).toBeVisible();
+    await expect(page.getByText("Gespeichert. Der Entwurf bleibt privat.")).toBeVisible(SLOW);
 
     const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },
@@ -439,7 +442,7 @@ test.describe("first approval, publication and public image", () => {
     await expect(page.getByText("Die geänderten Angaben werden öffentlich sichtbar. Jetzt veröffentlichen?")).toBeVisible();
     await page.getByRole("button", { name: "Ja, jetzt veröffentlichen" }).click();
     // The publish form disappears once the draft is the published revision.
-    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible();
+    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible(SLOW);
 
     const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },
