@@ -438,7 +438,8 @@ test.describe("first approval, publication and public image", () => {
     await page.getByRole("button", { name: "Änderungen veröffentlichen" }).click();
     await expect(page.getByText("Die geänderten Angaben werden öffentlich sichtbar. Jetzt veröffentlichen?")).toBeVisible();
     await page.getByRole("button", { name: "Ja, jetzt veröffentlichen" }).click();
-    await expect(page.getByText("Deine Änderungen sind veröffentlicht.")).toBeVisible();
+    // The publish form disappears once the draft is the published revision.
+    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible();
 
     const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },
