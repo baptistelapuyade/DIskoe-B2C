@@ -9,7 +9,12 @@ import {
 
 import type { Database } from "../lib/db/types";
 
-import { clearMailbox, waitForCode } from "./support/inbucket";
+import {
+  clearMailbox,
+  mailsWithSubject,
+  waitForCode,
+  waitForMail,
+} from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the
@@ -30,6 +35,8 @@ const emails = {
   ownerB: `owner-b-${run}@example.test`,
   visitor: `visitor-${run}@example.test`,
 };
+const QUESTION_MAIL = /Eine Frage zu deinem Profil/;
+const LIVE_MAIL = /ist jetzt live/;
 const slugA = `alpha-${run}`;
 const slugB = `beta-${run}`;
 
@@ -233,6 +240,27 @@ test.describe("first approval, publication and public image", () => {
     ).toBe("1");
     expect(sql(`select publication_state from public.profiles where id = '${profileB}'`)).toBe("private");
 
+    // The organizer gets one system mail: no question text, no token, only a
+    // link to the sign-in protected start page.
+    const questionMail = await waitForMail(emails.ownerB, QUESTION_MAIL);
+    expect(questionMail.body).toContain("keine Absage");
+    expect(questionMail.body).toContain(`${BASE_URL}/organizer`);
+    expect(questionMail.body).not.toContain("Der Link scheint nicht zu funktionieren.");
+    expect(await mailsWithSubject(emails.ownerB, QUESTION_MAIL)).toHaveLength(1);
+    expect(await mailsWithSubject(emails.ownerA, QUESTION_MAIL)).toHaveLength(0);
+    await expect(page.getByText("Mail vom Anbieter angenommen")).toBeVisible();
+    expect(sql(`select status || ':' || attempts from public.profile_mails where profile_id = '${profileB}' and kind = 'profile_question'`)).toBe("sent:1");
+    await expect(page.getByRole("button", { name: /^Mail (erneut )?senden$/ })).toHaveCount(0);
+
+    // A failed mail is shown as failed and can be sent again from the page.
+    sql(`update public.profile_mails set status = 'failed' where profile_id = '${profileB}' and kind = 'profile_question'`);
+    await page.reload();
+    await expect(page.getByText("Mail fehlgeschlagen").first()).toBeVisible();
+    await page.getByRole("button", { name: "Mail erneut senden" }).click();
+    await expect(page.getByText("Mail vom Anbieter angenommen")).toBeVisible(SLOW);
+    expect(sql(`select status || ':' || attempts from public.profile_mails where profile_id = '${profileB}' and kind = 'profile_question'`)).toBe("sent:2");
+    expect(await mailsWithSubject(emails.ownerB, QUESTION_MAIL)).toHaveLength(2);
+
     // The question moves to its own tab.
     await page.goto("/internal/approvals?tab=question");
     await expect(page.getByText(`/${slugB} ·`)).toBeVisible();
@@ -289,6 +317,26 @@ test.describe("first approval, publication and public image", () => {
     ).toBe("2");
     expect(sql(`select publication_state from public.profiles where id = '${profileA}'`)).toBe("published");
     expect(sql(`select published_revision_id = first_approved_revision_id from public.profiles where id = '${profileA}'`)).toBe("t");
+
+    // Exactly one "live" mail, to the owner of this profile only.
+    const liveMail = await waitForMail(emails.ownerA, LIVE_MAIL);
+    expect(liveMail.body).toContain("Alpha Events");
+    expect(liveMail.body).toContain(`${BASE_URL}/organizer`);
+    expect(await mailsWithSubject(emails.ownerA, LIVE_MAIL)).toHaveLength(1);
+    expect(await mailsWithSubject(emails.ownerB, LIVE_MAIL)).toHaveLength(0);
+    expect(sql(`select status from public.profile_mails where profile_id = '${profileA}' and kind = 'profile_live'`)).toBe("sent");
+    await expect(page.getByText("Mail vom Anbieter angenommen").first()).toBeVisible();
+
+    // Nothing to send again once the provider accepted the mail.
+    const again = await founderApi.rpc("claim_profile_mail", {
+      p_profile_id: profileA,
+      p_revision_id: revisionA,
+      p_kind: "profile_live",
+    });
+    expect(again.error).toBeNull();
+    expect(again.data).toBeNull();
+    await page.reload();
+    await expect(page.getByRole("button", { name: /^Mail (erneut )?senden$/ })).toHaveCount(0);
 
     // Data and image are public; the original stays private.
     const rows = await anon
@@ -399,6 +447,8 @@ test.describe("first approval, publication and public image", () => {
 
     expect(sql(`select published_revision_id = '${correctedB}' from public.profiles where id = '${profileB}'`)).toBe("t");
     expect(sql(`select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileB}/%'`)).toBe("1");
+    await waitForMail(emails.ownerB, LIVE_MAIL);
+    expect(await mailsWithSubject(emails.ownerB, LIVE_MAIL)).toHaveLength(1);
 
     await context.close();
   });

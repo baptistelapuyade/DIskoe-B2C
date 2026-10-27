@@ -147,3 +147,35 @@ export function RetryImageFounderForm({
     </form>
   );
 }
+
+export function ResendMailForm({
+  action,
+  profileId,
+  revisionId,
+  kind,
+  label,
+}: {
+  action: Action;
+  profileId: string;
+  revisionId: string;
+  kind: "profile_live" | "profile_question";
+  label: string;
+}) {
+  const [state, formAction, pending] = useActionState(action, initial);
+
+  return (
+    <form action={formAction} className="space-y-3">
+      <input type="hidden" name="profileId" value={profileId} />
+      <input type="hidden" name="revisionId" value={revisionId} />
+      <input type="hidden" name="kind" value={kind} />
+      <button
+        type="submit"
+        disabled={pending}
+        className="border-border rounded-md border px-5 py-2.5 font-medium disabled:opacity-60"
+      >
+        {pending ? "Sendet …" : label}
+      </button>
+      <Result state={state} />
+    </form>
+  );
+}
