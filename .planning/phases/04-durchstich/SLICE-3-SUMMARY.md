@@ -27,3 +27,16 @@ App:
 Abweichungen zum Plan: Slug nur angezeigt; keine eigene `setup`-Seite (Startseite verlinkt auf „Bearbeiten“); Gestaltung/Module nicht enthalten. Bei Teilfehlern bleiben unbenutzte private Dateien liegen (Clients dürfen nicht löschen).
 
 Prüfung: SQL-Tests lokal grün (Abschnitt 7c), sechs Mutationsproben (Erklärungen ignoriert, jeder darf einreichen, freigegebenes Profil erneut einreichbar, unvollständig akzeptiert, veraltete Revision akzeptiert, anon darf ausführen) wurden erkannt. Unit-Tests und `e2e/profile.spec.ts` (Editor, ungültige Eingabe, Bild-Prüfungen, Einreichen, neue Revision nach Einreichen, Zugriff anderer Konten) laufen in der CI; lokal nicht ausführbar (Registry gesperrt).
+
+## 3c — Founder-Freigabe, Veröffentlichen, öffentliches Bild (Branch `feat/slice-3c-approval-publish`, Draft-PR #9)
+
+Keine neue Migration. Die Migration aus 3b ist inzwischen auf dem Dev-Projekt angewendet.
+
+- `requireFounder()` (404 für Nicht-Founder, Anmeldung für Anonyme). Seiten `/internal/approvals` (Warteschlange, abgeleitet: aktueller Entwurf wurde eingereicht und hat keine Erstfreigabe) und `/internal/approvals/[profileId]` (exakte private Vorschau mit signierter Bild-URL). Die Freigabe schickt die angezeigte Revisions-ID an `approve_first_profile`; die Datenbank lehnt Änderungen (DK001), Lücken (DK002), Doppelfreigabe (DK003) und Selbstfreigabe (42501) ab. Der Founder liest die Basistabelle `profiles`, nicht `my_profiles` (diese Sicht zeigt nur eigene Profile).
+- Owner: „Veröffentlichen“ mit zweiter Bestätigung über `publish_profile`. Danach kopiert die Sitzung des Owners das Original von `private-media` nach `public-media` an den reservierten Pfad (idempotent). Schlägt das fehl, zeigt die Seite „Bild noch nicht öffentlich“ mit Wiederholen-Knopf. Ein Secret-Key war nicht nötig: die Cross-Bucket-Kopie mit Owner-Sitzung ist in der CI gegen echtes Storage belegt (öffentliche URL liefert 200, das private Original nicht).
+- Zwischen Erstfreigabe und erster Veröffentlichung ist Bearbeiten pausiert, weil die erste Veröffentlichung nur die freigegebene Revision akzeptiert (sonst Sackgasse). Danach erzeugt Bearbeiten wie bisher eine neue Revision; der öffentliche Stand bleibt, bis „Änderungen veröffentlichen“ bestätigt wird.
+- Nicht enthalten: öffentliche Seite `/[slug]` (Slice 6), Ablehnen/Rückfrage durch den Founder, Benachrichtigung des Organizers (keine echten E-Mails), Zurückziehen.
+
+Prüfung: Lint, Typecheck, Unit-Tests, RLS-Suiten und Playwright (`e2e/approval.spec.ts`: nur Founder erreicht die Seiten, Owner kann weder freigeben noch vorzeitig veröffentlichen, veralteter Stand nicht freigebbar, Veröffentlichung ist explizit, Daten und Bild werden öffentlich, Original bleibt privat, Bearbeiten ändert den öffentlichen Stand nicht) in der CI grün. Lokal nicht ausführbar (Registry gesperrt). Da keine SQL-Änderung, entfallen Mutationsproben.
+
+Slice 3 ist damit funktional komplett, aber noch nicht von dir am Dev-Projekt mit echtem Browser abgenommen.

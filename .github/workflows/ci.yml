@@ -175,4 +175,4 @@ jobs:
           echo "::add-mask::$(value ANON_KEY)"
 
       - name: Run sign-in and access tests
-        run: npx playwright test e2e/auth.spec.ts e2e/profile.spec.ts
+        run: npx playwright test e2e/auth.spec.ts e2e/profile.spec.ts e2e/approval.spec.ts

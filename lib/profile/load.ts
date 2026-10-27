@@ -8,7 +8,10 @@ import {
   type GapCode,
   type ReviewStatus,
 } from "@/lib/domain/profile-publication";
+import { loadImage, type ProfileImage } from "@/lib/profile/image";
+import { isPublishedImagePublic } from "@/lib/profile/publish";
 import {
+  isEditLocked,
   loadProfileState,
   loadRevision,
   wasSubmitted,
@@ -19,12 +22,7 @@ import {
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export type ProfileImage = {
-  useId: string;
-  altText: string | null;
-  confirmed: boolean;
-  signedUrl: string | null;
-};
+export type { ProfileImage };
 
 export type OwnerProfileView = {
   userId: string;
@@ -33,6 +31,10 @@ export type OwnerProfileView = {
   image: ProfileImage | null;
   gaps: GapCode[];
   status: ReviewStatus;
+  // Approved but not yet published: the draft must stay the approved revision.
+  locked: boolean;
+  // null = nothing published yet.
+  publishedImagePublic: boolean | null;
 };
 
 // Page and action guard in one: signed in, assigned to at least one profile,
@@ -78,38 +80,9 @@ export async function loadOwnerProfileView(
     ? await loadRevision(supabase, profile.draftRevisionId)
     : null;
 
-  let image: ProfileImage | null = null;
-
-  if (revision?.profileImageUseId) {
-    const { data: use } = await supabase
-      .from("media_uses")
-      .select("id, alt_text, confirmed_at, public_object_path, asset_id")
-      .eq("id", revision.profileImageUseId)
-      .maybeSingle();
-
-    if (use) {
-      const { data: asset } = await supabase
-        .from("media_assets")
-        .select("private_object_path")
-        .eq("id", use.asset_id)
-        .maybeSingle();
-
-      let signedUrl: string | null = null;
-      if (asset) {
-        const { data: signed } = await supabase.storage
-          .from("private-media")
-          .createSignedUrl(asset.private_object_path, 300);
-        signedUrl = signed?.signedUrl ?? null;
-      }
-
-      image = {
-        useId: use.id,
-        altText: use.alt_text,
-        confirmed: use.confirmed_at !== null && use.public_object_path !== null,
-        signedUrl,
-      };
-    }
-  }
+  const image = revision?.profileImageUseId
+    ? await loadImage(supabase, revision.profileImageUseId)
+    : null;
 
   const gaps = localGapCodes(
     {
@@ -132,5 +105,18 @@ export async function loadOwnerProfileView(
     submittedRevisionId: submitted ? (revision?.id ?? null) : null,
   });
 
-  return { userId, profile, revision, image, gaps, status };
+  const publishedImagePublic = profile.publishedRevisionId
+    ? await isPublishedImagePublic(supabase, profileId)
+    : null;
+
+  return {
+    userId,
+    profile,
+    revision,
+    image,
+    gaps,
+    status,
+    locked: isEditLocked(profile),
+    publishedImagePublic,
+  };
 }

@@ -51,7 +51,7 @@
 
 ## Nächste autorisierte Aufgabe
 
-Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig. Slices 1, 2 und 3a sind gemergt. Slice 3b (Owner-Editor, private Vorschau, Einreichen) liegt als Draft-PR #8 vor; die zugehörige Migration ist noch nicht auf dem Dev-Projekt angewendet. Danach 3c (Founder-Freigabe, Veröffentlichung, Bildkopie) laut `.planning/phases/04-durchstich/SLICE-3-SUMMARY.md`; kein Auto-Advance. SES-Produktionszugang und Preview-Deployment bleiben offen. Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
+Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig. Slices 1, 2, 3a und 3b sind gemergt; die 3b-Migration ist auf dem Dev-Projekt angewendet. Slice 3c (Founder-Freigabe, Veröffentlichen, Bildkopie) liegt als Draft-PR #9 vor, CI grün. Nächster technischer Schritt nach dessen Merge und deiner Abnahme am Dev-Projekt: Slice 4 (manueller Event-Entwurf mit Lückenprüfung) laut `.planning/phases/04-durchstich/PLAN.md`, zuerst als Plan zur Freigabe; kein Auto-Advance. SES-Produktionszugang und Preview-Deployment bleiben offen. Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
 
 ## Übergabeformat
 
