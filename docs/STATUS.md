@@ -51,7 +51,11 @@
 
 ## Nächste autorisierte Aufgabe
 
-Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig. Slices 1, 2, 3a und 3b sind gemergt; die 3b-Migration ist auf dem Dev-Projekt angewendet. Slice 3c (Founder-Freigabe, Veröffentlichen, Bildkopie) liegt als Draft-PR #9 vor, CI grün. Nächster technischer Schritt nach dessen Merge und deiner Abnahme am Dev-Projekt: Slice 4 (manueller Event-Entwurf mit Lückenprüfung) laut `.planning/phases/04-durchstich/PLAN.md`, zuerst als Plan zur Freigabe; kein Auto-Advance. SES-Produktionszugang und Preview-Deployment bleiben offen. Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
+Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig. Slices 1, 2, 3a, 3b und 3c sind gemergt und am Dev-Projekt mit Testkonten durchgespielt (Einreichen, Freigabe, Veröffentlichen, öffentliches Bild).
+
+**Entscheidung Founder (27.10.2026), Profilablauf „Variante B“:** Der Organizer stimmt beim Einreichen der Veröffentlichung zu; die Freigabe durch den Founder macht das Profil sofort öffentlich; der gebaute zweite Schritt „Veröffentlichen“ entfällt für die erste Veröffentlichung (spätere Änderungen bleiben privat, bis der Organizer sie bestätigt). Dazu: automatisierte Rückfrage des Founders an den Organizer (Freitext) und Systemmails bei Freigabe und Rückfrage. Wireframes dafür sind freigegeben (Artifact „Profilablauf Wireframes“); Figma hat für Profil-Erstfreigabe, Founder-Rückfrage und Startseite keine passenden Screens. Abweichung: Figma 01 „Eure Seiten sind veröffentlicht“ nennt Profil und erstes Event, hier zunächst nur das Profil.
+
+Nächster technischer Schritt: Umbau auf Variante B in drei kleinen PRs (Datenbank, App, Mails) laut Plan; danach Slice 4 (manueller Event-Entwurf mit Lückenprüfung) laut `.planning/phases/04-durchstich/PLAN.md`; kein Auto-Advance. SES-Produktionszugang (Founder), MAIL_FROM, DMARC-Eintrag und Preview-Deployment bleiben offen. Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
 
 ## Übergabeformat
 

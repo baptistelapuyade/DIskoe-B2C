@@ -40,3 +40,14 @@ Keine neue Migration. Die Migration aus 3b ist inzwischen auf dem Dev-Projekt an
 Prüfung: Lint, Typecheck, Unit-Tests, RLS-Suiten und Playwright (`e2e/approval.spec.ts`: nur Founder erreicht die Seiten, Owner kann weder freigeben noch vorzeitig veröffentlichen, veralteter Stand nicht freigebbar, Veröffentlichung ist explizit, Daten und Bild werden öffentlich, Original bleibt privat, Bearbeiten ändert den öffentlichen Stand nicht) in der CI grün. Lokal nicht ausführbar (Registry gesperrt). Da keine SQL-Änderung, entfallen Mutationsproben.
 
 Slice 3 ist damit funktional komplett, aber noch nicht von dir am Dev-Projekt mit echtem Browser abgenommen.
+
+## Entscheidung nach der Abnahme am Dev-Projekt (27.10.2026)
+
+Das Durchspielen mit zwei Testkonten (Organizer und Founder) funktionierte technisch (Daten und Bild öffentlich, Original privat, Audit-Verlauf vollständig). Die Bedienung war zu wenig geführt. Beschlossen (Founder):
+
+- **Variante B:** Einreichen enthält die Zustimmung zur Veröffentlichung; die Founder-Freigabe veröffentlicht direkt. Der separate Organizer-Schritt „Veröffentlichen“ aus 3c entfällt für die erste Veröffentlichung.
+- **Rückfrage** des Founders (Freitext, nur Profil) mit Korrektur und erneutem Einreichen durch den Organizer.
+- **Systemmails** bei Freigabe und Rückfrage (siehe `AGENTS.md`, Erweiterung vom 27.10.2026).
+- **Startseite** zeigt pro Profil Status, nächsten Schritt und „Wie geht es weiter“.
+
+Umsetzung in drei PRs: Datenbank (neue `approve_first_profile`, `request_profile_changes`, Mail-Protokoll, Storage-Policy für den Founder), App (Ablauf, Rückfrage, Startseite), Mails (SMTP über SES, Versandprotokoll). Offene Text- und Fachpunkte bleiben als `TODO(spec)` markiert: Bearbeitungszeit, Rechte-Erklärungen, Absenderadresse.
