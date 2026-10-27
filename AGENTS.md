@@ -6,7 +6,9 @@ Stand 2026-10-14 (Ausgangslage): Autorisiert waren ausschließlich Projektvorber
 
 **Entwicklungsfreigabe (Founder):** `[x] erteilt am 23.10.2026` mit folgendem Umfang:
 - Autorisiert: Anwendungscode und Abhängigkeiten für den Durchstich aus `docs/startpaket/02-durchstich.md`, Datenbankschema und Migrationen für Supabase, Entwicklungs- und Preview-Deployments auf AWS Amplify (Region `eu-central-1`) und Supabase (Frankfurt) im Rahmen des Gratis-/Guthabenrahmens.
-- Weiterhin nicht autorisiert: Produktions-Deployment mit echten Organizern, kostenpflichtige Dienste über den Guthabenrahmen hinaus, Live-KI-Verarbeitung echter Nutzerdaten, Versand echter E-Mails an Dritte, Billing/Checkout, Änderungen an bestehenden Projekten (DMO, MVP).
+- Weiterhin nicht autorisiert: Produktions-Deployment mit echten Organizern, kostenpflichtige Dienste über den Guthabenrahmen hinaus, Live-KI-Verarbeitung echter Nutzerdaten, Billing/Checkout, Änderungen an bestehenden Projekten (DMO, MVP). Versand echter E-Mails an Dritte nur im Umfang der Erweiterung unten.
+
+**Erweiterung (Founder, 27.10.2026): Systemmails in der Alpha.** Erlaubt ist der Versand von Systemmails zum Organizer-Ablauf an Organizer der Alpha: Anmeldecode, Hinweis „Profil freigegeben und live“, Rückfrage zur Prüfung. Weiterhin nicht erlaubt: Werbung, Newsletter, Mails an Besucher, Versand außerhalb dieser Systemzwecke. Der Versand läuft über Amazon SES. Den SES-Produktionszugang beantragt der Founder selbst; bis dahin gehen Mails nur an in SES verifizierte Adressen. Zugangsdaten stehen nur als Umgebungsvariablen (Namen in der Dokumentation), nie im Repo.
 Eine spätere ausdrückliche Nutzerfreigabe hat Vorrang; Umfang und Datum werden in `docs/STATUS.md` festgehalten.
 
 ## Vor jeder Session
