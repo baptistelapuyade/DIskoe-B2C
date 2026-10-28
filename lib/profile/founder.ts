@@ -201,6 +201,20 @@ export async function loadQueue(supabase: Client): Promise<QueueItem[]> {
   return items.sort((a, b) => b.at.localeCompare(a.at));
 }
 
+// Number of profiles that wait for the founder. Used for the link in the page
+// header. A failed lookup never breaks the page it is shown on: it returns
+// null and the link is shown without a number.
+export async function countOpenReviews(
+  supabase: Client,
+): Promise<number | null> {
+  try {
+    const queue = await loadQueue(supabase);
+    return queue.filter((item) => item.state === "open").length;
+  } catch {
+    return null;
+  }
+}
+
 export type FounderProfileView = {
   profile: ProfileState;
   revision: RevisionFields | null;
