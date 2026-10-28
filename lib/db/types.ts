@@ -1,15 +1,9 @@
 // GENERATED FILE. Do not edit by hand.
 //
-// Source: Supabase dev project (eu-central-1, Postgres 17) after the migrations
-// 20261023120000_alpha_core_schema.sql, 20261023120100_alpha_core_security.sql
-// and 20261026140000_my_profiles_view.sql, generated on 2026-10-26 with the
-// Supabase MCP `generate_typescript_types`.
+// Source: Supabase dev project (eu-central-1, Postgres 17) after all
+// migrations up to 20261027160000_review_flow.sql, generated on 2026-10-28
+// with the Supabase MCP `generate_typescript_types`.
 // Regenerate after every schema change (see docs/STATUS.md).
-//
-// TODO: the entries for migration 20261027160000_review_flow.sql
-// (profile_mails, review_requests, claim_profile_mail, finish_profile_mail,
-// request_profile_changes) were written by hand because the migration was not
-// yet applied to the dev project. Replace this file with a generated one.
 //
 // Caution: these types describe table columns, not column privileges. Clients
 // must still select named columns; for example `owner_id` and `actor_id` are
@@ -424,7 +418,21 @@ export type Database = {
             foreignKeyName: "profile_mails_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "my_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_mails_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_mails_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -637,7 +645,21 @@ export type Database = {
             foreignKeyName: "review_requests_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "my_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_requests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_requests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
           {
