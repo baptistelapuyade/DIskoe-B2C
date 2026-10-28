@@ -1,8 +1,8 @@
 # SES: Produktionszugang und Zustellbarkeit
 
-Stand 2026-10-27. Region `eu-central-1`, Domain `diskoe.world` (verifiziert). SES ist im Testmodus (Sandbox): Mails gehen nur an verifizierte Adressen. Für Organizer der Alpha, die nicht einzeln verifiziert sind, braucht es den Produktionszugang. Beantragen kann ihn nur der Founder im AWS-Konto.
+Stand 2026-10-28. Region `eu-central-1`, Domain `diskoe.world` (verifiziert). **Der Produktionszugang ist erteilt** (Founder, 2026-10-28); Mails gehen an beliebige Adressen, nicht mehr nur an verifizierte. Am selben Tag bestätigt: Versand aus der App über den SMTP-Zugang an eine GMX-Testadresse. Der Antrag und die Hinweise unten bleiben als Nachweis und für eine weitere Region oder ein weiteres Konto stehen. Beantragen kann den Zugang nur der Founder im AWS-Konto.
 
-## Zwischenlösung für die ersten Tester
+## Zwischenlösung für die ersten Tester (nur nötig, solange SES in der Sandbox ist)
 Jede Testadresse einzeln in SES verifizieren (*Verifizierte Identitäten → Identität erstellen → E-Mail-Adresse*, Bestätigungslink in der AWS-Mail anklicken).
 
 ## Antrag auf Produktionszugang (Textvorschlag, vor dem Absenden prüfen)
