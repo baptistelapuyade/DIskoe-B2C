@@ -21,7 +21,7 @@ Jeder kann sich per E-Mail anmelden (offene Alpha, kein Testerlimit). Die Anmeld
 - Region `eu-central-1` (Frankfurt). Domain-Identität `diskoe.world` per Easy DKIM (drei CNAME-Einträge bei United Domains) verifiziert; DMARC als TXT `_dmarc` mit `v=DMARC1; p=none;` (nur Beobachtung).
 - SMTP-Zugang über einen IAM-Benutzer (`ses-smtp-user…`, nur `ses:SendRawEmail`), **nicht** über Mail Manager (kostenpflichtig). Benutzername und Passwort liegen nur im Passwort-Manager und in Supabase.
 - Supabase → Authentication → Emails → SMTP: Host `email-smtp.eu-central-1.amazonaws.com`, Port `587`, Absender `login@diskoe.world`, Name `DISKOE`.
-- SES läuft im Sandbox-Modus: Mails gehen nur an in SES bestätigte Adressen. Der Antrag auf Produktionszugang ist **nicht** gestellt, weil Versand echter E-Mails an Dritte nach `AGENTS.md` noch nicht freigegeben ist.
+- SES-Produktionszugang ist seit 2026-10-28 erteilt (Stand zuvor: Sandbox). Versand echter Mails an Organizer der Alpha ist seit der Erweiterung in `AGENTS.md` vom 27.10.2026 für Systemzwecke erlaubt, siehe `system-mails.md`.
 - Vorlagen „Magic link“ und „Confirm sign up“ im Dashboard sind mit `supabase/templates/*.html` identisch und enthalten Code und Link.
 
 ## `.env.local`
