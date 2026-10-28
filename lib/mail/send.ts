@@ -22,7 +22,8 @@ export type ProfileMailInput = {
   revisionId: string;
   kind: MailKind;
   name: string | null | undefined;
-  // Origin of the app, used for the one link in the mail.
+  // Origin of the app. The one link in the mail leads to the profile's own
+  // page; after sign-in the app lands there (login keeps the target).
   origin: string;
 };
 
@@ -54,7 +55,7 @@ export async function sendProfileMail(
 
   const content = mailFor(input.kind, {
     name: input.name,
-    url: `${input.origin.replace(/\/+$/, "")}/organizer`,
+    url: `${input.origin.replace(/\/+$/, "")}/organizer/profiles/${input.profileId}/status`,
   });
 
   let messageId: string | null = null;
