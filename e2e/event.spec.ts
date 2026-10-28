@@ -195,12 +195,12 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   // 10. The image: alt text and rights are mandatory. The form is reset after
   // every attempt, so the file is chosen again each time.
   const png = { name: "buehne.png", mimeType: "image/png", buffer: PNG };
-  await page.getByLabel(/Eventbild/).setInputFiles(png);
+  await page.getByLabel(/^Eventbild \(JPEG/).setInputFiles(png);
   await page.getByRole("button", { name: "Bild hochladen" }).click();
   await expect(page.getByText("Bitte beschreibe das Bild kurz")).toBeVisible(SLOW);
   await expect(page.getByText(/Bitte bestätige, dass du das Bild/)).toBeVisible();
   await expect(gaps).toContainText("Ein bestätigtes Eventbild fehlt.");
-  await page.getByLabel(/Eventbild/).setInputFiles(png);
+  await page.getByLabel(/^Eventbild \(JPEG/).setInputFiles(png);
   await page.getByLabel("Bildbeschreibung (Alternativtext)").fill("Bühne bei Nacht");
   await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
   await page.getByRole("button", { name: "Bild hochladen" }).click();
