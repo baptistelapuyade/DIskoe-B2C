@@ -45,16 +45,6 @@ export function toRevisionFields(row: {
   };
 }
 
-// After the founder's first approval and before the first publication the
-// draft must remain exactly the approved revision: the first publication only
-// accepts that revision. Editing is paused in that window.
-export function isEditLocked(profile: ProfileState): boolean {
-  return (
-    profile.firstApprovedRevisionId !== null &&
-    profile.publishedRevisionId === null
-  );
-}
-
 export async function loadProfileState(
   supabase: Client,
   profileId: string,
@@ -121,6 +111,50 @@ export async function wasSubmitted(
   }
 
   return (data ?? []).length > 0;
+}
+
+export type ReviewQuestion = { message: string; createdAt: string };
+
+// The founder's question about one revision, if there is one. The owner reads
+// the text but never learns who wrote it (the column is not granted).
+export async function loadQuestionForRevision(
+  supabase: Client,
+  revisionId: string,
+): Promise<ReviewQuestion | null> {
+  const { data, error } = await supabase
+    .from("review_requests")
+    .select("message, created_at")
+    .eq("revision_id", revisionId)
+    .limit(1);
+
+  if (error) {
+    throw new Error("Question lookup failed");
+  }
+
+  const row = data?.[0];
+  return row ? { message: row.message, createdAt: row.created_at } : null;
+}
+
+// The most recent question about any revision of the profile. After the owner
+// changed the draft the question no longer belongs to the draft, but it is
+// still what the owner is working on.
+export async function loadLatestQuestion(
+  supabase: Client,
+  profileId: string,
+): Promise<ReviewQuestion | null> {
+  const { data, error } = await supabase
+    .from("review_requests")
+    .select("message, created_at")
+    .eq("profile_id", profileId)
+    .order("created_at", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    throw new Error("Question lookup failed");
+  }
+
+  const row = data?.[0];
+  return row ? { message: row.message, createdAt: row.created_at } : null;
 }
 
 // Returns the revision that may be edited. A draft that is confirmed,

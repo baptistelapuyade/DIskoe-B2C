@@ -62,3 +62,29 @@ Migration `20261027160000_review_flow.sql`, noch nicht auf dem Dev-Projekt angew
 - Storage: `is_publishable_media_path` erlaubt zusätzlich dem Founder, die öffentliche Bildkopie zu schreiben, weiterhin nur auf den reservierten Pfad einer veröffentlichten Revision.
 
 Prüfung: `npm run test:rls` lokal gegen PostgreSQL 16, 325 Zusicherungen (vorher 198 plus die 3b-Tests). Der Ablauf Einreichen, Rückfrage, Korrektur, erneut Einreichen, Freigabe ist durchgespielt. 19 gezielt eingebaute Fehler (fehlende Einreichungsprüfung, keine Veröffentlichung bei Freigabe, falscher bestätigender Nutzer, fehlende Founder-Prüfungen, doppelter Mailclaim, offene Policies, sichtbarer Autor) werden alle von den Tests erkannt. Nicht geprüft: echter Supabase-Lauf (CI-Job `rls-supabase`) und Dev-Projekt. `lib/db/types.ts` wird mit der App-Änderung nach dem Anwenden neu generiert.
+
+## Umbau auf Variante B, Teil 2: App (PR 2)
+
+Baut auf der Migration aus Teil 1 auf (gestapelter PR, Basis `feat/review-flow-db`). Ohne diese Migration funktioniert die App nicht.
+
+- **Founder:** Prüfseite zeigt genau den eingereichten Stand, links „Freigeben und veröffentlichen“ (mit zweiter Bestätigung, weil sofort öffentlich), rechts „Rückfrage stellen“ (Freitext bis 500 Zeichen). Nach der Freigabe kopiert die Founder-Sitzung das Bild in den öffentlichen Bucket; schlägt das fehl, gibt es „Bild erneut veröffentlichen“. Die Liste hat die Reiter Offen, Rückfrage gestellt und Erledigt. Sie ist aus Audit-Spur und Profilen abgeleitet, nichts davon wird doppelt gespeichert.
+- **Organizer:** Der eigene Veröffentlichen-Schritt für die erste Veröffentlichung und die Bearbeitungssperre entfallen. „Änderungen veröffentlichen“ bleibt für spätere Revisionen. Eine Revision, zu der es eine Rückfrage gibt, kann nicht unverändert erneut eingereicht werden; Speichern einer Änderung legt wie bisher eine neue Revision an.
+- **Startseite:** pro Profil eine Karte mit Status, Fortschritt (Angaben, Eingereicht, Geprüft, Live), einem Satz zum nächsten Schritt, einem Hauptknopf und einem Hinweis, was danach passiert. Neue Seite `status` für In Prüfung, Rückfrage und Live (inklusive „Zurückziehen und bearbeiten“). Texte aus den freigegebenen Wireframes; alle sind Vorschläge.
+- **Domain:** `reviewStatus` kennt `question` und `update_ready` (statt `approved`), `progressStage` und `parseQuestion` sind getestet.
+- `lib/db/types.ts` ist für die neue Migration von Hand ergänzt (Hinweis im Dateikopf), bis sie auf dem Dev-Projekt liegt und neu generiert wird.
+
+Nicht Teil davon: Mailversand (Teil 3). Der Text „Du bekommst eine E-Mail“ stimmt daher erst mit Teil 3. Die öffentliche Profilseite gibt es noch nicht (Slice 6); die Live-Seite sagt das.
+
+Prüfung: lokal nur statische Durchsicht; Lint, Typecheck, Vitest und Playwright laufen erstmals in der CI (npm-Registry von hier nicht erreichbar). E2E angepasst: Rückfrage, Korrektur, erneutes Einreichen, Freigabe mit sofortiger Veröffentlichung und öffentlichem Bild, spätere Änderungen mit eigener Bestätigung.
+
+## Umbau auf Variante B, Teil 3: Mails (PR 3)
+
+Baut auf Teil 2 auf (gestapelter PR, Basis `feat/review-flow-app`).
+
+- **Versand:** `lib/mail/` (Konfiguration, Texte, Versand). Nach „Freigeben und veröffentlichen“ und nach „Rückfrage stellen“ ruft die Founder-Aktion `claim_profile_mail` → SMTP → `finish_profile_mail`. Ein Fehlschlag macht die Entscheidung nicht rückgängig; die Prüfseite zeigt „Mail fehlgeschlagen“ und „Mail erneut senden“ (auch „Mail senden“, wenn noch nie gesendet wurde). Bei „angenommen“ gibt es keinen zweiten Versand.
+- **Texte (Vorschlag, `TODO(spec)`):** „Dein Profil „…“ ist jetzt live“ und „Eine Frage zu deinem Profil „…““. Der Fragetext steht nicht in der Mail, nur ein Hinweis, dass die Frage nach der Anmeldung auf der Startseite steht. Der einzige Link führt auf `/organizer`. Abweichung zum Wireframe: der Fragetext fehlt bewusst in der Mail; wenn du ihn in der Mail willst, ist das eine kleine Änderung.
+- **Abhängigkeit:** `nodemailer` (+ `@types/nodemailer`), siehe PR-Beschreibung.
+- **Konfiguration:** `MAIL_SMTP_HOST`, `MAIL_SMTP_PORT`, `MAIL_SMTP_USER`, `MAIL_SMTP_PASSWORD`, `MAIL_FROM`. Ohne sie wird nichts gesendet. Einrichtung: `docs/runbooks/system-mails.md`.
+- **Datenschutz:** Die Adresse kommt nur aus `claim_profile_mail`, wird nicht geloggt, nicht gespeichert und steht in keinem Fehlertext; protokolliert werden nur Art und Fehlercode.
+
+Prüfung: Unit-Tests für Konfiguration und Texte (Escaping, keine Zeilenumbrüche im Betreff, ein Link). E2E gegen den Mail-Fänger des Supabase-Stacks (SMTP-Port 54325): genau eine Mail je Ereignis an den richtigen Empfänger, keine Mail an das andere Profil, Wiederholung nach „fehlgeschlagen“, kein zweiter Versand nach „angenommen“. Nicht geprüft: Versand über echtes SES und Zustellung an einen Posteingang. Das passiert nach dem Merge mit deinen SMTP-Zugangsdaten an verifizierte Testadressen.

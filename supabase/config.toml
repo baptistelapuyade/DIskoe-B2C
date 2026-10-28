@@ -20,6 +20,8 @@ api_url = "http://127.0.0.1"
 [inbucket]
 enabled = true
 port = 54324
+# SMTP port of the mail catcher; the app sends its system mails here in tests.
+smtp_port = 54325
 
 [auth]
 enabled = true

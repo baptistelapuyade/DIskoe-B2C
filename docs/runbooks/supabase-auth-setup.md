@@ -30,7 +30,7 @@ Variablennamen siehe `.env.example`. `NEXT_PUBLIC_SITE_URL` ist nur der Rückfal
 
 ## Lokal und in der CI
 
-`supabase/config.toml` setzt Registrierung an, die Redirect-URLs, Code-Länge 6 und die Vorlagen. Der lokale Stack fängt Mails ab (Port 54324), es wird nichts versendet. Die Playwright-Tests lesen Codes und Links dort aus.
+`supabase/config.toml` setzt Registrierung an, die Redirect-URLs, Code-Länge 6 und die Vorlagen. Der lokale Stack fängt Mails ab (Weboberfläche Port 54324, SMTP Port 54325), es wird nichts versendet. Die Systemmails der App stehen in `system-mails.md`. Die Playwright-Tests lesen Codes und Links dort aus.
 
 ## Wichtig beim Testen
 

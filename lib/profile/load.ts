@@ -11,11 +11,13 @@ import {
 import { loadImage, type ProfileImage } from "@/lib/profile/image";
 import { isPublishedImagePublic } from "@/lib/profile/publish";
 import {
-  isEditLocked,
+  loadLatestQuestion,
   loadProfileState,
+  loadQuestionForRevision,
   loadRevision,
   wasSubmitted,
   type ProfileState,
+  type ReviewQuestion,
   type RevisionFields,
 } from "@/lib/profile/draft";
 
@@ -31,8 +33,13 @@ export type OwnerProfileView = {
   image: ProfileImage | null;
   gaps: GapCode[];
   status: ReviewStatus;
-  // Approved but not yet published: the draft must stay the approved revision.
-  locked: boolean;
+  // Something has been published at least once.
+  live: boolean;
+  // The founder's question about the current draft (status "question").
+  question: ReviewQuestion | null;
+  // The latest question while the profile is not approved yet. It stays
+  // available after the owner started to correct it.
+  latestQuestion: ReviewQuestion | null;
   // null = nothing published yet.
   publishedImagePublic: boolean | null;
 };
@@ -97,12 +104,21 @@ export async function loadOwnerProfileView(
   const submitted =
     revision !== null && (await wasSubmitted(supabase, profileId, revision.id));
 
+  const question = revision
+    ? await loadQuestionForRevision(supabase, revision.id)
+    : null;
+  const latestQuestion =
+    profile.firstApprovedRevisionId === null
+      ? await loadLatestQuestion(supabase, profileId)
+      : null;
+
   const status = reviewStatus({
     gapCount: gaps.length,
     draftRevisionId: profile.draftRevisionId,
     firstApprovedRevisionId: profile.firstApprovedRevisionId,
     publishedRevisionId: profile.publishedRevisionId,
     submittedRevisionId: submitted ? (revision?.id ?? null) : null,
+    questionRevisionId: question ? (revision?.id ?? null) : null,
   });
 
   const publishedImagePublic = profile.publishedRevisionId
@@ -116,7 +132,9 @@ export async function loadOwnerProfileView(
     image,
     gaps,
     status,
-    locked: isEditLocked(profile),
+    live: profile.publishedRevisionId !== null,
+    question,
+    latestQuestion,
     publishedImagePublic,
   };
 }

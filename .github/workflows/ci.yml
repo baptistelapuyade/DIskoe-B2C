@@ -174,5 +174,11 @@ jobs:
           echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$(value ANON_KEY)" >> "$GITHUB_ENV"
           echo "::add-mask::$(value ANON_KEY)"
 
+      # System mails go to the mail catcher of the local stack, not to a real
+      # provider.
       - name: Run sign-in and access tests
+        env:
+          MAIL_SMTP_HOST: 127.0.0.1
+          MAIL_SMTP_PORT: "54325"
+          MAIL_FROM: hello@example.test
         run: npx playwright test e2e/auth.spec.ts e2e/profile.spec.ts e2e/approval.spec.ts

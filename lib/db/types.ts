@@ -6,6 +6,11 @@
 // Supabase MCP `generate_typescript_types`.
 // Regenerate after every schema change (see docs/STATUS.md).
 //
+// TODO: the entries for migration 20261027160000_review_flow.sql
+// (profile_mails, review_requests, claim_profile_mail, finish_profile_mail,
+// request_profile_changes) were written by hand because the migration was not
+// yet applied to the dev project. Replace this file with a generated one.
+//
 // Caution: these types describe table columns, not column privileges. Clients
 // must still select named columns; for example `owner_id` and `actor_id` are
 // typed here but are not readable by anon or authenticated.
@@ -380,6 +385,57 @@ export type Database = {
           },
         ]
       }
+      profile_mails: {
+        Row: {
+          attempts: number
+          claimed_at: string
+          finished_at: string | null
+          id: number
+          kind: string
+          profile_id: string
+          provider_message_id: string | null
+          revision_id: string
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          claimed_at?: string
+          finished_at?: string | null
+          id?: never
+          kind: string
+          profile_id: string
+          provider_message_id?: string | null
+          revision_id: string
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          claimed_at?: string
+          finished_at?: string | null
+          id?: never
+          kind?: string
+          profile_id?: string
+          provider_message_id?: string | null
+          revision_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_mails_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_mails_revision_fk"
+            columns: ["revision_id", "profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile_revisions"
+            referencedColumns: ["id", "profile_id"]
+          },
+        ]
+      }
       profile_revisions: {
         Row: {
           confirmed_at: string | null
@@ -551,6 +607,48 @@ export type Database = {
         }
         Relationships: []
       }
+      review_requests: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: number
+          message: string
+          profile_id: string
+          revision_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: never
+          message: string
+          profile_id: string
+          revision_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: never
+          message?: string
+          profile_id?: string
+          revision_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_requests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_requests_revision_fk"
+            columns: ["revision_id", "profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile_revisions"
+            referencedColumns: ["id", "profile_id"]
+          },
+        ]
+      }
     }
     Views: {
       my_profiles: {
@@ -673,6 +771,20 @@ export type Database = {
         }
         Returns: undefined
       }
+      claim_profile_mail: {
+        Args: { p_kind: string; p_profile_id: string; p_revision_id: string }
+        Returns: string
+      }
+      finish_profile_mail: {
+        Args: {
+          p_kind: string
+          p_profile_id: string
+          p_provider_message_id?: string
+          p_revision_id: string
+          p_success: boolean
+        }
+        Returns: undefined
+      }
       provision_profile_owner: {
         Args: {
           target_name?: string
@@ -695,6 +807,14 @@ export type Database = {
         Args: {
           p_expected_draft_revision_id: string
           p_expected_published_revision_id?: string
+          p_profile_id: string
+        }
+        Returns: undefined
+      }
+      request_profile_changes: {
+        Args: {
+          p_expected_draft_revision_id: string
+          p_message: string
           p_profile_id: string
         }
         Returns: undefined

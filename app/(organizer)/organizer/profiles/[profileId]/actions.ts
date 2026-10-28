@@ -12,11 +12,7 @@ import {
   parseProfileInput,
   type FieldErrors,
 } from "@/lib/domain/profile-publication";
-import {
-  ensureEditableDraft,
-  isEditLocked,
-  loadProfileState,
-} from "@/lib/profile/draft";
+import { ensureEditableDraft, loadProfileState } from "@/lib/profile/draft";
 import { copyPublishedImage } from "@/lib/profile/publish";
 import { requireOwnedProfileId } from "@/lib/profile/load";
 
@@ -26,9 +22,6 @@ export type FormState = {
   errors?: FieldErrors & { image?: string; altText?: string; rights?: string };
   gaps?: string[];
 };
-
-const LOCKED_MESSAGE =
-  "Das Profil ist freigegeben. Bitte veröffentliche es zuerst; danach kannst du es weiterbearbeiten.";
 
 const GENERIC_ERROR =
   "Das hat leider nicht geklappt. Bitte versuche es noch einmal.";
@@ -68,10 +61,6 @@ export async function saveDetails(
 
   if (!userId || !profile) {
     return { ok: false, message: GENERIC_ERROR };
-  }
-
-  if (isEditLocked(profile)) {
-    return { ok: false, message: LOCKED_MESSAGE };
   }
 
   try {
@@ -141,10 +130,6 @@ export async function uploadImage(
 
   if (!userId || !profile) {
     return { ok: false, message: GENERIC_ERROR };
-  }
-
-  if (isEditLocked(profile)) {
-    return { ok: false, message: LOCKED_MESSAGE };
   }
 
   const path = `${userId}/${crypto.randomUUID()}.${extensionFor(checked.type)}`;
@@ -220,7 +205,7 @@ export async function uploadImage(
   revalidatePath(`/organizer/profiles/${profileId}/preview`);
   return {
     ok: true,
-    message: "Das Bild ist gespeichert und bleibt bis zur Veröffentlichung privat.",
+    message: "Das Bild ist gespeichert und bleibt bis zur Freigabe privat.",
   };
 }
 
@@ -279,7 +264,8 @@ export async function submitForReview(
       case "DK003":
         return {
           ok: false,
-          message: "Dieses Profil wurde bereits freigegeben.",
+          message:
+            "Dieser Stand kann nicht noch einmal eingereicht werden. Bitte ändere zuerst eine Angabe, besonders wenn DISKOE dir eine Frage gestellt hat.",
         };
       default:
         return { ok: false, message: GENERIC_ERROR };
@@ -291,7 +277,7 @@ export async function submitForReview(
   return {
     ok: true,
     message:
-      "Eingereicht. DISKOE prüft den Entwurf. Veröffentlicht wird erst nach der Freigabe und deiner Bestätigung.",
+      "Eingereicht. DISKOE prüft dein Profil. Mit der Freigabe wird es öffentlich.",
   };
 }
 
@@ -313,7 +299,7 @@ function publishFailure(code: string | undefined, details?: string | null): Form
       return {
         ok: false,
         message:
-          "Veröffentlichen ist gerade nicht möglich: Das Profil braucht zuerst die Freigabe von DISKOE oder hat nichts Neues.",
+          "Veröffentlichen ist gerade nicht möglich: Es gibt nichts Neues oder das Profil wurde noch nicht von DISKOE freigegeben.",
       };
     default:
       return { ok: false, message: GENERIC_ERROR };
@@ -361,11 +347,11 @@ export async function publishProfile(
   revalidatePath("/organizer");
 
   return copied === "copied"
-    ? { ok: true, message: "Dein Profil ist veröffentlicht." }
+    ? { ok: true, message: "Deine Änderungen sind veröffentlicht." }
     : {
         ok: true,
         message:
-          "Dein Profil ist veröffentlicht, aber das Bild ist noch nicht öffentlich. Bitte versuche es noch einmal.",
+          "Deine Änderungen sind veröffentlicht, aber das Bild ist noch nicht öffentlich. Bitte versuche es noch einmal.",
       };
 }
 

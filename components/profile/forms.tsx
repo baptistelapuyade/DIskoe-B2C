@@ -202,15 +202,20 @@ export function SubmitForm({ action }: { action: Action }) {
     <form action={formAction} className="space-y-4" noValidate>
       <label className="flex items-start gap-3">
         <input type="checkbox" name="rights" className="mt-1" />
-        <span>Ich habe die Rechte an allen Texten und Bildern dieses Profils.</span>
+        <span>
+          Ich habe die Angaben geprüft und bin berechtigt, für dieses Projekt zu
+          veröffentlichen.
+        </span>
       </label>
       <label className="flex items-start gap-3">
         <input type="checkbox" name="usage" className="mt-1" />
         <span>
-          Ich bin einverstanden, dass diese Angaben nach der Freigabe und meiner
-          Bestätigung öffentlich angezeigt werden.
+          Ich habe die nötigen Freigaben für die Texte und das Bild. Ich bin
+          damit einverstanden, dass mein Profil mit der Freigabe durch DISKOE
+          öffentlich wird.
         </span>
       </label>
+      {/* TODO(spec): the final legal wording of both declarations is open. */}
       <FieldError id="rights-error" text={state.errors?.rights} />
       <button type="submit" disabled={pending} className={buttonClass}>
         {pending ? "Reicht ein …" : "Zur Prüfung einreichen"}

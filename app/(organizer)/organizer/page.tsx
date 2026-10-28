@@ -1,16 +1,12 @@
-import Link from "next/link";
+import { ProfileCard } from "@/components/profile/home-card";
 import { requireAccess } from "@/lib/auth/server";
-import type { PublicationState } from "@/lib/auth/guards";
+import { loadOwnerProfileView } from "@/lib/profile/load";
 
-// TODO(spec): texts are proposals until Figma screens for the organizer entry
-// exist. There is deliberately no "create profile" action: profiles are
-// provisioned by the founder.
-const STATE_LABEL: Record<PublicationState, string> = {
-  private: "Privat",
-  published: "Veröffentlicht",
-  withdrawn: "Zurückgezogen",
-};
+export const dynamic = "force-dynamic";
 
+// TODO(spec): texts are proposals (approved wireframes, 2026-10-27). There is
+// deliberately no "create profile" action: profiles are provisioned by the
+// founder.
 export default async function OrganizerHome() {
   const access = await requireAccess("/organizer");
 
@@ -28,30 +24,25 @@ export default async function OrganizerHome() {
     );
   }
 
+  const views = await Promise.all(
+    access.profiles.map((profile) =>
+      loadOwnerProfileView(profile.id, "/organizer"),
+    ),
+  );
+
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">
-      <h1 className="text-3xl font-bold tracking-tight">Deine Profile</h1>
-      <ul className="border-border mt-8 divide-y border-y">
-        {access.profiles.map((profile) => (
-          <li
-            key={profile.id}
-            className="flex items-center justify-between py-4"
-          >
-            <span className="font-medium">
-              {profile.draftName ?? profile.slug}
-            </span>
-            <span className="flex items-center gap-4 text-sm">
-              <span className="text-muted-foreground">
-                {STATE_LABEL[profile.publicationState]}
-              </span>
-              <Link
-                href={`/organizer/profiles/${profile.id}/edit`}
-                className="font-medium underline"
-              >
-                Bearbeiten
-              </Link>
-            </span>
-          </li>
+    <main className="mx-auto max-w-3xl space-y-8 px-6 py-16">
+      <header className="space-y-3">
+        <h1 className="text-3xl font-bold tracking-tight">Deine Profile</h1>
+        <p className="text-muted-foreground max-w-2xl leading-7">
+          Hier siehst du immer, was als Nächstes zu tun ist und was danach
+          passiert.
+        </p>
+      </header>
+
+      <ul className="space-y-6">
+        {views.map((view) => (
+          <ProfileCard key={view.profile.id} view={view} />
         ))}
       </ul>
     </main>
