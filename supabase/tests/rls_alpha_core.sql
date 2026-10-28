@@ -208,6 +208,32 @@ begin
   return v_use;
 end $$;
 
+-- Event image helpers (Slice 4: event images reserve a public path too).
+create function tests.confirm_event_image_without_alt(p_event uuid)
+returns void language plpgsql as $$
+declare v_asset uuid; v_use uuid;
+begin
+  insert into public.media_assets (uploader_id, private_object_path, mime_type)
+  values (auth.uid(), auth.uid()::text || '/' || gen_random_uuid() || '.jpg', 'image/jpeg')
+  returning id into v_asset;
+  insert into public.media_uses (asset_id, event_id, role)
+  values (v_asset, p_event, 'event_image') returning id into v_use;
+  update public.media_uses set confirmed_at = now() where id = v_use;
+end $$;
+
+create function tests.new_event_image_use_mime(p_event uuid, p_mime text)
+returns uuid language plpgsql as $$
+declare v_asset uuid; v_use uuid;
+begin
+  insert into public.media_assets (uploader_id, private_object_path, mime_type)
+  values (auth.uid(), auth.uid()::text || '/' || gen_random_uuid() || '.bin', p_mime)
+  returning id into v_asset;
+  insert into public.media_uses (asset_id, event_id, role, alt_text)
+  values (v_asset, p_event, 'event_image', 'Test image') returning id into v_use;
+  update public.media_uses set confirmed_at = now() where id = v_use;
+  return v_use;
+end $$;
+
 grant usage on schema tests to public;
 grant execute on all functions in schema tests to public;
 
@@ -557,11 +583,41 @@ select tests.ev_insert(:'e1', :'use_e1') as ev1 \gset
 select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'ev1', :'e1'),
   1, 'owner selects the event draft');
 
+-- Event image confirmation (Slice 4): alt text is mandatory and the database
+-- reserves events/<event id>/<use id>.<ext>. A path, not a file.
+select tests.expect_error(format('select tests.confirm_event_image_without_alt(%L)', :'e1'),
+  '23514', 'an event image cannot be confirmed without alt text');
+select tests.new_event_image_use(:'e1', false) as use_e3 \gset
+select tests.expect_true(format('select public_object_path is null and confirmed_at is null from public.media_uses where id = %L', :'use_e3'),
+  'an unconfirmed event image use has no public path');
+select tests.expect_error(format('update public.media_uses set public_object_path = %L where id = %L', 'events/x.jpg', :'use_e3'),
+  '42501', 'client cannot write public_object_path of an event image');
+select tests.as_user(:'uid_b');
+select tests.expect_affected(format('update public.media_uses set confirmed_at = now() where id = %L', :'use_e3'),
+  0, 'B cannot confirm A''s event image use');
+select tests.as_user(:'uid_a');
+select tests.expect_affected(format('update public.media_uses set confirmed_at = now() where id = %L', :'use_e3'),
+  1, 'A confirms the event image use');
+select tests.new_event_image_use_mime(:'e1', 'image/webp') as use_e4 \gset
+select tests.as_superuser();
+select tests.expect_true(format($q$select public_object_path = 'events/' || event_id || '/' || id || '.jpg' and confirmed_by = %L from public.media_uses where id = %L$q$, :'uid_a', :'use_e3'),
+  'confirming an event image reserves events/<event>/<use>.jpg and stamps the user');
+select tests.expect_true(format($q$select public_object_path like 'events/%%.webp' from public.media_uses where id = %L$q$, :'use_e4'),
+  'the reserved event path carries the extension of the asset type');
+select public_object_path as ppe3 from public.media_uses where id = :'use_e3' \gset
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppe3'),
+  '42501', 'an event image path cannot be written to the public bucket yet (Slice 5)');
+
 -- ===========================================================================
 -- 6. Event approval, publication, privacy of drafts, status-only cancellation
 -- ===========================================================================
 select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 0, 'scheduled')$q$, :'e1', :'ev1'),
   'DK003', 'event cannot be published without first approval');
+-- Confirming the image reserves a path (Slice 4). Clear it to model an event
+-- whose image has no public path yet.
+select tests.as_superuser();
+update public.media_uses set public_object_path = null where id = :'use_e1';
 select tests.as_user(:'uid_f');
 select tests.expect_error(format('select public.approve_first_event(%L, %L)', :'e1', :'ev1'),
   'DK002', 'event approval refuses a missing public image', 'event_image');
