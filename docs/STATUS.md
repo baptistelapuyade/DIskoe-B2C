@@ -1,6 +1,6 @@
 # DISKOE B2C V1 — technischer Übergabestand
 
-**Stand:** 2026-10-26
+**Stand:** 2026-10-28
 **Phase:** Phase 4 „Durchstich (Alpha-Kern)“ geplant; technisches Projektgerüst als separater Schritt umgesetzt, Fach-Slices nicht begonnen.
 **Implementierung:** Freigegeben durch den Founder am 23.10.2026, Umfang laut `AGENTS.md`; Scaffold auf `feat/scaffold`, noch keine Fachfunktion.
 
@@ -55,7 +55,11 @@ Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig
 
 **Entscheidung Founder (27.10.2026), Profilablauf „Variante B“:** Der Organizer stimmt beim Einreichen der Veröffentlichung zu; die Freigabe durch den Founder macht das Profil sofort öffentlich; der gebaute zweite Schritt „Veröffentlichen“ entfällt für die erste Veröffentlichung (spätere Änderungen bleiben privat, bis der Organizer sie bestätigt). Dazu: automatisierte Rückfrage des Founders an den Organizer (Freitext) und Systemmails bei Freigabe und Rückfrage. Wireframes dafür sind freigegeben (Artifact „Profilablauf Wireframes“); Figma hat für Profil-Erstfreigabe, Founder-Rückfrage und Startseite keine passenden Screens. Abweichung: Figma 01 „Eure Seiten sind veröffentlicht“ nennt Profil und erstes Event, hier zunächst nur das Profil.
 
-Nächster technischer Schritt: Umbau auf Variante B in drei kleinen PRs (Datenbank, App, Mails) laut Plan. Teil 1 (Datenbank, Migration `20261027160000_review_flow.sql`), Teil 2 (App) und Teil 3 (Mails über SMTP/SES, `docs/runbooks/system-mails.md`) liegen als gestapelte Draft-PRs vor; die Migration ist seit 2026-10-28 auf dem Dev-Projekt angewendet (Rechte geprüft: Policies, Spaltenrechte, keine anon-Rechte; `lib/db/types.ts` neu generiert), Mails sind nur gegen den lokalen Mail-Fänger geprüft; danach Slice 4 (manueller Event-Entwurf mit Lückenprüfung) laut `.planning/phases/04-durchstich/PLAN.md`; kein Auto-Advance. SES-Produktionszugang (Founder, beantragt), `MAIL_*`-Variablen in Amplify bzw. `.env.local` (Founder), DMARC-Eintrag und Preview-Deployment bleiben offen. Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
+**Stand Variante B (2026-10-28):** Datenbank (#11), App und Mails (#14), Typen (#15), Doku (#16), Mail-Link direkt zum Profil (#17), Founder-Link „Prüfung (n)“ (#18) und automatischer Durchlauf mit Video in der CI (#19, Artifact `ablauf-video`) sind auf `main`. Auf dem Dev-Projekt mit zwei Testprofilen durchgespielt (Rückfrage, Korrektur, Freigabe, Live-Mail); die Mails gehen über Amazon SES (Frankfurt, Produktionszugang seit 2026-10-28; Betrieb: `docs/runbooks/system-mails.md`). „Vom Anbieter angenommen“ ist nicht „zugestellt“.
+
+**Beobachtung (2026-10-28), offen:** Der Anmeldecode (Supabase-Auth-Mail, Absender `login@diskoe.world`) kam bei einer GMX-Adresse erst nach mehreren Minuten an, die Systemmails derselben Adresse sofort. Ursache unbekannt (Postfachanbieter, Ruf der neuen Domain oder des Absenders). Gegenmaßnahme: Hinweis auf der Code-Seite („Das kann einen Moment dauern. Schau auch im Spam-Ordner nach.“). Vor echten Organizern prüfen: DMARC-Eintrag, weitere Postfachanbieter, SES-Zustellkennzahlen.
+
+Nächster technischer Schritt: Slice 4 (manueller Event-Entwurf mit Lückenprüfung) laut `.planning/phases/04-durchstich/PLAN.md`; kein Auto-Advance, Plan Mode vorher. Offen beim Founder bzw. später: `MAIL_*`-Variablen in Amplify, DMARC-Eintrag, Preview-Deployment, Node-24-Umstellung auf dem lokalen Rechner (läuft dort noch auf 20). Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
 
 ## Übergabeformat
 

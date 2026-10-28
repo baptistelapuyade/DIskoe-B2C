@@ -39,6 +39,9 @@ export function LoginForm({
           Wir haben dir einen Code an {requestState.email} gesendet. Gib ihn
           hier ein oder öffne den Link in der E-Mail.
         </p>
+        <p className="text-muted-foreground text-sm">
+          Das kann einen Moment dauern. Schau auch im Spam-Ordner nach.
+        </p>
         <div>
           <label htmlFor="code" className="mb-1 block text-sm font-medium">
             Code
