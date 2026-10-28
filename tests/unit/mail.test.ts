@@ -64,9 +64,10 @@ describe("readMailConfig", () => {
 });
 
 describe("mail templates", () => {
-  const url = "https://app.example.test/organizer";
+  const url =
+    "https://app.example.test/organizer/profiles/00000000-0000-4000-8000-000000000001/status";
 
-  it("names the profile and links only to the start page", () => {
+  it("names the profile and links only to the profile page", () => {
     const mail = profileLiveMail({ name: "Alpha Events", url });
 
     expect(mail.subject).toBe("Dein Profil „Alpha Events“ ist jetzt live");

@@ -244,7 +244,7 @@ test.describe("first approval, publication and public image", () => {
     // link to the sign-in protected start page.
     const questionMail = await waitForMail(emails.ownerB, QUESTION_MAIL);
     expect(questionMail.body).toContain("keine Absage");
-    expect(questionMail.body).toContain(`${BASE_URL}/organizer`);
+    expect(questionMail.body).toContain(`${BASE_URL}/organizer/profiles/${profileB}/status`);
     expect(questionMail.body).not.toContain("Der Link scheint nicht zu funktionieren.");
     expect(await mailsWithSubject(emails.ownerB, QUESTION_MAIL)).toHaveLength(1);
     expect(await mailsWithSubject(emails.ownerA, QUESTION_MAIL)).toHaveLength(0);
@@ -321,7 +321,7 @@ test.describe("first approval, publication and public image", () => {
     // Exactly one "live" mail, to the owner of this profile only.
     const liveMail = await waitForMail(emails.ownerA, LIVE_MAIL);
     expect(liveMail.body).toContain("Alpha Events");
-    expect(liveMail.body).toContain(`${BASE_URL}/organizer`);
+    expect(liveMail.body).toContain(`${BASE_URL}/organizer/profiles/${profileA}/status`);
     expect(await mailsWithSubject(emails.ownerA, LIVE_MAIL)).toHaveLength(1);
     expect(await mailsWithSubject(emails.ownerB, LIVE_MAIL)).toHaveLength(0);
     expect(sql(`select status from public.profile_mails where profile_id = '${profileA}' and kind = 'profile_live'`)).toBe("sent");

@@ -5,7 +5,7 @@ Stand 2026-10-27. Gilt für die Alpha. Erlaubt sind nur Systemmails zum Organize
 ## Was wann verschickt wird
 - **Anmeldecode:** schickt Supabase Auth selbst über SES (Einrichtung in `supabase-auth-setup.md`).
 - **„Dein Profil … ist jetzt live“ und „Eine Frage zu deinem Profil …“:** schickt die App serverseitig, direkt nachdem du auf der Prüfseite freigibst oder eine Rückfrage stellst. Der Weg: `claim_profile_mail` (Datenbank prüft den Zustand und gibt die Adresse nur dir heraus) → Versand per SMTP → `finish_profile_mail` (Ergebnis). Je Profil, Revision und Art gibt es genau eine Zeile in `profile_mails`; eine angenommene Mail wird nie ein zweites Mal gesendet.
-- Die Mail enthält keinen Token, keine Adresse und nur einen Link auf die Startseite des Organizers (nach Anmeldung). Der Fragetext steht nicht in der Mail, nur in der App.
+- Die Mail enthält keinen Token, keine Adresse und nur einen Link direkt auf die Seite des Profils (`/organizer/profiles/<id>/status`); wer nicht angemeldet ist, wird nach der Anmeldung dorthin zurückgeleitet. Der Fragetext steht nicht in der Mail, nur in der App.
 
 ## Umgebungsvariablen (Namen; Werte trägst du selbst ein)
 | Name | Bedeutung |

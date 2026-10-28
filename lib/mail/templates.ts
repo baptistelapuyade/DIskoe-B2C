@@ -2,7 +2,7 @@ import type { MailKind } from "@/lib/profile/founder";
 
 // System mails to organizers of the alpha (AGENTS.md, extension of 2026-10-27).
 // No marketing, no tokens, no recipient address in the text. The only link
-// leads to the sign-in protected start page.
+// leads to the profile's own page, which needs a sign-in.
 // TODO(spec): wording is a proposal (approved wireframes, 2026-10-27).
 
 export type MailContent = { subject: string; text: string; html: string };
@@ -71,14 +71,16 @@ export function profileQuestionMail(input: {
   const paragraphs = [
     "Hallo,",
     `wir haben eine Frage zu deinem Profil „${name}“. Das ist keine Absage: Dein Profil bleibt privat, bis alles passt.`,
-    "Die Frage und den nächsten Schritt findest du nach der Anmeldung auf deiner Startseite.",
+    "Über den Link kommst du nach der Anmeldung direkt zu deinem Profil. Dort steht die Frage, und du kannst die Angaben ändern.",
     FOOTER,
   ];
 
   return {
     subject: `Eine Frage zu deinem Profil „${name}“`,
-    text: [...paragraphs, "", `Zur Startseite: ${input.url}`].join("\n\n"),
-    html: html(paragraphs, input.url, "Zur Startseite"),
+    text: [...paragraphs, "", `Zur Frage und zu deinem Profil: ${input.url}`].join(
+      "\n\n",
+    ),
+    html: html(paragraphs, input.url, "Zur Frage und zu deinem Profil"),
   };
 }
 
