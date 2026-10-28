@@ -88,3 +88,14 @@ export function priceLabel(price: PriceView): string | null {
 
   return null;
 }
+
+// The amount as it is typed into a form field: "12,50", without symbol.
+export function formatAmountInput(amountMinor: number): string {
+  if (!Number.isInteger(amountMinor) || amountMinor < 0) {
+    throw new RangeError("amountMinor must be a non-negative integer");
+  }
+
+  return `${Math.floor(amountMinor / 100)},${(amountMinor % 100)
+    .toString()
+    .padStart(2, "0")}`;
+}

@@ -1,5 +1,8 @@
+import Link from "next/link";
+
 import { ProfileCard } from "@/components/profile/home-card";
 import { requireAccess } from "@/lib/auth/server";
+import { loadOwnerEvents } from "@/lib/event/load";
 import { loadOwnerProfileView } from "@/lib/profile/load";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +33,12 @@ export default async function OrganizerHome() {
     ),
   );
 
+  const events = await loadOwnerEvents(access.profiles.map((p) => p.id));
+  const newEventHref =
+    access.profiles.length === 1
+      ? `/organizer/events/new?profile=${access.profiles[0].id}`
+      : "/organizer/events/new";
+
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-6 py-16">
       <header className="space-y-3">
@@ -45,6 +54,36 @@ export default async function OrganizerHome() {
           <ProfileCard key={view.profile.id} view={view} />
         ))}
       </ul>
+
+      <section aria-labelledby="events-heading" className="space-y-4">
+        <h2 id="events-heading" className="text-2xl font-bold tracking-tight">
+          Deine Events
+        </h2>
+        {events.length > 0 ? (
+          <ul className="space-y-2">
+            {events.map((event) => (
+              <li key={event.id}>
+                <Link
+                  href={`/organizer/events/${event.id}/edit`}
+                  className="underline"
+                >
+                  {event.title ?? "Event ohne Titel"}
+                </Link>{" "}
+                <span className="text-muted-foreground text-sm">
+                  · Entwurf – privat
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-muted-foreground">
+            Du hast noch kein Event angelegt.
+          </p>
+        )}
+        <Link href={newEventHref} className="inline-block underline">
+          Event anlegen
+        </Link>
+      </section>
     </main>
   );
 }
