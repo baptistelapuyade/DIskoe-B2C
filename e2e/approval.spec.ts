@@ -203,6 +203,24 @@ test.describe("first approval, publication and public image", () => {
     expect(anonymous.headers().location).toContain("/login");
   });
 
+  test("the founder reaches the review list through a link, an owner does not see it", async ({ browser }) => {
+    const founder = await pageFor(browser, "founder");
+    await founder.page.goto("/organizer");
+    const link = founder.page.getByRole("link", { name: /^Prüfung( \(\d+\))?$/ });
+    await expect(link).toBeVisible(SLOW);
+    await link.click();
+    await expect(founder.page.getByRole("heading", { name: "Profile zur Prüfung" })).toBeVisible(SLOW);
+    // The internal pages have their own way back and out.
+    await expect(founder.page.getByRole("link", { name: "Organizer-Ansicht" })).toBeVisible();
+    await founder.context.close();
+
+    const owner = await pageFor(browser, "ownerA");
+    await owner.page.goto("/organizer");
+    await expect(owner.page.getByRole("button", { name: "Abmelden" })).toBeVisible(SLOW);
+    await expect(owner.page.getByRole("link", { name: /^Prüfung/ })).toHaveCount(0);
+    await owner.context.close();
+  });
+
   test("an owner can neither approve nor publish before the approval", async ({ browser }) => {
     const approve = await ownerAApi.rpc("approve_first_profile", {
       p_profile_id: profileA,
