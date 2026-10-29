@@ -14,9 +14,18 @@ import {
   extensionFor,
   parseAltText,
 } from "@/lib/domain/profile-publication";
-import { createEventDraft, ensureEditableEventDraft } from "@/lib/event/draft";
+import {
+  createEventDraft,
+  ensureEditableEventDraft,
+  loadEventRevision,
+} from "@/lib/event/draft";
 import { requireOwnedEvent } from "@/lib/event/load";
-import { valuesToRow, type EventFormValues } from "@/lib/event/values";
+import {
+  EMPTY_FORM_VALUES,
+  rowToFormValues,
+  valuesToRow,
+  type EventFormValues,
+} from "@/lib/event/values";
 import { createClient } from "@/lib/supabase/server";
 
 export type EventFormState = {
@@ -42,51 +51,67 @@ function listOf(formData: FormData, name: string): string[] {
   return formData.getAll(name).filter((v): v is string => typeof v === "string");
 }
 
-function inputFromForm(formData: FormData): EventFormInput {
+export type EventSection = "basics" | "access" | "atmosphere";
+
+// "2026-10-23T22:00" (one date-time control, as in Figma) to date and time.
+function splitLocal(raw: FormDataEntryValue | null): {
+  date: string;
+  time: string;
+} {
+  const [date = "", time = ""] = textOf(raw).split("T");
+  return { date, time: time.slice(0, 5) };
+}
+
+// A section page sends only its own fields. They are laid over the saved
+// draft, so that saving one page never clears the answers of another.
+function overlay(
+  section: EventSection,
+  current: EventFormValues,
+  formData: FormData,
+): EventFormValues {
+  if (section === "basics") {
+    const start = splitLocal(formData.get("start"));
+    const end = splitLocal(formData.get("end"));
+
+    return {
+      ...current,
+      title: textOf(formData.get("title")),
+      description: textOf(formData.get("description")),
+      format: textOf(formData.get("format")),
+      startDate: start.date,
+      startTime: start.time,
+      endDate: end.date,
+      endTime: end.time,
+      endUnknown: formData.get("endUnknown") === "on",
+      placeName: textOf(formData.get("placeName")),
+      addressLine: textOf(formData.get("addressLine")),
+      postalCode: textOf(formData.get("postalCode")),
+      city: textOf(formData.get("city")),
+    };
+  }
+
+  if (section === "access") {
+    return {
+      ...current,
+      priceModel: textOf(formData.get("priceModel")),
+      priceAmount: textOf(formData.get("priceAmount")),
+      accessKinds: listOf(formData, "accessKinds"),
+      onlineTicketUrl: textOf(formData.get("onlineTicketUrl")),
+      onlineRegistrationUrl: textOf(formData.get("onlineRegistrationUrl")),
+    };
+  }
+
   return {
-    title: formData.get("title"),
-    description: formData.get("description"),
-    format: formData.get("format"),
-    startDate: formData.get("startDate"),
-    startTime: formData.get("startTime"),
-    endDate: formData.get("endDate"),
-    endTime: formData.get("endTime"),
-    endUnknown: formData.get("endUnknown"),
-    placeName: formData.get("placeName"),
-    addressLine: formData.get("addressLine"),
-    postalCode: formData.get("postalCode"),
-    city: formData.get("city"),
-    priceModel: formData.get("priceModel"),
-    priceAmount: formData.get("priceAmount"),
-    accessKinds: listOf(formData, "accessKinds"),
-    onlineTicketUrl: formData.get("onlineTicketUrl"),
-    onlineRegistrationUrl: formData.get("onlineRegistrationUrl"),
+    ...current,
     atmosphereTags: listOf(formData, "atmosphereTags"),
-    atmosphereDescription: formData.get("atmosphereDescription"),
+    atmosphereDescription: textOf(formData.get("atmosphereDescription")),
   };
 }
 
-function echoOf(formData: FormData): EventFormValues {
+function inputFromValues(v: EventFormValues): EventFormInput {
   return {
-    title: textOf(formData.get("title")),
-    description: textOf(formData.get("description")),
-    format: textOf(formData.get("format")),
-    startDate: textOf(formData.get("startDate")),
-    startTime: textOf(formData.get("startTime")),
-    endDate: textOf(formData.get("endDate")),
-    endTime: textOf(formData.get("endTime")),
-    endUnknown: formData.get("endUnknown") === "on",
-    placeName: textOf(formData.get("placeName")),
-    addressLine: textOf(formData.get("addressLine")),
-    postalCode: textOf(formData.get("postalCode")),
-    city: textOf(formData.get("city")),
-    priceModel: textOf(formData.get("priceModel")),
-    priceAmount: textOf(formData.get("priceAmount")),
-    accessKinds: listOf(formData, "accessKinds"),
-    onlineTicketUrl: textOf(formData.get("onlineTicketUrl")),
-    onlineRegistrationUrl: textOf(formData.get("onlineRegistrationUrl")),
-    atmosphereTags: listOf(formData, "atmosphereTags"),
-    atmosphereDescription: textOf(formData.get("atmosphereDescription")),
+    ...v,
+    endUnknown: v.endUnknown ? "on" : null,
   };
 }
 
@@ -135,19 +160,32 @@ export async function createEvent(
   redirect(editPath(eventId));
 }
 
-export async function saveEventDetails(
+export async function saveEventSection(
   eventId: string,
+  section: EventSection,
   _previous: EventFormState,
   formData: FormData,
 ): Promise<EventFormState> {
   const { userId, event } = await requireOwnedEvent(eventId, editPath(eventId));
-  const parsed = parseEventInput(inputFromForm(formData));
+  const supabase = await createClient();
 
-  if (!parsed.ok) {
-    return { ok: false, errors: parsed.errors, echo: echoOf(formData) };
+  let current = EMPTY_FORM_VALUES;
+
+  try {
+    const revision = event.draftRevisionId
+      ? await loadEventRevision(supabase, event.draftRevisionId)
+      : null;
+    current = revision ? rowToFormValues(revision) : EMPTY_FORM_VALUES;
+  } catch {
+    return { ok: false, message: GENERIC_ERROR };
   }
 
-  const supabase = await createClient();
+  const merged = overlay(section, current, formData);
+  const parsed = parseEventInput(inputFromValues(merged));
+
+  if (!parsed.ok) {
+    return { ok: false, errors: parsed.errors, echo: merged };
+  }
 
   try {
     const { revisionId } = await ensureEditableEventDraft(
@@ -165,13 +203,14 @@ export async function saveEventDetails(
       .select("id");
 
     if (error || !data || data.length !== 1) {
-      return { ok: false, message: GENERIC_ERROR, echo: echoOf(formData) };
+      return { ok: false, message: GENERIC_ERROR, echo: merged };
     }
   } catch {
-    return { ok: false, message: GENERIC_ERROR, echo: echoOf(formData) };
+    return { ok: false, message: GENERIC_ERROR, echo: merged };
   }
 
   revalidatePath(editPath(eventId));
+  revalidatePath(`/organizer/events/${eventId}`, "layout");
   revalidatePath("/organizer");
   return { ok: true, message: "Gespeichert. Der Entwurf bleibt privat." };
 }

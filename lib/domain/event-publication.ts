@@ -83,9 +83,9 @@ export const ACCESS_KINDS = [
 export type AccessKind = (typeof ACCESS_KINDS)[number];
 
 export const ACCESS_LABEL: Record<AccessKind, string> = {
-  walk_in: "Einfach vorbeikommen",
-  door: "Tickets an der Abendkasse",
-  online_ticket: "Online-Tickets",
+  walk_in: "Ohne Anmeldung",
+  door: "Abendkasse",
+  online_ticket: "Online-Ticket",
   online_registration: "Online-Anmeldung",
 };
 

@@ -1,18 +1,22 @@
-import Link from "next/link";
-
+import { EventBasicsForm } from "@/components/event/basics-form";
+import { LinkButton } from "@/components/ui/button";
 import {
-  EventDetailsForm,
-  EventGapList,
-  EventImageForm,
-} from "@/components/event/forms";
+  ContextCard,
+  MutedText,
+  PageShell,
+  SectionHeading,
+  Workspace,
+} from "@/components/ui/page-shell";
 import { loadOwnerEventView } from "@/lib/event/load";
+import { atmosphereSummary, priceAccessSummary } from "@/lib/event/summary";
 
-import { saveEventDetails, uploadEventImage } from "../../actions";
+import { saveEventSection } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
-// TODO(spec): texts are proposals (Figma "Eventeditor" is the visual
-// reference; the layout here is a plain form).
+// Figma 01 "Eventeditor — privater Entwurf" (2496:1261, mobile 2496:2540).
+// Not built (not part of the Durchstich): "Programm und Besuch" and the
+// design settings of "Eventbild & Gestaltung".
 export default async function EditEventPage({
   params,
 }: {
@@ -23,57 +27,88 @@ export default async function EditEventPage({
     eventId,
     `/organizer/events/${eventId}/edit`,
   );
-  const { image } = view;
+  const base = `/organizer/events/${eventId}`;
+  const priceAccess = priceAccessSummary(view.form);
+  const atmosphere = atmosphereSummary(view.form);
 
   return (
-    <main className="mx-auto max-w-3xl space-y-10 px-6 py-12">
-      <header className="space-y-3">
-        <Link href="/organizer" className="text-muted-foreground text-sm">
-          ← Zurück
-        </Link>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Event bearbeiten
-        </h1>
-        <p className="text-muted-foreground">
-          Entwurf – privat. Du kannst jederzeit unvollständig speichern.
-        </p>
-      </header>
-
-      <EventGapList gaps={view.gaps} />
-
-      <section aria-labelledby="details-heading" className="space-y-4">
-        <h2 id="details-heading" className="text-xl font-semibold">
-          Angaben
-        </h2>
-        <EventDetailsForm
-          action={saveEventDetails.bind(null, eventId)}
-          values={view.form}
-        />
-      </section>
-
-      <section aria-labelledby="image-heading" className="space-y-4">
-        <h2 id="image-heading" className="text-xl font-semibold">
-          Eventbild
-        </h2>
-        <p className="text-muted-foreground text-sm">
-          Das Bild ist nur zum Veröffentlichen nötig. Für den Entwurf kannst du
-          es später hochladen.
-        </p>
-        {image?.signedUrl ? (
-          <figure>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={image.signedUrl}
-              alt={image.altText ?? ""}
-              className="max-h-64 rounded-md"
+    <PageShell
+      context={`DISKOE / ${view.profileName}`}
+      badge="Entwurf · gespeichert"
+      title={view.form.title || "Neues Event"}
+      subtitle="Event bearbeiten · Basisangaben prüfen"
+    >
+      <Workspace
+        main={
+          <>
+            <SectionHeading>Grundlagen</SectionHeading>
+            <EventBasicsForm
+              action={saveEventSection.bind(null, eventId, "basics")}
+              values={view.form}
             />
-            <figcaption className="text-muted-foreground mt-2 text-sm">
-              Aktuelles Bild. Ein neues Bild ersetzt es im Entwurf.
-            </figcaption>
-          </figure>
-        ) : null}
-        <EventImageForm action={uploadEventImage.bind(null, eventId)} />
-      </section>
-    </main>
+
+            <div className="mt-4 flex flex-col gap-5">
+              <SectionHeading>Preis und Zugang</SectionHeading>
+              <p className="text-base leading-6">
+                {priceAccess ?? "Preis und Zugang sind noch nicht angegeben."}
+              </p>
+              <LinkButton
+                href={`${base}/access`}
+                variant="secondary"
+                className="w-full"
+              >
+                Preis und Zugang bearbeiten
+              </LinkButton>
+            </div>
+
+            <ContextCard
+              title={atmosphere ? "Atmosphäre" : "Atmosphäre noch offen"}
+            >
+              <MutedText>
+                {atmosphere ??
+                  "Wählt bestätigte Begriffe oder beschreibt den Abend in eigenen Worten."}
+              </MutedText>
+            </ContextCard>
+
+            <div className="flex flex-wrap gap-4">
+              <LinkButton href="/organizer">Zur Eventübersicht</LinkButton>
+              <LinkButton href={`${base}/atmosphere`} variant="primary">
+                {atmosphere ? "Atmosphäre bearbeiten" : "Atmosphäre ergänzen"}
+              </LinkButton>
+              <LinkButton href={`${base}/preview`}>Zur Vorschau</LinkButton>
+            </div>
+          </>
+        }
+        side={
+          <>
+            <ContextCard title="Privater Entwurf">
+              <MutedText>
+                Eure Änderungen sind noch nicht öffentlich. Ihr könnt jederzeit
+                unterbrechen und später hier fortsetzen.
+              </MutedText>
+            </ContextCard>
+            <ContextCard title="Profil vor Einreichung prüfen">
+              <MutedText>
+                Projektname, Vorstellung, Profiladresse, offizieller Link oder
+                öffentlicher Kontakt und mindestens ein Cover oder Anzeigebild.
+                Fehlendes könnt ihr vor der Einreichung ergänzen.
+              </MutedText>
+            </ContextCard>
+            <ContextCard title="Bild und Material">
+              <MutedText>
+                Erfassungsmaterial und öffentliches Eventbild sind getrennt.
+                Wählt unter Eventbild &amp; Gestaltung ein Bild. Ohne Bild
+                bleibt das Event ein privater Entwurf.
+              </MutedText>
+              <div>
+                <LinkButton href={`${base}/image`}>
+                  Eventbild &amp; Gestaltung
+                </LinkButton>
+              </div>
+            </ContextCard>
+          </>
+        }
+      />
+    </PageShell>
   );
 }

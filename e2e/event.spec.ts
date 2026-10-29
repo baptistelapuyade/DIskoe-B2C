@@ -4,9 +4,10 @@ import { clearMailbox, waitForCode } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the private
-// event draft (Slice 4): saving an incomplete draft, concrete gaps, price
-// unknown, DST, atmosphere limit, online access link, event image. Publishing
-// is Slice 5.
+// event draft (Slice 4) through the Figma screens: Eventstart, Editor,
+// Atmosphäre, Preis und Zugang, Veröffentlichungscheck and Eventbild. Saving an
+// incomplete draft, concrete gaps, price unknown, DST, atmosphere limit, online
+// access link, event image. Publishing is Slice 5.
 
 const BASE_URL = "http://127.0.0.1:3000";
 // The CI serves the app with `next dev`, which compiles routes on first use.
@@ -38,12 +39,15 @@ async function signInWithCode(page: Page, email: string) {
   await page.waitForURL("**/organizer");
 }
 
-const gapList = (page: Page) =>
-  page.getByRole("note").filter({ hasText: "Das fehlt noch" });
-
-async function save(page: Page) {
-  await page.getByRole("button", { name: "Speichern", exact: true }).click();
+async function save(page: Page, name: string) {
+  await page.getByRole("button", { name, exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Gespeichert", SLOW);
 }
+
+// The chips are native checkboxes behind a styled pill: they are toggled by
+// their visible text.
+const chip = (page: Page, term: string) =>
+  page.getByText(term, { exact: true });
 
 test("the event draft: incomplete saves, concrete gaps, price, time, access, image", async ({
   browser,
@@ -69,44 +73,53 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await page.waitForURL("**/login", SLOW);
   await signInWithCode(page, emails.ownerA);
 
-  // 1. Create the draft with a title only.
+  // 1. Eventstart: only "Manuell eingeben" exists; it opens an empty draft.
   await expect(page.getByText("Du hast noch kein Event angelegt.")).toBeVisible(
     SLOW,
   );
   await page.getByRole("link", { name: "Event anlegen" }).click();
-  await page.getByLabel("Titel des Events").fill(TITLE);
-  await page.getByRole("button", { name: "Entwurf anlegen" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Was steht als Nächstes an?" }),
+  ).toBeVisible(SLOW);
+  await page.getByRole("button", { name: "Manuell eingeben" }).click();
   await page.waitForURL("**/organizer/events/*/edit", SLOW);
   const eventId = page.url().split("/events/")[1].split("/")[0];
+  const base = `/organizer/events/${eventId}`;
   await expect(
-    page.getByRole("heading", { name: "Event bearbeiten" }),
+    page.getByRole("heading", { name: "Neues Event", level: 1 }),
   ).toBeVisible(SLOW);
 
   const field = (column: string) =>
     sql(
       `select ${column} from public.event_revisions r join public.events e on e.draft_revision_id = r.id where e.id = '${eventId}'`,
     );
-
-  // 2. P01/P05: an incomplete draft exists; every gap is named, the image too.
-  const gaps = gapList(page);
-  await expect(gaps).toContainText("Die Beschreibung fehlt.");
-  await expect(gaps).toContainText("Datum und Uhrzeit des Beginns fehlen.");
-  await expect(gaps).toContainText("Der Ort mit Adresse fehlt.");
-  await expect(gaps).toContainText("Ein bestätigtes Eventbild fehlt.");
-  await expect(gaps).not.toContainText("Der Titel fehlt.");
-  expect(field("title_state")).toBe("provided");
+  expect(field("title_state")).toBe("unanswered");
   expect(field("price_state")).toBe("unanswered");
 
-  // 3. Format, description and a night event (P11): stored as UTC instants.
-  await page.getByLabel("Format", { exact: true }).selectOption("concert");
+  // 2. P01/P05: an empty draft exists; the check names every gap, the image too.
+  await page.getByRole("link", { name: "Zur Vorschau" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Noch Angaben offen" }),
+  ).toBeVisible(SLOW);
+  await expect(page.getByText("Der Titel fehlt.")).toBeVisible();
+  await expect(page.getByText("Die Beschreibung fehlt.")).toBeVisible();
+  await expect(page.getByText("Der Ort mit Adresse fehlt.")).toBeVisible();
+  await expect(page.getByText(/^Eventbild fehlt\. Speichern/)).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Zur Prüfung einreichen" }),
+  ).toBeDisabled();
+  await page.getByRole("link", { name: "Zurück zum Editor" }).click();
+
+  // 3. Title, format, description and a night event (P11): UTC instants.
+  await page.getByLabel("Titel", { exact: true }).fill(TITLE);
+  await page.getByLabel("Hauptformat").selectOption("concert");
   await page.getByLabel("Beschreibung", { exact: true }).fill("Live im Keller.");
-  await page.getByLabel("Beginn – Datum").fill("2026-10-31");
-  await page.getByLabel("Beginn – Uhrzeit").fill("23:00");
-  await page.getByLabel("Ende – Datum").fill("2026-11-01");
-  await page.getByLabel("Ende – Uhrzeit").fill("04:00");
-  await save(page);
-  await expect(gaps).not.toContainText("Datum und Uhrzeit des Beginns fehlen.", SLOW);
-  await expect(gaps).not.toContainText("Die Beschreibung fehlt.");
+  await page.getByLabel("Beginn", { exact: true }).fill("2026-10-31T23:00");
+  await page.getByLabel("Ende", { exact: true }).fill("2026-11-01T04:00");
+  await save(page, "Grundlagen speichern");
+  await expect(
+    page.getByRole("heading", { name: TITLE, level: 1 }),
+  ).toBeVisible(SLOW);
   expect(field(`to_char(start_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`)).toBe(
     "2026-10-31T22:00",
   );
@@ -114,97 +127,124 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     "2026-11-01T03:00",
   );
   await page.reload();
-  await expect(page.getByLabel("Beginn – Uhrzeit")).toHaveValue("23:00", SLOW);
-  await expect(page.getByLabel("Ende – Datum")).toHaveValue("2026-11-01");
-
-  // 4. P13: a time the clock change skips is refused and the input stays.
-  await page.getByLabel("Beginn – Datum").fill("2026-03-29");
-  await page.getByLabel("Beginn – Uhrzeit").fill("02:30");
-  await page.getByLabel("Ende – Datum").fill("2026-03-29");
-  await page.getByLabel("Ende – Uhrzeit").fill("05:00");
-  await save(page);
-  await expect(page.getByRole("alert").filter({ hasText: /Zeitumstellung nicht/ })).toBeVisible(
+  await expect(page.getByLabel("Beginn", { exact: true })).toHaveValue(
+    "2026-10-31T23:00",
     SLOW,
   );
-  await expect(page.getByLabel("Beginn – Uhrzeit")).toHaveValue("02:30");
+  await expect(page.getByLabel("Ende", { exact: true })).toHaveValue(
+    "2026-11-01T04:00",
+  );
+
+  // 4. P13: a time the clock change skips is refused and the input stays.
+  await page.getByLabel("Beginn", { exact: true }).fill("2026-03-29T02:30");
+  await page.getByLabel("Ende", { exact: true }).fill("2026-03-29T05:00");
+  await page.getByRole("button", { name: "Grundlagen speichern" }).click();
+  await expect(
+    page.getByRole("alert").filter({ hasText: /Zeitumstellung nicht/ }),
+  ).toBeVisible(SLOW);
+  await expect(page.getByLabel("Beginn", { exact: true })).toHaveValue(
+    "2026-03-29T02:30",
+  );
   expect(field(`to_char(start_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`)).toBe(
     "2026-10-31T22:00",
   );
-  await page.getByLabel("Beginn – Datum").fill("2026-10-31");
-  await page.getByLabel("Beginn – Uhrzeit").fill("23:00");
-  await page.getByLabel("Ende – Datum").fill("2026-11-01");
-  await page.getByLabel("Ende – Uhrzeit").fill("04:00");
+  await page.getByLabel("Beginn", { exact: true }).fill("2026-10-31T23:00");
+  await page.getByLabel("Ende", { exact: true }).fill("2026-11-01T04:00");
 
   // 5. Place: half-filled is refused, complete is saved.
   await page.getByLabel("Name des Orts").fill("Keller");
-  await save(page);
+  await page.getByRole("button", { name: "Grundlagen speichern" }).click();
   await expect(
     page.getByRole("alert").filter({ hasText: /Namen des Orts und die Adresse/ }),
   ).toBeVisible(SLOW);
-  await page.getByLabel("Adresse (Straße und Hausnummer)").fill("Musterstraße 1");
+  await page.getByLabel("Straße und Hausnummer").fill("Musterstraße 1");
   await page.getByLabel("Postleitzahl").fill("10115");
-  await page.getByLabel("Stadt").fill("Berlin");
+  await page.getByLabel("Stadt", { exact: true }).fill("Berlin");
+  await save(page, "Grundlagen speichern");
+  expect(field("place_name")).toBe("Keller");
 
-  // 6. P04: four atmosphere terms are an error, nothing is cut off.
+  // 6. Atmosphäre: P04, four terms are an error, nothing is cut off. The
+  // answer stays unanswered until "Auswahl übernehmen".
+  await page.getByRole("link", { name: "Atmosphäre ergänzen" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Wie fühlt sich der Abend an?" }),
+  ).toBeVisible(SLOW);
+  expect(field("atmosphere_state")).toBe("unanswered");
   for (const term of ["Gemütlich", "Intim/persönlich", "Entspannt", "Lebhaft"]) {
-    await page.getByRole("checkbox", { name: term }).check();
+    await chip(page, term).click();
   }
-  await save(page);
+  await page.getByRole("button", { name: "Auswahl übernehmen" }).click();
   await expect(
     page.getByRole("alert").filter({ hasText: /höchstens 3/ }),
   ).toBeVisible(SLOW);
-  await page.getByRole("checkbox", { name: "Lebhaft" }).uncheck();
-  await page.getByRole("checkbox", { name: "Entspannt" }).uncheck();
+  await chip(page, "Lebhaft").click();
+  await chip(page, "Entspannt").click();
+  await save(page, "Auswahl übernehmen");
+  expect(field("atmosphere_state")).toBe("provided");
+  await page.getByRole("link", { name: "Zurück zum Entwurf" }).click();
 
-  // 7. P08: an online route without a link is a named gap, then fixed.
-  await page.getByRole("checkbox", { name: "Online-Tickets" }).check();
-  await save(page);
-  await expect(gaps).toContainText("Für den Online-Zugang fehlt ein gültiger Link.", SLOW);
-  await expect(gaps).not.toContainText("Der Ort mit Adresse fehlt.");
-  await page.getByLabel("Link für Online-Tickets").fill("tickets.example.org/abend");
-  await save(page);
-  await expect(gaps).not.toContainText("Online-Zugang", SLOW);
+  // 7. Preis und Zugang. P08: an online route without a link is a named gap.
+  await page.getByRole("link", { name: "Preis und Zugang bearbeiten" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Preis und Zugang", level: 1 }),
+  ).toBeVisible(SLOW);
+  await page.getByRole("checkbox", { name: "Online-Ticket" }).check();
+  await save(page, "Angaben übernehmen");
+  await page.goto(`${base}/preview`);
+  await expect(
+    page.getByText("Für den Online-Zugang fehlt ein gültiger Link."),
+  ).toBeVisible(SLOW);
+  await expect(page.getByText("Der Ort mit Adresse fehlt.")).toHaveCount(0);
+  await page.goto(`${base}/access`);
+  await page.getByLabel("Ticketlink").fill("tickets.example.org/abend");
+  await save(page, "Angaben übernehmen");
   expect(field("access_routes::text")).toContain("https://tickets.example.org/abend");
 
-  // 8. P07: the price. Unanswered is a gap; "unknown" is its own state.
-  await expect(gaps).toContainText("Der Preis fehlt.");
-  await page.getByRole("radio", { name: "Preis noch nicht bekannt" }).check();
-  await save(page);
-  await expect(gaps).not.toContainText("Der Preis fehlt.", SLOW);
+  // 8. P07: the price. Unanswered is a gap; "unknown" is its own state and is
+  // never shown as "Frei".
+  await page.goto(`${base}/preview`);
+  await expect(page.getByText("Der Preis fehlt.")).toBeVisible(SLOW);
+  await page.goto(`${base}/access`);
+  await page.getByLabel("Preisform").selectOption({ label: "Noch nicht bekannt" });
+  await expect(page.getByText("Preis noch offen").first()).toBeVisible();
+  await save(page, "Angaben übernehmen");
   expect(field("price_state")).toBe("unknown");
   expect(field("coalesce(price_model::text, '')")).toBe("unknown");
   expect(field("coalesce(price_amount_minor::text, '')")).toBe("");
 
-  await page.getByRole("radio", { name: "Festpreis" }).check();
-  await page.getByLabel("Betrag in Euro (nur bei Festpreis)").fill("12,50");
-  await save(page);
+  await page.getByLabel("Preisform").selectOption({ label: "Festpreis" });
+  await page.getByLabel("Preis in EUR").fill("12,50");
+  await save(page, "Angaben übernehmen");
   await expect
     .poll(() => field("coalesce(price_amount_minor::text, '')"), SLOW)
     .toBe("1250");
   expect(field("price_state")).toBe("provided");
   await page.reload();
-  await expect(page.getByLabel("Betrag in Euro (nur bei Festpreis)")).toHaveValue(
-    "12,50",
-    SLOW,
-  );
+  await expect(page.getByLabel("Preis in EUR")).toHaveValue("12,50", SLOW);
 
   // 9. Only the image is missing now (P05: it gates publishing, not the draft).
-  await expect(gaps.getByRole("listitem")).toHaveCount(1, SLOW);
-  await expect(gaps).toContainText("Ein bestätigtes Eventbild fehlt.");
+  await page.goto(`${base}/preview`);
+  await expect(
+    page.getByRole("heading", { name: "Prüft euren öffentlichen Auftritt" }),
+  ).toBeVisible(SLOW);
+  await expect(page.getByRole("heading", { name: "Eventbild fehlt" })).toBeVisible();
+  await expect(page.getByText(/Pflichtlücke/)).toHaveCount(0);
 
   // 10. The image: alt text and rights are mandatory. The form is reset after
   // every attempt, so the file is chosen again each time.
+  await page.getByRole("link", { name: "Eventbild ergänzen" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Wie soll euer Event erscheinen?" }),
+  ).toBeVisible(SLOW);
   const png = { name: "buehne.png", mimeType: "image/png", buffer: PNG };
   await page.getByLabel(/^Eventbild \(JPEG/).setInputFiles(png);
   await page.getByRole("button", { name: "Bild hochladen" }).click();
   await expect(page.getByText("Bitte beschreibe das Bild kurz")).toBeVisible(SLOW);
   await expect(page.getByText(/Bitte bestätige, dass du das Bild/)).toBeVisible();
-  await expect(gaps).toContainText("Ein bestätigtes Eventbild fehlt.");
   await page.getByLabel(/^Eventbild \(JPEG/).setInputFiles(png);
   await page.getByLabel("Bildbeschreibung (Alternativtext)").fill("Bühne bei Nacht");
   await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
   await page.getByRole("button", { name: "Bild hochladen" }).click();
-  await expect(page.getByText("Das fehlt noch")).toHaveCount(0, SLOW);
   await expect(
     page.getByRole("img", { name: "Bühne bei Nacht" }),
   ).toBeVisible(SLOW);
@@ -214,7 +254,16 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     ),
   ).toMatch(new RegExp(`^events/${eventId}/[0-9a-f-]+\\.png$`));
 
-  // 11. The draft appears on the home page, privately.
+  // 11. The check is complete; submitting is not available yet (Slice 5).
+  await page.getByRole("link", { name: "Zur Eventvorschau" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Pflichtangaben vollständig" }),
+  ).toBeVisible(SLOW);
+  await expect(
+    page.getByRole("button", { name: "Weiter zur Bestätigung" }),
+  ).toBeDisabled();
+
+  // 12. The draft appears on the home page, privately.
   await page.goto("/organizer");
   await expect(page.getByRole("link", { name: TITLE })).toBeVisible(SLOW);
   await expect(page.getByText("Entwurf – privat")).toBeVisible();
@@ -222,9 +271,11 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     sql(`select publication_state from public.events where id = '${eventId}'`),
   ).toBe("private");
 
-  // 12. Another organizer cannot reach the draft.
-  const response = await otherPage.goto(`/organizer/events/${eventId}/edit`);
-  expect(response?.status()).toBe(404);
+  // 13. Another organizer cannot reach the draft or any of its pages.
+  for (const path of ["edit", "access", "atmosphere", "preview", "image"]) {
+    const response = await otherPage.goto(`${base}/${path}`);
+    expect(response?.status()).toBe(404);
+  }
 
   await context.close();
   await otherContext.close();

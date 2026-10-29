@@ -26,6 +26,7 @@ const UUID =
 
 export type OwnerEventView = {
   userId: string;
+  profileName: string;
   event: EventState;
   form: EventFormValues;
   image: ProfileImage | null;
@@ -38,7 +39,7 @@ export type OwnerEventView = {
 export async function requireOwnedEvent(
   eventId: string,
   currentPath: string,
-): Promise<{ userId: string; event: EventState }> {
+): Promise<{ userId: string; event: EventState; profileName: string }> {
   const access = await requireOwner(currentPath);
 
   if (!UUID.test(eventId)) {
@@ -49,23 +50,25 @@ export async function requireOwnedEvent(
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
   const event = userId ? await loadEventState(supabase, eventId) : null;
+  const profile = event
+    ? access.profiles.find((item) => item.id === event.organizerId)
+    : undefined;
 
-  if (
-    !userId ||
-    !event ||
-    !access.profiles.some((profile) => profile.id === event.organizerId)
-  ) {
+  if (!userId || !event || !profile) {
     notFound();
   }
 
-  return { userId, event };
+  return { userId, event, profileName: profile.draftName ?? profile.slug };
 }
 
 export async function loadOwnerEventView(
   eventId: string,
   currentPath: string,
 ): Promise<OwnerEventView> {
-  const { userId, event } = await requireOwnedEvent(eventId, currentPath);
+  const { userId, event, profileName } = await requireOwnedEvent(
+    eventId,
+    currentPath,
+  );
   const supabase = await createClient();
 
   const revision = event.draftRevisionId
@@ -84,6 +87,7 @@ export async function loadOwnerEventView(
 
   return {
     userId,
+    profileName,
     event,
     form: revision ? rowToFormValues(revision) : EMPTY_FORM_VALUES,
     image,
