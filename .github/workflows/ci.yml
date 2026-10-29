@@ -130,6 +130,9 @@ jobs:
   e2e-auth:
     name: Playwright sign-in and organizer access
     runs-on: ubuntu-latest
+    # Write access only for the screenshot branch below (ci-screens).
+    permissions:
+      contents: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -203,3 +206,21 @@ jobs:
           path: test-results/screens/
           retention-days: 14
           if-no-files-found: warn
+
+      # The screenshots are also pushed to the branch ci-screens (never to a
+      # code branch), so that they can be fetched with git and looked at.
+      - name: Push event screenshots to ci-screens
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          if [ ! -d test-results/screens ]; then exit 0; fi
+          dir="pr-${{ github.event.pull_request.number }}"
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git fetch origin ci-screens 2>/dev/null && git worktree add ../shots origin/ci-screens \
+            || git worktree add --orphan -b ci-screens ../shots
+          rm -rf "../shots/$dir" && mkdir -p "../shots/$dir"
+          cp test-results/screens/*.png "../shots/$dir/"
+          cd ../shots
+          git add -A
+          git commit -m "Screenshots of ${GITHUB_SHA::7} for PR ${{ github.event.pull_request.number }}" || exit 0
+          git push origin HEAD:ci-screens
