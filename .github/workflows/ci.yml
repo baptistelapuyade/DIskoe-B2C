@@ -193,3 +193,13 @@ jobs:
           path: test-results/walkthrough/ablauf.webm
           retention-days: 14
           if-no-files-found: warn
+
+      # Screenshots of the event screens, to hold against the Figma frames.
+      - name: Upload event screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: event-screens
+          path: test-results/screens/
+          retention-days: 14
+          if-no-files-found: warn

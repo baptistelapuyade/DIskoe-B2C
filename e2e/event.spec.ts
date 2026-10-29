@@ -49,12 +49,25 @@ async function save(page: Page, name: string) {
 const chip = (page: Page, term: string) =>
   page.getByText(term, { exact: true });
 
+// Screenshots of every screen, attached to the CI run (artifact "event-screens")
+// so that they can be held against the Figma frames.
+async function shot(page: Page, name: string) {
+  await page.waitForTimeout(300);
+  await page.screenshot({
+    path: `test-results/screens/${name}.png`,
+    fullPage: true,
+  });
+}
+
 test("the event draft: incomplete saves, concrete gaps, price, time, access, image", async ({
   browser,
 }) => {
   test.setTimeout(300_000);
 
-  const context = await browser.newContext({ baseURL: BASE_URL });
+  const context = await browser.newContext({
+    baseURL: BASE_URL,
+    viewport: { width: 1128, height: 900 },
+  });
   const page = await context.newPage();
 
   // Accounts and profiles: provisioned the way the founder does it.
@@ -81,6 +94,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(
     page.getByRole("heading", { name: "Was steht als Nächstes an?" }),
   ).toBeVisible(SLOW);
+  await shot(page, "01-eventstart");
   await page.getByRole("button", { name: "Manuell eingeben" }).click();
   await page.waitForURL("**/organizer/events/*/edit", SLOW);
   const eventId = page.url().split("/events/")[1].split("/")[0];
@@ -95,6 +109,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     );
   expect(field("title_state")).toBe("unanswered");
   expect(field("price_state")).toBe("unanswered");
+  await shot(page, "02-editor-leer");
 
   // 2. P01/P05: an empty draft exists; the check names every gap, the image too.
   await page.getByRole("link", { name: "Zur Vorschau" }).click();
@@ -108,6 +123,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(
     page.getByRole("button", { name: "Zur Prüfung einreichen" }),
   ).toBeDisabled();
+  await shot(page, "03-check-luecken");
   await page.getByRole("link", { name: "Zurück zum Editor" }).click();
 
   // 3. Title, format, description and a night event (P11): UTC instants.
@@ -162,6 +178,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await page.getByLabel("Stadt", { exact: true }).fill("Berlin");
   await save(page, "Grundlagen speichern");
   expect(field("place_name")).toBe("Keller");
+  await shot(page, "04-editor-gefuellt");
 
   // 6. Atmosphäre: P04, four terms are an error, nothing is cut off. The
   // answer stays unanswered until "Auswahl übernehmen".
@@ -177,6 +194,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(
     page.getByRole("alert").filter({ hasText: /höchstens 3/ }),
   ).toBeVisible(SLOW);
+  await shot(page, "05-atmosphaere-fehler");
   await chip(page, "Lebhaft").click();
   await chip(page, "Entspannt").click();
   await save(page, "Auswahl übernehmen");
@@ -206,6 +224,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(page.getByText("Der Preis fehlt.")).toBeVisible(SLOW);
   await page.goto(`${base}/access`);
   await page.getByLabel("Preisform").selectOption({ label: "Noch nicht bekannt" });
+  await shot(page, "06-preis-unbekannt");
   await expect(page.getByText("Preis noch offen").first()).toBeVisible();
   await save(page, "Angaben übernehmen");
   expect(field("price_state")).toBe("unknown");
@@ -221,6 +240,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   expect(field("price_state")).toBe("provided");
   await page.reload();
   await expect(page.getByLabel("Preis in EUR")).toHaveValue("12,50", SLOW);
+  await shot(page, "07-preis-fest");
 
   // 9. Only the image is missing now (P05: it gates publishing, not the draft).
   await page.goto(`${base}/preview`);
@@ -229,6 +249,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   ).toBeVisible(SLOW);
   await expect(page.getByRole("heading", { name: "Eventbild fehlt" })).toBeVisible();
   await expect(page.getByText(/Pflichtlücke/)).toHaveCount(0);
+  await shot(page, "08-check-bild-fehlt");
 
   // 10. The image: alt text and rights are mandatory. The form is reset after
   // every attempt, so the file is chosen again each time.
@@ -236,6 +257,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(
     page.getByRole("heading", { name: "Wie soll euer Event erscheinen?" }),
   ).toBeVisible(SLOW);
+  await shot(page, "09-eventbild");
   const png = { name: "buehne.png", mimeType: "image/png", buffer: PNG };
   await page.getByLabel(/^Eventbild \(JPEG/).setInputFiles(png);
   await page.getByRole("button", { name: "Bild hochladen" }).click();
@@ -262,6 +284,20 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(
     page.getByRole("button", { name: "Weiter zur Bestätigung" }),
   ).toBeDisabled();
+  await shot(page, "10-check-vollstaendig");
+
+  // Mobile frames (Figma M01 to M03).
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const [path, name] of [
+    ["edit", "m1-editor"],
+    ["atmosphere", "m2-atmosphaere"],
+    ["preview", "m3-check"],
+  ]) {
+    await page.goto(`${base}/${path}`);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible(SLOW);
+    await shot(page, name);
+  }
+  await page.setViewportSize({ width: 1128, height: 900 });
 
   // 12. The draft appears on the home page, privately.
   await page.goto("/organizer");
