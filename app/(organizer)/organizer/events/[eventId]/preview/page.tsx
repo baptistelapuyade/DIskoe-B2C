@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Badge, ContextCard, MutedText, PageShell, Workspace } from "@/components/ui/page-shell";
 import { Button, LinkButton } from "@/components/ui/button";
-import { FORMAT_LABEL, type PrimaryFormat } from "@/lib/domain/event-publication";
+import { FORMAT_LABEL } from "@/lib/domain/event-publication";
 import { loadOwnerEventView } from "@/lib/event/load";
 import {
   accessText,

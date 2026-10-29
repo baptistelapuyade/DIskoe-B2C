@@ -7,8 +7,8 @@ import {
   priceAccessSummary,
   priceText,
   whenText,
-} from "@/lib/event/summary";
-import { EMPTY_FORM_VALUES, type EventFormValues } from "@/lib/event/values";
+} from "../../lib/event/summary";
+import { EMPTY_FORM_VALUES, type EventFormValues } from "../../lib/event/values";
 
 const base: EventFormValues = { ...EMPTY_FORM_VALUES };
 
