@@ -1,6 +1,6 @@
 # DISKOE B2C V1 — technischer Übergabestand
 
-**Stand:** 2026-10-28
+**Stand:** 2026-10-29
 **Phase:** Phase 4 „Durchstich (Alpha-Kern)“ geplant; technisches Projektgerüst als separater Schritt umgesetzt, Fach-Slices nicht begonnen.
 **Implementierung:** Freigegeben durch den Founder am 23.10.2026, Umfang laut `AGENTS.md`; Scaffold auf `feat/scaffold`, noch keine Fachfunktion.
 
@@ -59,9 +59,15 @@ Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig
 
 **Beobachtung (2026-10-28), offen:** Der Anmeldecode (Supabase-Auth-Mail, Absender `login@diskoe.world`) kam bei einer GMX-Adresse erst nach mehreren Minuten an, die Systemmails derselben Adresse sofort. Ursache unbekannt (Postfachanbieter, Ruf der neuen Domain oder des Absenders). Gegenmaßnahme: Hinweis auf der Code-Seite („Das kann einen Moment dauern. Schau auch im Spam-Ordner nach.“). Vor echten Organizern prüfen: DMARC-Eintrag, weitere Postfachanbieter, SES-Zustellkennzahlen.
 
+**Stand Slice 4 (2026-10-29):** Manueller Evententwurf mit konkreter Lückenprüfung ist auf `main` (#21 Domäne, #22 Migration Eventbild-Pfad, #23 App). Die UI wurde nach den Figma-Screens gebaut (Eventstart nur „Manuell eingeben“, Editor, Atmosphäre, Preis und Zugang, Veröffentlichungscheck, Eventbild); Bausteine in `components/ui/`. Die CI hängt Screenshots an (Artefakt `event-screens`, zusätzlich Branch `ci-screens`). Bewusste Abweichungen von Figma (ein Preis je Event, kein „Programm und Besuch“, keine Eventgestaltung, Atmosphärebegriffe nach Vertrag u. a.): `.planning/phases/04-durchstich/SLICE-4-SUMMARY.md`. Noch nicht getan: Test am Dev-Projekt mit echtem Browser durch den Founder; kein Veröffentlichen von Events (Slice 5).
+
+**Regel (Founder, 2026-10-29):** Vor jedem UI-Bau zuerst prüfen, ob es die Figma-Screens gibt (Figma-MCP, Knoten in `docs/startpaket/03-screens-figma.md`), und nur danach bauen. Fehlt ein Screen, wird er zuerst abgestimmt, nicht frei gestaltet.
+
+**Offen, eigene Schritte:** (a) Abgleich der schon gebauten Profil- und Founder-Seiten mit Figma als Abweichungsliste, ohne Umbau; (b) KI-Erfassung (Text, Flyer, Link) als eigener Slice, braucht eine eigene ausdrückliche Freigabe, weil Live-KI auf Nutzerdaten in `AGENTS.md` nicht autorisiert ist.
+
 **Figma-Aufräumrunde (2026-10-30), Entwurf, nicht im Repo geprüft:** Die Figma-Datei ist nach Ablauf sortiert (Seiten 00 bis 90, Nummern `ORG-`, `NACH-`, `PUB-`, Status im Namen). Kernflow v1 ist Master der Organizer-Flows; ältere Flows liegen im Archiv, nichts wurde gelöscht, Knoten-IDs sind unverändert. Neue Komponente `DISKOE / Action Bar`, „Gut zu wissen v3“ ersetzt 17 handgebaute Blöcke. Details und Umzugsliste: `docs/startpaket/03-screens-figma.md`. Offen: Entscheidung über Kit-Reste (Poll/Plan/District), Abgleich der alten Eventseiten-Stände mit Review NEW, Slice-5-Skizzen warten auf Freigabe.
 
-Nächster technischer Schritt: Slice 4 (manueller Event-Entwurf mit Lückenprüfung) laut `.planning/phases/04-durchstich/PLAN.md`; kein Auto-Advance, Plan Mode vorher. Offen beim Founder bzw. später: `MAIL_*`-Variablen in Amplify, DMARC-Eintrag, Preview-Deployment, Node-24-Umstellung auf dem lokalen Rechner (läuft dort noch auf 20). Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
+Nächster technischer Schritt: Slice 5 (Event einreichen, Freigabe, Veröffentlichen, Absagen, Verschieben) laut `.planning/phases/04-durchstich/PLAN.md`; vorher klären, ob Events dem Ablauf „Variante B“ folgen, und die Storage-Policy für Eventbilder; kein Auto-Advance, Plan Mode vorher. Offen beim Founder bzw. später: `MAIL_*`-Variablen in Amplify, DMARC-Eintrag, Preview-Deployment, Node-24-Umstellung auf dem lokalen Rechner (läuft dort noch auf 20). Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
 
 ## Übergabeformat
 
