@@ -628,13 +628,13 @@ select tests.expect_true(format($q$select public_object_path like 'events/%%.web
 select public_object_path as ppe3 from public.media_uses where id = :'use_e3' \gset
 select tests.as_user(:'uid_a');
 select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppe3'),
-  '42501', 'an event image path cannot be written to the public bucket yet (Slice 5)');
+  '42501', 'an event image path cannot be written before the event is published');
 
 -- ===========================================================================
 -- 6. Event approval, publication, privacy of drafts, status-only cancellation
 -- ===========================================================================
 select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 0, 'scheduled')$q$, :'e1', :'ev1'),
-  'DK003', 'event cannot be published without first approval');
+  '22023', 'a profile-approved event needs both declarations to be published by its owner');
 -- Confirming the image reserves a path (Slice 4). Clear it to model an event
 -- whose image has no public path yet.
 select tests.as_superuser();
@@ -1187,6 +1187,172 @@ select tests.expect_error(format($q$insert into public.profile_mails (profile_id
   '23514', 'the database allows only the two system mail kinds');
 
 -- ===========================================================================
+-- 7e. First publication (profile + first event) and later events (Slice 5)
+-- ===========================================================================
+\set uid_d 'd0000000-0000-0000-0000-00000000000d'
+select tests.as_superuser();
+insert into auth.users (id, email) values (:'uid_d', 'owner-c@example.test');
+select tests.as_user(:'uid_f');
+select public.provision_profile_owner(:'uid_d', 'owner-c', 'Gamma Events') as pc \gset
+select tests.as_user(:'uid_d');
+select draft_revision_id as rc1 from public.profiles where id = :'pc' \gset
+select tests.new_profile_image_use(:'pc', true) as use_c \gset
+select tests.expect_affected(format('update public.profile_revisions set profile_image_use_id = %L where id = %L', :'use_c', :'rc1'),
+  1, 'C attaches the confirmed profile image');
+select tests.expect_affected(format($q$insert into public.events (organizer_id, slug) values (%L, 'c-first-night')$q$, :'pc'),
+  1, 'C creates the first event');
+select id as ec1 from public.events where slug = 'c-first-night' \gset
+select tests.expect_affected(format($q$insert into public.events (organizer_id, slug) values (%L, 'c-second-night')$q$, :'pc'),
+  1, 'C creates the second event');
+select id as ec2 from public.events where slug = 'c-second-night' \gset
+select tests.new_event_image_use(:'ec1') as use_ce1 \gset
+select tests.new_event_image_use(:'ec2') as use_ce2 \gset
+select tests.ev_insert(:'ec1', :'use_ce1') as evc1 \gset
+select tests.ev_insert(:'ec2', :'use_ce2') as evc2 \gset
+select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'evc1', :'ec1'),
+  1, 'C selects the first event draft');
+select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'evc2', :'ec2'),
+  1, 'C selects the second event draft');
+
+-- Before the founder approved the profile an event cannot publish itself.
+select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 0, 'scheduled', true, true)$q$, :'ec1', :'evc1'),
+  'DK003', 'an event of an unapproved profile cannot be published by its owner');
+
+-- Submission of profile and first event together
+select tests.expect_error(format('select public.submit_first_publication(%L, %L, %L, %L, true, true)', :'pc', :'rc1', :'ec1', :'evc1'),
+  'DK002', 'an incomplete profile blocks the joint submission', 'profile.name');
+select tests.expect_affected(
+  format($q$update public.profile_revisions set name = 'Gamma Events', short_intro = 'Gamma nights.', official_url = 'https://gamma.example.test' where id = %L$q$, :'rc1'),
+  1, 'C completes the profile draft');
+select tests.expect_error(format('select public.submit_first_publication(%L, %L, %L, %L, true, false)', :'pc', :'rc1', :'ec1', :'evc1'),
+  '22023', 'both declarations are mandatory for the joint submission');
+select tests.expect_error(format('select public.submit_first_publication(%L, %L, %L, %L, true, true)', :'pc', :'rc1', :'ec1', gen_random_uuid()),
+  'DK001', 'a stale event revision cannot be submitted');
+select tests.expect_error(format('select public.submit_first_publication(%L, %L, %L, %L, true, true)', :'pc', :'rc1', :'e1', :'ev1'),
+  '42501', 'an event of another organizer cannot ride along');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.submit_first_publication(%L, %L, %L, %L, true, true)', :'pc', :'rc1', :'ec1', :'evc1'),
+  '42501', 'another owner cannot submit C''s profile and event');
+select tests.as_user(:'uid_v');
+select tests.expect_error(format('select public.submit_first_publication(%L, %L, %L, %L, true, true)', :'pc', :'rc1', :'ec1', :'evc1'),
+  '42501', 'a visitor cannot submit');
+select tests.as_anon();
+select tests.expect_error(format('select public.submit_first_publication(%L, %L, %L, %L, true, true)', :'pc', :'rc1', :'ec1', :'evc1'),
+  '42501', 'anon cannot execute submit_first_publication');
+select tests.as_user(:'uid_d');
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id in (%L, %L) and action = 'submit_for_review'$q$, :'pc', :'ec1'),
+  0, 'failed joint submissions leave no audit row');
+select public.submit_first_publication(:'pc', :'rc1', :'ec1', :'evc1', true, true);
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id in (%L, %L) and action = 'submit_for_review'$q$, :'pc', :'ec1'),
+  2, 'the joint submission is audited for profile and event');
+select tests.as_anon();
+select tests.expect_count($q$select slug from public.public_events where slug = 'c-first-night'$q$, 0,
+  'a submitted event is still private');
+select tests.expect_count($q$select slug from public.public_profiles where slug = 'owner-c'$q$, 0,
+  'a submitted profile is still private');
+
+-- The founder decides on the pair
+select tests.as_user(:'uid_d');
+select tests.expect_error(format('select public.approve_first_publication(%L, %L, %L, %L)', :'pc', :'rc1', :'ec1', :'evc1'),
+  '42501', 'the owner cannot approve the own submission');
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.approve_first_publication(%L, %L, %L, %L)', :'pc', :'rc1', :'ec1', gen_random_uuid()),
+  'DK001', 'approval of a different event revision is refused');
+select tests.expect_error(format('select public.approve_first_publication(%L, %L, %L, %L)', :'pc', :'rc1', :'e1', :'ev1'),
+  'P0002', 'approval with an event of another organizer is refused');
+select tests.as_superuser();
+select tests.expect_true(format($q$select first_approved_revision_id is null and publication_state = 'private' from public.profiles where id = %L$q$, :'pc'),
+  'a refused joint approval leaves the profile untouched (one transaction)');
+select tests.as_user(:'uid_f');
+select public.request_profile_changes(:'pc', :'rc1', 'Is the venue right?', :'evc1');
+select tests.expect_true(format($q$select event_revision_id = %L from public.review_requests where revision_id = %L$q$, :'evc1', :'rc1'),
+  'the question belongs to the pair of revisions');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L, %L)', :'pc', :'rc1', 'Again?', :'evc1'),
+  'DK003', 'a pair has one question only');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L, %L)', :'pc', :'rc1', 'Other?', gen_random_uuid()),
+  'DK001', 'a question about an unknown event revision is refused');
+select tests.as_user(:'uid_d');
+select tests.expect_error(format('select public.submit_first_publication(%L, %L, %L, %L, true, true)', :'pc', :'rc1', :'ec1', :'evc1'),
+  'DK003', 'the unchanged pair cannot be submitted again');
+-- The owner changes the event only; the new pair can be submitted.
+select tests.ev_insert(:'ec1', :'use_ce1', '{"title":"Gamma Opening"}') as evc1b \gset
+select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'evc1b', :'ec1'),
+  1, 'C selects the corrected event draft');
+select public.submit_first_publication(:'pc', :'rc1', :'ec1', :'evc1b', true, true);
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.approve_first_publication(%L, %L, %L, %L)', :'pc', :'rc1', :'ec1', :'evc1'),
+  'DK001', 'the old event revision cannot be approved after the correction');
+select public.approve_first_publication(:'pc', :'rc1', :'ec1', :'evc1b');
+select tests.as_superuser();
+select tests.expect_true(format($q$select first_approved_revision_id = %L and published_revision_id = %L and publication_state = 'published' and approved_by = %L from public.profiles where id = %L$q$, :'rc1', :'rc1', :'uid_f', :'pc'),
+  'the joint approval publishes the profile');
+select tests.expect_true(format($q$select first_approved_revision_id = %L and published_revision_id = %L and publication_state = 'published' and approved_by = %L and approved_at is not null and state_version = 1 from public.events where id = %L$q$, :'evc1b', :'evc1b', :'uid_f', :'ec1'),
+  'the joint approval publishes the first event');
+select tests.expect_true(format('select confirmed_by = %L and confirmed_at is not null from public.event_revisions where id = %L', :'uid_d', :'evc1b'),
+  'the submitting owner confirmed the event revision');
+select tests.expect_true(format($q$select count(*) filter (where action = 'approve_first') = 1 and count(*) filter (where action = 'publish') = 1 and count(*) filter (where action = 'submit_for_review') = 2 from public.publication_audit where entity_type = 'event' and entity_id = %L$q$, :'ec1'),
+  'the event approval is in the audit trail');
+select tests.as_anon();
+select tests.expect_true($q$select title = 'Gamma Opening' from public.public_events where slug = 'c-first-night'$q$,
+  'the public sees the first event after the joint approval');
+
+-- Public image copy of the first event: reserved path, owner or founder only
+select tests.as_superuser();
+select public_object_path as ppce1 from public.media_uses where id = :'use_ce1' \gset
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppce1'),
+  '42501', 'another owner cannot write the event image into the public bucket');
+select tests.as_user(:'uid_f');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, 'events/' || :'ec1' || '/not-reserved.jpg'),
+  '42501', 'the founder cannot write an unreserved event path');
+select tests.expect_ok(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppce1'),
+  'the founder writes the reserved public copy of the event image');
+select tests.as_user(:'uid_d');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppce1' || '.copy'),
+  '42501', 'the owner cannot write another event path');
+select tests.expect_affected(format($q$update storage.objects set name = name || 'x' where name = %L$q$, :'ppce1'),
+  0, 'a public event image cannot be renamed (no update policy)');
+
+-- Later events: the owner publishes with both declarations, no founder
+select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 0, 'scheduled')$q$, :'ec2', :'evc2'),
+  '22023', 'a later event needs both declarations');
+select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 0, 'scheduled', true, false)$q$, :'ec2', :'evc2'),
+  '22023', 'a later event needs the usage declaration');
+select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 0, 'scheduled', null, true)$q$, :'ec2', :'evc2'),
+  '22023', 'a null declaration is not a confirmation for a later event');
+select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 5, 'scheduled', true, true)$q$, :'ec2', :'evc2'),
+  'DK001', 'a stale state version is refused for a later event');
+select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 0, 'scheduled', true, true)$q$, :'ec2', gen_random_uuid()),
+  'DK001', 'an unknown draft is refused for a later event');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 0, 'scheduled', true, true)$q$, :'ec2', :'evc2'),
+  '42501', 'another owner cannot publish C''s later event');
+select tests.as_anon();
+select tests.expect_count($q$select slug from public.public_events where slug = 'c-second-night'$q$, 0,
+  'the later event is private until its owner publishes it');
+select tests.as_user(:'uid_d');
+select public.publish_event(:'ec2', :'evc2', null, 0, 'scheduled', true, true);
+select tests.as_superuser();
+select tests.expect_true(format($q$select first_approved_revision_id = %L and published_revision_id = %L and publication_state = 'published' and approved_by = %L and state_version = 1 from public.events where id = %L$q$, :'evc2', :'evc2', :'uid_f', :'ec2'),
+  'a later event is covered by the profile approval (approved_by = the approving founder)');
+select tests.expect_true(format($q$select count(*) filter (where action = 'publish' and actor_id = %L) = 1 and count(*) filter (where action = 'approve_first') = 0 from public.publication_audit where entity_type = 'event' and entity_id = %L$q$, :'uid_d', :'ec2'),
+  'the self-publication is audited as the owner''s publish only');
+select tests.as_anon();
+select tests.expect_true($q$select slug = 'c-second-night' from public.public_events where slug = 'c-second-night'$q$,
+  'the public sees the later event after its owner published it');
+select tests.as_superuser();
+select public_object_path as ppce2 from public.media_uses where id = :'use_ce2' \gset
+select tests.as_user(:'uid_d');
+select tests.expect_ok(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppce2'),
+  'the owner writes the public copy of a later event image');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$insert into storage.objects (bucket_id, name) values ('public-media', %L)$q$, :'ppce2' || '.copy'),
+  '42501', 'another owner cannot write a copy for C''s later event');
+select tests.as_user(:'uid_d');
+select tests.expect_error(format($q$select public.publish_event(%L, %L, %L, 1, 'scheduled', true, true)$q$, :'ec2', :'evc2', :'evc2'),
+  'DK003', 'nothing new to publish for a later event');
+
+-- ===========================================================================
 -- 8. Privilege snapshot and object inventory (a new object fails the run)
 -- ===========================================================================
 select tests.as_superuser();
@@ -1216,7 +1382,7 @@ insert into tests.expected_col_grants values
   ('authenticated', 'media_assets', 'SELECT', array['id','uploader_id','private_object_path','mime_type','created_at']),
   ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type']),
   ('authenticated', 'media_assets', 'UPDATE', array['mime_type']),
-  ('authenticated', 'review_requests', 'SELECT', array['id','profile_id','revision_id','message','created_at']),
+  ('authenticated', 'review_requests', 'SELECT', array['id','profile_id','revision_id','message','created_at','event_revision_id']),
   ('authenticated', 'profile_mails', 'SELECT', array['id','profile_id','revision_id','kind','status','attempts','claimed_at','finished_at']),
   ('authenticated', 'media_uses', 'SELECT', array['id','asset_id','profile_id','event_id','role','public_object_path','alt_text','crop','confirmed_at']),
   ('authenticated', 'media_uses', 'INSERT', array['asset_id','profile_id','event_id','role','alt_text','crop']),
@@ -1308,7 +1474,8 @@ insert into tests.expected_exec values
   ('public', 'cancel_event'),
   ('public', 'submit_profile_for_review'),
   ('public', 'request_profile_changes'), ('public', 'claim_profile_mail'),
-  ('public', 'finish_profile_mail');
+  ('public', 'finish_profile_mail'),
+  ('public', 'submit_first_publication'), ('public', 'approve_first_publication');
 select tests.expect_count($q$
   select n.nspname, p.proname
     from pg_proc p join pg_namespace n on n.oid = p.pronamespace
@@ -1428,7 +1595,9 @@ insert into tests.expected_objects values
   ('function', 'public', 'submit_profile_for_review'),
   ('function', 'public', 'request_profile_changes'),
   ('function', 'public', 'claim_profile_mail'),
-  ('function', 'public', 'finish_profile_mail');
+  ('function', 'public', 'finish_profile_mail'),
+  ('function', 'public', 'submit_first_publication'),
+  ('function', 'public', 'approve_first_publication');
 
 select tests.expect_count($q$
   select case c.relkind when 'r' then 'table' when 'v' then 'view'
