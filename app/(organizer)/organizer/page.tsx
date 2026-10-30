@@ -64,13 +64,15 @@ export default async function OrganizerHome() {
             {events.map((event) => (
               <li key={event.id}>
                 <Link
-                  href={`/organizer/events/${event.id}/edit`}
+                  href={`/organizer/events/${event.id}/${
+                    event.published ? "manage" : "edit"
+                  }`}
                   className="underline"
                 >
                   {event.title ?? "Event ohne Titel"}
                 </Link>{" "}
                 <span className="text-muted-foreground text-sm">
-                  · Entwurf – privat
+                  · {event.published ? "Veröffentlicht" : "Entwurf – privat"}
                 </span>
               </li>
             ))}
