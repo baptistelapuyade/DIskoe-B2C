@@ -264,7 +264,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(page.getByText("Bitte beschreibe das Bild kurz")).toBeVisible(SLOW);
   await expect(page.getByText(/Bitte bestätige, dass du das Bild/)).toBeVisible();
   await page.getByLabel(/^Eventbild \(JPEG/).setInputFiles(png);
-  await page.getByLabel("Bildbeschreibung (Alternativtext)").fill("Bühne bei Nacht");
+  await page.getByLabel("Bildbeschreibung · freiwillig").fill("Bühne bei Nacht");
   await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
   await page.getByRole("button", { name: "Bild hochladen" }).click();
   await expect(

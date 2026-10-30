@@ -201,12 +201,12 @@ test.describe("profile editor, preview and hand-in", () => {
       mimeType: "image/png",
       buffer: Buffer.from("this is not an image"),
     });
-    await page.getByLabel("Bildbeschreibung (Alternativtext)").fill("Bühne");
+    await page.getByLabel("Bildbeschreibung · freiwillig").fill("Bühne");
     await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
     await page.getByRole("button", { name: "Bild hochladen" }).click();
     await expect(page.getByText("Bitte lade ein Bild als JPEG, PNG oder WebP hoch.")).toBeVisible();
 
-    // A real image without description and confirmation.
+    // A real image without the rights confirmation. The description is optional.
     await page.reload();
     await page.getByLabel(/Profilbild/).setInputFiles({
       name: "stage.png",
@@ -214,7 +214,7 @@ test.describe("profile editor, preview and hand-in", () => {
       buffer: PNG,
     });
     await page.getByRole("button", { name: "Bild hochladen" }).click();
-    await expect(page.getByText("Bitte beschreibe das Bild kurz (Alternativtext).")).toBeVisible();
+    await expect(page.getByText("Bitte beschreibe das Bild kurz")).toHaveCount(0);
     await expect(page.getByText("Bitte bestätige, dass du das Bild verwenden")).toBeVisible();
 
     expect(
@@ -237,7 +237,7 @@ test.describe("profile editor, preview and hand-in", () => {
       mimeType: "image/png",
       buffer: PNG,
     });
-    await page.getByLabel("Bildbeschreibung (Alternativtext)").fill("Bühne bei Nacht");
+    await page.getByLabel("Bildbeschreibung · freiwillig").fill("Bühne bei Nacht");
     await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
     await page.getByRole("button", { name: "Bild hochladen" }).click();
     await expect(page.getByText("Das Bild ist gespeichert und bleibt bis zur Freigabe privat.")).toBeVisible();
