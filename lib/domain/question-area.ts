@@ -1,4 +1,4 @@
-import { QUESTION_MAX_LENGTH } from "@/lib/domain/profile-publication";
+import { QUESTION_MAX_LENGTH } from "./profile-publication";
 
 // The affected spot of a founder question (Figma S5-D "Betroffen: Ort"). The
 // database has no column for it: it is stored as the first line of the message
