@@ -19,7 +19,7 @@ declare
   v_mime text;
   v_ext text;
 begin
-  new.alt_text := nullif(btrim(new.alt_text), '');
+  new.alt_text := nullif(btrim(new.alt_text, E' \t\r\n'), '');
 
   if old.confirmed_at is not null then
     new.confirmed_at := old.confirmed_at;
