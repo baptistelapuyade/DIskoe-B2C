@@ -276,14 +276,18 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     ),
   ).toMatch(new RegExp(`^events/${eventId}/[0-9a-f-]+\\.png$`));
 
-  // 11. The check is complete; submitting is not available yet (Slice 5).
+  // 11. The event is complete, but the profile is still a shell, so the joint
+  // submission is not available yet.
   await page.getByRole("link", { name: "Zur Eventvorschau" }).click();
   await expect(
     page.getByRole("heading", { name: "Pflichtangaben vollständig" }),
   ).toBeVisible(SLOW);
   await expect(
-    page.getByRole("button", { name: "Weiter zur Bestätigung" }),
+    page.getByRole("button", { name: "Zur Prüfung einreichen" }),
   ).toBeDisabled();
+  await expect(
+    page.getByText(/Zum Einreichen fehlen noch Angaben am Profil/),
+  ).toBeVisible();
   await shot(page, "10-check-vollstaendig");
 
   // Mobile frames (Figma M01 to M03).
