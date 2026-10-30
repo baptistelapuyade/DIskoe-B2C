@@ -1220,7 +1220,7 @@ select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 0,
 
 -- Submission of profile and first event together
 select tests.expect_error(format('select public.submit_first_publication(%L, %L, %L, %L, true, true)', :'pc', :'rc1', :'ec1', :'evc1'),
-  'DK002', 'an incomplete profile blocks the joint submission', 'profile.name');
+  'DK002', 'an incomplete profile blocks the joint submission', 'profile.short_intro');
 select tests.expect_affected(
   format($q$update public.profile_revisions set name = 'Gamma Events', short_intro = 'Gamma nights.', official_url = 'https://gamma.example.test' where id = %L$q$, :'rc1'),
   1, 'C completes the profile draft');
