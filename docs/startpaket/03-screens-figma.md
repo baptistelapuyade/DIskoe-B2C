@@ -3,16 +3,36 @@
 Datei: `4wtHBUljZkvFetSA9ZujjY`. Link-Muster: `https://www.figma.com/design/4wtHBUljZkvFetSA9ZujjY?node-id=<ID mit - statt :>`. Beispiel: `2643:9414` → `node-id=2643-9414`.
 Hinweis: Figma ist visuelle Referenz. Fachregeln stehen in den Verträgen. Alles hier sind statische Entwürfe, keine Funktionsnachweise.
 
-## Seiten der Datei
+## Seiten der Datei (Struktur seit 30.10.2026)
+Status im Namen jeder Section: GELTEND, ENTWURF oder ARCHIV. Screens tragen eine durchgehende Nummer (`ORG-nn`, `NACH-nn`, `PUB-nn`), der alte Code steht in Klammern dahinter. Knoten-IDs sind beim Umsortieren gleich geblieben.
+
 | Seite | Inhalt |
 |---|---|
-| ❖ Components | shadcn-basiertes Fundament (Button, Input, Dialog …) |
-| DISKOE — Komponenten | Eigene Komponenten und Abschnitte |
-| Wireframes — Organizer-Flows | Organizer-Einstieg, Editor, Eventeditor, D8, D11, D12, D15–D18, D20, D21 |
-| High-Fi — Profile & Event | Öffentliche Profil- und Eventseiten, Module, Profiltypen |
-| Zustände — Event & Freigabe | Sonderzustände, Freigabe, Rückfragen, Besucheraktionen |
-| Prototyp — Besucher | Klickprototyp (Desktop 1440×900, Mobile 390×844) |
-| Referenzen & Archiv | Archiv, Vergleiche (nicht aktiv) |
+| 00 Start hier | Legende, Status-Regeln, Nummernschema |
+| 10 Design-System — DISKOE-Komponenten | Eigene Komponenten, u. a. `DISKOE / Action Bar` (2876:1802) |
+| 11 Design-System — UI-Kit (Basis) | shadcn-basiertes Fundament; nur Icons, Select, Tabs, Internal Components und Button werden außerhalb des Kits benutzt |
+| 20 Organizer — Ablauf bis zur Prüfung | Master: Kernflow v1 (2533:3521, `ORG-01` bis `ORG-90`), dazu D11, D12, D15–D18, D20, D21, Preis und Zugang, Eventeditor-Review |
+| 30 Organizer — nach der Veröffentlichung | `NACH-00` Übersicht, `NACH-01` bis `NACH-16` Freigabe, Rückfrage, Eventverwaltung, Ändern, Verschieben, Absage; Section „ENTWURF · Slice 5“ (2859:40104) |
+| 40 Öffentliche Seiten | `PUB-01` bis `PUB-24`; geltende Eventseite ist `PUB-01` (2643:9414) |
+| 50 Intern (Founder) | D8 Interne Prüfseite (2764:44857) |
+| 60 Besucher-Prototyp | Klickprototyp (Desktop 1440×900, Mobile 390×844) |
+| 80 Geparkt — Discovery (spätere Phase) | Bausteine für die Discovery nach der Alpha (Poll, Plan, District, Merken, Kategorien, Account row, Event-detailpage u. a.), nicht löschen |
+| 90 Archiv | ersetzte Stände mit Datum und Grund im Namen |
+
+### Umzüge am 30.10.2026
+| Vorher | Jetzt |
+|---|---|
+| Flow 01 Wireframes (2496:2924) | Archiv; Mobil M01–M03 jetzt `ORG-53` bis `ORG-56` im Kernflow |
+| Flow 00 Organizer-Einstieg (2514:1943) | Archiv; 00.7 und M00.1–M00.3 jetzt `ORG-84`, `ORG-88` bis `ORG-90`; 00.4c (manuelles Formular) durch Eventeditor `ORG-19` ersetzt |
+| Flow 01 Adaptive Ergänzungen (2504:1579) | Archiv; Vernissage/Film `ORG-75` bis `ORG-83`, Mobil `ORG-85` bis `ORG-87` |
+| Zusammenhängender Profileditor (2519:5757) | Archiv; Modulinhalte und Varianten `ORG-57` bis `ORG-74` |
+| Eventsonderzustände, Öffentliches Ergebnis, Besucheraktionen (Zustände) | Seite 40, `PUB-18` bis `PUB-24` |
+| D8 (2764:44857) | Seite 50 |
+| Poll-, Plan-, District-, Merken- und Kategorien-Bausteine aus dem Kit (17 Elemente) | Seite 80 Geparkt, für die Discovery |
+| Zustände 01–16 | `NACH-01` bis `NACH-16`, Aktionen in `DISKOE / Action Bar` |
+| 17 handgebaute „Gut zu wissen / zwei Spalten“ (D13, Eventsonderzustände, Ergebnis) | durch Komponente „Gut zu wissen v3“ ersetzt; Altbestand im Archivrahmen auf Seite 90 |
+
+Geltende Eventseite: „Öffentliche Eventseite — Contententwurf / Review - NEW“ (`PUB-01`). D13, Eventsonderzustände und Öffentliches Ergebnis sind noch an sie anzugleichen.
 
 ## Öffentliche Seiten
 | Screen | Knoten | Vertrag |
@@ -32,10 +52,10 @@ Hinweis: Figma ist visuelle Referenz. Fachregeln stehen in den Verträgen. Alles
 ## Organizer-Flows
 | Screen | Knoten | Vertrag |
 |---|---|---|
-| Organizer-Einstieg (Flow 00) | 2514:1943 | S4, R03 |
-| Zusammenhängender Profileditor | 2519:5757 | Q29–Q35 |
-| Flow 01 Erfassung und adaptive Ergänzungen | 2496:2924, 2504:1579 | S3, R05 |
-| Testprototyp Kernflow v1 | 2533:3521 | Kernflow |
+| Organizer-Einstieg (Flow 00, archiviert; jetzt `ORG-01` bis `ORG-18` im Kernflow) | 2514:1943 | S4, R03 |
+| Zusammenhängender Profileditor (archiviert; Master im Kernflow) | 2519:5757 | Q29–Q35 |
+| Flow 01 Erfassung und adaptive Ergänzungen (archiviert; Master im Kernflow) | 2496:2924, 2504:1579 | S3, R05 |
+| Master-Flow Kernflow v1 (GELTEND, `ORG-01` bis `ORG-90`) | 2533:3521 | Kernflow |
 | Eventeditor: Programm, Besuch, Preis, Zugang | 2686:10021 | v0.3 §4–§5 |
 | D11 Ort, Line-up, Mitveranstalter wählen | 2715:43598 | v0.5 §2 |
 | D12 Venue einladen und bestätigen | 2719:43976 | v0.5 §3, §5 |
