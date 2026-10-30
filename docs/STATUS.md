@@ -59,6 +59,8 @@ Entwicklung ist ausschließlich im in `AGENTS.md` freigegebenen Umfang zulässig
 
 **Beobachtung (2026-10-28), offen:** Der Anmeldecode (Supabase-Auth-Mail, Absender `login@diskoe.world`) kam bei einer GMX-Adresse erst nach mehreren Minuten an, die Systemmails derselben Adresse sofort. Ursache unbekannt (Postfachanbieter, Ruf der neuen Domain oder des Absenders). Gegenmaßnahme: Hinweis auf der Code-Seite („Das kann einen Moment dauern. Schau auch im Spam-Ordner nach.“). Vor echten Organizern prüfen: DMARC-Eintrag, weitere Postfachanbieter, SES-Zustellkennzahlen.
 
+**Figma-Aufräumrunde (2026-10-30), Entwurf, nicht im Repo geprüft:** Die Figma-Datei ist nach Ablauf sortiert (Seiten 00 bis 90, Nummern `ORG-`, `NACH-`, `PUB-`, Status im Namen). Kernflow v1 ist Master der Organizer-Flows; ältere Flows liegen im Archiv, nichts wurde gelöscht, Knoten-IDs sind unverändert. Neue Komponente `DISKOE / Action Bar`, „Gut zu wissen v3“ ersetzt 17 handgebaute Blöcke. Details und Umzugsliste: `docs/startpaket/03-screens-figma.md`. Offen: Entscheidung über Kit-Reste (Poll/Plan/District), Abgleich der alten Eventseiten-Stände mit Review NEW, Slice-5-Skizzen warten auf Freigabe.
+
 Nächster technischer Schritt: Slice 4 (manueller Event-Entwurf mit Lückenprüfung) laut `.planning/phases/04-durchstich/PLAN.md`; kein Auto-Advance, Plan Mode vorher. Offen beim Founder bzw. später: `MAIL_*`-Variablen in Amplify, DMARC-Eintrag, Preview-Deployment, Node-24-Umstellung auf dem lokalen Rechner (läuft dort noch auf 20). Unabhängige nächste fachliche Arbeit bleibt die Gesamtdurchsicht von Datenvertrag v0.3 und Produktdelta v0.4 samt Discovery-Suchdetails und Rest-Specs.
 
 ## Übergabeformat
