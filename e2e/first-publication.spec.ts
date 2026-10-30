@@ -38,6 +38,17 @@ const PNG = Buffer.from(
 
 type Api = SupabaseClient<Database>;
 
+// revision_no is assigned by a database trigger and is not grantable to clients;
+// the generated type still lists it as required (same workaround as lib/event).
+type NewEventRevision = Omit<
+  Database["public"]["Tables"]["event_revisions"]["Insert"],
+  "revision_no"
+>;
+
+function asInsert(row: NewEventRevision) {
+  return row as Database["public"]["Tables"]["event_revisions"]["Insert"];
+}
+
 async function apiClientFor(email: string): Promise<Api> {
   const client = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
@@ -116,7 +127,7 @@ async function createCompleteEvent(
 
   const revision = await client
     .from("event_revisions")
-    .insert({
+    .insert(asInsert({
       event_id: eventId,
       created_by: userId,
       title_state: "provided",
@@ -140,7 +151,7 @@ async function createCompleteEvent(
       atmosphere_state: "provided",
       atmosphere_tags: ["warm"],
       event_image_use_id: useId,
-    })
+    }))
     .select("id")
     .single();
   expect(revision.error).toBeNull();
@@ -247,7 +258,9 @@ test.describe("first publication: profile and first event together", () => {
     await page.getByLabel("Betroffene Stelle").selectOption("Ort");
     await page.getByLabel("Deine Frage an den Organizer").fill("Stimmt die Adresse der Halle?");
     await page.getByRole("button", { name: "Rückfrage stellen" }).click();
-    await expect(page.getByText("Rückfrage gespeichert.", { exact: false })).toBeVisible(SLOW);
+    // The form disappears after the save; the page keeps the facts.
+    await expect(page.getByText("Zu diesem Stand ist eine Rückfrage gestellt.", { exact: false })).toBeVisible(SLOW);
+    await expect(page.getByRole("heading", { name: "Gestellte Rückfrage" })).toBeVisible();
 
     const stored = sql(
       `select message from public.review_requests where profile_id = '${profileId}' and event_revision_id = '${first.revisionId}'`,
@@ -265,7 +278,7 @@ test.describe("first publication: profile and first event together", () => {
     // The owner corrects the event: a new draft revision replaces the old one.
     const corrected = await ownerApi
       .from("event_revisions")
-      .insert({
+      .insert(asInsert({
         event_id: first.eventId,
         created_by: ownerId,
         title_state: "provided",
@@ -289,7 +302,7 @@ test.describe("first publication: profile and first event together", () => {
         atmosphere_state: "provided",
         atmosphere_tags: ["warm"],
         event_image_use_id: first.useId,
-      })
+      }))
       .select("id")
       .single();
     expect(corrected.error).toBeNull();
