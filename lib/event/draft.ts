@@ -20,6 +20,9 @@ export type EventState = {
   draftRevisionId: string | null;
   firstApprovedRevisionId: string | null;
   publishedRevisionId: string | null;
+  // What publish_event expects back (optimistic check against a stale page).
+  stateVersion: number;
+  publicStatus: Database["public"]["Enums"]["event_status"];
 };
 
 export async function loadEventState(
@@ -29,7 +32,7 @@ export async function loadEventState(
   const { data, error } = await supabase
     .from("events")
     .select(
-      "id, organizer_id, slug, draft_revision_id, first_approved_revision_id, published_revision_id",
+      "id, organizer_id, slug, draft_revision_id, first_approved_revision_id, published_revision_id, state_version, public_status",
     )
     .eq("id", eventId)
     .maybeSingle();
@@ -46,6 +49,8 @@ export async function loadEventState(
         draftRevisionId: data.draft_revision_id,
         firstApprovedRevisionId: data.first_approved_revision_id,
         publishedRevisionId: data.published_revision_id,
+        stateVersion: data.state_version,
+        publicStatus: data.public_status,
       }
     : null;
 }
@@ -174,4 +179,67 @@ export async function ensureEditableEventDraft(
   await pointDraftAt(supabase, event.id, revisionId);
 
   return { revisionId, created: true };
+}
+
+export async function wasEventSubmitted(
+  supabase: Client,
+  eventId: string,
+  revisionId: string,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("publication_audit")
+    .select("id")
+    .eq("entity_type", "event")
+    .eq("entity_id", eventId)
+    .eq("revision_id", revisionId)
+    .eq("action", "submit_for_review")
+    .limit(1);
+
+  if (error) {
+    throw new Error("Audit lookup failed");
+  }
+
+  return (data ?? []).length > 0;
+}
+
+// Did the founder approve this event (together with the profile)? An event
+// that its owner published himself has no approve_first row.
+export async function wasEventApprovedByFounder(
+  supabase: Client,
+  eventId: string,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("publication_audit")
+    .select("id")
+    .eq("entity_type", "event")
+    .eq("entity_id", eventId)
+    .eq("action", "approve_first")
+    .limit(1);
+
+  if (error) {
+    throw new Error("Audit lookup failed");
+  }
+
+  return (data ?? []).length > 0;
+}
+
+// The founder's question about exactly this pair of revisions.
+export async function loadPairQuestion(
+  supabase: Client,
+  profileRevisionId: string,
+  eventRevisionId: string,
+): Promise<{ message: string; createdAt: string } | null> {
+  const { data, error } = await supabase
+    .from("review_requests")
+    .select("message, created_at")
+    .eq("revision_id", profileRevisionId)
+    .eq("event_revision_id", eventRevisionId)
+    .limit(1);
+
+  if (error) {
+    throw new Error("Question lookup failed");
+  }
+
+  const row = data?.[0];
+  return row ? { message: row.message, createdAt: row.created_at } : null;
 }

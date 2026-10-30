@@ -3,21 +3,21 @@ import Link from "next/link";
 import { Badge, ContextCard, MutedText, PageShell, Workspace } from "@/components/ui/page-shell";
 import { Button, LinkButton } from "@/components/ui/button";
 import { FORMAT_LABEL } from "@/lib/domain/event-publication";
-import { loadOwnerEventView } from "@/lib/event/load";
+import { loadPublicationView } from "@/lib/event/publication";
 import {
   accessText,
   placeText,
   priceText,
   whenText,
 } from "@/lib/event/summary";
-import { loadOwnerProfileView } from "@/lib/profile/load";
 
 export const dynamic = "force-dynamic";
 
 // Figma 03a/03b "Veröffentlichungscheck" and "Vorschau" (2496:1925, 2496:2079,
-// 2533:4219, mobile 2496:2837). Submitting an event is Slice 5, so the
-// submit button stays disabled here. Not built: "Mobile Vorschau" and the
-// ticket-provider button (prototype only).
+// 2533:4219, mobile 2496:2837). The way on depends on where the owner stands:
+// first publication (profile and event go to the founder together), a later
+// event (the owner publishes it himself) or an event that is live already.
+// Not built: "Mobile Vorschau" and the ticket-provider button (prototype only).
 export default async function EventPreviewPage({
   params,
 }: {
@@ -25,8 +25,9 @@ export default async function EventPreviewPage({
 }) {
   const { eventId } = await params;
   const path = `/organizer/events/${eventId}/preview`;
-  const view = await loadOwnerEventView(eventId, path);
-  const profile = await loadOwnerProfileView(view.event.organizerId, path);
+  const publication = await loadPublicationView(eventId, path);
+  const view = publication.event;
+  const profile = publication.profile;
   const base = `/organizer/events/${eventId}`;
   const v = view.form;
 
@@ -34,6 +35,7 @@ export default async function EventPreviewPage({
   const openGaps = view.gaps.filter((gap) => gap.code !== "event_image");
   const complete = view.gaps.length === 0;
   const profileReady = profile.gaps.length === 0;
+  const { mode, status } = publication;
 
   const when = whenText(v);
   const place = placeText(v);
@@ -127,15 +129,39 @@ export default async function EventPreviewPage({
                 <LinkButton href={`${base}/image`} variant="primary">
                   Eventbild ergänzen
                 </LinkButton>
+              ) : status === "ready" && mode === "first" && profileReady ? (
+                <LinkButton href={`${base}/submit`} variant="primary">
+                  Weiter zur Bestätigung
+                </LinkButton>
+              ) : status === "question" ? (
+                <LinkButton href={`${base}/review`} variant="primary">
+                  Frage von DISKOE ansehen
+                </LinkButton>
+              ) : status === "ready" && mode === "later" ? (
+                <LinkButton href={`${base}/publish`} variant="primary">
+                  Weiter zur Bestätigung
+                </LinkButton>
+              ) : status === "in_review" ? (
+                <LinkButton href={`${base}/review`} variant="primary">
+                  Stand der Prüfung ansehen
+                </LinkButton>
+              ) : status === "published" ? (
+                <LinkButton href={`${base}/manage`} variant="primary">
+                  Eventverwaltung
+                </LinkButton>
               ) : (
-                <Button disabled>
-                  {complete ? "Weiter zur Bestätigung" : "Zur Prüfung einreichen"}
-                </Button>
+                <Button disabled>Zur Prüfung einreichen</Button>
               )}
             </div>
-            {complete || openGaps.length > 0 ? (
+            {mode === "first" && complete && !profileReady ? (
               <MutedText>
-                Das Einreichen von Events ist noch nicht freigeschaltet. Der
+                Das Event ist vollständig. Zum Einreichen fehlen noch Angaben
+                am Profil.
+              </MutedText>
+            ) : status === "update" ? (
+              <MutedText>
+                Das Veröffentlichen von Änderungen an einem live
+                veröffentlichten Event folgt in einem späteren Schritt. Der
                 Entwurf bleibt gespeichert und privat.
               </MutedText>
             ) : null}
@@ -177,30 +203,41 @@ export default async function EventPreviewPage({
                 </MutedText>
               </ContextCard>
             ) : null}
-            <ContextCard
-              title={profileReady ? "Profil bereit zur Prüfung" : "Profil noch unvollständig"}
-            >
-              <MutedText>
-                {profileReady
-                  ? `${view.profileName}: Kurzvorstellung, Profiladresse, offizieller Link oder Kontakt und Bild vorhanden.`
-                  : "Am Profil fehlen noch Angaben. Ergänzt sie vor der Einreichung."}
-              </MutedText>
-              <div>
-                <Link
-                  href={`/organizer/profiles/${view.event.organizerId}/${
-                    profileReady ? "preview" : "edit"
-                  }`}
-                  className="border-border bg-background inline-flex min-h-10 items-center rounded-lg border px-4 text-sm font-medium shadow-sm"
-                >
-                  {profileReady ? "Profilvorschau öffnen" : "Profil ergänzen"}
-                </Link>
-              </div>
-            </ContextCard>
+            {mode === "first" ? (
+              <ContextCard
+                title={profileReady ? "Profil bereit zur Prüfung" : "Profil noch unvollständig"}
+              >
+                <MutedText>
+                  {profileReady
+                    ? `${view.profileName}: Kurzvorstellung, Profiladresse, offizieller Link oder Kontakt und Bild vorhanden.`
+                    : "Am Profil fehlen noch Angaben. Ergänzt sie vor der Einreichung."}
+                </MutedText>
+                <div>
+                  <Link
+                    href={`/organizer/profiles/${view.event.organizerId}/${
+                      profileReady ? "preview" : "edit"
+                    }`}
+                    className="border-border bg-background inline-flex min-h-10 items-center rounded-lg border px-4 text-sm font-medium shadow-sm"
+                  >
+                    {profileReady ? "Profilvorschau öffnen" : "Profil ergänzen"}
+                  </Link>
+                </div>
+              </ContextCard>
+            ) : (
+              <ContextCard title="Profil freigegeben">
+                <MutedText>
+                  {view.profileName} ist von DISKOE freigegeben. Weitere Events
+                  veröffentlicht ihr selbst.
+                </MutedText>
+              </ContextCard>
+            )}
             {!imageMissing || openGaps.length === 0 ? (
               <ContextCard title="Was passiert als Nächstes?">
                 <MutedText>
                   {complete
-                    ? "Ihr bestätigt den Stand und reicht Profil und erstes Event gemeinsam ein. Bis zur Freigabe bleibt beides privat."
+                    ? mode === "first"
+                      ? "Ihr bestätigt den Stand und reicht Profil und erstes Event gemeinsam ein. Bis zur Freigabe bleibt beides privat."
+                      : "Ihr bestätigt zwei Punkte und veröffentlicht das Event selbst, ohne zusätzliche Prüfung."
                     : "Euer Entwurf bleibt privat. Mit einem Eventbild könnt ihr im nächsten Schritt die Verwendung bestätigen und einreichen."}
                 </MutedText>
               </ContextCard>

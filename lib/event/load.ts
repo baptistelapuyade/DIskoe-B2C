@@ -99,6 +99,8 @@ export type OwnerEventListItem = {
   id: string;
   title: string | null;
   organizerId: string;
+  // Something of this event is public.
+  published: boolean;
 };
 
 // The owner's events with the title of the current draft. The caller passes
@@ -113,7 +115,7 @@ export async function loadOwnerEvents(
   const supabase = await createClient();
   const { data: events, error } = await supabase
     .from("events")
-    .select("id, organizer_id, draft_revision_id, created_at")
+    .select("id, organizer_id, draft_revision_id, published_revision_id, created_at")
     .in("organizer_id", profileIds)
     .order("created_at", { ascending: false });
 
@@ -144,6 +146,7 @@ export async function loadOwnerEvents(
   return (events ?? []).map((event) => ({
     id: event.id,
     organizerId: event.organizer_id,
+    published: event.published_revision_id !== null,
     title: event.draft_revision_id
       ? (titles.get(event.draft_revision_id) ?? null)
       : null,
