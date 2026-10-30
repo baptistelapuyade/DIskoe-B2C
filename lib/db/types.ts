@@ -619,6 +619,7 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string
+          event_revision_id: string | null
           id: number
           message: string
           profile_id: string
@@ -627,6 +628,7 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by: string
+          event_revision_id?: string | null
           id?: never
           message: string
           profile_id: string
@@ -635,12 +637,20 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string
+          event_revision_id?: string | null
           id?: never
           message?: string
           profile_id?: string
           revision_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "review_requests_event_revision_id_fkey"
+            columns: ["event_revision_id"]
+            isOneToOne: false
+            referencedRelation: "event_revisions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "review_requests_profile_id_fkey"
             columns: ["profile_id"]
@@ -784,6 +794,15 @@ export type Database = {
         Args: { p_expected_draft_revision_id: string; p_profile_id: string }
         Returns: undefined
       }
+      approve_first_publication: {
+        Args: {
+          p_event_id: string
+          p_expected_draft_revision_id: string
+          p_expected_event_draft_revision_id: string
+          p_profile_id: string
+        }
+        Returns: undefined
+      }
       cancel_event: {
         Args: {
           p_event_id: string
@@ -817,6 +836,8 @@ export type Database = {
       }
       publish_event: {
         Args: {
+          p_confirmed_rights?: boolean
+          p_confirmed_usage?: boolean
           p_event_id: string
           p_expected_draft_revision_id: string
           p_expected_published_revision_id: string
@@ -836,6 +857,7 @@ export type Database = {
       request_profile_changes: {
         Args: {
           p_expected_draft_revision_id: string
+          p_expected_event_draft_revision_id?: string
           p_message: string
           p_profile_id: string
         }
@@ -848,6 +870,17 @@ export type Database = {
           p_expected_published_revision_id: string
           p_expected_state_version: number
           p_expected_status: Database["public"]["Enums"]["event_status"]
+        }
+        Returns: undefined
+      }
+      submit_first_publication: {
+        Args: {
+          p_confirmed_rights: boolean
+          p_confirmed_usage: boolean
+          p_event_id: string
+          p_expected_draft_revision_id: string
+          p_expected_event_draft_revision_id: string
+          p_profile_id: string
         }
         Returns: undefined
       }
