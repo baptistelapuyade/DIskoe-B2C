@@ -9,6 +9,14 @@ import {
 } from "@/components/profile/approve-form";
 import { GapList } from "@/components/profile/status";
 import { requireFounder } from "@/lib/auth/server";
+import { FORMAT_LABEL } from "@/lib/domain/event-publication";
+import {
+  accessText,
+  atmosphereSummary,
+  placeText,
+  priceText,
+  whenText,
+} from "@/lib/event/summary";
 import { loadFounderProfileView, mailText } from "@/lib/profile/founder";
 import { createClient } from "@/lib/supabase/server";
 
@@ -39,17 +47,24 @@ export default async function ApprovalDetailPage({
   }
 
   const { revision, image } = view;
+  const event = view.event;
+  const eventForm = event?.form;
   const canDecide =
     revision !== null &&
     view.submittedAt !== null &&
     !view.alreadyApproved &&
     !view.questionIsOnDraft &&
-    view.gaps.length === 0;
+    view.gaps.length === 0 &&
+    (event === null || event.gaps.length === 0);
+  const eventTarget = event
+    ? { eventId: event.eventId, revisionId: event.revisionId }
+    : null;
   // Offered while the mail was not accepted yet (failed, never sent, or stuck).
   const canResend =
     view.mailTarget !== null && view.mail?.status !== "sent";
   const imageMissingPublicly =
-    view.alreadyApproved && view.publishedImagePublic === false;
+    view.alreadyApproved &&
+    (view.publishedImagePublic === false || view.eventImagePublic === false);
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-6 py-12">
@@ -76,6 +91,16 @@ export default async function ApprovalDetailPage({
       </header>
 
       <GapList gaps={view.gaps} />
+      {event && event.gaps.length > 0 ? (
+        <section role="alert" className="border-border rounded-lg border p-4">
+          <h2 className="font-medium">Am Event fehlen Angaben</h2>
+          <ul className="mt-1 list-disc pl-5 text-sm">
+            {event.gaps.map((gap) => (
+              <li key={gap.code}>{gap.message}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <article className="border-border space-y-4 rounded-lg border p-6">
         {image?.signedUrl ? (
@@ -98,6 +123,57 @@ export default async function ApprovalDetailPage({
           {image?.altText ? <li>Bildbeschreibung: {image.altText}</li> : null}
         </ul>
       </article>
+
+      {event && eventForm ? (
+        <article
+          aria-labelledby="event-heading"
+          className="border-border space-y-4 rounded-lg border p-6"
+        >
+          <p className="text-muted-foreground text-sm">
+            Erstes Event · wird zusammen mit dem Profil entschieden
+          </p>
+          {event.image?.signedUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={event.image.signedUrl}
+              alt={event.image.altText ?? ""}
+              className="max-h-64 rounded-md"
+            />
+          ) : null}
+          <h2 id="event-heading" className="text-2xl font-bold">
+            {eventForm.title || "Titel fehlt"}
+          </h2>
+          <p className="leading-7 whitespace-pre-line">
+            {eventForm.description || "Beschreibung fehlt."}
+          </p>
+          <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[10rem_1fr]">
+            <dt className="font-medium">Format</dt>
+            <dd>
+              {(FORMAT_LABEL as Record<string, string>)[eventForm.format] ?? "fehlt"}
+            </dd>
+            <dt className="font-medium">Termin</dt>
+            <dd>{whenText(eventForm) ?? "fehlt"}</dd>
+            <dt className="font-medium">Ort</dt>
+            <dd>{placeText(eventForm) ?? "fehlt"}</dd>
+            <dt className="font-medium">Eintritt</dt>
+            <dd>{priceText(eventForm) ?? "nicht angegeben"}</dd>
+            <dt className="font-medium">Zugang</dt>
+            <dd>{accessText(eventForm) ?? "nicht angegeben"}</dd>
+            <dt className="font-medium">Atmosphäre</dt>
+            <dd>{atmosphereSummary(eventForm) ?? "nicht bestätigt"}</dd>
+            <dt className="font-medium">Bildbeschreibung</dt>
+            <dd>
+              {event.image
+                ? (event.image.altText ?? "keine (Bild zählt als Dekoration)")
+                : "kein Bild"}
+            </dd>
+          </dl>
+        </article>
+      ) : view.submittedAt && !view.alreadyApproved ? (
+        <p role="note" className="text-muted-foreground text-sm">
+          Zu diesem Profil wurde kein Event eingereicht.
+        </p>
+      ) : null}
 
       {view.question ? (
         <section aria-labelledby="asked-heading" className="bg-muted space-y-2 rounded-lg p-4">
@@ -143,7 +219,7 @@ export default async function ApprovalDetailPage({
           </p>
           {imageMissingPublicly ? (
             <>
-              <p role="alert">Das Bild ist noch nicht öffentlich.</p>
+              <p role="alert">Mindestens ein Bild ist noch nicht öffentlich.</p>
               <RetryImageFounderForm action={retryImage} profileId={profileId} />
             </>
           ) : null}
@@ -155,13 +231,15 @@ export default async function ApprovalDetailPage({
               Freigeben
             </h2>
             <p className="text-sm leading-6">
-              Das Profil wird sofort öffentlich. Der Organizer bekommt eine
-              E-Mail.
+              {event
+                ? "Profil und Event werden sofort öffentlich. Der Organizer bekommt eine E-Mail."
+                : "Das Profil wird sofort öffentlich. Der Organizer bekommt eine E-Mail."}
             </p>
             <ApproveForm
               action={approveFirst}
               profileId={profileId}
               revisionId={revision.id}
+              event={eventTarget}
             />
           </section>
           <section aria-labelledby="question-heading" className="border-border space-y-3 rounded-lg border p-5">
@@ -172,6 +250,7 @@ export default async function ApprovalDetailPage({
               action={requestChanges}
               profileId={profileId}
               revisionId={revision.id}
+              event={eventTarget}
             />
           </section>
         </div>

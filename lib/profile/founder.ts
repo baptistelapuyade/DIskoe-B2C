@@ -15,6 +15,8 @@ import {
 } from "@/lib/profile/draft";
 import { loadImage, type ProfileImage } from "@/lib/profile/image";
 import { isPublishedImagePublic } from "@/lib/profile/publish";
+import { loadFounderEventView, type FounderEventView } from "@/lib/event/founder";
+import { isPublishedEventImagePublic } from "@/lib/event/publish";
 
 type Client = SupabaseClient<Database>;
 
@@ -233,6 +235,10 @@ export type FounderProfileView = {
   mailTarget: { kind: MailKind; revisionId: string } | null;
   // null = nothing published yet.
   publishedImagePublic: boolean | null;
+  // The first event, submitted or approved together with the profile.
+  event: FounderEventView | null;
+  // null = the first event is not published (or there is none).
+  eventImagePublic: boolean | null;
 };
 
 export async function loadFounderProfileView(
@@ -330,10 +336,17 @@ export async function loadFounderProfileView(
     }
   }
 
+  const event = await loadFounderEventView(supabase, profileId, alreadyApproved);
+
   return {
     profile,
     revision,
     image,
+    event,
+    eventImagePublic:
+      alreadyApproved && event
+        ? await isPublishedEventImagePublic(supabase, event.eventId)
+        : null,
     gaps: localGapCodes(
       {
         name: revision?.name ?? "",

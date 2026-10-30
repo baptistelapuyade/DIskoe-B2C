@@ -2,6 +2,8 @@
 
 import { useActionState, useState } from "react";
 
+import { QUESTION_AREAS } from "@/lib/domain/question-area";
+
 import type { FormState } from "@/app/(organizer)/organizer/profiles/[profileId]/actions";
 
 const initial: FormState = { ok: false };
@@ -31,15 +33,29 @@ function Result({ state }: { state: FormState }) {
 
 type Action = (previous: FormState, formData: FormData) => Promise<FormState>;
 
+// The first event travels with the profile when both were submitted together.
+export type EventTarget = { eventId: string; revisionId: string };
+
+function EventFields({ event }: { event?: EventTarget | null }) {
+  return event ? (
+    <>
+      <input type="hidden" name="eventId" value={event.eventId} />
+      <input type="hidden" name="eventRevisionId" value={event.revisionId} />
+    </>
+  ) : null;
+}
+
 // Approval publishes the profile at once, so it asks once more.
 export function ApproveForm({
   action,
   profileId,
   revisionId,
+  event,
 }: {
   action: Action;
   profileId: string;
   revisionId: string;
+  event?: EventTarget | null;
 }) {
   const [state, formAction, pending] = useActionState(action, initial);
   const [asking, setAsking] = useState(false);
@@ -48,11 +64,13 @@ export function ApproveForm({
     <form action={formAction} className="space-y-3">
       <input type="hidden" name="profileId" value={profileId} />
       <input type="hidden" name="revisionId" value={revisionId} />
+      <EventFields event={event} />
       {asking ? (
         <>
           <p role="alert" className="font-medium">
-            Dieser Stand wird sofort öffentlich. Jetzt freigeben und
-            veröffentlichen?
+            {event
+              ? "Profil und Event werden sofort öffentlich. Jetzt freigeben und veröffentlichen?"
+              : "Dieser Stand wird sofort öffentlich. Jetzt freigeben und veröffentlichen?"}
           </p>
           <div className="flex gap-3">
             <button type="submit" disabled={pending} className={primary}>
@@ -85,10 +103,12 @@ export function QuestionForm({
   action,
   profileId,
   revisionId,
+  event,
 }: {
   action: Action;
   profileId: string;
   revisionId: string;
+  event?: EventTarget | null;
 }) {
   const [state, formAction, pending] = useActionState(action, initial);
 
@@ -96,6 +116,23 @@ export function QuestionForm({
     <form action={formAction} className="space-y-3">
       <input type="hidden" name="profileId" value={profileId} />
       <input type="hidden" name="revisionId" value={revisionId} />
+      <EventFields event={event} />
+      <label htmlFor="question-area" className="block text-sm">
+        Betroffene Stelle
+      </label>
+      <select
+        id="question-area"
+        name="area"
+        defaultValue=""
+        className="border-border w-full rounded-md border px-3 py-2"
+      >
+        <option value="">Allgemein</option>
+        {QUESTION_AREAS.map((area) => (
+          <option key={area} value={area}>
+            {area}
+          </option>
+        ))}
+      </select>
       <label htmlFor="question" className="block text-sm">
         Deine Frage an den Organizer
       </label>
@@ -109,7 +146,8 @@ export function QuestionForm({
         aria-describedby="question-help"
       />
       <p id="question-help" className="text-muted-foreground text-sm">
-        Höchstens 500 Zeichen. Das Profil bleibt privat. Der Organizer
+        Höchstens 500 Zeichen inklusive der betroffenen Stelle. Profil und
+        Event bleiben privat. Der Organizer
         korrigiert und reicht erneut ein.
       </p>
       <button
@@ -141,7 +179,7 @@ export function RetryImageFounderForm({
         disabled={pending}
         className="border-border rounded-md border px-5 py-2.5 font-medium disabled:opacity-60"
       >
-        {pending ? "Versucht es …" : "Bild erneut veröffentlichen"}
+        {pending ? "Versucht es …" : "Bilder erneut veröffentlichen"}
       </button>
       <Result state={state} />
     </form>

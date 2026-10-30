@@ -123,16 +123,39 @@ export async function loadQuestionForRevision(
 ): Promise<ReviewQuestion | null> {
   const { data, error } = await supabase
     .from("review_requests")
-    .select("message, created_at")
+    .select("message, created_at, event_revision_id")
     .eq("revision_id", revisionId)
-    .limit(1);
+    .order("created_at", { ascending: false })
+    .limit(10);
 
   if (error) {
     throw new Error("Question lookup failed");
   }
 
-  const row = data?.[0];
-  return row ? { message: row.message, createdAt: row.created_at } : null;
+  // A question about a pair (profile and first event) only counts while the
+  // event draft is still the one that was asked about. After the owner changed
+  // the event, the new pair is a new submission.
+  for (const row of data ?? []) {
+    if (row.event_revision_id === null) {
+      return { message: row.message, createdAt: row.created_at };
+    }
+
+    const { data: current, error: currentError } = await supabase
+      .from("events")
+      .select("id")
+      .eq("draft_revision_id", row.event_revision_id)
+      .limit(1);
+
+    if (currentError) {
+      throw new Error("Question lookup failed");
+    }
+
+    if ((current ?? []).length > 0) {
+      return { message: row.message, createdAt: row.created_at };
+    }
+  }
+
+  return null;
 }
 
 // The most recent question about any revision of the profile. After the owner
