@@ -286,9 +286,9 @@ describe("image checks", () => {
     expect(checkImage(edge)).toEqual({ ok: true, type: "image/jpeg" });
   });
 
-  it("requires an alt text of reasonable length", () => {
-    expect(parseAltText("  ").ok).toBe(false);
-    expect(parseAltText(undefined).ok).toBe(false);
+  it("treats the alt text as optional and limits its length", () => {
+    expect(parseAltText("  ")).toEqual({ ok: true, value: null });
+    expect(parseAltText(undefined)).toEqual({ ok: true, value: null });
     expect(parseAltText("x".repeat(LIMITS.altText + 1)).ok).toBe(false);
     expect(parseAltText(" Bühne bei Nacht ")).toEqual({
       ok: true,

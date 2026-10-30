@@ -164,15 +164,21 @@ export function ImageForm({ action }: { action: Action }) {
 
       <div>
         <label htmlFor="altText" className="font-medium">
-          Bildbeschreibung (Alternativtext)
+          Bildbeschreibung · freiwillig
         </label>
         <input
           id="altText"
           name="altText"
           className={inputClass}
           autoComplete="off"
-          aria-describedby="altText-error"
+          placeholder="Was ist auf dem Bild zu sehen?"
+          aria-describedby="altText-hint altText-error"
         />
+        <p id="altText-hint" className="text-muted-foreground mt-1 text-xs">
+          Sie hilft Menschen, die das Bild nicht sehen können, und
+          Vorlese-Programmen. Ein Satz reicht, zum Beispiel: „Vier Personen vor
+          einer Backsteinwand“. Ohne Eintrag gilt das Bild als reine Dekoration.
+        </p>
         <FieldError id="altText-error" text={state.errors?.altText} />
       </div>
 

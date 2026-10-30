@@ -114,7 +114,7 @@ test("the whole profile flow, from the first entry to the live profile", async (
       buffer: PNG,
     });
     await page
-      .getByLabel("Bildbeschreibung (Alternativtext)")
+      .getByLabel("Bildbeschreibung · freiwillig")
       .fill("Bühne bei Nacht");
     await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
     await page.getByRole("button", { name: "Bild hochladen" }).click();

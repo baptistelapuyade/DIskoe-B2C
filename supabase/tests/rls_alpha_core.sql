@@ -168,16 +168,26 @@ begin
 end $$;
 
 -- Confirmation without alt text must fail (called as the owner).
-create function tests.confirm_without_alt(p_profile uuid, p_mime text default 'image/jpeg')
-returns void language plpgsql as $$
-declare v_asset uuid; v_use uuid;
+-- Confirms an image use with the given description (NULL or blank allowed)
+-- and reports whether it was stored as NULL and got its reserved path. The
+-- subtransaction is rolled back, so the helper leaves no rows behind.
+create function tests.confirm_with_alt_is_null(p_profile uuid, p_alt text, p_mime text default 'image/jpeg')
+returns boolean language plpgsql as $$
+declare v_asset uuid; v_use uuid; v_ok boolean;
 begin
-  insert into public.media_assets (uploader_id, private_object_path, mime_type)
-  values (auth.uid(), auth.uid()::text || '/' || gen_random_uuid() || '.jpg', p_mime)
-  returning id into v_asset;
-  insert into public.media_uses (asset_id, profile_id, role)
-  values (v_asset, p_profile, 'profile_image') returning id into v_use;
-  update public.media_uses set confirmed_at = now() where id = v_use;
+  begin
+    insert into public.media_assets (uploader_id, private_object_path, mime_type)
+    values (auth.uid(), auth.uid()::text || '/' || gen_random_uuid() || '.jpg', p_mime)
+    returning id into v_asset;
+    insert into public.media_uses (asset_id, profile_id, role, alt_text)
+    values (v_asset, p_profile, 'profile_image', p_alt) returning id into v_use;
+    update public.media_uses set confirmed_at = now() where id = v_use;
+    select alt_text is null and public_object_path is not null and confirmed_at is not null
+      into v_ok from public.media_uses where id = v_use;
+    raise exception 'rollback' using errcode = 'RB000';
+  exception when sqlstate 'RB000' then
+    return v_ok;
+  end;
 end $$;
 
 create function tests.new_profile_image_use_mime(p_profile uuid, p_mime text)
@@ -209,16 +219,23 @@ begin
 end $$;
 
 -- Event image helpers (Slice 4: event images reserve a public path too).
-create function tests.confirm_event_image_without_alt(p_event uuid)
-returns void language plpgsql as $$
-declare v_asset uuid; v_use uuid;
+create function tests.confirm_event_image_with_alt_is_null(p_event uuid, p_alt text)
+returns boolean language plpgsql as $$
+declare v_asset uuid; v_use uuid; v_ok boolean;
 begin
-  insert into public.media_assets (uploader_id, private_object_path, mime_type)
-  values (auth.uid(), auth.uid()::text || '/' || gen_random_uuid() || '.jpg', 'image/jpeg')
-  returning id into v_asset;
-  insert into public.media_uses (asset_id, event_id, role)
-  values (v_asset, p_event, 'event_image') returning id into v_use;
-  update public.media_uses set confirmed_at = now() where id = v_use;
+  begin
+    insert into public.media_assets (uploader_id, private_object_path, mime_type)
+    values (auth.uid(), auth.uid()::text || '/' || gen_random_uuid() || '.jpg', 'image/jpeg')
+    returning id into v_asset;
+    insert into public.media_uses (asset_id, event_id, role, alt_text)
+    values (v_asset, p_event, 'event_image', p_alt) returning id into v_use;
+    update public.media_uses set confirmed_at = now() where id = v_use;
+    select alt_text is null and public_object_path is not null and confirmed_at is not null
+      into v_ok from public.media_uses where id = v_use;
+    raise exception 'rollback' using errcode = 'RB000';
+  exception when sqlstate 'RB000' then
+    return v_ok;
+  end;
 end $$;
 
 create function tests.new_event_image_use_mime(p_event uuid, p_mime text)
@@ -338,8 +355,10 @@ select tests.expect_error(format($q$insert into public.media_assets (uploader_id
   '42501', 'asset path must sit under the uploader prefix');
 select tests.expect_error(format($q$insert into public.media_assets (uploader_id, private_object_path, mime_type) values (%L, %L, 'image/gif')$q$, :'uid_a', :'uid_a' || '/x.gif'),
   '23514', 'only jpeg, png and webp assets are accepted');
-select tests.expect_error(format('select tests.confirm_without_alt(%L)', :'pa'),
-  '23514', 'an image use cannot be confirmed without alt text');
+select tests.expect_true(format('select tests.confirm_with_alt_is_null(%L, null)', :'pa'),
+  'a profile image can be confirmed without a description');
+select tests.expect_true(format('select tests.confirm_with_alt_is_null(%L, %L)', :'pa', '   '),
+  'a blank description is stored as NULL');
 select tests.new_profile_image_use(:'pa', false) as use_a \gset
 select tests.expect_true(format('select public_object_path is null and confirmed_at is null from public.media_uses where id = %L', :'use_a'),
   'an unconfirmed image use has no public path');
@@ -583,10 +602,12 @@ select tests.ev_insert(:'e1', :'use_e1') as ev1 \gset
 select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'ev1', :'e1'),
   1, 'owner selects the event draft');
 
--- Event image confirmation (Slice 4): alt text is mandatory and the database
--- reserves events/<event id>/<use id>.<ext>. A path, not a file.
-select tests.expect_error(format('select tests.confirm_event_image_without_alt(%L)', :'e1'),
-  '23514', 'an event image cannot be confirmed without alt text');
+-- Event image confirmation (Slice 4): the description is optional (Slice 5)
+-- and the database reserves events/<event id>/<use id>.<ext>. A path, not a file.
+select tests.expect_true(format('select tests.confirm_event_image_with_alt_is_null(%L, null)', :'e1'),
+  'an event image can be confirmed without a description');
+select tests.expect_true(format('select tests.confirm_event_image_with_alt_is_null(%L, %L)', :'e1', E' \n '),
+  'a blank event image description is stored as NULL');
 select tests.new_event_image_use(:'e1', false) as use_e3 \gset
 select tests.expect_true(format('select public_object_path is null and confirmed_at is null from public.media_uses where id = %L', :'use_e3'),
   'an unconfirmed event image use has no public path');

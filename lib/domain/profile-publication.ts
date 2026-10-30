@@ -331,20 +331,16 @@ export function checkImage(bytes: Uint8Array): ImageCheck {
 
 export function parseAltText(
   raw: unknown,
-): { ok: true; value: string } | { ok: false; message: string } {
+): { ok: true; value: string | null } | { ok: false; message: string } {
   const value = text(raw);
 
-  if (value === "") {
-    return {
-      ok: false,
-      message: "Bitte beschreibe das Bild kurz (Alternativtext).",
-    };
-  }
+  // Optional: without a description the image counts as pure decoration.
+  if (value === "") return { ok: true, value: null };
 
   if (value.length > LIMITS.altText) {
     return {
       ok: false,
-      message: `Der Alternativtext darf höchstens ${LIMITS.altText} Zeichen lang sein.`,
+      message: `Die Bildbeschreibung darf höchstens ${LIMITS.altText} Zeichen lang sein.`,
     };
   }
 

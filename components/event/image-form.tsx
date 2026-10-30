@@ -15,8 +15,8 @@ type Action = (
 const initial: EventFormState = { ok: false };
 
 // Figma "Öffentliches Eventbild · erforderlich" (2533:4121): the file input.
-// The alternative text and the rights confirmation are not in the wireframe;
-// the contract and the database require them (media_uses), so they are added.
+// Description (optional, Figma 2857:39307) and rights confirmation (required,
+// media_uses) are added below the file input.
 export function EventImageForm({ action }: { action: Action }) {
   const [state, formAction, pending] = useActionState(action, initial);
 
@@ -39,7 +39,8 @@ export function EventImageForm({ action }: { action: Action }) {
       </Field>
       <Field
         id="altText"
-        label="Bildbeschreibung (Alternativtext)"
+        label="Bildbeschreibung · freiwillig"
+        hint="Sie hilft Menschen, die das Bild nicht sehen können, und Vorlese-Programmen. Ein Satz reicht, zum Beispiel: „Zwei Personen am DJ-Pult in einem dunklen Club“. Ohne Eintrag gilt das Bild als reine Dekoration."
         error={state.errors?.altText}
       >
         {(p) => (
@@ -47,6 +48,7 @@ export function EventImageForm({ action }: { action: Action }) {
             {...p}
             name="altText"
             autoComplete="off"
+            placeholder="Was ist auf dem Bild zu sehen?"
             className={controlClass}
           />
         )}
