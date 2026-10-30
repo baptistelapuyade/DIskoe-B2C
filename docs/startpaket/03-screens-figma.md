@@ -16,6 +16,7 @@ Status im Namen jeder Section: GELTEND, ENTWURF oder ARCHIV. Screens tragen eine
 | 40 Öffentliche Seiten | `PUB-01` bis `PUB-24`; geltende Eventseite ist `PUB-01` (2643:9414) |
 | 50 Intern (Founder) | D8 Interne Prüfseite (2764:44857) |
 | 60 Besucher-Prototyp | Klickprototyp (Desktop 1440×900, Mobile 390×844) |
+| 80 Geparkt — Discovery (spätere Phase) | Bausteine für die Discovery nach der Alpha (Poll, Plan, District, Merken, Kategorien, Account row, Event-detailpage u. a.), nicht löschen |
 | 90 Archiv | ersetzte Stände mit Datum und Grund im Namen |
 
 ### Umzüge am 30.10.2026
@@ -27,6 +28,7 @@ Status im Namen jeder Section: GELTEND, ENTWURF oder ARCHIV. Screens tragen eine
 | Zusammenhängender Profileditor (2519:5757) | Archiv; Modulinhalte und Varianten `ORG-57` bis `ORG-74` |
 | Eventsonderzustände, Öffentliches Ergebnis, Besucheraktionen (Zustände) | Seite 40, `PUB-18` bis `PUB-24` |
 | D8 (2764:44857) | Seite 50 |
+| Poll-, Plan-, District-, Merken- und Kategorien-Bausteine aus dem Kit (17 Elemente) | Seite 80 Geparkt, für die Discovery |
 | Zustände 01–16 | `NACH-01` bis `NACH-16`, Aktionen in `DISKOE / Action Bar` |
 | 17 handgebaute „Gut zu wissen / zwei Spalten“ (D13, Eventsonderzustände, Ergebnis) | durch Komponente „Gut zu wissen v3“ ersetzt; Altbestand im Archivrahmen auf Seite 90 |
 
