@@ -332,7 +332,7 @@ test.describe("first publication: profile and first event together", () => {
     await page.goto(`/internal/approvals/${profileId}`);
     await expect(page.getByText("Hauptstraße 2", { exact: false })).toBeVisible();
     await page.getByRole("button", { name: "Freigeben und veröffentlichen" }).click();
-    await expect(page.getByText("Profil und Event werden sofort öffentlich.", { exact: false })).toBeVisible();
+    await expect(page.getByText("Jetzt freigeben und veröffentlichen?", { exact: false })).toBeVisible();
     await page.getByRole("button", { name: "Ja, freigeben und veröffentlichen" }).click();
     await expect(page.getByText("Freigegeben und veröffentlicht.").first()).toBeVisible(SLOW);
 
