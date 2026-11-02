@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { expect, test, type Browser, type BrowserContext } from "@playwright/test";
+import { expect, test, type Browser, type BrowserContext, type Page } from "@playwright/test";
 
 import type { Database } from "../lib/db/types";
 
@@ -172,6 +172,16 @@ async function createCompleteEvent(
   expect(pointed.data).toHaveLength(1);
 
   return { eventId, revisionId: revision.data!.id, useId, title };
+}
+
+// The management page after an action. If the form stays, its message tells why.
+async function expectManagePage(page: Page, eventId: string) {
+  try {
+    await expect(page).toHaveURL(new RegExp(`/events/${eventId}/manage$`), SLOW);
+  } catch (error) {
+    const messages = await page.locator('[role="alert"], [role="status"]').allTextContents();
+    throw new Error(`Still on ${page.url()}: ${messages.join(" | ") || "no message"}`, { cause: error });
+  }
 }
 
 test.describe.configure({ mode: "serial" });
@@ -357,7 +367,7 @@ test.describe("cancel and reschedule a live event", () => {
 
     // The side card of the form says "Neuer Termin folgt" too, so wait for the
     // redirect to the management page first.
-    await expect(page).toHaveURL(new RegExp(`/events/${move.eventId}/manage$`), SLOW);
+    await expectManagePage(page, move.eventId);
     await expect(page.getByText("Neuer Termin folgt").first()).toBeVisible(SLOW);
     expect(sql(`select public_status from public.events where id = '${move.eventId}'`)).toBe("postponed_undated");
     expect((await publicEvent(MOVE_TITLE)).data?.public_status).toBe("postponed_undated");
@@ -374,7 +384,7 @@ test.describe("cancel and reschedule a live event", () => {
 
     await page.getByLabel("Neuer Beginn").fill("2027-07-10T21:00");
     await page.getByRole("button", { name: "Verschiebung bestätigen" }).click();
-    await expect(page).toHaveURL(new RegExp(`/events/${move.eventId}/manage$`), SLOW);
+    await expectManagePage(page, move.eventId);
     await expect(page.getByText("Verschoben, neuer Termin").first()).toBeVisible(SLOW);
 
     expect(sql(`select public_status from public.events where id = '${move.eventId}'`)).toBe("rescheduled");
@@ -398,7 +408,7 @@ test.describe("cancel and reschedule a live event", () => {
     // Postponing without a date publishes nothing and stays possible.
     await page.getByRole("link", { name: "Ersatztermin steht noch nicht fest" }).click();
     await page.getByRole("button", { name: "Ohne Ersatztermin verschieben" }).click();
-    await expect(page).toHaveURL(new RegExp(`/events/${blocked.eventId}/manage$`), SLOW);
+    await expectManagePage(page, blocked.eventId);
     await expect(page.getByText("Neuer Termin folgt").first()).toBeVisible(SLOW);
     expect((await publicEvent(BLOCKED_TITLE)).data?.description).not.toContain("Noch nicht veröffentlicht");
     await context.close();
