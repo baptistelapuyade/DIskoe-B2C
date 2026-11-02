@@ -101,4 +101,29 @@ describe("mail templates", () => {
       "Dein Profil „ohne Namen“ ist jetzt live",
     );
   });
+
+  it("names the first event and links to its management page", () => {
+    const mail = profileLiveMail({
+      name: "Nebenraum Kollektiv",
+      url,
+      eventTitle: "Zwischen den Boxen",
+      eventUrl: "https://app.example.test/organizer/events/e1/manage",
+    });
+
+    expect(mail.text).toContain("Zwischen den Boxen");
+    expect(mail.text).toContain("Event verwalten");
+    expect(mail.html).toContain('href="https://app.example.test/organizer/events/e1/manage"');
+    expect(mail.text.match(/https?:\/\//g)).toHaveLength(2);
+  });
+
+  it("escapes the event title in HTML", () => {
+    const mail = profileLiveMail({
+      name: "A",
+      url,
+      eventTitle: "<script>x()</script>",
+      eventUrl: "https://app.example.test/e",
+    });
+
+    expect(mail.html).not.toContain("<script>");
+  });
 });

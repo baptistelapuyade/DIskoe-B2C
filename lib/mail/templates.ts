@@ -30,13 +30,18 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function html(paragraphs: string[], url: string, linkLabel: string): string {
+type Link = { url: string; label: string };
+
+function html(paragraphs: string[], links: Link[]): string {
   const body = paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join("\n");
 
   return [
     '<div style="font-family: sans-serif; line-height: 1.5; max-width: 36rem;">',
     body,
-    `<p><a href="${escapeHtml(url)}">${escapeHtml(linkLabel)}</a></p>`,
+    ...links.map(
+      (link) =>
+        `<p><a href="${escapeHtml(link.url)}">${escapeHtml(link.label)}</a></p>`,
+    ),
     "</div>",
   ].join("\n");
 }
@@ -44,29 +49,46 @@ function html(paragraphs: string[], url: string, linkLabel: string): string {
 const FOOTER =
   "Das ist eine automatische Systemmail zu deinem Profil bei DISKOE.";
 
-export function profileLiveMail(input: {
+// The first event is submitted and approved together with the profile
+// (Slice 5). Its title and link are optional: a profile approved without an
+// event gets the text of Slice 3.
+export type MailInput = {
   name: string | null | undefined;
   url: string;
-}): MailContent {
+  eventTitle?: string | null;
+  eventUrl?: string | null;
+};
+
+export function profileLiveMail(input: MailInput): MailContent {
   const name = cleanName(input.name);
+  const withEvent = input.eventTitle !== undefined && input.eventTitle !== null;
+  const eventTitle = cleanName(input.eventTitle);
   const paragraphs = [
     "Hallo,",
-    `dein Profil „${name}“ wurde geprüft und ist jetzt live.`,
+    withEvent
+      ? `dein Profil „${name}“ und das Event „${eventTitle}“ wurden geprüft und sind jetzt live.`
+      : `dein Profil „${name}“ wurde geprüft und ist jetzt live.`,
     "Änderungen bleiben privat, bis du sie selbst bestätigst.",
     FOOTER,
   ];
+  const links: Link[] = [{ url: input.url, label: "Zu deinem Profil" }];
+
+  if (withEvent && input.eventUrl) {
+    links.push({ url: input.eventUrl, label: "Event verwalten" });
+  }
 
   return {
     subject: `Dein Profil „${name}“ ist jetzt live`,
-    text: [...paragraphs, "", `Zu deinem Profil: ${input.url}`].join("\n\n"),
-    html: html(paragraphs, input.url, "Zu deinem Profil"),
+    text: [
+      ...paragraphs,
+      "",
+      ...links.map((link) => `${link.label}: ${link.url}`),
+    ].join("\n\n"),
+    html: html(paragraphs, links),
   };
 }
 
-export function profileQuestionMail(input: {
-  name: string | null | undefined;
-  url: string;
-}): MailContent {
+export function profileQuestionMail(input: MailInput): MailContent {
   const name = cleanName(input.name);
   const paragraphs = [
     "Hallo,",
@@ -80,14 +102,13 @@ export function profileQuestionMail(input: {
     text: [...paragraphs, "", `Zur Frage und zu deinem Profil: ${input.url}`].join(
       "\n\n",
     ),
-    html: html(paragraphs, input.url, "Zur Frage und zu deinem Profil"),
+    html: html(paragraphs, [
+      { url: input.url, label: "Zur Frage und zu deinem Profil" },
+    ]),
   };
 }
 
-export function mailFor(
-  kind: MailKind,
-  input: { name: string | null | undefined; url: string },
-): MailContent {
+export function mailFor(kind: MailKind, input: MailInput): MailContent {
   return kind === "profile_live"
     ? profileLiveMail(input)
     : profileQuestionMail(input);

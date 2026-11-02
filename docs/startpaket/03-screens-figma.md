@@ -83,3 +83,6 @@ Button 2453:242 (Varianten Primary/Outline/Ghost, Size Regular/Large), Alert 245
 - „Mehr anzeigen“ bei mehr als 3 Einträgen (Events, Galerie, Archiv): größer, Akzentfarbe, 72 px Abstand zur Liste.
 - Eventseite: Faktenblock direkt nach dem Titel, Datum/Beginn und Venue hervorgehoben (Delta v0.4 §17.5).
 - Archivliste: keine eigene Archivseite, „Weitere vergangene Events anzeigen“ im Modul.
+
+## Slice 5 gebaut (Stand 2026-10-30)
+Section „ENTWURF · Slice 5“ (2859:40104): S5-A Founder-Prüfung (2855:38880), S5-D Rückfrage mit betroffener Stelle (2894:1019) und S5-E Mailentwürfe (2894:1178) sind in PR D gebaut, die Organizer-Seiten (Bestätigung, in Prüfung, Selbstveröffentlichung, Eventverwaltung) in PR C. Kein Screenshot-Vergleich mit Figma erfolgt; Abweichungen in `.planning/phases/04-durchstich/SLICE-5-SUMMARY.md`. Nicht gebaut: `NACH-09` bis `NACH-16`.

@@ -10,6 +10,10 @@ import {
   parseGapDetail,
   parseQuestion,
 } from "@/lib/domain/profile-publication";
+import { QUESTION_AREAS, questionWithArea } from "@/lib/domain/question-area";
+import { describeEventGaps } from "@/lib/domain/event-publication";
+import { copyPublishedEventImage } from "@/lib/event/publish";
+import { loadFounderEventView } from "@/lib/event/founder";
 import { mailOutcomeText, sendProfileMail } from "@/lib/mail/send";
 import { loadRevision } from "@/lib/profile/draft";
 import type { MailKind } from "@/lib/profile/founder";
@@ -23,6 +27,28 @@ const UUID =
 
 const GENERIC_ERROR =
   "Das hat leider nicht geklappt. Bitte versuche es noch einmal.";
+
+// With a joint submission the database prefixes the codes with "profile." or
+// "event."; a profile-only approval reports plain profile codes.
+function gapMessages(details: string | null | undefined, joint: boolean): string[] {
+  const codes = parseGapDetail(details);
+
+  if (!joint) {
+    return describeGaps(codes).map((gap) => gap.message);
+  }
+
+  const profile = codes
+    .filter((code) => code.startsWith("profile."))
+    .map((code) => code.slice("profile.".length));
+  const event = codes
+    .filter((code) => code.startsWith("event."))
+    .map((code) => code.slice("event.".length));
+
+  return [
+    ...describeGaps(profile).map((gap) => `Profil: ${gap.message}`),
+    ...describeEventGaps(event).map((gap) => `Event: ${gap.message}`),
+  ];
+}
 
 function refresh(profileId: string) {
   revalidatePath("/internal/approvals");
@@ -40,23 +66,49 @@ async function sendMail(
   kind: MailKind,
 ): Promise<string> {
   const revision = await loadRevision(supabase, revisionId);
+  // The mail names the first event that was decided together with the profile.
+  const event = await loadFounderEventView(
+    supabase,
+    profileId,
+    kind === "profile_live",
+  );
   const outcome = await sendProfileMail(supabase, {
     profileId,
     revisionId,
     kind,
     name: revision?.name,
+    event: event
+      ? { id: event.eventId, title: event.form.title.trim() || null }
+      : null,
     origin: getRequestOrigin(await headers()),
   });
 
   return mailOutcomeText(outcome);
 }
 
-function ids(formData: FormData): { profileId: string; revisionId: string } | null {
+type Target = {
+  profileId: string;
+  revisionId: string;
+  // Set when the first event is decided together with the profile.
+  event: { eventId: string; revisionId: string } | null;
+};
+
+function ids(formData: FormData): Target | null {
   const profileId = String(formData.get("profileId") ?? "");
   const revisionId = String(formData.get("revisionId") ?? "");
+  const eventId = String(formData.get("eventId") ?? "");
+  const eventRevisionId = String(formData.get("eventRevisionId") ?? "");
 
-  return UUID.test(profileId) && UUID.test(revisionId)
-    ? { profileId, revisionId }
+  if (!UUID.test(profileId) || !UUID.test(revisionId)) {
+    return null;
+  }
+
+  if (eventId === "" && eventRevisionId === "") {
+    return { profileId, revisionId, event: null };
+  }
+
+  return UUID.test(eventId) && UUID.test(eventRevisionId)
+    ? { profileId, revisionId, event: { eventId, revisionId: eventRevisionId } }
     : null;
 }
 
@@ -76,10 +128,17 @@ export async function approveFirst(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("approve_first_profile", {
-    p_profile_id: target.profileId,
-    p_expected_draft_revision_id: target.revisionId,
-  });
+  const { error } = target.event
+    ? await supabase.rpc("approve_first_publication", {
+        p_profile_id: target.profileId,
+        p_expected_draft_revision_id: target.revisionId,
+        p_event_id: target.event.eventId,
+        p_expected_event_draft_revision_id: target.event.revisionId,
+      })
+    : await supabase.rpc("approve_first_profile", {
+        p_profile_id: target.profileId,
+        p_expected_draft_revision_id: target.revisionId,
+      });
 
   if (error) {
     switch (error.code) {
@@ -93,9 +152,7 @@ export async function approveFirst(
         return {
           ok: false,
           message: "Es fehlen noch Angaben.",
-          gaps: describeGaps(parseGapDetail(error.details)).map(
-            (gap) => gap.message,
-          ),
+          gaps: gapMessages(error.details, target.event !== null),
         };
       case "DK003":
         return {
@@ -114,7 +171,12 @@ export async function approveFirst(
     }
   }
 
-  const copied = await copyPublishedImage(supabase, target.profileId);
+  const profileCopied = await copyPublishedImage(supabase, target.profileId);
+  const eventCopied = target.event
+    ? await copyPublishedEventImage(supabase, target.event.eventId)
+    : "copied";
+  const copied =
+    profileCopied === "copied" && eventCopied === "copied" ? "copied" : "failed";
   const mail = await sendMail(
     supabase,
     target.profileId,
@@ -127,7 +189,7 @@ export async function approveFirst(
     ? { ok: true, message: `Freigegeben und veröffentlicht. ${mail}` }
     : {
         ok: true,
-        message: `Freigegeben und veröffentlicht, aber das Bild ist noch nicht öffentlich. Bitte versuche es mit „Bild erneut veröffentlichen“ noch einmal. ${mail}`,
+        message: `Freigegeben und veröffentlicht, aber mindestens ein Bild ist noch nicht öffentlich. Bitte versuche es mit „Bilder erneut veröffentlichen“ noch einmal. ${mail}`,
       };
 }
 
@@ -147,11 +209,25 @@ export async function requestChanges(
     return { ok: false, message: question.message };
   }
 
+  // The affected spot is stored as the first line of the message: the database
+  // has no separate column and the organizer reads the message as written.
+  const area = String(formData.get("area") ?? "");
+  const message = questionWithArea(
+    QUESTION_AREAS.includes(area as (typeof QUESTION_AREAS)[number]) ? area : "",
+    question.value,
+  );
+  if (!message.ok) {
+    return { ok: false, message: message.message };
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.rpc("request_profile_changes", {
     p_profile_id: target.profileId,
     p_expected_draft_revision_id: target.revisionId,
-    p_message: question.value,
+    p_message: message.value,
+    ...(target.event
+      ? { p_expected_event_draft_revision_id: target.event.revisionId }
+      : {}),
   });
 
   if (error) {
@@ -228,14 +304,20 @@ export async function retryImage(
   }
 
   const supabase = await createClient();
-  const copied = await copyPublishedImage(supabase, profileId);
+  const profileCopied = await copyPublishedImage(supabase, profileId);
+  const eventView = await loadFounderEventView(supabase, profileId, true);
+  const eventCopied = eventView
+    ? await copyPublishedEventImage(supabase, eventView.eventId)
+    : "copied";
+  const copied =
+    profileCopied === "copied" && eventCopied === "copied" ? "copied" : "failed";
   refresh(profileId);
 
   return copied === "copied"
-    ? { ok: true, message: "Das Bild ist jetzt öffentlich." }
+    ? { ok: true, message: "Die Bilder sind jetzt öffentlich." }
     : {
         ok: false,
         message:
-          "Das Bild konnte noch nicht veröffentlicht werden. Bitte versuche es später noch einmal.",
+          "Mindestens ein Bild konnte noch nicht veröffentlicht werden. Bitte versuche es später noch einmal.",
       };
 }

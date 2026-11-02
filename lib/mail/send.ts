@@ -22,6 +22,8 @@ export type ProfileMailInput = {
   revisionId: string;
   kind: MailKind;
   name: string | null | undefined;
+  // The first event that was submitted and approved with the profile, if any.
+  event?: { id: string; title: string | null } | null;
   // Origin of the app. The one link in the mail leads to the profile's own
   // page; after sign-in the app lands there (login keeps the target).
   origin: string;
@@ -53,9 +55,20 @@ export async function sendProfileMail(
     return "skipped";
   }
 
+  const origin = input.origin.replace(/\/+$/, "");
+  const profileUrl = `${origin}/organizer/profiles/${input.profileId}/status`;
   const content = mailFor(input.kind, {
     name: input.name,
-    url: `${input.origin.replace(/\/+$/, "")}/organizer/profiles/${input.profileId}/status`,
+    // A question about profile and first event is answered on the event's
+    // review page; a live mail links to both.
+    url:
+      input.kind === "profile_question" && input.event
+        ? `${origin}/organizer/events/${input.event.id}/review`
+        : profileUrl,
+    eventTitle: input.event ? (input.event.title ?? "") : undefined,
+    eventUrl: input.event
+      ? `${origin}/organizer/events/${input.event.id}/manage`
+      : undefined,
   });
 
   let messageId: string | null = null;
