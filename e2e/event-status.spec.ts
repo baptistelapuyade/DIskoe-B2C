@@ -355,6 +355,9 @@ test.describe("cancel and reschedule a live event", () => {
     await expect(page.getByRole("heading", { name: "Verschieben ohne neuen Termin" })).toBeVisible(SLOW);
     await page.getByRole("button", { name: "Ohne Ersatztermin verschieben" }).click();
 
+    // The side card of the form says "Neuer Termin folgt" too, so wait for the
+    // redirect to the management page first.
+    await expect(page).toHaveURL(new RegExp(`/events/${move.eventId}/manage$`), SLOW);
     await expect(page.getByText("Neuer Termin folgt").first()).toBeVisible(SLOW);
     expect(sql(`select public_status from public.events where id = '${move.eventId}'`)).toBe("postponed_undated");
     expect((await publicEvent(MOVE_TITLE)).data?.public_status).toBe("postponed_undated");
@@ -371,6 +374,7 @@ test.describe("cancel and reschedule a live event", () => {
 
     await page.getByLabel("Neuer Beginn").fill("2027-07-10T21:00");
     await page.getByRole("button", { name: "Verschiebung bestätigen" }).click();
+    await expect(page).toHaveURL(new RegExp(`/events/${move.eventId}/manage$`), SLOW);
     await expect(page.getByText("Verschoben, neuer Termin").first()).toBeVisible(SLOW);
 
     expect(sql(`select public_status from public.events where id = '${move.eventId}'`)).toBe("rescheduled");
@@ -394,6 +398,7 @@ test.describe("cancel and reschedule a live event", () => {
     // Postponing without a date publishes nothing and stays possible.
     await page.getByRole("link", { name: "Ersatztermin steht noch nicht fest" }).click();
     await page.getByRole("button", { name: "Ohne Ersatztermin verschieben" }).click();
+    await expect(page).toHaveURL(new RegExp(`/events/${blocked.eventId}/manage$`), SLOW);
     await expect(page.getByText("Neuer Termin folgt").first()).toBeVisible(SLOW);
     expect((await publicEvent(BLOCKED_TITLE)).data?.description).not.toContain("Noch nicht veröffentlicht");
     await context.close();
