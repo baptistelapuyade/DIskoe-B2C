@@ -23,5 +23,15 @@ Stand 2026-11-02. Zwei Draft-PRs: I (Datenschicht und Eventseite), J (Profilseit
 - **Weggelassen:** Follow-Section „Nichts verpassen“, Profilmodule, Profilgestaltung/Palette (Standard-Theme), Teilen, „Programm ansehen“ (Alpha-Ausschluss bzw. nicht im Durchstich). Leertext nach Figma-Index im alten Stil („Keine kommenden Events · Neue Termine folgen“); hier der Wortlaut „Neue Termine folgen.“ aus dem Durchstich.
 - E2E erweitert: Profilseite, Sitemap (nur Öffentliches), robots, Leerzustand, `/impressum` als 404.
 
+## Korrektur nach Abgleich mit dem Vertrag (2026-11-02)
+Abgleich mit `06-delta-v0.5-lesefassung.md` (§9, §6.8) und Datenvertrag v0.3. Korrigiert an der Eventseite:
+1. **Zugänglichkeit** ist immer sichtbar („Noch keine Angaben“ plus Hinweis, dass das nicht „unzugänglich“ heißt). „Veranstalter fragen“ nur mit nutzbarem `public_contact` (E-Mail → `mailto:`, http(s)-Link; Freitext sonst kein Button).
+2. **Eintritt** erscheint nur mit Kostenantwort („Frei“, Betrag, „Preis noch offen“). Das erfundene „Keine Angabe“ entfällt.
+3. **Balken in voller Breite** mit 1-px-Trennlinien, Überschrift und Unterzeile wie Figma.
+4. **Format-Tags** tragen die Namen aus Figma und Tokens („Party / Clubabend“, „Filmabend / Screening“, „Ausstellungsabend / Offspace“, „Konzert / Live-Musik“); der Editor behält seine kürzeren Labels.
+Die Auswahl der Balken steht rein in `lib/public/info-bars.ts` (Unit-getestet).
+
+**Weiter offene Abweichung:** Die Icons am Balken-Label fehlen. Die Figma-Assets sind aus der Umgebung nicht ladbar, und `lucide-react` ist keine Abhängigkeit (neue Abhängigkeit braucht Begründung im PR). Entscheidung beim Founder.
+
 ### Nicht geprüft
 Kein Vergleich mit einem gerenderten Figma-Screenshot (Download aus der Umgebung gesperrt); Abgleich nur gegen den Figma-Code. Typecheck, Lint, Unit- und E2E-Tests laufen lokal nicht (Registry gesperrt), nur in der CI.
