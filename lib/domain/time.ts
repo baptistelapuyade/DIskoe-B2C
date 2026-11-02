@@ -256,3 +256,33 @@ export function formatEventTime(
     ? `${start} bis ${view.endTime} Uhr`
     : `${start} bis ${formatLocalDate(view.endDate)}, ${view.endTime} Uhr`;
 }
+
+// The archive cut-off of an event (Data contract v0.3 §4): the known end,
+// otherwise 12:00 local time on the following day. It is a cut-off, not an
+// actual end: it is never shown as the end of the event. Null when the start
+// is not a valid instant.
+export function archiveInstant(
+  startInstant: string,
+  endInstant: string | null,
+  zone: string = EVENT_ZONE,
+): string | null {
+  if (endInstant) {
+    const end = Date.parse(endInstant);
+
+    return Number.isNaN(end) ? null : new Date(end).toISOString();
+  }
+
+  const start = instantToLocal(startInstant, zone);
+  const parts = start ? DATE_PATTERN.exec(start.date) : null;
+
+  if (!parts) {
+    return null;
+  }
+
+  const next = new Date(
+    Date.UTC(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]) + 1),
+  );
+  const result = localToInstant(next.toISOString().slice(0, 10), "12:00", zone);
+
+  return result.ok ? result.instant : null;
+}

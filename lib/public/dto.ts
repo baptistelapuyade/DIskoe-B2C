@@ -13,7 +13,7 @@ import {
   type PrimaryFormat,
 } from "../domain/event-publication";
 import { priceLabel, type PriceView } from "../domain/money";
-import { describeEventTime, formatLocalDate } from "../domain/time";
+import { archiveInstant, describeEventTime, formatLocalDate } from "../domain/time";
 
 type Views = Database["public"]["Views"];
 export type PublicEventRow = Views["public_events"]["Row"];
@@ -57,6 +57,10 @@ export type PublicEvent = {
   startInstant: string;
   endInstant: string | null;
   timezone: string;
+  // The archive cut-off (known end, else the next day 12:00 local). Not an
+  // actual end. `past` is set from it for a scheduled or rescheduled event.
+  archiveAt: string;
+  past: boolean;
   // Display lines in the event's zone. All null for a postponed event without
   // a new date: the old date is not valid any more.
   dateLine: string | null;
@@ -186,6 +190,7 @@ export function toPublicEvent(
   row: PublicEventRow,
   organizer: PublicProfile,
   mediaBase: string,
+  now: Date = new Date(),
 ): PublicEvent | null {
   const imageUrl = publicImageUrl(mediaBase, row.event_image_path);
 
@@ -209,6 +214,15 @@ export function toPublicEvent(
 
   if (!time) return null;
 
+  const archiveAt = archiveInstant(row.start_at, endInstant, row.timezone);
+
+  if (!archiveAt) return null;
+
+  // A cancelled event stays cancelled and a postponed one has no date: only a
+  // scheduled or rescheduled event can be over.
+  const past =
+    (status === "scheduled" || status === "rescheduled") &&
+    now.getTime() >= new Date(archiveAt).getTime();
   const hasDate = status !== "postponed_undated";
   const view = priceView(row);
   const access = accessFrom(row.access_routes);
@@ -229,6 +243,8 @@ export function toPublicEvent(
     startInstant: row.start_at,
     endInstant,
     timezone: row.timezone,
+    archiveAt,
+    past,
     dateLine: hasDate ? formatLocalDate(time.startDate) : null,
     timeLine: hasDate
       ? time.endTime
@@ -244,19 +260,11 @@ export function toPublicEvent(
     priceText: priceLabel(view),
     offer: offerFrom(view),
     access,
-    ticketUrl: status === "cancelled" ? null : (ticket?.url ?? null),
+    ticketUrl: status === "cancelled" || past ? null : (ticket?.url ?? null),
     atmosphereTags: row.atmosphere_tags ?? [],
     atmosphereDescription: row.atmosphere_description || null,
     imageUrl,
     publishedAt: row.published_at,
     organizer,
   };
-}
-
-// Is the event still to come? A known end counts; an unknown end is not
-// invented, and the start alone decides then.
-export function isUpcoming(event: PublicEvent, now: Date): boolean {
-  const reference = event.endInstant ?? event.startInstant;
-
-  return new Date(reference).getTime() >= now.getTime();
 }

@@ -1,7 +1,7 @@
 // schema.org Event from the public DTO, the same source as the page. Pure.
 // Rules: no offer for an unknown price (and never price 0 for it), no end date
 // when the end is unknown, no offer for a cancelled event, no start date for an
-// event that is postponed without a new date.
+// event that is postponed without a new date, no offer for a past event.
 
 import type { PublicEvent } from "./dto";
 
@@ -51,7 +51,7 @@ export function eventJsonLd(event: PublicEvent, siteUrl: string): JsonLdEvent {
     };
   }
 
-  if (event.offer && event.status !== "cancelled") {
+  if (event.offer && event.status !== "cancelled" && !event.past) {
     data.offers = {
       "@type": "Offer",
       price: event.offer.amount,

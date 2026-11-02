@@ -1,5 +1,4 @@
 import {
-  isUpcoming,
   toPublicEvent,
   toPublicProfile,
   type PublicEvent,
@@ -75,11 +74,11 @@ export async function listUpcomingEvents(
   if (error) throw new Error("Public events lookup failed");
 
   const events = (data ?? [])
-    .map((row) => toPublicEvent(row, profile, mediaBase()))
+    .map((row) => toPublicEvent(row, profile, mediaBase(), now))
     .filter((event): event is PublicEvent => event !== null);
 
   const dated = events.filter(
-    (event) => event.status !== "postponed_undated" && isUpcoming(event, now),
+    (event) => event.status !== "postponed_undated" && !event.past,
   );
   const undated = events.filter((event) => event.status === "postponed_undated");
 

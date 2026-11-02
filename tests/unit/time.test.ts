@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  archiveInstant,
   describeEventTime,
   formatEventTime,
   instantToLocal,
@@ -135,5 +136,39 @@ describe("P12: unknown end", () => {
     expect(formatEventTime("2026-10-31T22:00:00.000Z", null)).toBe(
       "Sa., 31.10.2026, 23:00 Uhr",
     );
+  });
+});
+
+describe("archiveInstant", () => {
+  it("is the known end", () => {
+    expect(
+      archiveInstant("2026-10-31T22:00:00.000Z", "2026-11-01T03:00:00.000Z"),
+    ).toBe("2026-11-01T03:00:00.000Z");
+  });
+
+  it("is 12:00 local time on the next day without a known end", () => {
+    // Sa. 31.10.2026 23:00 Berlin (CET): So. 01.11.2026 12:00 Berlin = 11:00 UTC.
+    expect(archiveInstant("2026-10-31T22:00:00.000Z", null)).toBe(
+      "2026-11-01T11:00:00.000Z",
+    );
+  });
+
+  it("follows the clock change: summer time gives 10:00 UTC", () => {
+    // Sa. 06.06.2026 23:00 Berlin (CEST): So. 07.06.2026 12:00 Berlin = 10:00 UTC.
+    expect(archiveInstant("2026-06-06T21:00:00.000Z", null)).toBe(
+      "2026-06-07T10:00:00.000Z",
+    );
+  });
+
+  it("uses the local date, not the UTC date, of a start after midnight local time", () => {
+    // 31.10.2026 23:30 UTC is 01.11.2026 00:30 Berlin (CET): the next local day
+    // is the 2nd, 12:00 Berlin = 11:00 UTC.
+    expect(archiveInstant("2026-10-31T23:30:00.000Z", null)).toBe(
+      "2026-11-02T11:00:00.000Z",
+    );
+  });
+
+  it("is null for an invalid start", () => {
+    expect(archiveInstant("not a date", null)).toBeNull();
   });
 });

@@ -22,6 +22,7 @@ const profileSlug = `pub-${run}`;
 const LIVE = { title: `Zwischen den Boxen ${run}`, slug: `pub-live-${run}` };
 const CANCELLED = { title: `Abgesagte Nacht ${run}`, slug: `pub-cancelled-${run}` };
 const POSTPONED = { title: `Verschobene Nacht ${run}`, slug: `pub-postponed-${run}` };
+const PAST = { title: `Alte Nacht ${run}`, slug: `pub-past-${run}` };
 const DRAFT = { title: `Privater Entwurf ${run}`, slug: `pub-draft-${run}` };
 
 const PNG = Buffer.from(
@@ -104,6 +105,7 @@ function completeRow(
   title: string,
   useId: string,
   description = `${title}: eine Nacht im Nebenraum.`,
+  startAt = "2027-06-05T21:00:00Z",
 ) {
   return asInsert({
     event_id: eventId,
@@ -115,7 +117,7 @@ function completeRow(
     format_state: "provided",
     primary_format: "club_night",
     start_state: "provided",
-    start_at: "2027-06-05T21:00:00Z",
+    start_at: startAt,
     end_state: "unknown",
     place_state: "provided",
     place_name: "Halle 3",
@@ -140,6 +142,7 @@ async function createCompleteEvent(
   title: string,
   eventSlug: string,
   altText: string | null,
+  startAt?: string,
 ): Promise<Ids> {
   const event = await client
     .from("events")
@@ -158,7 +161,7 @@ async function createCompleteEvent(
 
   const revision = await client
     .from("event_revisions")
-    .insert(completeRow(eventId, userId, title, useId))
+    .insert(completeRow(eventId, userId, title, useId, undefined, startAt))
     .select("id")
     .single();
   expect(revision.error).toBeNull();
@@ -185,6 +188,7 @@ test.describe("public pages", () => {
   let live: Ids;
   let cancelled: Ids;
   let postponed: Ids;
+  let past: Ids;
 
   function stateOf(ids: Ids) {
     const [version, status, published] = sql(
@@ -275,6 +279,10 @@ test.describe("public pages", () => {
     const postpone = await ownerApi.rpc("postpone_event", stateOf(postponed));
     expect(postpone.error).toBeNull();
 
+    // Over long ago: shown as past, without a ticket, and not listed as upcoming.
+    past = await createCompleteEvent(ownerApi, ownerId, profileId, PAST.title, PAST.slug, null, "2020-03-07T21:00:00Z");
+    await publishAlone(past);
+
     // Never published: stays private.
     await createCompleteEvent(ownerApi, ownerId, profileId, DRAFT.title, DRAFT.slug, null);
   });
@@ -345,6 +353,24 @@ test.describe("public pages", () => {
       (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
     );
     expect(jsonLd.startDate).toBeUndefined();
+  });
+
+  test("a past event says so, offers no ticket and is not listed as upcoming", async ({ page }) => {
+    const response = await page.goto(`/e/${PAST.slug}`);
+    expect(response?.status()).toBe(200);
+
+    await expect(page.getByRole("status").getByText("Vorbei")).toBeVisible(SLOW);
+    await expect(page.getByRole("heading", { level: 1, name: PAST.title })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Zum Ticketanbieter/ })).toHaveCount(0);
+
+    const jsonLd = JSON.parse(
+      (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
+    );
+    expect(jsonLd.offers).toBeUndefined();
+
+    await page.goto(`/${profileSlug}`);
+    await expect(page.getByRole("heading", { level: 1, name: "Pub Kollektiv" })).toBeVisible(SLOW);
+    await expect(page.getByText(PAST.title)).toHaveCount(0);
   });
 
   test("a draft and an unknown address are not found", async ({ page }) => {
