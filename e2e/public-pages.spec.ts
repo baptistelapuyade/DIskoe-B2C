@@ -346,5 +346,55 @@ test.describe("public pages", () => {
 
     const unknown = await page.goto(`/e/does-not-exist-${run}`);
     expect(unknown?.status()).toBe(404);
+
+    // A reserved word is not a profile.
+    const reserved = await page.goto("/impressum");
+    expect(reserved?.status()).toBe(404);
+  });
+
+  test("the profile page lists upcoming events, not cancelled or private ones", async ({ page }) => {
+    const response = await page.goto(`/${profileSlug}`);
+    expect(response?.status()).toBe(200);
+
+    await expect(page.getByRole("heading", { level: 1, name: "Pub Kollektiv" })).toBeVisible(SLOW);
+    await expect(page.getByRole("link", { name: new RegExp(LIVE.title) })).toHaveAttribute(
+      "href",
+      `/e/${LIVE.slug}`,
+    );
+    // Postponed without a date: listed, without a date.
+    const postponedLink = page.getByRole("link", { name: new RegExp(POSTPONED.title) });
+    await expect(postponedLink).toContainText("Neuer Termin folgt");
+    await expect(page.getByText(CANCELLED.title)).toHaveCount(0);
+    await expect(page.getByText(DRAFT.title)).toHaveCount(0);
+    await expect(page.getByText("Neue Termine folgen")).toHaveCount(0);
+  });
+
+  test("the sitemap lists public addresses only", async ({ request }) => {
+    const response = await request.get("/sitemap.xml");
+    expect(response.status()).toBe(200);
+    const xml = await response.text();
+
+    expect(xml).toContain(`/e/${LIVE.slug}<`);
+    expect(xml).toContain(`/e/${POSTPONED.slug}<`);
+    expect(xml).toContain(`/${profileSlug}<`);
+    expect(xml).not.toContain(CANCELLED.slug);
+    expect(xml).not.toContain(DRAFT.slug);
+  });
+
+  test("robots.txt keeps the private areas out and names the sitemap", async ({ request }) => {
+    const text = await (await request.get("/robots.txt")).text();
+
+    expect(text).toContain("Disallow: /organizer");
+    expect(text).toContain("Disallow: /internal");
+    expect(text).toMatch(/Sitemap: .*\/sitemap\.xml/);
+  });
+
+  test("a profile without upcoming events says that new dates follow", async ({ page }) => {
+    expect((await ownerApi.rpc("cancel_event", stateOf(live))).error).toBeNull();
+    expect((await ownerApi.rpc("cancel_event", stateOf(postponed))).error).toBeNull();
+
+    await page.goto(`/${profileSlug}`);
+    await expect(page.getByText("Neue Termine folgen.")).toBeVisible(SLOW);
+    await expect(page.getByText(LIVE.title)).toHaveCount(0);
   });
 });
