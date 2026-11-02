@@ -24,7 +24,8 @@ Stand: 2026-10-30. Vier Draft-PRs nacheinander (A bis D); A bis C sind gemergt, 
 ## Geprüft
 
 - In der Sitzung lokal nicht ausführbar (`npm ci` scheitert, Registry nicht erreichbar): Typecheck, Lint, Unit- und E2E-Tests laufen nur in der CI. Ergebnis der CI steht im PR.
-- Nicht gemacht: Durchlauf auf dem Dev-Projekt mit Testkonten (Mail an eine in SES verifizierte Adresse, öffentlicher und privater Bildzugriff).
+- Dev-Durchlauf (2026-11-02, Projekt `lbttgzffhvxvtqocyvao`, Datenbank- und RLS-Ebene, mit den vorhandenen Testkonten, als SQL mit simulierten Nutzern in einer Transaktion, die am Ende bewusst zurückgerollt wurde; danach 0 Events, 2 Profile, keine Event-Objekte im Speicher). Migrationen bis `first_publication` waren angewendet. Ergebnis: Event-Entwurf mit Bild ohne Beschreibung bestätigt; Veröffentlichen ohne beide Bestätigungen abgelehnt (22023); Bildkopie vor der Veröffentlichung abgelehnt (42501), danach am reservierten Pfad erlaubt, an einem anderen Pfad abgelehnt (42501); Besucher sieht das veröffentlichte Event, einen Entwurf nicht; zweites Testprofil: Organizer kann sich nicht selbst freigeben (42501), gemeinsame Einreichung gelingt, vor der Freigabe ist nichts öffentlich, der Founder gibt Profil und Event gemeinsam frei und kopiert beide Bilder, danach sehen Besucher beides.
+- Nicht geprüft auf Dev: die App-Oberfläche im Browser (kein Deployment), echte Dateien im Speicher (es wurden nur die Zeilen und Policies geprüft), Mailversand (die `MAIL_*`-Variablen liegen nicht vor).
 
 ## Abweichungen von Figma und Beobachtungen
 
