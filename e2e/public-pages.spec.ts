@@ -284,10 +284,18 @@ test.describe("public pages", () => {
     expect(response?.status()).toBe(200);
 
     await expect(page.getByRole("heading", { level: 1, name: LIVE.title })).toBeVisible(SLOW);
-    await expect(page.getByText("Club", { exact: false }).first()).toBeVisible();
-    await expect(page.getByText("Sa., 05.06.2027").first()).toBeVisible();
+        await expect(page.getByText("Sa., 05.06.2027").first()).toBeVisible();
     await expect(page.getByText("Preis noch offen").first()).toBeVisible();
     await expect(page.getByText("Frei", { exact: true })).toHaveCount(0);
+    // "Gut zu wissen": the entry bar answers the cost, accessibility is always
+    // there and neutral. The seed profile has no public contact.
+    const bars = page.getByRole("region", { name: "Gut zu wissen" });
+    await expect(bars.getByText("Eintritt", { exact: true })).toBeVisible();
+    await expect(bars.getByText("Preis noch offen")).toBeVisible();
+    await expect(bars.getByText("Zugänglichkeit", { exact: true })).toBeVisible();
+    await expect(bars.getByText("Noch keine Angaben")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Veranstalter fragen" })).toHaveCount(0);
+    await expect(page.getByText("Party / Clubabend").first()).toBeVisible();
     await expect(page.getByRole("link", { name: /Pub Kollektiv/ }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: /Zum Ticketanbieter/ })).toHaveAttribute(
       "href",

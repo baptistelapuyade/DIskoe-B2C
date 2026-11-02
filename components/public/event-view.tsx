@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { buttonClass } from "@/components/ui/button";
 import type { PublicEvent } from "@/lib/public/dto";
+import { infoBars } from "@/lib/public/info-bars";
 
 import {
   AtmosphereTag,
@@ -185,31 +186,46 @@ export function EventView({ event }: { event: PublicEvent }) {
         </Band>
       ) : null}
 
-      {event.priceText || event.access.length > 0 ? (
-        <Band tone="paper" label="Gut zu wissen">
-          <div className="flex flex-col gap-6">
-            <h2 className="text-[32px] leading-[35px] font-bold">Gut zu wissen</h2>
-            <div className="bg-secondary flex flex-col gap-2.5 px-6 py-[18px]">
-              <p className="text-xs font-bold tracking-[1.2px] uppercase">Eintritt</p>
-              <p className="text-[26px] leading-[29px] font-bold">
-                {event.priceText ?? "Keine Angabe"}
-              </p>
-              {event.access.length > 0 ? (
-                <ul className="flex flex-wrap gap-2">
-                  {event.access.map((route) => (
-                    <li
-                      key={route.kind}
-                      className="bg-brand-yellow border-foreground rounded-full border px-3.5 py-1.5 text-sm font-medium"
-                    >
-                      {route.label}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
-          </div>
-        </Band>
-      ) : null}
+      <section aria-label="Gut zu wissen" className="border-foreground border-y">
+        <div className="mx-auto flex w-full max-w-[1128px] flex-col gap-2 px-6 py-10 sm:px-8">
+          <h2 className="text-[32px] leading-[35px] font-bold">Gut zu wissen</h2>
+          <p className="text-muted-foreground text-[15px] leading-[21px]">
+            Was ihr vor dem Besuch wissen wollt. Wir fragen es extra beim Veranstalter ab.
+          </p>
+        </div>
+        <ul className="bg-foreground flex flex-col gap-px py-px">
+          {infoBars(event).map((bar) => (
+            <li key={bar.key} className="bg-secondary">
+              <div className="mx-auto flex w-full max-w-[1128px] flex-col gap-2.5 px-6 py-[18px] sm:px-8">
+                <p className="text-xs font-bold tracking-[1.2px] uppercase">{bar.label}</p>
+                <p className="text-[26px] leading-[29px] font-bold">{bar.value}</p>
+                {bar.pills.length > 0 ? (
+                  <ul className="flex flex-wrap gap-2">
+                    {bar.pills.map((pill) => (
+                      <li
+                        key={pill}
+                        className="bg-brand-yellow border-foreground rounded-full border px-3.5 py-1.5 text-sm font-medium"
+                      >
+                        {pill}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {bar.detail ? (
+                  <p className="max-w-[704px] text-[17px] leading-[20px] font-medium">
+                    {bar.detail}
+                  </p>
+                ) : null}
+                {bar.action ? (
+                  <a href={bar.action.href} className={buttonClass("outline", "w-fit")}>
+                    {bar.action.label}
+                  </a>
+                ) : null}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <Band tone="ink" label="Veranstalter">
         <div className="flex max-w-[704px] flex-col gap-5">

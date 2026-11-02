@@ -9,7 +9,6 @@ import type { Database, Json } from "../db/types";
 import {
   ACCESS_KINDS,
   ACCESS_LABEL,
-  FORMAT_LABEL,
   type AccessKind,
   type PrimaryFormat,
 } from "../domain/event-publication";
@@ -19,6 +18,18 @@ import { describeEventTime, formatLocalDate } from "../domain/time";
 type Views = Database["public"]["Views"];
 export type PublicEventRow = Views["public_events"]["Row"];
 export type PublicProfileRow = Views["public_profiles"]["Row"];
+
+// The names of the format tags as the design shows them (Figma, tokens doc
+// "Format-Tags"). The editor uses shorter labels (FORMAT_LABEL).
+export const PUBLIC_FORMAT_LABEL: Record<PrimaryFormat, string> = {
+  concert: "Konzert / Live-Musik",
+  dj_set: "DJ-Set",
+  club_night: "Party / Clubabend",
+  listening_session: "Listening-Session",
+  opening: "Vernissage",
+  exhibition: "Ausstellungsabend / Offspace",
+  screening: "Filmabend / Screening",
+};
 
 export type PublicStatus = "scheduled" | "rescheduled" | "postponed_undated" | "cancelled";
 
@@ -213,7 +224,7 @@ export function toPublicEvent(
     title: row.title,
     description: row.description || null,
     format: row.primary_format,
-    formatLabel: FORMAT_LABEL[row.primary_format],
+    formatLabel: PUBLIC_FORMAT_LABEL[row.primary_format],
     status,
     startInstant: row.start_at,
     endInstant,
