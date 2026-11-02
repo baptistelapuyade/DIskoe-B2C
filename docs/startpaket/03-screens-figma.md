@@ -120,3 +120,6 @@ Regeln:
 
 ## Slice 5 gebaut (Stand 2026-10-30)
 Section „ENTWURF · Slice 5“ (2859:40104): S5-A Founder-Prüfung (2855:38880), S5-D Rückfrage mit betroffener Stelle (2894:1019) und S5-E Mailentwürfe (2894:1178) sind in PR D gebaut, die Organizer-Seiten (Bestätigung, in Prüfung, Selbstveröffentlichung, Eventverwaltung) in PR C. Kein Screenshot-Vergleich mit Figma erfolgt; Abweichungen in `.planning/phases/04-durchstich/SLICE-5-SUMMARY.md`. Der Rest (PR F/G, 2026-11-02): `NACH-11`, `NACH-12`, `NACH-15` und der Zustand `NACH-16` sind gebaut, ohne Freitext „Grund/Hinweis“ und ohne Abo-Sätze. Nicht gebaut: `NACH-09`, `NACH-10`, `NACH-13`, `NACH-14` (veröffentlichte Zustände sind die Verwaltungsseite).
+
+## Slice 6 gebaut (PR I, 2026-11-02)
+`PUB-01` (Eventseite) ist als `/e/[slug]` gebaut, auch die Statusvarianten für verschoben, verschoben ohne Termin und abgesagt. Weggelassen sind Follow, Merken, Kalender, Änderungs-Karte (Alpha-Ausschluss) sowie Programm, Einlass, Alter, Vor Ort und Zugänglichkeit (keine Daten in der Alpha). Texte der Statusvarianten sind Vorschläge. Einzelheiten: `.planning/phases/04-durchstich/SLICE-6-SUMMARY.md`.
