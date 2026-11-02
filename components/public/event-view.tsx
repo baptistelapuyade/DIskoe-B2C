@@ -2,7 +2,9 @@ import Link from "next/link";
 
 import { buttonClass } from "@/components/ui/button";
 import type { PublicEvent } from "@/lib/public/dto";
-import { infoBars } from "@/lib/public/info-bars";
+import { infoBars, type InfoBar } from "@/lib/public/info-bars";
+
+import { BadgeEuroIcon, CircleHelpIcon } from "./icons";
 
 import {
   AtmosphereTag,
@@ -32,6 +34,11 @@ const STATUS_NOTICE: Record<
     title: "Abgesagt",
     text: "Dieses Event findet nicht statt.",
   },
+};
+
+const BAR_ICON: Record<InfoBar["key"], React.ReactNode> = {
+  entry: <BadgeEuroIcon />,
+  accessibility: <CircleHelpIcon />,
 };
 
 function ticketLabel(kind: string): string {
@@ -197,7 +204,10 @@ export function EventView({ event }: { event: PublicEvent }) {
           {infoBars(event).map((bar) => (
             <li key={bar.key} className="bg-secondary">
               <div className="mx-auto flex w-full max-w-[1128px] flex-col gap-2.5 px-6 py-[18px] sm:px-8">
-                <p className="text-xs font-bold tracking-[1.2px] uppercase">{bar.label}</p>
+                <p className="flex items-center gap-2.5 text-xs font-bold tracking-[1.2px] uppercase">
+                  {BAR_ICON[bar.key]}
+                  {bar.label}
+                </p>
                 <p className="text-[26px] leading-[29px] font-bold">{bar.value}</p>
                 {bar.pills.length > 0 ? (
                   <ul className="flex flex-wrap gap-2">
