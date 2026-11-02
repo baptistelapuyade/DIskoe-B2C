@@ -1,14 +1,16 @@
 import { LinkButton } from "@/components/ui/button";
 import { Badge, ContextCard, MutedText, PageShell, Workspace } from "@/components/ui/page-shell";
 import { loadPublicationView } from "@/lib/event/publication";
+import { canCancel, canReschedule, STATUS_LABEL } from "@/lib/event/status";
 import { placeText, whenText } from "@/lib/event/summary";
 
 export const dynamic = "force-dynamic";
 
 // Figma "Eventverwaltung, veröffentlicht und privater Entwurf" (2859:40259),
 // reduced to what exists: the live state, the private draft and the way on.
-// Not built: cancelling and rescheduling (NACH-09 to NACH-16) and publishing
-// changes to a live event.
+// Cancelling and rescheduling (NACH-11, 12, 15, 16) start here; the state after
+// a cancellation is NACH-16. Not built: changing a live event (NACH-09, 10) and
+// publishing other changes to it.
 export default async function EventManagePage({
   params,
 }: {
@@ -21,14 +23,19 @@ export default async function EventManagePage({
   const live = e.publishedRevisionId !== null;
   const draftDiffers = live && e.publishedRevisionId !== e.draftRevisionId;
   const title = view.event.form.title || "Event ohne Titel";
+  const status = e.publicStatus;
+  const cancelled = live && status === "cancelled";
+  const postponed = live && status === "postponed_undated";
 
   return (
     <PageShell
       context={`DISKOE / ${view.event.profileName}${live ? " · Veröffentlicht" : ""} · Eventverwaltung`}
-      badge={live ? "Öffentlich" : "Privater Entwurf"}
-      title={title}
+      badge={live ? (cancelled ? "Abgesagt" : postponed ? "Termin folgt" : "Öffentlich") : "Privater Entwurf"}
+      title={cancelled ? "Event abgesagt" : title}
       subtitle={
-        live
+        cancelled
+          ? "Der öffentliche Stand des Events ist „abgesagt“."
+          : live
           ? "Verwaltet die öffentliche Fassung und bearbeitet weitere Änderungen zunächst privat."
           : "Dieses Event ist noch nicht öffentlich."
       }
@@ -37,13 +44,20 @@ export default async function EventManagePage({
         main={
           <>
             {live ? (
-              <ContextCard title="Öffentlich">
+              <ContextCard title={cancelled ? "Bestätigter Stand" : "Öffentlich"}>
                 <p className="text-base leading-6">
-                  {whenText(view.event.form)}
-                  <br />
-                  {placeText(view.event.form)}
+                  {cancelled ? `${title} wurde abgesagt.` : null}
+                  {cancelled ? null : (
+                    <>
+                      {postponed ? <>Neuer Termin folgt<br />Bisher: </> : null}
+                      {whenText(view.event.form)}
+                      <br />
+                      {placeText(view.event.form)}
+                    </>
+                  )}
                 </p>
-                <div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge>{STATUS_LABEL[status]}</Badge>
                   <Badge>Stand der letzten Veröffentlichung</Badge>
                 </div>
               </ContextCard>
@@ -57,14 +71,28 @@ export default async function EventManagePage({
               </ContextCard>
             )}
             {draftDiffers ? (
-              <ContextCard title="Privater Entwurf vorhanden" tone="warning">
+              <ContextCard
+                title={cancelled ? "Privater Entwurf bleibt getrennt" : "Privater Entwurf vorhanden"}
+                tone="warning"
+              >
                 <MutedText>
-                  Eine überarbeitete Fassung ist noch nicht veröffentlicht. Die
-                  öffentliche Seite zeigt weiterhin den bestätigten Live-Stand.
-                  Das Veröffentlichen von Änderungen folgt in einem späteren
-                  Schritt.
+                  {cancelled
+                    ? "Änderungen aus eurem privaten Entwurf wurden nicht veröffentlicht."
+                    : "Eine überarbeitete Fassung ist noch nicht veröffentlicht. Die öffentliche Seite zeigt weiterhin den bestätigten Live-Stand. Das Veröffentlichen von Änderungen folgt in einem späteren Schritt."}
                 </MutedText>
               </ContextCard>
+            ) : null}
+            {live && (canReschedule(status) || canCancel(status)) ? (
+              <div className="flex flex-wrap gap-4">
+                {canReschedule(status) ? (
+                  <LinkButton href={`${base}/reschedule`} variant="primary">
+                    {postponed ? "Ersatztermin eintragen" : "Event verschieben"}
+                  </LinkButton>
+                ) : null}
+                {canCancel(status) ? (
+                  <LinkButton href={`${base}/cancel`}>Event absagen</LinkButton>
+                ) : null}
+              </div>
             ) : null}
             <div className="flex flex-wrap gap-4">
               <LinkButton href={`${base}/edit`}>Entwurf bearbeiten</LinkButton>

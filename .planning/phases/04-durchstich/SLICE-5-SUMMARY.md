@@ -36,7 +36,22 @@ Stand: 2026-10-30. Vier Draft-PRs nacheinander (A bis D); A bis C sind gemergt, 
 
 ## Nicht gebaut
 
-Absagen und Verschieben (`NACH-09` bis `NACH-16`), Veröffentlichen von Änderungen an einem live veröffentlichten Event, öffentliche Eventseiten (Slice 6), KI-Erfassung, Programm und Besuch. „Weiteres Event anlegen“ in der Eventverwaltung ist UX-seitig noch zu überdenken.
+Änderungen am Ort eines live Events (`NACH-09`, `NACH-10`), Veröffentlichen von Änderungen an einem live veröffentlichten Event, öffentliche Eventseiten (Slice 6), KI-Erfassung, Programm und Besuch. „Weiteres Event anlegen“ in der Eventverwaltung ist UX-seitig noch zu überdenken.
+
+## Rest von Slice 5: Absagen und Verschieben (PR F, PR G)
+
+Gebaut (Figma `NACH-11`, `NACH-12`, `NACH-15`, `NACH-16`):
+- PR F (Datenbank, `20261102120000_postpone_event.sql`): `postpone_event` (nur Status „Termin folgt“, fasst die veröffentlichte Revision nie an), `reschedule_event` auch aus „Termin folgt“, Audit-Aktion `postpone`. 399 SQL-Prüfungen lokal grün.
+- PR G (Oberfläche): Eventverwaltung mit „Event verschieben“ / „Ersatztermin eintragen“ und „Event absagen“; Seite `…/cancel` (`NACH-15`), Seite `…/reschedule` mit Umschalter „Ersatztermin steht (noch nicht) fest“ (`NACH-11`/`NACH-12`); der Zustand nach der Absage (`NACH-16`) ist die Verwaltungsseite mit Titel „Event abgesagt“. Reine Regeln in `lib/event/status.ts`, Aktionen in `app/(organizer)/organizer/events/status-actions.ts`.
+
+Abweichungen von Figma (bewusst):
+1. Kein Freitext „Grund für die Absage“ / „Kurzer Hinweis“ (Founder, 2.11.2026); kommt mit den öffentlichen Seiten (Slice 6).
+2. Alle Sätze zu Abonnenten, Benachrichtigung, Merkungen, Ticket- und Kalenderaktionen entfallen (nicht Teil der Alpha, noch nicht gebaut). Die Zeile „Absagebenachrichtigung … vorbereitet“ und „Öffentliche Absage ansehen“ entfallen; es gibt noch keine öffentliche Seite.
+3. „Bisher“ zeigt den Termin im Format der übrigen Seiten („… bis …“), nicht „→“.
+4. Verschieben mit Ersatztermin veröffentlicht den ganzen Entwurf (`reschedule_event`). Damit nichts Privates still öffentlich wird, ist es nur möglich, wenn der Entwurf bis auf Datum und Uhrzeit dem öffentlichen Stand entspricht. Sonst erscheint ein Hinweis und die Aktion ist gesperrt; Verschieben ohne Termin und Absage bleiben möglich. Solange es das Veröffentlichen anderer Änderungen an einem live Event nicht gibt, kommt der Organizer aus dieser Sperre nicht heraus.
+5. Die Texte der Seitenkarten sind gekürzt auf das, was gebaut ist („Gleicher Eventlink“, „Öffentliche Folgen“, „Folgen der Absage“).
+
+Geprüft: SQL (lokal), CI (Lint, Typecheck, Unit `tests/unit/event-status.test.ts`, E2E `e2e/event-status.spec.ts`). Nicht geprüft: Screenshot-Vergleich mit Figma, Durchlauf im Browser auf Dev durch den Founder. Die öffentliche Statusanzeige entsteht erst mit Slice 6.
 
 ## Offen
 
