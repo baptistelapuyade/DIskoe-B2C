@@ -48,6 +48,7 @@ Geltende Eventseite: „Öffentliche Eventseite — Contententwurf / Review - NE
 | Profiltypen-Vergleich | 2753:52940 | v0.5 §4.1 |
 | Künstler:innen-Seite (D14 v3 + Zustände) | 2730:56314, 2758:43625 | v0.5 §6 |
 | Profilgestaltung: Richtungen, Paletten | 2769:44367 | v0.5 §4.2 |
+| Follow-Platzierung (GELTEND seit 02.11.2026), Animation, Palettenprüfung, Merken-Dialog | 2839:47447 | Q32, S9, D10 |
 
 ## Organizer-Flows
 | Screen | Knoten | Vertrag |
@@ -83,6 +84,39 @@ Button 2453:242 (Varianten Primary/Outline/Ghost, Size Regular/Large), Alert 245
 - „Mehr anzeigen“ bei mehr als 3 Einträgen (Events, Galerie, Archiv): größer, Akzentfarbe, 72 px Abstand zur Liste.
 - Eventseite: Faktenblock direkt nach dem Titel, Datum/Beginn und Venue hervorgehoben (Delta v0.4 §17.5).
 - Archivliste: keine eigene Archivseite, „Weitere vergangene Events anzeigen“ im Modul.
+
+## Follow und Eventänderungen in den Hi-Fi-Screens (Stand 2026-11-02)
+Entscheidungen vom 26.10.2026 (Q32, S9, D10): Follow ist eine feste Profilaktion, kein Modul und für Organizer nicht abschaltbar. Label „Neue Events per E-Mail erhalten“, E-Mail-Feld direkt in der Section, Anmeldung per Bestätigungslink. Der Entwurf `PUB-17` (2839:47447) ist die Referenz und trägt jetzt den Status GELTEND; Animation und Zustände stehen nur dort. Die Screens unten sind danach angeglichen. `PUB-02` (alte Review-Fassung ohne Komponenten) liegt auf Seite 90 Archiv; `PUB-04` (Desktop-Regeln, Modulanzahl) hat keinen Profilkopf und blieb unverändert.
+
+### Komponenten und ihre Nutzung
+| Baustein | Wo | Nutzung |
+|---|---|---|
+| `DISKOE / Profile Module / Identity` (Set 2597:8374, Viewport Desktop/Mobile) | Veranstalter-Kopf in `PUB-03`, `05`, `06`, `12`, `13` | Hero-Aktionen: Follow primär mit Mikrotext, „Programm ansehen“ sekundär, „Profil teilen“ in der Kopfzeile. Der Name im Mikrotext ist fest („Nebenraum“) und wird im Screen nicht überschrieben. |
+| `DISKOE / Profile Header / Cover` (Venue, Desktop 2624:6923, Mobile 2624:6948) | `PUB-11`, `12` | Gleiche Aktionsreihenfolge; „Profil teilen“ mit dunklem Hintergrund (50 %), weil es auf dem Foto liegt. |
+| `DISKOE / Artist Section / Hero`, nur Mode „Selbst gepflegt“ (Desktop 2733:41747, Mobile 2733:41775) | `PUB-08` (Variante B), `12` | Follow primär. Mode „Alpha, angelegt vom Organizer“ hat bewusst keine Follow-Aktion. |
+| Follow-Section „Nichts verpassen“ (noch **keine** Komponente; Vorlagen 2908:12139 Desktop, 2908:12202 Mobile) | vor „Links und Kontakt“ in `PUB-03`, `05`, `06`, `08` (B), `11`, `13` | Immer nach allen Modulen. Farben nur über Profilpalette-Rollen (Kopf, Kopf Text, Akzent, Akzent Text, Seite, Linie, Text gedämpft), damit alle neun Paletten 4,5 : 1 erreichen. Bei Venue und Artist ist der Name im Text per Hand ersetzt. Offen: als Komponente mit Textfeld für den Namen bauen. |
+| `DISKOE / Event Follow / Organizer Card` (Set 2915:12020, Viewport Desktop/Mobile, Textfelder „Headline“ und „Text“) | Block „Veranstaltet von“ auf allen Eventseiten (`PUB-01`, `07`, `14`, `15`, `19`–`24`) | Anmeldung für alle künftigen Events des Veranstalters. In die Textfelder den Veranstalternamen einsetzen (Muster: „Neue Events von {Name} direkt ins Postfach.“). |
+| `DISKOE / Event Follow / Change Card` (Set 2915:12059, Eigenschaften Viewport und Status) | dritte Spalte im Band „Beschreibung, Atmosphäre und Updates“ | Anmeldung nur für Änderungen an diesem einen Event. Status je Eventzustand wählen (siehe unten). |
+
+### Change Card: Status je Eventzustand
+| Eventzustand | Status | Inhalt |
+|---|---|---|
+| normal, geändert, Termin neu bestätigt (`PUB-01`, `07`, `14`, `15`, `20`–`22`, `rescheduled`) | Aktiv | E-Mail-Feld, Button „Bei Änderungen benachrichtigen“ |
+| verschoben, neuer Termin folgt (`postponed_undated`, `PUB-23`) | Neuer Termin folgt | E-Mail-Feld, Button „Über neuen Termin informieren“ |
+| abgesagt (`cancelled`, `PUB-24`) | Abgesagt | graue Fläche, nur Text, keine Anmeldung |
+| vorbei (`past`) | Vorbei | graue Fläche, Text und Link „Neue Events erhalten ↓“ zur Veranstalter-Karte |
+
+Regeln:
+- Der Eventkopf zeigt unter „Zum Kalender hinzufügen“ den Link „Bei Änderungen benachrichtigt werden ↓“ nur bei den Status Aktiv und Neuer Termin folgt.
+- Bei Abgesagt und Vorbei gibt es keine Anmeldung zu Eventänderungen. Ein deaktivierter Button wurde bewusst nicht gewählt, weil er Fragen aufwirft, statt etwas zu erklären.
+- Die Veranstalter-Karte steht immer unten im Block „Veranstaltet von“, auch bei Abgesagt und Vorbei.
+
+### Abweichungen und offene Punkte
+- Am 02.11.2026 wurden beim Einsetzen acht Status-Spalten (`PUB-19` abgesagt, verschoben ohne Termin, vorbei; `PUB-23`, `PUB-24`) mit der aktiven Karte überschrieben. Der ursprüngliche Inhalt ist nicht wiederherstellbar (keine gespeicherte Version nach dem 30.10.). Die Spalten tragen jetzt die Status-Varianten, deren Texte neu entworfen und vom Founder noch nicht inhaltlich bestätigt sind.
+- Der Merken-Dialog verweist noch auf die alte Änderungs-Anmeldung. Er sollte nur „Merken“ und die Veranstalter-Anmeldung anbieten.
+- Der Besucher-Prototyp (Seite 60) trägt noch die alte Spalte „Wenn sich etwas ändert“ und den alten Veranstalter-Block.
+- Die Profile ohne Termine („Keine kommenden Events · Neue Termine folgen“ in `PUB-03`, `05`) sind im alten Stil.
+- Vor der Umsetzung im Code fehlen Texte für die Bestätigungs-E-Mails dieser beiden Anmeldungen und die Entscheidung, ob die Änderungs-Anmeldung in der Alpha enthalten ist (öffentliche Eventseiten gehören zu Slice 6).
 
 ## Slice 5 gebaut (Stand 2026-10-30)
 Section „ENTWURF · Slice 5“ (2859:40104): S5-A Founder-Prüfung (2855:38880), S5-D Rückfrage mit betroffener Stelle (2894:1019) und S5-E Mailentwürfe (2894:1178) sind in PR D gebaut, die Organizer-Seiten (Bestätigung, in Prüfung, Selbstveröffentlichung, Eventverwaltung) in PR C. Kein Screenshot-Vergleich mit Figma erfolgt; Abweichungen in `.planning/phases/04-durchstich/SLICE-5-SUMMARY.md`. Nicht gebaut: `NACH-09` bis `NACH-16`.

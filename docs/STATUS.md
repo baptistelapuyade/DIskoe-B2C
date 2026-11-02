@@ -27,6 +27,7 @@
 - 2026-10-23: Startpaket unter `docs/startpaket/` aufgenommen. Architekturentscheidungen und weiterhin offene Punkte sind in `docs/startpaket/01-architektur.md` festgehalten; es wurde keine Entwicklung begonnen.
 - 2026-10-23: Entwicklungsfreigabe durch den Founder erteilt; Umfang siehe `AGENTS.md`.
 - 2026-10-23: Umsetzungsplan unter `.planning/phases/04-durchstich/PLAN.md` erstellt. Er gliedert den autorisierten Durchstich in sieben Slices (Migrationen/RLS, Login, Profil, Event/Lückenprüfung, Publizieren/Absagen, öffentliche Seiten/JSON-LD, Playwright), enthält die 38er-Inventur (37 V1-IDs plus separat geführtes `PREMIUM-01`) und wurde im GSD-Planprüflauf nach zwei Korrekturschleifen bestanden. Kein Code, keine Abhängigkeit und keine Installation.
+- 2026-11-02: Figma-Hi-Fi-Screens an die Follow-Entscheidungen angeglichen (Profilköpfe, Follow-Section, Veranstalter- und Änderungs-Karte auf den Eventseiten, Status-Varianten für abgesagte, verschobene und vergangene Events). Nur Designarbeit, keine Funktion; Nutzungsregeln und offene Punkte in `docs/startpaket/03-screens-figma.md`. Der Status-Inhalt für abgesagte/verschobene/vergangene Events ist neu entworfen und noch nicht vom Founder bestätigt.
 - Das technische Gerüst besitzt Unit-/Smoke-Prüfungen; die fachlichen Abnahmefälle D01–D15 bleiben Papierspezifikationen und kein Requirement gilt als umgesetzt. Entwicklungsfreigabe siehe `AGENTS.md`.
 
 ## Gelesene und geprüfte Quellen
