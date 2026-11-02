@@ -30,8 +30,28 @@ Stand: 2026-10-30. Vier Draft-PRs nacheinander (A bis D); A bis C sind gemergt, 
 
 1. Die betroffene Stelle (S5-D) ist ein Auswahlfeld mit sechs Werten, im Vertrag nicht definiert; gespeichert als Textzeile.
 2. Mailtexte (S5-E) folgen den Figma-Entwürfen; „Event verwalten“ ist ein zweiter Link in der Live-Mail. Die Mails sind minimal gehalten.
-3. Die Founder-Seite folgt S5-A in Aufbau und Texten, ist aber mit den vorhandenen Tailwind-Bausteinen der Founder-Seite gebaut, nicht mit den neuen `components/ui`-Bausteinen der Organizer-Seiten. Ein Screenshot-Vergleich mit Figma ist nicht erfolgt.
+3. Die Founder-Seite folgt S5-A in Aufbau und Texten, ist aber mit den vorhandenen Tailwind-Bausteinen der Founder-Seite gebaut, nicht mit den neuen `components/ui`-Bausteinen der Organizer-Seiten. Der Vergleich mit Figma steht im Abschnitt „Abgleich Founder-Seite mit Figma“.
 4. Einreichen nur des Profils (ohne Event) ist weiterhin möglich; die Founder-Seite zeigt dann „Zu diesem Profil wurde kein Event eingereicht.“ und gibt wie bisher nur das Profil frei.
+
+## Abgleich Founder-Seite mit Figma (2026-11-02)
+
+Verglichen wurden die Figma-Screens S5-A (2855:38880) und S5-D (2894:1019) mit dem Code der gebauten Seite. Die Seite wurde dabei nicht gerendert (lokal keine Pakete, die CI-Screenshots decken die Founder-Seite nicht ab); es ist also ein Vergleich von Figma mit dem Code, nicht mit einem Bildschirmfoto. Es wurde nichts umgebaut.
+
+Abweichungen S5-A „Profil und erstes Event prüfen“:
+1. Titel und Einleitung: gebaut „Erstprüfung: <Name>“ ohne die Einleitung („Eine Freigabe veröffentlicht beide Seiten …“); Figma hat Kopfzeile „DISKOE INTERN · ERSTPRÜFUNG“.
+2. Aufbau: Figma zweispaltig mit Karte „Was du prüfst“ rechts; gebaut einspaltig, Karte fehlt.
+3. Profilzeilen: Figma Profiltyp, Projektname, Kurzvorstellung, Profiladresse, Offizieller Link, Projektzuordnung, Gestaltung, Profilbild mit Beschreibung. Gebaut: Name, Kurzvorstellung, Link, Kontakt, Profilbild, Beschreibung als Liste; Profiltyp, Profiladresse, Projektzuordnung und Gestaltung fehlen (Gestaltung ist nicht im Durchstich).
+4. Eventzeilen: Figma Titel, Hauptformat, Beschreibung, Beginn und Ende, Ort, Atmosphäre, Preis, Zugangswege, Ticketlink, Gestaltung, Eventbild mit Beschreibung. Gebaut: ohne Ticketlink und Gestaltung, Preis und Zugang getrennt als „Eintritt“ und „Zugang“.
+5. Prüfnotiz (intern, optional) und „Private Vorschau öffnen“ fehlen. Es gibt keine Spalte für die Notiz.
+6. Aktionen: Figma drei Buttons nebeneinander am Ende; gebaut zwei Abschnitte „Freigeben“ und „Rückfrage stellen“ mit zweiter Bestätigung vor dem Veröffentlichen (bewusst, weil sofort öffentlich).
+7. Bausteine: die Founder-Seite nutzt die älteren Tailwind-Klassen, nicht `components/ui`.
+
+Abweichungen S5-D „Rückfrage an den Organizer stellen“:
+1. Gebaut als Abschnitt auf der Prüfseite, nicht als eigener Screen; „Rückfrage senden“/„Abbrechen“ heißt gebaut „Rückfrage stellen“ ohne Abbrechen.
+2. Einleitung, Hilfetexte und Karte „Was der Organizer sieht“ (Betreff, Betroffen, Frage) fehlen.
+3. Feldbeschriftung gebaut „Deine Frage an den Organizer“, Figma „Eure Frage“ (Ihr-Form).
+4. Betroffene Stelle: Figma nennt Profilbild, Cover, Profiltext, Eventtitel, Termin, Ort, Eventbild als Beispiele; gebaut Profil, Event, Ort, Termin, Bild, Kosten und Zugang, mit der Vorauswahl „Allgemein“ (in Figma ein Pflichtfeld „Select an item“).
+5. Mailbetreff: Figma „Rückfrage zu eurer Einreichung“, gebaut „Eine Frage zu deinem Profil „<Name>““ (Du-Form, aus Slice 3).
 
 ## Nicht gebaut
 
