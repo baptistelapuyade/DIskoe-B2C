@@ -19,8 +19,10 @@ export const dynamic = "force-dynamic";
 
 // Figma NACH-11 "Verschieben, Ersatztermin bekannt" (2700:12070) and NACH-12
 // "Verschieben, Ersatztermin offen" (2700:12262), one page with the switch of
-// the Figma screens as links. Left out on purpose: the free text "Kurzer
-// Hinweis" and the sentences about subscribers (not part of the Alpha).
+// the Figma screens as links. A replacement date changes only the date of the
+// public version (reschedule_event_date); private draft changes stay private.
+// Left out on purpose: the free text "Kurzer Hinweis" and the sentences about
+// subscribers (not part of the Alpha).
 export default async function RescheduleEventPage({
   params,
   searchParams,
@@ -31,7 +33,7 @@ export default async function RescheduleEventPage({
   const { eventId } = await params;
   const { termin } = await searchParams;
   const base = `/organizer/events/${eventId}`;
-  const { view, live, draftHasOtherChanges } = await loadLiveEvent(
+  const { view, live, draftDiffers } = await loadLiveEvent(
     eventId,
     `${base}/reschedule`,
   );
@@ -42,9 +44,6 @@ export default async function RescheduleEventPage({
   // An event that already waits for a date can only get one.
   const open = termin === "offen" && canPostpone(status);
   const waiting = status === "postponed_undated";
-  const sameTimes =
-    view.form.startDate === live.startDate &&
-    view.form.startTime === live.startTime;
   const context = `DISKOE / ${view.profileName} · ${waiting ? "Ersatztermin eintragen" : "Verschiebung vorbereiten"}`;
 
   const switchLink = waiting ? null : open ? (
@@ -118,38 +117,13 @@ export default async function RescheduleEventPage({
             <TintedBlock title="Bisher">
               <p className="text-base leading-6">{whenText(live)}</p>
             </TintedBlock>
-            {draftHasOtherChanges ? (
-              <>
-                <ContextCard title="Weitere private Änderungen" tone="warning">
-                  <MutedText>
-                    Ein neuer Termin veröffentlicht den ganzen Entwurf. Euer
-                    Entwurf unterscheidet sich außer im Termin vom öffentlichen
-                    Stand. Das Veröffentlichen anderer Änderungen folgt in einem
-                    späteren Schritt; bis dahin ist das Verschieben mit neuem
-                    Termin gesperrt.
-                  </MutedText>
-                </ContextCard>
-                <LinkButton href={`${base}/manage`} variant="secondary" className="w-full sm:w-80">
-                  Zurück zur Verwaltung
-                </LinkButton>
-              </>
-            ) : (
-              <RescheduleForm
-                action={rescheduleEvent.bind(null, eventId)}
-                start={
-                  sameTimes
-                    ? { date: "", time: "" }
-                    : { date: view.form.startDate, time: view.form.startTime }
-                }
-                end={
-                  sameTimes
-                    ? { date: "", time: "" }
-                    : { date: view.form.endDate, time: view.form.endTime }
-                }
-                endUnknown={view.form.endUnknown}
-                backHref={`${base}/manage`}
-              />
-            )}
+            <RescheduleForm
+              action={rescheduleEvent.bind(null, eventId)}
+              start={{ date: "", time: "" }}
+              end={{ date: "", time: "" }}
+              endUnknown={live.endUnknown}
+              backHref={`${base}/manage`}
+            />
           </>
         }
         side={
@@ -157,6 +131,9 @@ export default async function RescheduleEventPage({
             <MutedText>
               Der neue Termin ersetzt den alten. Das Event behält seinen
               Eventlink.
+              {draftDiffers
+                ? " Euer privater Entwurf übernimmt den neuen Termin, andere Änderungen darin bleiben privat."
+                : null}
             </MutedText>
           </ContextCard>
         }

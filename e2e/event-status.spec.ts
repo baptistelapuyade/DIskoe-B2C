@@ -8,7 +8,7 @@ import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the rest of
 // Slice 5: a live event is cancelled, postponed without a date and then given a
-// replacement date; a draft with other private changes blocks the replacement.
+// replacement date, which publishes no other private change.
 
 const BASE_URL = "http://127.0.0.1:3000";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -395,22 +395,32 @@ test.describe("cancel and reschedule a live event", () => {
     await context.close();
   });
 
-  test("a draft with other private changes blocks the replacement date", async ({ browser }) => {
+  test("a replacement date publishes no private changes and the draft takes the date", async ({ browser }) => {
     await privateChange(blocked, "Noch nicht veröffentlichte Beschreibung.");
     const context = await browser.newContext({ baseURL: BASE_URL, storageState: ownerState });
     const page = await context.newPage();
 
     await page.goto(`/organizer/events/${blocked.eventId}/reschedule`);
-    await expect(page.getByText("Weitere private Änderungen")).toBeVisible(SLOW);
-    await expect(page.getByRole("button", { name: "Verschiebung bestätigen" })).toHaveCount(0);
-    expect(sql(`select public_status from public.events where id = '${blocked.eventId}'`)).toBe("scheduled");
-
-    // Postponing without a date publishes nothing and stays possible.
-    await page.getByRole("link", { name: "Ersatztermin steht noch nicht fest" }).click();
-    await page.getByRole("button", { name: "Ohne Ersatztermin verschieben" }).click();
+    await expect(
+      page.getByText("Euer privater Entwurf übernimmt den neuen Termin", { exact: false }),
+    ).toBeVisible(SLOW);
+    await page.getByLabel("Neuer Beginn").fill("2027-08-14T20:00");
+    await page.getByRole("button", { name: "Verschiebung bestätigen" }).click();
     await expectManagePage(page, blocked.eventId);
-    await expect(page.getByText("Neuer Termin folgt").first()).toBeVisible(SLOW);
-    expect((await publicEvent(BLOCKED_TITLE)).data?.description).not.toContain("Noch nicht veröffentlicht");
+
+    expect(sql(`select public_status from public.events where id = '${blocked.eventId}'`)).toBe("rescheduled");
+    const row = await publicEvent(BLOCKED_TITLE);
+    expect(row.data?.public_status).toBe("rescheduled");
+    // 20:00 Berlin summer time is 18:00 UTC; the private text is not public.
+    expect(new Date(row.data!.start_at!).toISOString()).toBe("2027-08-14T18:00:00.000Z");
+    expect(row.data?.description).not.toContain("Noch nicht veröffentlicht");
+
+    // The draft keeps its private text and has the new date.
+    expect(
+      sql(
+        `select to_char(r.start_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI') || '|' || r.description from public.events e join public.event_revisions r on r.id = e.draft_revision_id where e.id = '${blocked.eventId}'`,
+      ),
+    ).toBe("2027-08-14T18:00|Noch nicht veröffentlichte Beschreibung.");
     await context.close();
   });
 

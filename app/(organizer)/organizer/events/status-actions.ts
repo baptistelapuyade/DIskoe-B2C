@@ -7,14 +7,14 @@ import {
   parseEventInput,
   type EventFieldErrors,
 } from "@/lib/domain/event-publication";
-import { ensureEditableEventDraft } from "@/lib/event/draft";
+import { valueOrNull } from "@/lib/domain/answers";
 import { loadLiveEvent } from "@/lib/event/live";
 import {
   canCancel,
   canPostpone,
   canReschedule,
 } from "@/lib/event/status";
-import { valuesToRow, type EventFormValues } from "@/lib/event/values";
+import type { EventFormValues } from "@/lib/event/values";
 import { createClient } from "@/lib/supabase/server";
 
 export type StatusFormState = {
@@ -122,14 +122,14 @@ export async function postponeEvent(
   done(eventId);
 }
 
-// NACH-11. The draft is saved with the new date and published as a whole by
-// reschedule_event; so it must equal the public version apart from the date.
+// NACH-11. The database builds the new public revision from the live one and
+// changes only start and end; the private draft takes over the new date.
 export async function rescheduleEvent(
   eventId: string,
   _previous: StatusFormState,
   formData: FormData,
 ): Promise<StatusFormState> {
-  const { view, live, draftHasOtherChanges } = await loadLiveEvent(
+  const { view, live } = await loadLiveEvent(
     eventId,
     `/organizer/events/${eventId}/reschedule`,
   );
@@ -139,18 +139,10 @@ export async function rescheduleEvent(
     return { ok: false, message: "Ein abgesagtes Event kann nicht verschoben werden." };
   }
 
-  if (draftHasOtherChanges) {
-    return {
-      ok: false,
-      message:
-        "Euer Entwurf enthält weitere private Änderungen. Sie würden mitveröffentlicht und werden deshalb nicht übernommen.",
-    };
-  }
-
   const start = splitLocal(formData.get("start"));
   const end = splitLocal(formData.get("end"));
   const merged: EventFormValues = {
-    ...view.form,
+    ...live,
     startDate: start.date,
     startTime: start.time,
     endDate: end.date,
@@ -171,55 +163,47 @@ export async function rescheduleEvent(
   });
 
   if (!parsed.ok) {
-    const { start: startError, end: endError, ...other } = parsed.errors;
-    const rest = Object.values(other).filter((text) => Boolean(text));
-
-    // Another field of the draft is invalid; the editor is where to fix it.
     return {
       ok: false,
-      errors: { start: startError, end: endError },
+      errors: { start: parsed.errors.start, end: parsed.errors.end },
       message:
-        rest.length > 0
-          ? `Euer Entwurf enthält Angaben, die erst im Editor korrigiert werden müssen: ${rest.join(" ")}`
-          : undefined,
+        parsed.errors.start || parsed.errors.end ? undefined : GENERIC_ERROR,
     };
   }
 
-  const supabase = await createClient();
-  let revisionId: string;
+  const newStart = valueOrNull(parsed.value.start);
 
-  try {
-    ({ revisionId } = await ensureEditableEventDraft(supabase, view.userId, event));
-
-    const { data, error } = await supabase
-      .from("event_revisions")
-      .update(valuesToRow(parsed.value))
-      .eq("id", revisionId)
-      .select("id");
-
-    if (error || !data || data.length !== 1) {
-      return { ok: false, message: GENERIC_ERROR };
-    }
-  } catch {
-    return { ok: false, message: GENERIC_ERROR };
+  if (newStart === null) {
+    return { ok: false, errors: { start: "Bitte gebt Datum und Uhrzeit des Beginns an." } };
   }
 
-  const { error } = await supabase.rpc("reschedule_event", {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("reschedule_event_date", {
     p_event_id: eventId,
-    p_expected_draft_revision_id: revisionId,
     p_expected_published_revision_id: event.publishedRevisionId as string,
     p_expected_state_version: event.stateVersion,
     p_expected_status: event.publicStatus,
+    p_new_start: newStart,
+    // No end is an unknown end; the generated type does not show that the
+    // parameter accepts null.
+    p_new_end: valueOrNull(parsed.value.end) as string,
   });
 
   if (error) {
     if (error.code === "DK002") {
-      return { ok: false, message: "Es fehlen noch Angaben im Entwurf." };
+      return { ok: false, message: "Es fehlen noch Angaben im Event." };
+    }
+
+    if (error.code === "22023") {
+      return { ok: false, errors: { end: "Das Ende muss nach dem Beginn liegen." } };
     }
 
     return {
       ok: false,
-      message: errorMessage(error.code, "Der neue Beginn muss sich vom bisherigen unterscheiden."),
+      message: errorMessage(
+        error.code,
+        "Der neue Beginn muss sich vom bisherigen unterscheiden.",
+      ),
     };
   }
 
