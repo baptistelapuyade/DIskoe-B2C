@@ -800,6 +800,98 @@ select tests.as_user(:'uid_a');
 select tests.expect_error(format($q$select public.postpone_event(%L, %L, 2, 'cancelled')$q$, :'e1', :'ev1'),
   'DK003', 'a cancelled event cannot be postponed');
 
+-- Rescheduling that changes the date only: the public revision is a copy of the
+-- live one, the private draft keeps its other changes and takes over the date.
+select tests.as_user(:'uid_a');
+select tests.expect_affected(format($q$insert into public.events (organizer_id, slug) values (%L, 'third-night')$q$, :'pa'),
+  1, 'owner creates a third event');
+select id as e3 from public.events where slug = 'third-night' \gset
+select tests.new_event_image_use(:'e3') as use_e3 \gset
+select tests.ev_insert(:'e3', :'use_e3', '{"title":"Third Night"}') as evt1 \gset
+select tests.expect_ok(format('update public.events set draft_revision_id = %L where id = %L', :'evt1', :'e3'),
+  'owner selects the third event draft');
+select tests.as_superuser();
+update public.media_uses set public_object_path = 'public/events/' || id where id = :'use_e3';
+select tests.as_user(:'uid_f');
+select public.approve_first_event(:'e3', :'evt1');
+select tests.as_user(:'uid_a');
+select public.publish_event(:'e3', :'evt1', null, 0, 'scheduled');
+select tests.ev_insert(:'e3', :'use_e3', '{"title":"Private Title","description":"Private text."}') as evt2 \gset
+select tests.expect_ok(format('update public.events set draft_revision_id = %L where id = %L', :'evt2', :'e3'),
+  'owner has a private draft with other changes');
+
+select tests.as_user(:'uid_b');
+select tests.expect_error(format($q$select public.reschedule_event_date(%L, %L, 1, 'scheduled', '2027-08-01 20:00:00+02', null)$q$, :'e3', :'evt1'),
+  '42501', 'B cannot reschedule A''s event');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$select public.reschedule_event_date(%L, %L, 0, 'scheduled', '2027-08-01 20:00:00+02', null)$q$, :'e3', :'evt1'),
+  'DK001', 'date change with a stale version is refused');
+select tests.expect_error(format($q$select public.reschedule_event_date(%L, %L, 1, 'rescheduled', '2027-08-01 20:00:00+02', null)$q$, :'e3', :'evt1'),
+  'DK001', 'date change with the wrong status is refused');
+select tests.expect_error(format($q$select public.reschedule_event_date(%L, %L, 1, 'scheduled', '2027-08-01 20:00:00+02', null)$q$, :'e3', gen_random_uuid()),
+  'DK001', 'date change against another published revision is refused');
+select tests.expect_error(format($q$select public.reschedule_event_date(%L, %L, 1, 'scheduled', '2027-06-05 19:00:00+02', null)$q$, :'e3', :'evt1'),
+  'DK003', 'the new start must differ from the current one');
+select tests.expect_error(format($q$select public.reschedule_event_date(%L, %L, 1, 'scheduled', null, null)$q$, :'e3', :'evt1'),
+  '22023', 'a new start is required');
+select tests.expect_error(format($q$select public.reschedule_event_date(%L, %L, 1, 'scheduled', '2027-08-01 20:00:00+02', '2027-08-01 19:00:00+02')$q$, :'e3', :'evt1'),
+  '22023', 'the end must be after the start');
+select tests.expect_error(format($q$select public.reschedule_event_date(%L, %L, 2, 'cancelled', '2027-08-01 20:00:00+02', null)$q$, :'e1', :'ev1'),
+  'DK003', 'a cancelled event cannot get a new date');
+
+select public.reschedule_event_date(:'e3', :'evt1', 1, 'scheduled', '2027-08-01 20:00:00+02', '2027-08-02 02:00:00+02');
+select tests.as_superuser();
+select published_revision_id as evt3 from public.events where id = :'e3' \gset
+select tests.expect_true(format($q$select public_status = 'rescheduled' and state_version = 2 and published_revision_id not in (%L, %L) and draft_revision_id = %L from public.events where id = %L$q$, :'evt1', :'evt2', :'evt2', :'e3'),
+  'the date change publishes a new revision and leaves the draft pointer');
+select tests.expect_true(format($q$select title = 'Third Night' and description = 'A first night.' and start_at = '2027-08-01 20:00:00+02' and end_at = '2027-08-02 02:00:00+02' and end_state = 'provided' and confirmed_at is not null and confirmed_by = %L and event_image_use_id = %L from public.event_revisions where id = %L$q$, :'uid_a', :'use_e3', :'evt3'),
+  'the new public revision is the live text with the new date, confirmed by the owner');
+select tests.expect_true(format($q$select (to_jsonb(a) - array['id','revision_no','created_at','confirmed_at','confirmed_by','start_at','end_at','end_state']) = (to_jsonb(b) - array['id','revision_no','created_at','confirmed_at','confirmed_by','start_at','end_at','end_state']) from public.event_revisions a, public.event_revisions b where a.id = %L and b.id = %L$q$, :'evt1', :'evt3'),
+  'the copy changes nothing but the date (every other column equal)');
+select tests.expect_true(format($q$select title = 'Private Title' and description = 'Private text.' and start_at = '2027-08-01 20:00:00+02' and end_at = '2027-08-02 02:00:00+02' from public.event_revisions where id = %L$q$, :'evt2'),
+  'the private draft keeps its changes and takes over the date');
+select tests.expect_true(format($q$select start_at = '2027-06-05 19:00:00+02' from public.event_revisions where id = %L$q$, :'evt1'),
+  'the earlier public revision stays as it was');
+select tests.expect_true(format($q$select count(*) = 1 from public.publication_audit where entity_id = %L and action = 'reschedule' and revision_id = %L$q$, :'e3', :'evt3'),
+  'the date change is audited');
+select tests.as_anon();
+select tests.expect_true($q$select title = 'Third Night' and description = 'A first night.' and start_at = '2027-08-01 20:00:00+02' and end_at = '2027-08-02 02:00:00+02' and public_status = 'rescheduled' from public.public_events where slug = 'third-night'$q$,
+  'public view shows the new date and not the private text');
+
+-- From "new date follows", without an end.
+select tests.as_user(:'uid_a');
+select public.postpone_event(:'e3', :'evt3', 2, 'rescheduled');
+select public.reschedule_event_date(:'e3', :'evt3', 3, 'postponed_undated', '2027-09-01 20:00:00+02', null);
+select tests.as_superuser();
+select published_revision_id as evt4 from public.events where id = :'e3' \gset
+select tests.expect_true(format($q$select public_status = 'rescheduled' and state_version = 4 from public.events where id = %L$q$, :'e3'),
+  'a replacement date works after postponing');
+select tests.expect_true(format($q$select start_at = '2027-09-01 20:00:00+02' and end_at is null and end_state = 'unknown' from public.event_revisions where id = %L$q$, :'evt4'),
+  'no end stays an unknown end');
+select tests.expect_true(format($q$select start_at = '2027-09-01 20:00:00+02' and end_at is null and end_state = 'unknown' and title = 'Private Title' from public.event_revisions where id = %L$q$, :'evt2'),
+  'the draft takes over the missing end as well');
+
+-- A draft that is the live revision moves to the new revision.
+select tests.as_user(:'uid_a');
+select tests.expect_ok(format('update public.events set draft_revision_id = %L where id = %L', :'evt4', :'e3'),
+  'owner points the draft at the live revision');
+select public.reschedule_event_date(:'e3', :'evt4', 4, 'rescheduled', '2027-10-01 20:00:00+02', null);
+select tests.as_superuser();
+select tests.expect_true(format($q$select draft_revision_id = published_revision_id and draft_revision_id <> %L from public.events where id = %L$q$, :'evt4', :'e3'),
+  'a draft equal to the live revision follows the new live revision');
+
+-- A frozen draft is copied, never edited.
+select published_revision_id as evt5 from public.events where id = :'e3' \gset
+select tests.as_user(:'uid_a');
+select tests.expect_ok(format('update public.events set draft_revision_id = %L where id = %L', :'evt1', :'e3'),
+  'owner points the draft at an old confirmed revision');
+select public.reschedule_event_date(:'e3', :'evt5', 5, 'rescheduled', '2027-11-01 20:00:00+01', null);
+select tests.as_superuser();
+select tests.expect_true(format($q$select e.draft_revision_id not in (%L, e.published_revision_id) and r.confirmed_at is null and r.start_at = '2027-11-01 20:00:00+01' and r.title = 'Third Night' from public.events e join public.event_revisions r on r.id = e.draft_revision_id where e.id = %L$q$, :'evt1', :'e3'),
+  'a frozen draft becomes a new unconfirmed copy with the new date');
+select tests.expect_true(format($q$select start_at = '2027-06-05 19:00:00+02' from public.event_revisions where id = %L$q$, :'evt1'),
+  'the frozen revision itself is untouched');
+
 -- ===========================================================================
 -- 7. Cross-role access matrix: founder, owners, visitor, anon, direct tables
 -- ===========================================================================
@@ -1514,6 +1606,7 @@ insert into tests.expected_exec values
   ('public', 'approve_first_event'), ('public', 'publish_profile'),
   ('public', 'publish_event'), ('public', 'reschedule_event'),
   ('public', 'cancel_event'), ('public', 'postpone_event'),
+  ('public', 'reschedule_event_date'),
   ('public', 'submit_profile_for_review'),
   ('public', 'request_profile_changes'), ('public', 'claim_profile_mail'),
   ('public', 'finish_profile_mail'),
@@ -1623,6 +1716,8 @@ insert into tests.expected_objects values
   ('function', 'public', 'publish_profile'), ('function', 'public', 'publish_event'),
   ('function', 'public', 'reschedule_event'), ('function', 'public', 'cancel_event'),
   ('function', 'public', 'postpone_event'),
+  ('function', 'public', 'reschedule_event_date'),
+  ('function', 'app_private', 'copy_event_revision'),
   ('function', 'app_private', 'is_founder'), ('function', 'app_private', 'owns_profile'),
   ('function', 'app_private', 'owns_event'), ('function', 'app_private', 'profile_gaps'),
   ('function', 'app_private', 'event_gaps'),
