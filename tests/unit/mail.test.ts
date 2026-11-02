@@ -126,4 +126,10 @@ describe("mail templates", () => {
 
     expect(mail.html).not.toContain("<script>");
   });
+
+  it("uses the Du-form subject of the question mail without the profile name", () => {
+    expect(profileQuestionMail({ name: "Alpha Events", url }).subject).toBe(
+      "Rückfrage zu deiner Einreichung",
+    );
+  });
 });

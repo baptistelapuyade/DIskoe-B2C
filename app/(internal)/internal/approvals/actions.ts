@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
 import { getRequestOrigin } from "@/lib/auth/origin";
@@ -10,7 +11,7 @@ import {
   parseGapDetail,
   parseQuestion,
 } from "@/lib/domain/profile-publication";
-import { QUESTION_AREAS, questionWithArea } from "@/lib/domain/question-area";
+import { questionAreas, questionWithArea } from "@/lib/domain/question-area";
 import { describeEventGaps } from "@/lib/domain/event-publication";
 import { copyPublishedEventImage } from "@/lib/event/publish";
 import { loadFounderEventView } from "@/lib/event/founder";
@@ -209,13 +210,15 @@ export async function requestChanges(
     return { ok: false, message: question.message };
   }
 
-  // The affected spot is stored as the first line of the message: the database
-  // has no separate column and the organizer reads the message as written.
+  // The affected spot is required and stored as the first line of the message:
+  // the database has no separate column and the organizer reads the message as
+  // written.
   const area = String(formData.get("area") ?? "");
-  const message = questionWithArea(
-    QUESTION_AREAS.includes(area as (typeof QUESTION_AREAS)[number]) ? area : "",
-    question.value,
-  );
+  if (!questionAreas(target.event !== null).includes(area)) {
+    return { ok: false, message: "Bitte wähle die betroffene Stelle." };
+  }
+
+  const message = questionWithArea(area, question.value);
   if (!message.ok) {
     return { ok: false, message: message.message };
   }
@@ -256,7 +259,7 @@ export async function requestChanges(
     }
   }
 
-  const mail = await sendMail(
+  await sendMail(
     supabase,
     target.profileId,
     target.revisionId,
@@ -264,10 +267,8 @@ export async function requestChanges(
   );
   refresh(target.profileId);
 
-  return {
-    ok: true,
-    message: `Rückfrage gespeichert. Das Profil bleibt privat. ${mail}`,
-  };
+  // The detail page shows the question and the state of the mail.
+  redirect(`/internal/approvals/${target.profileId}`);
 }
 
 // Sends a mail again after "failed" or when it was never sent (for example

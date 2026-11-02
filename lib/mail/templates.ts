@@ -98,7 +98,7 @@ export function profileQuestionMail(input: MailInput): MailContent {
   ];
 
   return {
-    subject: `Eine Frage zu deinem Profil „${name}“`,
+    subject: "Rückfrage zu deiner Einreichung",
     text: [...paragraphs, "", `Zur Frage und zu deinem Profil: ${input.url}`].join(
       "\n\n",
     ),
