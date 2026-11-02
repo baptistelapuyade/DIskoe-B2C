@@ -129,7 +129,7 @@ function completeRow(
     access_state: "provided",
     access_routes: [{ kind: "walk_in" }],
     atmosphere_state: "provided",
-    atmosphere_tags: ["warm"],
+    atmosphere_tags: ["Gemütlich"],
     event_image_use_id: useId,
   });
 }

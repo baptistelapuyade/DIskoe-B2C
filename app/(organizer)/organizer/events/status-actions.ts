@@ -171,7 +171,18 @@ export async function rescheduleEvent(
   });
 
   if (!parsed.ok) {
-    return { ok: false, errors: { start: parsed.errors.start, end: parsed.errors.end } };
+    const { start: startError, end: endError, ...other } = parsed.errors;
+    const rest = Object.values(other).filter((text) => Boolean(text));
+
+    // Another field of the draft is invalid; the editor is where to fix it.
+    return {
+      ok: false,
+      errors: { start: startError, end: endError },
+      message:
+        rest.length > 0
+          ? `Euer Entwurf enthält Angaben, die erst im Editor korrigiert werden müssen: ${rest.join(" ")}`
+          : undefined,
+    };
   }
 
   const supabase = await createClient();
