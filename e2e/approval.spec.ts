@@ -251,7 +251,11 @@ test.describe("first approval, publication and public image", () => {
     // The affected spot is required.
     await page.getByLabel("Deine Frage").fill("Der Link scheint nicht zu funktionieren.");
     await page.getByRole("button", { name: "Rückfrage senden" }).click();
-    await expect(page.getByText("Bitte wähle die betroffene Stelle.")).toBeVisible(SLOW);
+    // The browser blocks the empty select: nothing was stored, we stay here.
+    await expect(page).toHaveURL(/\/question$/);
+    expect(
+      sql(`select count(*) from public.review_requests where profile_id = '${profileB}'`),
+    ).toBe("0");
     await page.getByLabel("Betroffene Stelle").selectOption("Profiltext");
     await page.getByRole("button", { name: "Rückfrage senden" }).click();
     // The form disappears after the save; the page keeps the facts.
