@@ -359,7 +359,7 @@ test.describe("public pages", () => {
     const response = await page.goto(`/e/${PAST.slug}`);
     expect(response?.status()).toBe(200);
 
-    await expect(page.getByRole("status").getByText("Vorbei")).toBeVisible(SLOW);
+    await expect(page.getByRole("status").getByText("Vorbei", { exact: true })).toBeVisible(SLOW);
     await expect(page.getByRole("heading", { level: 1, name: PAST.title })).toBeVisible();
     await expect(page.getByRole("link", { name: /Zum Ticketanbieter/ })).toHaveCount(0);
 
