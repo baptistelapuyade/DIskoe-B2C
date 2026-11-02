@@ -2,14 +2,22 @@
 
 import { useActionState, useState } from "react";
 
-import { QUESTION_AREAS } from "@/lib/domain/question-area";
+import { Button, LinkButton, buttonClass } from "@/components/ui/button";
+import {
+  Field,
+  SelectWrap,
+  controlClass,
+  selectClass,
+} from "@/components/ui/field";
+import { TintedBlock } from "@/components/ui/page-shell";
+import { questionWithArea } from "@/lib/domain/question-area";
 
 import type { FormState } from "@/app/(organizer)/organizer/profiles/[profileId]/actions";
 
 const initial: FormState = { ok: false };
 
-const primary =
-  "bg-primary text-primary-foreground rounded-md px-5 py-2.5 font-medium disabled:opacity-60";
+const primary = buttonClass("primary");
+const outline = buttonClass("outline");
 
 function Result({ state }: { state: FormState }) {
   if (!state.message) return null;
@@ -76,13 +84,9 @@ export function ApproveForm({
             <button type="submit" disabled={pending} className={primary}>
               {pending ? "Gibt frei …" : "Ja, freigeben und veröffentlichen"}
             </button>
-            <button
-              type="button"
-              onClick={() => setAsking(false)}
-              className="border-border rounded-md border px-5 py-2.5"
-            >
+            <Button variant="outline" onClick={() => setAsking(false)}>
               Abbrechen
-            </button>
+            </Button>
           </div>
         </>
       ) : (
@@ -99,66 +103,101 @@ export function ApproveForm({
   );
 }
 
+// Figma S5-D "Rückfrage an den Organizer stellen" (2894:1019): affected spot,
+// question and a live preview of what the organizer reads. The preview is the
+// mail subject and the stored message (the spot is its first line).
 export function QuestionForm({
   action,
   profileId,
   revisionId,
   event,
+  areas,
+  backHref,
 }: {
   action: Action;
   profileId: string;
   revisionId: string;
   event?: EventTarget | null;
+  areas: readonly string[];
+  backHref: string;
 }) {
   const [state, formAction, pending] = useActionState(action, initial);
+  const [area, setArea] = useState("");
+  const [message, setMessage] = useState("");
+  const shown = message.trim() === "" ? "…" : message.trim();
+  const length = questionWithArea(area, message.trim());
 
   return (
-    <form action={formAction} className="space-y-3">
-      <input type="hidden" name="profileId" value={profileId} />
-      <input type="hidden" name="revisionId" value={revisionId} />
-      <EventFields event={event} />
-      <label htmlFor="question-area" className="block text-sm">
-        Betroffene Stelle
-      </label>
-      <select
-        id="question-area"
-        name="area"
-        defaultValue=""
-        className="border-border w-full rounded-md border px-3 py-2"
+    <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-start">
+      <form
+        action={formAction}
+        className="flex min-w-0 flex-1 flex-col gap-6 lg:max-w-[704px]"
       >
-        <option value="">Allgemein</option>
-        {QUESTION_AREAS.map((area) => (
-          <option key={area} value={area}>
-            {area}
-          </option>
-        ))}
-      </select>
-      <label htmlFor="question" className="block text-sm">
-        Deine Frage an den Organizer
-      </label>
-      <textarea
-        id="question"
-        name="message"
-        rows={4}
-        maxLength={500}
-        required
-        className="border-border w-full rounded-md border px-3 py-2"
-        aria-describedby="question-help"
-      />
-      <p id="question-help" className="text-muted-foreground text-sm">
-        Höchstens 500 Zeichen inklusive der betroffenen Stelle. Profil und
-        Event bleiben privat. Der Organizer
-        korrigiert und reicht erneut ein.
-      </p>
-      <button
-        type="submit"
-        disabled={pending}
-        className="border-border rounded-md border px-5 py-2.5 font-medium disabled:opacity-60"
-      >
-        {pending ? "Sendet …" : "Rückfrage stellen"}
-      </button>
-      <Result state={state} />
-    </form>
+        <input type="hidden" name="profileId" value={profileId} />
+        <input type="hidden" name="revisionId" value={revisionId} />
+        <EventFields event={event} />
+        <Field
+          id="question-area"
+          label="Betroffene Stelle"
+          hint={`Zum Beispiel ${areas.slice(0, 3).join(", ")} oder ${areas[areas.length - 1]}.`}
+        >
+          {(props) => (
+            <SelectWrap>
+              <select
+                {...props}
+                name="area"
+                required
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                className={selectClass}
+              >
+                <option value="">Bitte wählen</option>
+                {areas.map((entry) => (
+                  <option key={entry} value={entry}>
+                    {entry}
+                  </option>
+                ))}
+              </select>
+            </SelectWrap>
+          )}
+        </Field>
+        <Field
+          id="question"
+          label="Deine Frage"
+          hint="Der Organizer sieht den Text in der Mail und im Organizer-Bereich. Höchstens 500 Zeichen inklusive der betroffenen Stelle."
+          error={length.ok ? undefined : length.message}
+        >
+          {(props) => (
+            <textarea
+              {...props}
+              name="message"
+              rows={4}
+              maxLength={500}
+              required
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className={`${controlClass} min-h-24`}
+            />
+          )}
+        </Field>
+        <div className="flex flex-wrap gap-4">
+          <button type="submit" disabled={pending} className={primary}>
+            {pending ? "Sendet …" : "Rückfrage senden"}
+          </button>
+          <LinkButton href={backHref} variant="outline">
+            Abbrechen
+          </LinkButton>
+        </div>
+        <Result state={state} />
+      </form>
+      <aside className="flex w-full flex-col gap-4 lg:w-[328px] lg:shrink-0">
+        <TintedBlock title="Was der Organizer sieht">
+          <p className="text-base leading-6 whitespace-pre-line">
+            {`Betreff: Rückfrage zu deiner Einreichung\nBetroffen: ${area || "…"}\nFrage: ${shown}\nDein Stand bleibt privat. Antworte im Organizer-Bereich.`}
+          </p>
+        </TintedBlock>
+      </aside>
+    </div>
   );
 }
 
@@ -177,7 +216,7 @@ export function RetryImageFounderForm({
       <button
         type="submit"
         disabled={pending}
-        className="border-border rounded-md border px-5 py-2.5 font-medium disabled:opacity-60"
+        className={outline}
       >
         {pending ? "Versucht es …" : "Bilder erneut veröffentlichen"}
       </button>
@@ -209,7 +248,7 @@ export function ResendMailForm({
       <button
         type="submit"
         disabled={pending}
-        className="border-border rounded-md border px-5 py-2.5 font-medium disabled:opacity-60"
+        className={outline}
       >
         {pending ? "Sendet …" : label}
       </button>

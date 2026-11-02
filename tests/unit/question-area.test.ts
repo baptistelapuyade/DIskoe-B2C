@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { questionWithArea } from "../../lib/domain/question-area";
+import { questionAreas, questionWithArea } from "../../lib/domain/question-area";
 
 describe("questionWithArea", () => {
   it("keeps the message as written without an area", () => {
@@ -21,5 +21,11 @@ describe("questionWithArea", () => {
     const result = questionWithArea("Ort", "x".repeat(495));
 
     expect(result.ok).toBe(false);
+  });
+
+  it("offers event spots only with a first event and no cover", () => {
+    expect(questionAreas(false)).toEqual(["Profilbild", "Profiltext"]);
+    expect(questionAreas(true)).toContain("Eventbild");
+    expect(questionAreas(true)).not.toContain("Cover");
   });
 });

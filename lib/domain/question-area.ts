@@ -1,16 +1,21 @@
 import { QUESTION_MAX_LENGTH } from "./profile-publication";
 
-// The affected spot of a founder question (Figma S5-D "Betroffen: Ort"). The
-// database has no column for it: it is stored as the first line of the message
-// and shown to the organizer exactly as written.
-export const QUESTION_AREAS = [
-  "Profil",
-  "Event",
-  "Ort",
+// The affected spot of a founder question (Figma S5-D 2894:1019, examples
+// "Profilbild, Profiltext, Eventtitel, Termin, Ort, Eventbild"). The database
+// has no column for it: it is stored as the first line of the message and
+// shown to the organizer exactly as written. Organizers have no cover image.
+export const PROFILE_AREAS = ["Profilbild", "Profiltext"] as const;
+export const EVENT_AREAS = [
+  "Eventtitel",
   "Termin",
-  "Bild",
+  "Ort",
   "Kosten und Zugang",
+  "Eventbild",
 ] as const;
+
+export function questionAreas(withEvent: boolean): readonly string[] {
+  return withEvent ? [...PROFILE_AREAS, ...EVENT_AREAS] : [...PROFILE_AREAS];
+}
 
 export const AREA_PREFIX = "Betroffen: ";
 

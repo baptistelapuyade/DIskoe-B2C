@@ -35,7 +35,7 @@ const emails = {
   ownerB: `owner-b-${run}@example.test`,
   visitor: `visitor-${run}@example.test`,
 };
-const QUESTION_MAIL = /Eine Frage zu deinem Profil/;
+const QUESTION_MAIL = /Rückfrage zu deiner Einreichung/;
 const LIVE_MAIL = /ist jetzt live/;
 const slugA = `alpha-${run}`;
 const slugB = `beta-${run}`;
@@ -245,10 +245,19 @@ test.describe("first approval, publication and public image", () => {
     const { context, page } = await pageFor(browser, "founder");
 
     await page.goto(`/internal/approvals/${profileB}`);
-    await expect(page.getByRole("heading", { name: "Beta Events", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Profil: Beta Events", exact: true })).toBeVisible();
 
-    await page.getByLabel("Deine Frage an den Organizer").fill("Der Link scheint nicht zu funktionieren.");
-    await page.getByRole("button", { name: "Rückfrage stellen" }).click();
+    await page.getByRole("link", { name: "Rückfrage stellen" }).click();
+    // The affected spot is required.
+    await page.getByLabel("Deine Frage").fill("Der Link scheint nicht zu funktionieren.");
+    await page.getByRole("button", { name: "Rückfrage senden" }).click();
+    // The browser blocks the empty select: nothing was stored, we stay here.
+    await expect(page).toHaveURL(/\/question$/);
+    expect(
+      sql(`select count(*) from public.review_requests where profile_id = '${profileB}'`),
+    ).toBe("0");
+    await page.getByLabel("Betroffene Stelle").selectOption("Profiltext");
+    await page.getByRole("button", { name: "Rückfrage senden" }).click();
     // The form disappears after the save; the page keeps the facts.
     await expect(page.getByText("Zu diesem Stand ist eine Rückfrage gestellt.", { exact: false })).toBeVisible(SLOW);
     await expect(page.getByRole("heading", { name: "Gestellte Rückfrage" })).toBeVisible();
@@ -315,7 +324,7 @@ test.describe("first approval, publication and public image", () => {
     await expect(page.getByText(`/${slugA} ·`)).toBeVisible();
 
     await page.goto(`/internal/approvals/${profileA}`);
-    await expect(page.getByRole("heading", { name: "Alpha Events", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Profil: Alpha Events", exact: true })).toBeVisible();
     await expect(page.getByRole("img", { name: "Bühne" })).toBeVisible();
 
     const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {

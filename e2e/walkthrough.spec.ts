@@ -29,7 +29,7 @@ const slug = `walk-${run}`;
 const NAME = "Walkthrough Events";
 const QUESTION_TEXT = "Funktioniert der Link zu eurer Seite?";
 
-const QUESTION_MAIL = /Eine Frage zu deinem Profil/;
+const QUESTION_MAIL = /Rückfrage zu deiner Einreichung/;
 const LIVE_MAIL = /ist jetzt live/;
 
 // A valid 1x1 PNG.
@@ -149,11 +149,13 @@ test("the whole profile flow, from the first entry to the live profile", async (
       .getByRole("link", { name: "Prüfen" })
       .click();
     await expect(
-      page.getByRole("heading", { name: NAME, exact: true }),
+      page.getByRole("heading", { name: `Profil: ${NAME}`, exact: true }),
     ).toBeVisible(SLOW);
     await beat(page);
-    await page.getByLabel("Deine Frage an den Organizer").fill(QUESTION_TEXT);
-    await page.getByRole("button", { name: "Rückfrage stellen" }).click();
+    await page.getByRole("link", { name: "Rückfrage stellen" }).click();
+    await page.getByLabel("Betroffene Stelle").selectOption("Profiltext");
+    await page.getByLabel("Deine Frage").fill(QUESTION_TEXT);
+    await page.getByRole("button", { name: "Rückfrage senden" }).click();
     await expect(
       page.getByText("Zu diesem Stand ist eine Rückfrage gestellt.", {
         exact: false,

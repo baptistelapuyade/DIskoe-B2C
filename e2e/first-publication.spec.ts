@@ -29,7 +29,7 @@ const slug = `gamma-${run}`;
 const FIRST_TITLE = "Zwischen den Boxen";
 const LATER_TITLE = "Nachschlag";
 const LIVE_MAIL = /ist jetzt live/;
-const QUESTION_MAIL = /Eine Frage zu deinem Profil/;
+const QUESTION_MAIL = /Rückfrage zu deiner Einreichung/;
 
 const PNG = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
@@ -250,14 +250,17 @@ test.describe("first publication: profile and first event together", () => {
     const page = await context.newPage();
 
     await page.goto(`/internal/approvals/${profileId}`);
-    await expect(page.getByRole("heading", { name: "Gamma Kollektiv", exact: true })).toBeVisible();
-    await expect(page.getByRole("heading", { name: FIRST_TITLE, exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Profil: Gamma Kollektiv", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: `Erstes Event: ${FIRST_TITLE}`, exact: true })).toBeVisible();
     await expect(page.getByRole("img", { name: "Bühne" })).toBeVisible();
-    await expect(page.getByText("keine (Bild zählt als Dekoration)")).toBeVisible();
+    await expect(page.getByText("Keine Bildbeschreibung (das Bild zählt als Dekoration)")).toBeVisible();
 
+    await page.getByRole("link", { name: "Rückfrage stellen" }).click();
     await page.getByLabel("Betroffene Stelle").selectOption("Ort");
-    await page.getByLabel("Deine Frage an den Organizer").fill("Stimmt die Adresse der Halle?");
-    await page.getByRole("button", { name: "Rückfrage stellen" }).click();
+    await page.getByLabel("Deine Frage").fill("Stimmt die Adresse der Halle?");
+    // The preview shows what the organizer will read.
+    await expect(page.getByText("Betreff: Rückfrage zu deiner Einreichung", { exact: false })).toBeVisible();
+    await page.getByRole("button", { name: "Rückfrage senden" }).click();
     // The form disappears after the save; the page keeps the facts.
     await expect(page.getByText("Zu diesem Stand ist eine Rückfrage gestellt.", { exact: false })).toBeVisible(SLOW);
     await expect(page.getByRole("heading", { name: "Gestellte Rückfrage" })).toBeVisible();
