@@ -16,5 +16,12 @@ Stand 2026-11-02. Zwei Draft-PRs: I (Datenschicht und Eventseite), J (Profilseit
 5. **Überschrift der Beschreibung** „Über das Event“ statt des Beispieltitels „Die Nacht“. Das Eventbild wird mit `object-contain` gezeigt (Figma „Fit“).
 6. Der Ticketlink steht nur, wenn ein Zugangsweg eine Adresse hat; Button „Zum Ticketanbieter ↗“ bzw. „Zur Anmeldung ↗“. Abgesagte Events zeigen keinen Ticketlink.
 
+## PR J: Profilseite `/[profileSlug]`, Sitemap, robots
+- `app/[profileSlug]/page.tsx`: Name, Profilbild, Kurzvorstellung, „Kommende Events“ (nicht abgesagt, `start_at` bzw. bekanntes Ende nicht vorbei, aufsteigend; das nächste farbig hervorgehoben; ab dem vierten Eintrag „Mehr anzeigen (n)“ als `<details>`, ohne Skript), sonst „Neue Termine folgen.“, darunter offizieller Link und Kontakt. Feste Routen (`/e`, `/organizer`, `/login`, `/auth`) haben Vorrang, die Datenbank hält reservierte Wörter aus den Profil-Slugs, alles Unbekannte ist 404.
+- `app/sitemap.ts`: veröffentlichte Profile und ihre nicht abgesagten Events (auch vergangene und „Termin folgt“), Basis `NEXT_PUBLIC_SITE_URL`. `app/robots.ts`: sperrt `/organizer`, `/internal`, `/auth`, `/login`, `/api`, nennt die Sitemap.
+- **Annahmen:** Ein ohne neuen Termin verschobenes Event steht ohne Datum hinter den datierten in der Liste (es existiert noch, hat aber keinen Termin). Abgesagte Events stehen nicht in Sitemap und Profilliste, ihre Seite bleibt erreichbar. Vergangene Events stehen in der Sitemap, nicht in der Profilliste.
+- **Weggelassen:** Follow-Section „Nichts verpassen“, Profilmodule, Profilgestaltung/Palette (Standard-Theme), Teilen, „Programm ansehen“ (Alpha-Ausschluss bzw. nicht im Durchstich). Leertext nach Figma-Index im alten Stil („Keine kommenden Events · Neue Termine folgen“); hier der Wortlaut „Neue Termine folgen.“ aus dem Durchstich.
+- E2E erweitert: Profilseite, Sitemap (nur Öffentliches), robots, Leerzustand, `/impressum` als 404.
+
 ### Nicht geprüft
 Kein Vergleich mit einem gerenderten Figma-Screenshot (Download aus der Umgebung gesperrt); Abgleich nur gegen den Figma-Code. Typecheck, Lint, Unit- und E2E-Tests laufen lokal nicht (Registry gesperrt), nur in der CI.

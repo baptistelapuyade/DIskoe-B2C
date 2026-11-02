@@ -123,3 +123,4 @@ Section „ENTWURF · Slice 5“ (2859:40104): S5-A Founder-Prüfung (2855:38880
 
 ## Slice 6 gebaut (PR I, 2026-11-02)
 `PUB-01` (Eventseite) ist als `/e/[slug]` gebaut, auch die Statusvarianten für verschoben, verschoben ohne Termin und abgesagt. Weggelassen sind Follow, Merken, Kalender, Änderungs-Karte (Alpha-Ausschluss) sowie Programm, Einlass, Alter, Vor Ort und Zugänglichkeit (keine Daten in der Alpha). Texte der Statusvarianten sind Vorschläge. Einzelheiten: `.planning/phases/04-durchstich/SLICE-6-SUMMARY.md`.
+PR J (2026-11-02): Veranstalter-Profilseite gebaut (Kopf, kommende Events mit „Mehr anzeigen“ ab dem vierten, Leerzustand „Neue Termine folgen.“, Links und Kontakt). Ohne Follow-Section, Module und Gestaltung.
