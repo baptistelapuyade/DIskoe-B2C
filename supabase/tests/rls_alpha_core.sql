@@ -758,6 +758,48 @@ select tests.as_anon();
 select tests.expect_true($q$select start_at = '2027-06-06 19:00:00+02'::timestamptz and public_status = 'rescheduled' from public.public_events where slug = 'second-night'$q$,
   'public view shows the new start');
 
+-- Postponing without a date: status only, a replacement date can follow.
+select tests.as_user(:'uid_b');
+select tests.expect_error(format($q$select public.postpone_event(%L, %L, 2, 'rescheduled')$q$, :'e2', :'evs2'),
+  '42501', 'B cannot postpone A''s event');
+select tests.as_user(:'uid_a');
+select tests.ev_insert(:'e2', :'use_e2', '{"title":"Private rename"}') as evs3 \gset
+select tests.expect_ok(format('update public.events set draft_revision_id = %L where id = %L', :'evs3', :'e2'),
+  'owner prepares a private change before postponing');
+select tests.expect_error(format($q$select public.postpone_event(%L, %L, 1, 'rescheduled')$q$, :'e2', :'evs2'),
+  'DK001', 'postponing with a stale version is refused');
+select tests.expect_error(format($q$select public.postpone_event(%L, %L, 2, 'scheduled')$q$, :'e2', :'evs2'),
+  'DK001', 'postponing with the wrong status is refused');
+select tests.expect_error(format($q$select public.postpone_event(%L, %L, 2, 'rescheduled')$q$, :'e2', gen_random_uuid()),
+  'DK001', 'postponing a different published revision is refused');
+select public.postpone_event(:'e2', :'evs2', 2, 'rescheduled');
+select tests.as_superuser();
+select tests.expect_true(format($q$select public_status = 'postponed_undated' and published_revision_id = %L and draft_revision_id = %L and state_version = 3 from public.events where id = %L$q$, :'evs2', :'evs3', :'e2'),
+  'postpone_event changes status only and leaves both revisions untouched');
+select tests.expect_true(format($q$select count(*) = 1 from public.publication_audit where entity_id = %L and action = 'postpone' and revision_id = %L$q$, :'e2', :'evs2'),
+  'postponing is audited');
+select tests.as_anon();
+select tests.expect_true($q$select public_status = 'postponed_undated' and title <> 'Private rename' from public.public_events where slug = 'second-night'$q$,
+  'public view shows the status and not the private draft');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$select public.postpone_event(%L, %L, 3, 'postponed_undated')$q$, :'e2', :'evs2'),
+  'DK003', 'an already postponed event cannot be postponed again');
+select tests.ev_insert(:'e2', :'use_e2', '{"start_at":"2027-07-10 19:00:00+02"}') as evs4 \gset
+select tests.expect_ok(format('update public.events set draft_revision_id = %L where id = %L', :'evs4', :'e2'),
+  'owner prepares a replacement date');
+select public.reschedule_event(:'e2', :'evs4', :'evs2', 3, 'postponed_undated');
+select tests.as_superuser();
+select tests.expect_true(format($q$select public_status = 'rescheduled' and published_revision_id = %L and state_version = 4 from public.events where id = %L$q$, :'evs4', :'e2'),
+  'a replacement date can be published after postponing');
+select tests.as_anon();
+select tests.expect_true($q$select start_at = '2027-07-10 19:00:00+02'::timestamptz and public_status = 'rescheduled' from public.public_events where slug = 'second-night'$q$,
+  'public view shows the replacement date');
+
+-- A cancelled event can neither be postponed nor rescheduled.
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$select public.postpone_event(%L, %L, 2, 'cancelled')$q$, :'e1', :'ev1'),
+  'DK003', 'a cancelled event cannot be postponed');
+
 -- ===========================================================================
 -- 7. Cross-role access matrix: founder, owners, visitor, anon, direct tables
 -- ===========================================================================
@@ -1471,7 +1513,7 @@ insert into tests.expected_exec values
   ('public', 'provision_profile_owner'), ('public', 'approve_first_profile'),
   ('public', 'approve_first_event'), ('public', 'publish_profile'),
   ('public', 'publish_event'), ('public', 'reschedule_event'),
-  ('public', 'cancel_event'),
+  ('public', 'cancel_event'), ('public', 'postpone_event'),
   ('public', 'submit_profile_for_review'),
   ('public', 'request_profile_changes'), ('public', 'claim_profile_mail'),
   ('public', 'finish_profile_mail'),
@@ -1580,6 +1622,7 @@ insert into tests.expected_objects values
   ('function', 'public', 'approve_first_event'),
   ('function', 'public', 'publish_profile'), ('function', 'public', 'publish_event'),
   ('function', 'public', 'reschedule_event'), ('function', 'public', 'cancel_event'),
+  ('function', 'public', 'postpone_event'),
   ('function', 'app_private', 'is_founder'), ('function', 'app_private', 'owns_profile'),
   ('function', 'app_private', 'owns_event'), ('function', 'app_private', 'profile_gaps'),
   ('function', 'app_private', 'event_gaps'),
