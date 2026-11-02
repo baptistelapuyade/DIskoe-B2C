@@ -31,7 +31,7 @@ Abgleich mit `06-delta-v0.5-lesefassung.md` (§9, §6.8) und Datenvertrag v0.3. 
 4. **Format-Tags** tragen die Namen aus Figma und Tokens („Party / Clubabend“, „Filmabend / Screening“, „Ausstellungsabend / Offspace“, „Konzert / Live-Musik“); der Editor behält seine kürzeren Labels.
 Die Auswahl der Balken steht rein in `lib/public/info-bars.ts` (Unit-getestet).
 
-**Weiter offene Abweichung:** Die Icons am Balken-Label fehlen. Die Figma-Assets sind aus der Umgebung nicht ladbar, und `lucide-react` ist keine Abhängigkeit (neue Abhängigkeit braucht Begründung im PR). Entscheidung beim Founder.
+**Icons:** Die Icons am Balken-Label (`badge-euro` für Eintritt, `circle-help` für Zugänglichkeit) kommen aus den Figma-Komponenten `Icon / …` (533:53937, 533:53668); die SVG-Quelle wurde über die Figma-API gelesen und als `components/public/icons.tsx` eingebaut, ohne neue Abhängigkeit. Die Strichfarbe folgt der Textfarbe (`currentColor`) statt dem festen Grau des Exports. Einlass, Alter und Vor Ort haben in der Alpha keinen Balken, ihre Icons fehlen.
 
 ### Nicht geprüft
 Kein Vergleich mit einem gerenderten Figma-Screenshot (Download aus der Umgebung gesperrt); Abgleich nur gegen den Figma-Code. Typecheck, Lint, Unit- und E2E-Tests laufen lokal nicht (Registry gesperrt), nur in der CI.
