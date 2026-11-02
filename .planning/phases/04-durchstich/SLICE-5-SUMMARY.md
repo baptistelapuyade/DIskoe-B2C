@@ -39,6 +39,6 @@ Absagen und Verschieben (`NACH-09` bis `NACH-16`), Veröffentlichen von Änderun
 
 ## Offen
 
-- Notion-Abgleich der Entscheidung „Ein Event bei Erstfreigabe, weitere selbst“: nicht durchgeführt, bleibt offen.
+- Notion-Abgleich (2026-11-02, nur lesend): Die Seite „Umsetzungsstand B2C V1 (Repo)“ (29.10.) ist überholt (Slice 5 als offen, Frage „Variante B auch für Events?“ unbeantwortet, „Event veröffentlichen“ als nicht gebaut). Die Entscheidung „Ein Event bei Erstfreigabe, weitere selbst“ ist in Notion nicht als eigene Seite festgehalten. Notion ist nicht geändert; die Seite sollte nachgezogen werden.
 - Figma: doppelte Styles/About auf der Kit-Seite zusammenführen; verbleibende Unterschiede alter Event-Zustände zu Review NEW vergleichen.
 - Durchlauf auf dem Dev-Projekt (siehe oben).
