@@ -1,0 +1,427 @@
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { expect, test, type Browser, type BrowserContext, type Page } from "@playwright/test";
+
+import type { Database } from "../lib/db/types";
+
+import { clearMailbox, waitForCode } from "./support/inbucket";
+import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
+
+// Needs the local Supabase stack (see the e2e-auth CI job). Covers the rest of
+// Slice 5: a live event is cancelled, postponed without a date and then given a
+// replacement date; a draft with other private changes blocks the replacement.
+
+const BASE_URL = "http://127.0.0.1:3000";
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
+const SLOW = { timeout: 20_000 };
+
+const run = `s${Date.now().toString(36)}`;
+const emails = {
+  founder: `founder-${run}@example.test`,
+  owner: `owner-${run}@example.test`,
+};
+const slug = `delta-${run}`;
+// The run suffix keeps the titles unique among the other specs' events.
+const CANCEL_TITLE = `Zwischen den Boxen ${run}`;
+const MOVE_TITLE = `Nachschlag ${run}`;
+const BLOCKED_TITLE = `Zugabe ${run}`;
+
+const PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+  "base64",
+);
+
+type Api = SupabaseClient<Database>;
+
+type Ids = { eventId: string; revisionId: string; useId: string; title: string };
+
+// revision_no is assigned by a database trigger and is not grantable to clients;
+// the generated type still lists it as required (same workaround as lib/event).
+type NewEventRevision = Omit<
+  Database["public"]["Tables"]["event_revisions"]["Insert"],
+  "revision_no"
+>;
+
+function asInsert(row: NewEventRevision) {
+  return row as Database["public"]["Tables"]["event_revisions"]["Insert"];
+}
+
+async function apiClientFor(email: string): Promise<Api> {
+  const client = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  await clearMailbox(email);
+  const sent = await client.auth.signInWithOtp({ email });
+  expect(sent.error).toBeNull();
+  const verified = await client.auth.verifyOtp({
+    email,
+    token: await waitForCode(email),
+    type: "email",
+  });
+  expect(verified.error).toBeNull();
+  return client;
+}
+
+async function uploadConfirmedImage(
+  client: Api,
+  userId: string,
+  use: { profile_id: string; role: "profile_image" } | { event_id: string; role: "event_image" },
+  altText: string | null,
+): Promise<string> {
+  const path = `${userId}/${crypto.randomUUID()}.png`;
+  const upload = await client.storage
+    .from("private-media")
+    .upload(path, PNG, { contentType: "image/png" });
+  expect(upload.error).toBeNull();
+
+  const asset = await client
+    .from("media_assets")
+    .insert({ uploader_id: userId, private_object_path: path, mime_type: "image/png" })
+    .select("id")
+    .single();
+  expect(asset.error).toBeNull();
+
+  const created = await client
+    .from("media_uses")
+    .insert({ asset_id: asset.data!.id, alt_text: altText, ...use })
+    .select("id")
+    .single();
+  expect(created.error).toBeNull();
+
+  const confirmed = await client
+    .from("media_uses")
+    .update({ confirmed_at: new Date().toISOString() })
+    .eq("id", created.data!.id)
+    .select("id");
+  expect(confirmed.data).toHaveLength(1);
+
+  return created.data!.id;
+}
+
+// The revision row of a complete event, as the editor would leave it.
+function completeRow(
+  eventId: string,
+  userId: string,
+  title: string,
+  useId: string,
+  description = `${title}: eine Nacht im Nebenraum.`,
+) {
+  return asInsert({
+    event_id: eventId,
+    created_by: userId,
+    title_state: "provided",
+    title,
+    description_state: "provided",
+    description,
+    format_state: "provided",
+    primary_format: "club_night",
+    start_state: "provided",
+    start_at: "2027-06-05T21:00:00Z",
+    end_state: "unknown",
+    place_state: "provided",
+    place_name: "Halle 3",
+    address_line: "Hauptstraße 1",
+    postal_code: "10115",
+    city: "Berlin",
+    price_state: "unknown",
+    price_model: "unknown",
+    access_state: "provided",
+    access_routes: [{ kind: "walk_in" }],
+    atmosphere_state: "provided",
+    atmosphere_tags: ["Gemütlich"],
+    event_image_use_id: useId,
+  });
+}
+
+// A complete private event with a confirmed image, as the editor would leave it.
+async function createCompleteEvent(
+  client: Api,
+  userId: string,
+  profileId: string,
+  title: string,
+  altText: string | null,
+): Promise<Ids> {
+  const event = await client
+    .from("events")
+    .insert({ organizer_id: profileId, slug: `${title.toLowerCase().replace(/[^a-z]/g, "-")}-${run}` })
+    .select("id")
+    .single();
+  expect(event.error).toBeNull();
+  const eventId = event.data!.id;
+
+  const useId = await uploadConfirmedImage(
+    client,
+    userId,
+    { event_id: eventId, role: "event_image" },
+    altText,
+  );
+
+  const revision = await client
+    .from("event_revisions")
+    .insert(completeRow(eventId, userId, title, useId))
+    .select("id")
+    .single();
+  expect(revision.error).toBeNull();
+
+  const pointed = await client
+    .from("events")
+    .update({ draft_revision_id: revision.data!.id })
+    .eq("id", eventId)
+    .select("id");
+  expect(pointed.data).toHaveLength(1);
+
+  return { eventId, revisionId: revision.data!.id, useId, title };
+}
+
+// The management page after an action. If the form stays, its message tells why.
+async function expectManagePage(page: Page, eventId: string) {
+  try {
+    await expect(page).toHaveURL(new RegExp(`/events/${eventId}/manage$`), SLOW);
+  } catch (error) {
+    const messages = await page.locator('[role="alert"], [role="status"]').allTextContents();
+    throw new Error(`Still on ${page.url()}: ${messages.join(" | ") || "no message"}`, { cause: error });
+  }
+}
+
+test.describe.configure({ mode: "serial" });
+
+test.describe("cancel and reschedule a live event", () => {
+  test.setTimeout(240_000);
+
+  let ownerState: Awaited<ReturnType<BrowserContext["storageState"]>>;
+  let founderState: Awaited<ReturnType<BrowserContext["storageState"]>>;
+  let ownerApi: Api;
+  let ownerId = "";
+  let profileId = "";
+  let cancel: Ids;
+  let move: Ids;
+  let blocked: Ids;
+
+  async function signIn(browser: Browser, email: string) {
+    const context = await browser.newContext({ baseURL: BASE_URL });
+    const page = await context.newPage();
+    await clearMailbox(email);
+    await page.goto("/login");
+    await page.getByLabel("E-Mail-Adresse").fill(email);
+    await page.getByRole("button", { name: "Code senden" }).click();
+    await page.getByLabel("Code", { exact: true }).fill(await waitForCode(email));
+    await page.getByRole("button", { name: "Anmelden", exact: true }).click();
+    await page.waitForURL("**/organizer");
+    const state = await context.storageState();
+    await context.close();
+    return state;
+  }
+
+  async function publishAlone(ids: Ids) {
+    const state = sql(
+      `select state_version || ',' || public_status from public.events where id = '${ids.eventId}'`,
+    ).split(",");
+    const published = await ownerApi.rpc("publish_event", {
+      p_event_id: ids.eventId,
+      p_expected_draft_revision_id: ids.revisionId,
+      p_expected_published_revision_id: null as unknown as string,
+      p_expected_state_version: Number(state[0]),
+      p_expected_status: state[1] as Database["public"]["Enums"]["event_status"],
+      p_confirmed_rights: true,
+      p_confirmed_usage: true,
+    });
+    expect(published.error).toBeNull();
+  }
+
+  // A private change: a new draft revision with another description.
+  async function privateChange(ids: Ids, description: string) {
+    const created = await ownerApi
+      .from("event_revisions")
+      .insert(completeRow(ids.eventId, ownerId, ids.title, ids.useId, description))
+      .select("id")
+      .single();
+    expect(created.error).toBeNull();
+    const pointed = await ownerApi
+      .from("events")
+      .update({ draft_revision_id: created.data!.id })
+      .eq("id", ids.eventId)
+      .select("id");
+    expect(pointed.data).toHaveLength(1);
+  }
+
+  function publicEvent(title: string) {
+    const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false },
+    });
+
+    return anon
+      .from("public_events")
+      .select("public_status, description, start_at")
+      .eq("title", title)
+      .maybeSingle();
+  }
+
+  test.beforeAll(async ({ browser }) => {
+    test.setTimeout(300_000);
+
+    founderState = await signIn(browser, emails.founder);
+    ownerApi = await apiClientFor(emails.owner);
+    ownerId = userIdByEmail(emails.owner);
+    const founderId = userIdByEmail(emails.founder);
+    makeFounder(founderId);
+    profileId = provisionAs(founderId, ownerId, slug, "Delta Kollektiv");
+    ownerState = await signIn(browser, emails.owner);
+
+    const profileRevision = sql(
+      `select draft_revision_id from public.profiles where id = '${profileId}'`,
+    );
+    const profileUse = await uploadConfirmedImage(
+      ownerApi,
+      ownerId,
+      { profile_id: profileId, role: "profile_image" },
+      null,
+    );
+    const filled = await ownerApi
+      .from("profile_revisions")
+      .update({
+        name: "Delta Kollektiv",
+        short_intro: "Delta Kollektiv macht Nächte.",
+        official_url: "https://delta.example/",
+        profile_image_use_id: profileUse,
+      })
+      .eq("id", profileRevision)
+      .select("id");
+    expect(filled.data).toHaveLength(1);
+
+    // The first event goes through the founder, the others are published by
+    // the owner. All three are live before the tests start.
+    cancel = await createCompleteEvent(ownerApi, ownerId, profileId, CANCEL_TITLE, null);
+    const submit = await ownerApi.rpc("submit_first_publication", {
+      p_profile_id: profileId,
+      p_expected_draft_revision_id: profileRevision,
+      p_event_id: cancel.eventId,
+      p_expected_event_draft_revision_id: cancel.revisionId,
+      p_confirmed_rights: true,
+      p_confirmed_usage: true,
+    });
+    expect(submit.error).toBeNull();
+
+    const founderApi = await apiClientFor(emails.founder);
+    const approved = await founderApi.rpc("approve_first_publication", {
+      p_profile_id: profileId,
+      p_expected_draft_revision_id: profileRevision,
+      p_event_id: cancel.eventId,
+      p_expected_event_draft_revision_id: cancel.revisionId,
+    });
+    expect(approved.error).toBeNull();
+
+    move = await createCompleteEvent(ownerApi, ownerId, profileId, MOVE_TITLE, null);
+    await publishAlone(move);
+    blocked = await createCompleteEvent(ownerApi, ownerId, profileId, BLOCKED_TITLE, null);
+    await publishAlone(blocked);
+  });
+
+  test("cancelling needs its own confirmation and publishes no private change", async ({ browser }) => {
+    await privateChange(cancel, "Private Korrektur, noch nicht veröffentlicht.");
+    const publishedBefore = sql(
+      `select published_revision_id from public.events where id = '${cancel.eventId}'`,
+    );
+
+    const context = await browser.newContext({ baseURL: BASE_URL, storageState: ownerState });
+    const page = await context.newPage();
+
+    await page.goto(`/organizer/events/${cancel.eventId}/manage`);
+    await expect(page.getByRole("link", { name: "Event absagen" })).toBeVisible(SLOW);
+    await page.getByRole("link", { name: "Event absagen" }).click();
+    await expect(page.getByRole("heading", { name: "Event wirklich absagen?" })).toBeVisible(SLOW);
+    await expect(page.getByText(CANCEL_TITLE).first()).toBeVisible();
+
+    // Cancel leaves without a change.
+    await page.getByRole("link", { name: "Abbrechen" }).click();
+    expect(sql(`select public_status from public.events where id = '${cancel.eventId}'`)).toBe("scheduled");
+
+    await page.goto(`/organizer/events/${cancel.eventId}/cancel`);
+    await page.getByRole("button", { name: "Event verbindlich absagen" }).click();
+    await expect(page.getByRole("heading", { name: "Event abgesagt" })).toBeVisible(SLOW);
+    await expect(page.getByText("Privater Entwurf bleibt getrennt")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Event absagen" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Event verschieben" })).toHaveCount(0);
+
+    expect(sql(`select public_status from public.events where id = '${cancel.eventId}'`)).toBe("cancelled");
+    expect(sql(`select published_revision_id from public.events where id = '${cancel.eventId}'`)).toBe(publishedBefore);
+    const publicRow = await publicEvent(CANCEL_TITLE);
+    expect(publicRow.data?.public_status).toBe("cancelled");
+    expect(publicRow.data?.description).not.toContain("Private Korrektur");
+
+    // The cancel page of a cancelled event leads back.
+    await page.goto(`/organizer/events/${cancel.eventId}/cancel`);
+    await expect(page).toHaveURL(new RegExp(`/events/${cancel.eventId}/manage$`));
+    await context.close();
+  });
+
+  test("postponing without a date, then giving a replacement date", async ({ browser }) => {
+    const context = await browser.newContext({ baseURL: BASE_URL, storageState: ownerState });
+    const page = await context.newPage();
+
+    await page.goto(`/organizer/events/${move.eventId}/reschedule`);
+    await expect(page.getByRole("heading", { name: "Event auf einen neuen Termin verschieben" })).toBeVisible(SLOW);
+    await page.getByRole("link", { name: "Ersatztermin steht noch nicht fest" }).click();
+    await expect(page.getByRole("heading", { name: "Verschieben ohne neuen Termin" })).toBeVisible(SLOW);
+    await page.getByRole("button", { name: "Ohne Ersatztermin verschieben" }).click();
+
+    // The side card of the form says "Neuer Termin folgt" too, so wait for the
+    // redirect to the management page first.
+    await expectManagePage(page, move.eventId);
+    await expect(page.getByText("Neuer Termin folgt").first()).toBeVisible(SLOW);
+    expect(sql(`select public_status from public.events where id = '${move.eventId}'`)).toBe("postponed_undated");
+    expect((await publicEvent(MOVE_TITLE)).data?.public_status).toBe("postponed_undated");
+
+    // Without a date the only way on is a replacement date.
+    await page.getByRole("link", { name: "Ersatztermin eintragen" }).click();
+    await expect(page.getByRole("heading", { name: "Ersatztermin eintragen" })).toBeVisible(SLOW);
+    await expect(page.getByRole("link", { name: "Ersatztermin steht noch nicht fest" })).toHaveCount(0);
+
+    // The old start is not a replacement.
+    await page.getByLabel("Neuer Beginn").fill("2027-06-05T23:00");
+    await page.getByRole("button", { name: "Verschiebung bestätigen" }).click();
+    await expect(page.getByText("Der neue Beginn muss sich vom bisherigen unterscheiden.")).toBeVisible(SLOW);
+
+    await page.getByLabel("Neuer Beginn").fill("2027-07-10T21:00");
+    await page.getByRole("button", { name: "Verschiebung bestätigen" }).click();
+    await expectManagePage(page, move.eventId);
+    await expect(page.getByText("Verschoben, neuer Termin").first()).toBeVisible(SLOW);
+
+    expect(sql(`select public_status from public.events where id = '${move.eventId}'`)).toBe("rescheduled");
+    const row = await publicEvent(MOVE_TITLE);
+    expect(row.data?.public_status).toBe("rescheduled");
+    // 21:00 Berlin summer time is 19:00 UTC.
+    expect(new Date(row.data!.start_at!).toISOString()).toBe("2027-07-10T19:00:00.000Z");
+    await context.close();
+  });
+
+  test("a draft with other private changes blocks the replacement date", async ({ browser }) => {
+    await privateChange(blocked, "Noch nicht veröffentlichte Beschreibung.");
+    const context = await browser.newContext({ baseURL: BASE_URL, storageState: ownerState });
+    const page = await context.newPage();
+
+    await page.goto(`/organizer/events/${blocked.eventId}/reschedule`);
+    await expect(page.getByText("Weitere private Änderungen")).toBeVisible(SLOW);
+    await expect(page.getByRole("button", { name: "Verschiebung bestätigen" })).toHaveCount(0);
+    expect(sql(`select public_status from public.events where id = '${blocked.eventId}'`)).toBe("scheduled");
+
+    // Postponing without a date publishes nothing and stays possible.
+    await page.getByRole("link", { name: "Ersatztermin steht noch nicht fest" }).click();
+    await page.getByRole("button", { name: "Ohne Ersatztermin verschieben" }).click();
+    await expectManagePage(page, blocked.eventId);
+    await expect(page.getByText("Neuer Termin folgt").first()).toBeVisible(SLOW);
+    expect((await publicEvent(BLOCKED_TITLE)).data?.description).not.toContain("Noch nicht veröffentlicht");
+    await context.close();
+  });
+
+  test("someone else does not reach the pages", async ({ browser }) => {
+    const context = await browser.newContext({ baseURL: BASE_URL, storageState: founderState });
+    const page = await context.newPage();
+
+    for (const path of ["cancel", "reschedule"]) {
+      await page.goto(`/organizer/events/${blocked.eventId}/${path}`);
+      await expect(page.getByRole("button", { name: /absagen|verschieben|bestätigen/i })).toHaveCount(0);
+    }
+    await context.close();
+  });
+});

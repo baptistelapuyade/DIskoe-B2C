@@ -184,7 +184,7 @@ jobs:
           MAIL_SMTP_HOST: 127.0.0.1
           MAIL_SMTP_PORT: "54325"
           MAIL_FROM: hello@example.test
-        run: npx playwright test e2e/auth.spec.ts e2e/profile.spec.ts e2e/approval.spec.ts e2e/first-publication.spec.ts e2e/event.spec.ts e2e/walkthrough.spec.ts
+        run: npx playwright test e2e/auth.spec.ts e2e/profile.spec.ts e2e/approval.spec.ts e2e/first-publication.spec.ts e2e/event-status.spec.ts e2e/event.spec.ts e2e/walkthrough.spec.ts
 
       # Video of the whole profile flow (e2e/walkthrough.spec.ts), also after a
       # failed run, so that it can be watched under Actions -> run -> Artifacts.
