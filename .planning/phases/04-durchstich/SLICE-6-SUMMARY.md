@@ -38,7 +38,7 @@ Die Auswahl der Balken steht rein in `lib/public/info-bars.ts` (Unit-getestet).
 - **Zeitpunkt:** Archiv-Cutoff nach Datenvertrag v0.3 §4: bekanntes Ende, sonst Folgetag 12:00 Ortszeit (`archiveInstant` in `lib/domain/time.ts`, Zeitumstellung getestet). Der Cutoff ist kein tatsächliches Ende und wird nie als Ende angezeigt.
 - **Vorrang:** Abgesagt bleibt „Abgesagt“, verschoben ohne Termin hat kein Datum und ist nie „vorbei“. Nur `scheduled`/`rescheduled` können vorbei sein; ein verschobenes Event mit abgelaufenem neuem Termin ebenfalls.
 - **Folge für die Profilliste:** „Kommende Events“ nutzt denselben Cutoff (`!event.past`). Ein Event ohne bekanntes Ende bleibt bis zum Folgetag 12:00 in der Liste (vorher fiel es mit dem Start heraus).
-- Die Sitemap-Regel für vergangene Events ist unverändert (sie stehen darin) und eine eigene offene Entscheidung.
+- Sitemap-Regel (Founder-Entscheidung 3.11.): abgesagte Events nicht, vergangene nur bis 12 Monate nach ihrem Archiv-Cutoff (gleiche Spanne wie das Profilarchiv, Delta v0.5), verschobene ohne Termin immer. Der Vertrag nennt keine Sitemap-Grenze; die 12 Monate sind aus dem Archiv übernommen. Reine Funktion `lib/public/sitemap-window.ts`. Die Seiten selbst bleiben erreichbar.
 
 ### Nicht geprüft
 Kein Vergleich mit einem gerenderten Figma-Screenshot (Download aus der Umgebung gesperrt); Abgleich nur gegen den Figma-Code. Typecheck, Lint, Unit- und E2E-Tests laufen lokal nicht (Registry gesperrt), nur in der CI.

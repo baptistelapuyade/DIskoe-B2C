@@ -428,6 +428,8 @@ test.describe("public pages", () => {
     expect(xml).toContain(`/e/${POSTPONED.slug}<`);
     expect(xml).toContain(`/${profileSlug}<`);
     expect(xml).not.toContain(CANCELLED.slug);
+    // Over for more than 12 months (start 2020): out of the sitemap, page stays reachable.
+    expect(xml).not.toContain(PAST.slug);
     expect(xml).not.toContain(DRAFT.slug);
   });
 

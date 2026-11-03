@@ -33,6 +33,7 @@
 - 2026-11-02: Slice 6 nach Abgleich mit Delta v0.5 §9/§6.8 korrigiert (Draft-PR): Zugänglichkeit immer sichtbar, Eintritt nur mit Kostenantwort, Balken in voller Breite, Format-Tag-Namen wie im Design. Icons am Balken-Label folgen in einem eigenen kleinen PR. Offen zur Entscheidung: „Vorbei“-Kennzeichnung, Sitemap-Regeln, Impressum/Datenschutz, noindex für Preview, Statustexte.
 - 2026-11-02: Vergangene Events zeigen „Vorbei“ ohne Ticketlink (Draft-PR, Cutoff nach Vertrag: bekanntes Ende, sonst Folgetag 12:00 Ortszeit). Offen zur Entscheidung: Sitemap-Regeln, Impressum/Datenschutz, noindex für Preview, Statustexte.
 - 2026-11-03: Seiten `/impressum` und `/datenschutz` mit Footer-Links auf Event-, Profil- und Login-Seite (Draft-PR). Inhalt ist Platzhalter („Angaben folgen.“, `noindex`); Rechtstexte liefert der Founder in `lib/legal/texts.ts` und setzt `placeholder: false`. Voraussetzung vor echten Organizern, nicht für das Preview mit Testdaten. Offen zur Entscheidung: noindex für Preview, Statustexte.
+- 2026-11-03: Sitemap-Regel entschieden: ohne abgesagte, vergangene Events 12 Monate nach Cutoff (Draft-PR, auf den „Vorbei“-PR aufgesetzt). Offen zur Entscheidung: Impressum/Datenschutz, noindex für Preview, Statustexte.
 - Das technische Gerüst besitzt Unit-/Smoke-Prüfungen; die fachlichen Abnahmefälle D01–D15 bleiben Papierspezifikationen und kein Requirement gilt als umgesetzt. Entwicklungsfreigabe siehe `AGENTS.md`.
 
 ## Gelesene und geprüfte Quellen
