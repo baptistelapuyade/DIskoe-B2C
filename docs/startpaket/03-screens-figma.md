@@ -112,7 +112,7 @@ Regeln:
 - Die Veranstalter-Karte steht immer unten im Block „Veranstaltet von“, auch bei Abgesagt und Vorbei.
 
 ### Abweichungen und offene Punkte
-- Am 02.11.2026 wurden beim Einsetzen acht Status-Spalten (`PUB-19` abgesagt, verschoben ohne Termin, vorbei; `PUB-23`, `PUB-24`) mit der aktiven Karte überschrieben. Der ursprüngliche Inhalt ist nicht wiederherstellbar (keine gespeicherte Version nach dem 30.10.). Die Spalten tragen jetzt die Status-Varianten, deren Texte neu entworfen und vom Founder noch nicht inhaltlich bestätigt sind.
+- Am 02.11.2026 wurden beim Einsetzen acht Status-Spalten (`PUB-19` abgesagt, verschoben ohne Termin, vorbei; `PUB-23`, `PUB-24`) mit der aktiven Karte überschrieben. Der ursprüngliche Inhalt ist nicht wiederherstellbar (keine gespeicherte Version nach dem 30.10.). Die Spalten tragen jetzt die Status-Varianten, deren Texte neu entworfen wurden. Der Founder hat die Wortlaute am 03.11.2026 bestätigt: „Neuer Termin“ (Der Termin unten ist der neue Termin.), „Neuer Termin folgt“ (Ein neuer Termin steht noch nicht fest.), „Abgesagt“ (Dieses Event findet nicht statt.), „Vorbei“ (Dieses Event ist vorbei.). Die Figma-Spalten müssen noch mit diesen Texten gefüllt werden.
 - Der Merken-Dialog verweist noch auf die alte Änderungs-Anmeldung. Er sollte nur „Merken“ und die Veranstalter-Anmeldung anbieten.
 - Der Besucher-Prototyp (Seite 60) trägt noch die alte Spalte „Wenn sich etwas ändert“ und den alten Veranstalter-Block.
 - Die Profile ohne Termine („Keine kommenden Events · Neue Termine folgen“ in `PUB-03`, `05`) sind im alten Stil.
