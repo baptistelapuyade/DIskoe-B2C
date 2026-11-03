@@ -10,3 +10,12 @@ export function siteUrl(): string {
 export function mediaBase(): string {
   return process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 }
+
+// Search engines may index this deployment only when SITE_INDEXING is exactly
+// "on" (production). Missing or any other value keeps the site closed, so a
+// forgotten variable never makes a preview public.
+export function indexingEnabled(
+  env: Record<string, string | undefined> = process.env,
+): boolean {
+  return env.SITE_INDEXING === "on";
+}
