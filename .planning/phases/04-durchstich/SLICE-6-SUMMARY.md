@@ -48,3 +48,9 @@ Kein Vergleich mit einem gerenderten Figma-Screenshot (Download aus der Umgebung
 - `SITE_INDEXING=on` öffnet, alles andere (auch fehlend) schließt. Geschlossen: `robots.txt` mit `Disallow: /` ohne Sitemap-Zeile, leere Sitemap, `noindex` in der Root-Metadata und `X-Robots-Tag: noindex, nofollow` aus der Middleware (gewinnt gegen Seiten-Metadata).
 - Annahmen: kein Zugriffsschutz, nur Crawler-Signal. Statisch gebaute Seiten übernehmen den Wert vom Build (ungesetzt = zu, sicher); Event- und Profilseiten sind dynamisch und lesen ihn zur Laufzeit. Auf Amplify die Variable für Build und Laufzeit setzen und nach dem Deployment `robots.txt` und Header prüfen.
 - Playwright startet den Dev-Server mit `SITE_INDEXING=on`, weil die Specs den offenen Zustand lesen (Sitemap, robots). Der geschlossene Zustand ist per Unit-Test (`tests/unit/site-indexing.test.ts`) abgedeckt, nicht per E2E.
+
+## Impressum und Datenschutz (Founder-Entscheidung 3.11.)
+
+- Seiten `/impressum` und `/datenschutz` (statische Routen, gehen den reservierten Slugs vor), Footer-Links auf Event-, Profil- und Login-Seite. Die Rechtsseiten stehen nicht in der Sitemap.
+- **Annahme/Abweichung vom Plan:** Der Text steht als TypeScript in `lib/legal/texts.ts` statt als Markdown-Datei, damit der Amplify-Build keine zusätzlichen Dateien verfolgen muss. Der Inhalt ist ein Platzhalter; keine erfundenen Rechtsangaben. Solange `placeholder: true`, sind die Seiten `noindex`.
+- Vor echten Organizern: Founder liefert Impressum (Anbieter, Anschrift, Kontakt) und Datenschutzerklärung (Login per E-Mail-Code, Session-Cookies, Supabase Frankfurt, Amazon SES, Amplify-Logs). Keine Rechtsberatung.

@@ -98,3 +98,19 @@ export function formatPublishedDate(iso: string | null): string | null {
     timeZone: "Europe/Berlin",
   });
 }
+
+export function LegalFooter() {
+  return (
+    <nav
+      aria-label="Rechtliches"
+      className="mx-auto flex w-full max-w-[1128px] gap-6 px-6 pb-8 text-sm leading-5 sm:px-8"
+    >
+      <Link href="/impressum" className="underline-offset-4 hover:underline">
+        Impressum
+      </Link>
+      <Link href="/datenschutz" className="underline-offset-4 hover:underline">
+        Datenschutz
+      </Link>
+    </nav>
+  );
+}
