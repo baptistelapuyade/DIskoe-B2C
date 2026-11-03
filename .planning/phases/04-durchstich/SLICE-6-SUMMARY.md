@@ -42,3 +42,9 @@ Die Auswahl der Balken steht rein in `lib/public/info-bars.ts` (Unit-getestet).
 
 ### Nicht geprüft
 Kein Vergleich mit einem gerenderten Figma-Screenshot (Download aus der Umgebung gesperrt); Abgleich nur gegen den Figma-Code. Typecheck, Lint, Unit- und E2E-Tests laufen lokal nicht (Registry gesperrt), nur in der CI.
+
+## Impressum und Datenschutz (Founder-Entscheidung 3.11.)
+
+- Seiten `/impressum` und `/datenschutz` (statische Routen, gehen den reservierten Slugs vor), Footer-Links auf Event-, Profil- und Login-Seite. Die Rechtsseiten stehen nicht in der Sitemap.
+- **Annahme/Abweichung vom Plan:** Der Text steht als TypeScript in `lib/legal/texts.ts` statt als Markdown-Datei, damit der Amplify-Build keine zusätzlichen Dateien verfolgen muss. Der Inhalt ist ein Platzhalter; keine erfundenen Rechtsangaben. Solange `placeholder: true`, sind die Seiten `noindex`.
+- Vor echten Organizern: Founder liefert Impressum (Anbieter, Anschrift, Kontakt) und Datenschutzerklärung (Login per E-Mail-Code, Session-Cookies, Supabase Frankfurt, Amazon SES, Amplify-Logs). Keine Rechtsberatung.
