@@ -33,5 +33,12 @@ Die Auswahl der Balken steht rein in `lib/public/info-bars.ts` (Unit-getestet).
 
 **Icons:** Die Icons am Balken-Label (`badge-euro` für Eintritt, `circle-help` für Zugänglichkeit) kommen aus den Figma-Komponenten `Icon / …` (533:53937, 533:53668); die SVG-Quelle wurde über die Figma-API gelesen und als `components/public/icons.tsx` eingebaut, ohne neue Abhängigkeit. Die Strichfarbe folgt der Textfarbe (`currentColor`) statt dem festen Grau des Exports. Einlass, Alter und Vor Ort haben in der Alpha keinen Balken, ihre Icons fehlen.
 
+## „Vorbei“-Kennzeichnung (Entscheidung Founder, 2026-11-02)
+- Ein vergangenes Event zeigt den Hinweis „Vorbei“ („Dieses Event ist vorbei.“, neutrale Fläche), behält das Datum und hat keinen Ticketlink; im JSON-LD entfällt das Angebot. Der Wortlaut ist ein Vorschlag (Statustexte sind noch nicht bestätigt).
+- **Zeitpunkt:** Archiv-Cutoff nach Datenvertrag v0.3 §4: bekanntes Ende, sonst Folgetag 12:00 Ortszeit (`archiveInstant` in `lib/domain/time.ts`, Zeitumstellung getestet). Der Cutoff ist kein tatsächliches Ende und wird nie als Ende angezeigt.
+- **Vorrang:** Abgesagt bleibt „Abgesagt“, verschoben ohne Termin hat kein Datum und ist nie „vorbei“. Nur `scheduled`/`rescheduled` können vorbei sein; ein verschobenes Event mit abgelaufenem neuem Termin ebenfalls.
+- **Folge für die Profilliste:** „Kommende Events“ nutzt denselben Cutoff (`!event.past`). Ein Event ohne bekanntes Ende bleibt bis zum Folgetag 12:00 in der Liste (vorher fiel es mit dem Start heraus).
+- Die Sitemap-Regel für vergangene Events ist unverändert (sie stehen darin) und eine eigene offene Entscheidung.
+
 ### Nicht geprüft
 Kein Vergleich mit einem gerenderten Figma-Screenshot (Download aus der Umgebung gesperrt); Abgleich nur gegen den Figma-Code. Typecheck, Lint, Unit- und E2E-Tests laufen lokal nicht (Registry gesperrt), nur in der CI.

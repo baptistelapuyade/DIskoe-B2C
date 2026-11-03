@@ -41,14 +41,22 @@ const BAR_ICON: Record<InfoBar["key"], React.ReactNode> = {
   accessibility: <CircleHelpIcon />,
 };
 
+const PAST_NOTICE = { title: "Vorbei", text: "Dieses Event ist vorbei." };
+
 function ticketLabel(kind: string): string {
   return kind === "online_registration" ? "Zur Anmeldung ↗" : "Zum Ticketanbieter ↗";
 }
 
 export function EventView({ event }: { event: PublicEvent }) {
-  const notice = event.status === "scheduled" ? null : STATUS_NOTICE[event.status];
+  const notice = event.past
+    ? PAST_NOTICE
+    : event.status === "scheduled"
+      ? null
+      : STATUS_NOTICE[event.status];
   const cancelled = event.status === "cancelled";
-  const ticketRoute = event.access.find((route) => route.url !== null);
+  const ticketRoute = event.ticketUrl
+    ? event.access.find((route) => route.url === event.ticketUrl)
+    : undefined;
   const confirmed = formatPublishedDate(event.publishedAt);
   const hasWhen = event.dateLine !== null;
   const hasPlace = event.placeName !== null || event.addressLines.length > 0;
@@ -61,7 +69,7 @@ export function EventView({ event }: { event: PublicEvent }) {
         {notice ? (
           <div
             role="status"
-            className={`${cancelled ? "bg-error-subtle text-error" : "bg-warning-subtle text-warning"} mb-6 flex flex-col gap-1 rounded-lg px-5 py-4`}
+            className={`${cancelled ? "bg-error-subtle text-error" : event.past ? "bg-background text-foreground border-border border" : "bg-warning-subtle text-warning"} mb-6 flex flex-col gap-1 rounded-lg px-5 py-4`}
           >
             <p className="text-lg leading-6 font-bold">{notice.title}</p>
             <p className="text-base leading-6">{notice.text}</p>

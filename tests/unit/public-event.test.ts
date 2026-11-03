@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  isUpcoming,
   publicImageUrl,
   toPublicEvent,
   toPublicProfile,
@@ -57,8 +56,11 @@ const eventRow: PublicEventRow = {
 
 const organizer = toPublicProfile(profileRow, MEDIA)!;
 
-function build(overrides: Partial<PublicEventRow>) {
-  const event = toPublicEvent({ ...eventRow, ...overrides }, organizer, MEDIA);
+// Before the event starts, so that nothing counts as past by accident.
+const BEFORE = new Date("2026-10-20T00:00:00Z");
+
+function build(overrides: Partial<PublicEventRow>, now: Date = BEFORE) {
+  const event = toPublicEvent({ ...eventRow, ...overrides }, organizer, MEDIA, now);
 
   if (!event) throw new Error("event expected");
 
@@ -149,11 +151,29 @@ describe("public event shape", () => {
     expect(publicImageUrl(MEDIA, null)).toBeNull();
   });
 
-  it("counts an event as upcoming until its known end", () => {
-    const event = build({});
+  it("marks a scheduled event as past from its known end, not before", () => {
+    expect(build({}, new Date("2026-11-01T02:59:00Z")).past).toBe(false);
+    expect(build({}, new Date("2026-11-01T03:00:00Z")).past).toBe(true);
+  });
 
-    expect(isUpcoming(event, new Date("2026-11-01T02:00:00Z"))).toBe(true);
-    expect(isUpcoming(event, new Date("2026-11-01T04:00:00Z"))).toBe(false);
+  it("uses 12:00 on the next day when the end is not known", () => {
+    const unknown = { end_state: "unknown" as const, end_at: null };
+
+    // Start Sa. 31.10.2026 23:00 Berlin: the cut-off is So. 01.11.2026 12:00
+    // (CET, 11:00 UTC), which is not an end time and is not shown as one.
+    expect(build(unknown, new Date("2026-11-01T10:59:00Z")).past).toBe(false);
+    expect(build(unknown, new Date("2026-11-01T11:00:00Z")).past).toBe(true);
+    expect(build(unknown).endInstant).toBeNull();
+  });
+
+  it("never marks a cancelled or undated event as past, and drops the ticket", () => {
+    const late = new Date("2030-01-01T00:00:00Z");
+
+    expect(build({ public_status: "cancelled" }, late).past).toBe(false);
+    expect(build({ public_status: "postponed_undated" }, late).past).toBe(false);
+    expect(build({ public_status: "rescheduled" }, late).past).toBe(true);
+    expect(build({}, late).ticketUrl).toBeNull();
+    expect(build({}, BEFORE).ticketUrl).toBe("https://tickets.example.test/x");
   });
 });
 
@@ -203,6 +223,12 @@ describe("event JSON-LD", () => {
 
     expect(data.eventStatus).toBe("https://schema.org/EventPostponed");
     expect(data).not.toHaveProperty("startDate");
+  });
+
+  it("offers no tickets for a past event", () => {
+    const data = eventJsonLd(build({}, new Date("2030-01-01T00:00:00Z")), SITE);
+
+    expect(data).not.toHaveProperty("offers");
   });
 
   it("marks a rescheduled event", () => {
