@@ -382,8 +382,24 @@ test.describe("public pages", () => {
     expect(unknown?.status()).toBe(404);
 
     // A reserved word is not a profile.
-    const reserved = await page.goto("/impressum");
+    const reserved = await page.goto("/hilfe");
     expect(reserved?.status()).toBe(404);
+  });
+
+  test("the legal pages exist, stay out of search engines while empty, and are linked", async ({ page }) => {
+    for (const path of ["/impressum", "/datenschutz"]) {
+      const response = await page.goto(path);
+      expect(response?.status()).toBe(200);
+      await expect(page.getByText("Angaben folgen.")).toBeVisible(SLOW);
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+    }
+
+    await page.goto(`/e/${LIVE.slug}`);
+    await expect(page.getByRole("link", { name: "Impressum" })).toHaveAttribute("href", "/impressum");
+    await expect(page.getByRole("link", { name: "Datenschutz" })).toHaveAttribute("href", "/datenschutz");
+
+    await page.goto(`/${profileSlug}`);
+    await expect(page.getByRole("link", { name: "Impressum" })).toBeVisible(SLOW);
   });
 
   test("the profile page lists upcoming events, not cancelled or private ones", async ({ page }) => {

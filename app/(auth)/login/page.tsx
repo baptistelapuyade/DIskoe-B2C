@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { safeNextPath } from "@/lib/auth/guards";
 import { getAccess } from "@/lib/auth/server";
 
+import { LegalFooter } from "@/components/public/parts";
+
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
@@ -41,6 +43,9 @@ export default async function LoginPage({
         Wir senden dir einen Code per E-Mail. Ein Passwort brauchst du nicht.
       </p>
       <LoginForm next={next} linkError={first(params.error) === "link"} />
+      <div className="mt-12">
+        <LegalFooter />
+      </div>
     </main>
   );
 }

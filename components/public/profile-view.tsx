@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import type { PublicEvent, PublicProfile } from "@/lib/public/dto";
 
-import { Band, Eyebrow, FormatTag, ProfileImage, SiteBar } from "./parts";
+import { Band, Eyebrow, FormatTag, LegalFooter, ProfileImage, SiteBar } from "./parts";
 
 const VISIBLE = 3;
 
@@ -113,6 +113,7 @@ export function ProfileView({
           </div>
         </Band>
       ) : null}
+      <LegalFooter />
     </main>
   );
 }
