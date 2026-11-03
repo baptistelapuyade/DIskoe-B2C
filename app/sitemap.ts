@@ -4,7 +4,8 @@ import { listSitemapEntries } from "@/lib/public/queries";
 import { indexingEnabled, siteUrl } from "@/lib/public/site";
 
 // Only public addresses: published profiles and their events that are not
-// cancelled. Drafts are not in the views and so can not appear here.
+// cancelled and not over for more than 12 months. Drafts are not in the views
+// and so can not appear here.
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
