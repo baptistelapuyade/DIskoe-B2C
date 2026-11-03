@@ -16,8 +16,8 @@ import {
   SiteBar,
 } from "./parts";
 
-// Texts of the status variants (PUB-19, 23, 24). Proposals: the founder has not
-// confirmed the wording of these yet.
+// Texts of the status variants (PUB-19, 23, 24). Wording confirmed by the
+// founder on 2026-11-03 (the Figma originals were overwritten on 2026-11-02).
 const STATUS_NOTICE: Record<
   Exclude<PublicEvent["status"], "scheduled">,
   { title: string; text: string }

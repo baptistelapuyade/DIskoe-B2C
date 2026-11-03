@@ -32,6 +32,7 @@
 - 2026-11-02: Slice 6, PR J (Draft, auf PR I aufgesetzt): öffentliche Profilseite `/[profileSlug]` mit kommenden Events und Leerzustand, `sitemap.xml` und `robots.txt`; E2E erweitert. Nach PR I und J ist Durchstich Punkt 5 und 6 gebaut, Abnahme im Browser durch den Founder steht aus.
 - 2026-11-02: Slice 6 nach Abgleich mit Delta v0.5 §9/§6.8 korrigiert (Draft-PR): Zugänglichkeit immer sichtbar, Eintritt nur mit Kostenantwort, Balken in voller Breite, Format-Tag-Namen wie im Design. Icons am Balken-Label folgen in einem eigenen kleinen PR. Offen zur Entscheidung: „Vorbei“-Kennzeichnung, Sitemap-Regeln, Impressum/Datenschutz, noindex für Preview, Statustexte.
 - 2026-11-02: Vergangene Events zeigen „Vorbei“ ohne Ticketlink (Draft-PR, Cutoff nach Vertrag: bekanntes Ende, sonst Folgetag 12:00 Ortszeit). Offen zur Entscheidung: Sitemap-Regeln, Impressum/Datenschutz, noindex für Preview, Statustexte.
+- 2026-11-03: Statustexte (Neuer Termin, Neuer Termin folgt, Abgesagt, Vorbei) vom Founder bestätigt (Draft-PR, nur Kommentar und Doku). Damit sind die Entscheidungspunkte zu Slice 6 abgeschlossen. Offen: Figma-Spalten mit den bestätigten Texten füllen, Browser-Abnahme im Preview.
 - Das technische Gerüst besitzt Unit-/Smoke-Prüfungen; die fachlichen Abnahmefälle D01–D15 bleiben Papierspezifikationen und kein Requirement gilt als umgesetzt. Entwicklungsfreigabe siehe `AGENTS.md`.
 
 ## Gelesene und geprüfte Quellen
