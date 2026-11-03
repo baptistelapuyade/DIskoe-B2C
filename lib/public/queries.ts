@@ -6,6 +6,7 @@ import {
 } from "./dto";
 import { publicClient } from "./client";
 import { mediaBase } from "./site";
+import { inSitemapWindow } from "./sitemap-window";
 
 // Reserved first path segments are not profile slugs (mirrors the database
 // constraint on profiles.slug). A request for one is a 404 without a lookup.
@@ -96,7 +97,9 @@ export async function listSitemapEntries(): Promise<{
     client.from("public_profiles").select("slug, published_at"),
     client
       .from("public_events")
-      .select("slug, published_at")
+      .select(
+        "slug, published_at, public_status, start_at, end_at, end_state, timezone",
+      )
       .neq("public_status", "cancelled"),
   ]);
 
@@ -113,5 +116,18 @@ export async function listSitemapEntries(): Promise<{
       )
       .map((row) => ({ slug: row.slug, updatedAt: row.published_at }));
 
-  return { profiles: entries(profiles.data), events: entries(events.data) };
+  const now = new Date();
+  const recent = (events.data ?? []).filter((row) =>
+    inSitemapWindow(
+      {
+        status: row.public_status ?? "",
+        startInstant: row.start_at,
+        endInstant: row.end_state === "provided" ? row.end_at : null,
+        timezone: row.timezone,
+      },
+      now,
+    ),
+  );
+
+  return { profiles: entries(profiles.data), events: entries(recent) };
 }
