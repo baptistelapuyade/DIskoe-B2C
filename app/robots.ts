@@ -1,14 +1,10 @@
 import type { MetadataRoute } from "next";
 
-import { siteUrl } from "@/lib/public/site";
+import { buildRobots } from "@/lib/public/robots-rules";
+import { indexingEnabled, siteUrl } from "@/lib/public/site";
+
+export const dynamic = "force-dynamic";
 
 export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: ["/organizer", "/internal", "/auth", "/login", "/api"],
-    },
-    sitemap: `${siteUrl()}/sitemap.xml`,
-  };
+  return buildRobots(indexingEnabled(), siteUrl());
 }
