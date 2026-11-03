@@ -13,6 +13,7 @@ import {
   formatPublishedDate,
   FormatTag,
   ProfileImage,
+  LegalFooter,
   SiteBar,
 } from "./parts";
 
@@ -272,6 +273,7 @@ export function EventView({ event }: { event: PublicEvent }) {
           ) : null}
         </p>
       </footer>
+      <LegalFooter />
     </main>
   );
 }
