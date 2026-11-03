@@ -42,3 +42,9 @@ Die Auswahl der Balken steht rein in `lib/public/info-bars.ts` (Unit-getestet).
 
 ### Nicht geprüft
 Kein Vergleich mit einem gerenderten Figma-Screenshot (Download aus der Umgebung gesperrt); Abgleich nur gegen den Figma-Code. Typecheck, Lint, Unit- und E2E-Tests laufen lokal nicht (Registry gesperrt), nur in der CI.
+
+## Indexierungs-Schalter (Founder-Entscheidung 3.11.)
+
+- `SITE_INDEXING=on` öffnet, alles andere (auch fehlend) schließt. Geschlossen: `robots.txt` mit `Disallow: /` ohne Sitemap-Zeile, leere Sitemap, `noindex` in der Root-Metadata und `X-Robots-Tag: noindex, nofollow` aus der Middleware (gewinnt gegen Seiten-Metadata).
+- Annahmen: kein Zugriffsschutz, nur Crawler-Signal. Statisch gebaute Seiten übernehmen den Wert vom Build (ungesetzt = zu, sicher); Event- und Profilseiten sind dynamisch und lesen ihn zur Laufzeit. Auf Amplify die Variable für Build und Laufzeit setzen und nach dem Deployment `robots.txt` und Header prüfen.
+- Playwright startet den Dev-Server mit `SITE_INDEXING=on`, weil die Specs den offenen Zustand lesen (Sitemap, robots). Der geschlossene Zustand ist per Unit-Test (`tests/unit/site-indexing.test.ts`) abgedeckt, nicht per E2E.
