@@ -1,0 +1,25 @@
+# AWS Amplify Hosting (Next.js SSR), region eu-central-1. No values in this file:
+# variables are set in the Amplify console (see docs/runbooks/amplify-preview.md).
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 24.22.1
+        - nvm use 24.22.1
+        - npm ci
+    build:
+      commands:
+        # Amplify passes only NEXT_PUBLIC_* variables on to the server runtime.
+        # The server-side names are copied into .env.production so that the
+        # running app can read them. Only names, never values, are listed here.
+        - env | grep -E '^(SITE_INDEXING|MAIL_SMTP_HOST|MAIL_SMTP_PORT|MAIL_SMTP_USER|MAIL_SMTP_PASSWORD|MAIL_FROM|SENTRY_DSN|SENTRY_ENVIRONMENT)=' >> .env.production || true
+        - npm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/*
