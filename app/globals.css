@@ -16,6 +16,10 @@
   --peach: #ffb58e;
   --yellow: #f5d95c;
   --lavender: #c3a4cc;
+  /* Figma variables neutral/100, 800, 900 (public event page bands). */
+  --neutral-100: #f5f3f0;
+  --neutral-800: #2b2a29;
+  --neutral-900: #181817;
   --border-strong: #8e8e87;
   --success-base: #2e7048;
   --success-soft: #e8f3ec;
@@ -68,6 +72,9 @@
   --color-brand-peach: var(--peach);
   --color-brand-yellow: var(--yellow);
   --color-brand-lavender: var(--lavender);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
   --color-hover: var(--hover);
   --color-focus: var(--focus);
   --color-border-strong: var(--border-strong);

@@ -6,34 +6,57 @@ import type { PrimaryFormat } from "@/lib/domain/event-publication";
 
 // Shared pieces of the public pages. Colours come from the design tokens only.
 
+// Container widths. "wide" follows the 1440 px frames of PUB-01 (64 px side
+// padding on desktop); the default keeps the narrower pages as they were.
+const CONTAINER = "mx-auto w-full max-w-[1128px] px-6 sm:px-8";
+const CONTAINER_WIDE = "mx-auto w-full max-w-[1440px] px-6 sm:px-8 lg:px-16";
+
 export function Band({
   children,
   tone = "paper",
   label,
+  wide = false,
 }: {
   children: ReactNode;
-  tone?: "paper" | "surface" | "ink" | "lavender";
+  tone?: "paper" | "surface" | "ink" | "lavender" | "neutral100" | "neutral900";
   label?: string;
+  wide?: boolean;
 }) {
   const toneClass = {
     paper: "bg-background text-foreground",
     surface: "bg-secondary text-foreground",
     ink: "bg-foreground text-background",
     lavender: "bg-brand-lavender text-foreground",
+    neutral100: "bg-neutral-100 text-foreground",
+    neutral900: "bg-neutral-900 text-background",
   }[tone];
 
   return (
     <section aria-label={label} className={`${toneClass} border-y border-foreground`}>
-      <div className="mx-auto w-full max-w-[1128px] px-6 py-8 sm:px-8 sm:py-10">
+      <div
+        className={
+          wide
+            ? `${CONTAINER_WIDE} py-8 lg:py-16`
+            : `${CONTAINER} py-8 sm:py-10`
+        }
+      >
         {children}
       </div>
     </section>
   );
 }
 
-export function SiteBar({ back }: { back?: { href: string; label: string } }) {
+export function SiteBar({
+  back,
+  wide = false,
+}: {
+  back?: { href: string; label: string };
+  wide?: boolean;
+}) {
   return (
-    <header className="mx-auto flex w-full max-w-[1128px] flex-col gap-5 px-6 py-5 sm:px-8">
+    <header
+      className={`${wide ? CONTAINER_WIDE : CONTAINER} flex flex-col gap-5 py-5 lg:py-8`}
+    >
       <p className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">DISKOE</p>
       {back ? (
         <Link href={back.href} className="text-sm leading-5 underline-offset-4 hover:underline">

@@ -48,6 +48,7 @@ Rollen: Seite, Fläche, Kopf, Kopf Text, Text, Text gedämpft, Linie, Akzent, Ak
 Textfarbe auf Tags: ink; auf Grün white. Mapping als Code-Konstante.
 **Profiltyp-Kennzeichen (v0.5 §4.1):** Venue Blau mit Ortsmarker, Veranstalter Iris mit Kalender, Artist Pink mit Person.
 **Info-Balken (Gut zu wissen, v0.5 §6.7):** Fläche folgt Profilrolle „Fläche“, Text „Text“, Detail „Text gedämpft“ (17 px Medium), Trennlinien 1 px in `foreground`. Pills farbig: Einlass Lavendel, Eintritt Gelb, Alter Pink, Vor Ort Blau. Zugänglichkeit: neutral, bestätigt grün-getönt, teilweise orange-getönt.
+**Eventseite, Flächen (Figma `neutral/100`, `800`, `900`):** `#f5f3f0` Eventkopf, `#2b2a29` Beschreibung, `#181817` Veranstalter-Band. Als Tokens `--neutral-100/800/900` in `app/globals.css` (seit 2026-11-04). Das Atmosphäre-Band nutzt weiter das Token Lavendel; der Figma-Wert `#bf8bf3` ist dort kein Variablenwert.
 **Eventstatus:** Abgesagt/Verschoben nutzen Status-Tokens (error/warning), siehe Figma „Eventstatus-Farben“.
 
 ## Typografie und Maße

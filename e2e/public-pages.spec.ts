@@ -303,6 +303,12 @@ test.describe("public pages", () => {
     await expect(bars.getByText("Zugänglichkeit", { exact: true })).toBeVisible();
     await expect(bars.getByText("Noch keine Angaben")).toBeVisible();
     await expect(page.getByRole("link", { name: "Veranstalter fragen" })).toHaveCount(0);
+    // PUB-01 actions: sharing is there, "Merken" is a disabled placeholder,
+    // there is no follow or change subscription in the alpha.
+    await expect(page.getByRole("button", { name: "Teilen" })).toBeVisible(SLOW);
+    await expect(page.getByRole("button", { name: "Merken" })).toBeDisabled();
+    await expect(page.getByText("kommt nach der Alpha")).toBeVisible();
+    await expect(page.getByRole("button", { name: /benachrichtig|Neue Events/ })).toHaveCount(0);
     await expect(page.getByText("Party / Clubabend").first()).toBeVisible();
     await expect(page.getByRole("link", { name: /Pub Kollektiv/ }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: /Zum Ticketanbieter/ })).toHaveAttribute(
