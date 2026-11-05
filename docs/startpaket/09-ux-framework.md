@@ -237,7 +237,7 @@ Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 9. Alle weiteren Vorschläge aus dem Entwurf (Maße §5.2, Reihenfolge bei Konflikten §2) zugestimmt (Founder, 05.11., 14:46).
 
 **Offen:**
-1. **Editor-UX-Punkte 1–8** aus dem Test des Eventeditors im Preview (04.11.): Die Liste ist weder im Repo noch in Notion, in PR-Kommentaren oder in den Sitzungsdaten abgelegt und muss vom Founder noch einmal genannt werden. Danach sofort in Repo-Doku und Notion schreiben und als Regeln (neue UX-Nummern) einarbeiten.
+1. ~~Editor-UX-Punkte 1–8~~ **Erledigt durch Verfahren (Founder, 05.11., 14:50):** Die Liste aus dem Test vom 04.11. ist nicht mehr auffindbar. Der Eventeditor (ORG-B) wird in Welle 1 Screen für Screen mit diesem Framework durchgearbeitet; Funde werden dabei sofort in Repo-Doku festgehalten (je Screen ein Review-Protokoll in `docs/reviews/`) und, wenn sie allgemein sind, als neue UX-Regel aufgenommen.
 2. **Maße (§5.2):** Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen.
 3. **Tippziele:** Button und Feld sind 36 px hoch. Ab welcher Breite gilt 44 px?
 4. **Barrierefreiheitsstärkungsgesetz:** Prüfung, ob es gilt, vor dem Alpha-Start.
