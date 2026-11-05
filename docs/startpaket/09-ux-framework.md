@@ -129,6 +129,10 @@ Verbindlich, weil aus Verträgen und Beschlüssen abgeleitet. Die Kennung (UX-nn
 - **UX-21 Profilgestaltung bricht die Plattform nicht.** Organizer gestalten Profil und Event; Fehlerzustände, Pflichthinweise und Rechtliches bleiben im Plattformstil lesbar.
 - **UX-22 Die Szene darf man sehen.** Typografisch und im Bild eigensinnig statt Standard-SaaS; Fotos und Flyer der Organizer sind die Hauptdarsteller, die Oberfläche tritt zurück. *(PP-10; Vorschlag zur Ausgestaltung im Review)*
 
+- **UX-23 Die Seite hat eine lesbare Hierarchie.** Jeder Screen hat genau einen Blickfang (meist Titel oder Hauptaktion), danach klar abgestufte Ebenen: Titel, Abschnitt, Fließtext, Nebeninfo. Ablauf, Schrift, Text, Elemente und Farben folgen derselben Rangfolge. Prüfung: Augen zusammenkneifen (Squint-Test) und fünf Sekunden schauen: Was fällt zuerst auf, was als Nächstes, stimmt das mit dem Ziel des Screens überein? *(Founder, 05.11.)*
+- **UX-24 Farbe lenkt die Aufmerksamkeit.** Plattformfarben (Iris, Pink, Blau, Pfirsich, Gelb, Lavendel, Status-Soft-Töne) werden gezielt eingesetzt, um Fokus, Fortschritt, Status und Erfolgsmomente zu setzen, nicht als Dekoration und nicht überall. Mindestens ein bewusster Farbakzent pro Screen, kein Screen ohne Farbe außer Formulare, in denen der Fokus beim Ausfüllen liegt. Farbe trägt nie allein die Bedeutung (§3.5), Kontrast nach `04-design-tokens.md`. Die festen Tag-Farben behalten ihre Bedeutung und werden nicht für andere Zwecke verwendet. *(Founder, 05.11.)*
+- **UX-25 Fehlt eine Schrift als Token, wird sie vorgeschlagen.** Passt keiner der vorhandenen Textstile (§5.2) zur Aufgabe, wird kein Wert „frei“ gesetzt. Ablauf: Vorschlag mit Name, Größe, Zeilenhöhe, Gewicht, Einsatz und Begründung → Founder bestätigt → Textstil in Figma und Token in `app/globals.css` anlegen, in `04-design-tokens.md` dokumentieren → erst dann verwenden. *(Founder, 05.11.)*
+
 ## 5. Text, Ton und Maße
 
 ### 5.1 Text und Ton
@@ -163,6 +167,23 @@ Verbindlich, weil aus Verträgen und Beschlüssen abgeleitet. Die Kennung (UX-nn
 - **Icons:** Lucide-Stil bleibt Vorbild (24-px-Raster, Strich 1,5 px, rund, `currentColor`). Neue Icons kommen aus der Figma-Komponente `Icon / …`, nicht frei gezeichnet. Ein Icon trägt nie allein die Bedeutung (Text oder Beschriftung dabei).
 - **Tippziele:** siehe §3.4.
 - **Seitenränder und Spaltenbreiten:** je Screen aus Figma lesen (z. B. Eventkopf Desktop 64 px Innenabstand), nicht pauschal festlegen.
+
+### 5.3 Hierarchie, Farbe und Schrift (Ausgestaltung zu UX-23 bis UX-25)
+**Gilt als Arbeitsregel**, soweit es die drei Founder-Regeln konkretisiert. Zahlen sind Startwerte und werden im Review geschärft.
+
+- **Rangfolge:** Titel > Abschnittstitel > Text > Nebeninfo. Pro Screen ein Titel (H1). Gleiche Rolle = gleicher Textstil auf allen Screens. Größe, Gewicht und Farbe tragen zusammen die Rangfolge; ein Element, das „wichtig“ ist, ist nie nur größer, sondern auch klar abgesetzt.
+- **Farbe als Rangfolge:** Hauptaktion in `primary` (Ink); Fortschritt, aktueller Schritt und Auswahl in Iris; Status in den Soft-Tönen mit Text und Icon; Erfolg und Abschluss (Peak-End) dürfen eine Pastellfläche (Pink, Gelb, Pfirsich, Blau, Lavendel) bekommen, Text darauf in Ink. Graue Fläche ist Hintergrund, kein Akzent.
+- **Schrift:** Die vorhandenen Textstile (§5.2) reichen für Plattform-Screens. Ein Screen nutzt höchstens drei Größenstufen neben Eyebrow und Caption. Neue Stile nur über UX-25.
+
+**Vorschläge von Claude (noch nicht bestätigt, bitte entscheiden):**
+- **V1 Lesebreite:** Fließtext höchstens 75 Zeichen oder rund 680 px breit, auch auf breiten Bildschirmen. Formulare höchstens 560 px, Mehrspaltiges nur bei Vergleich oder Übersicht.
+- **V2 Rhythmus statt Einheitsabstand:** Zusammengehörendes näher (8–12 px), Abschnitte weiter (32–48 px), nicht überall 24 px. Gruppierung durch Nähe vor Linien und Kästen.
+- **V3 Titelgröße je Viewport:** Mobil Titel kleiner als Desktop (z. B. 24 statt 32), Fließtext bleibt 16 px; die Hierarchie bleibt über die Größenunterschiede erhalten, nicht über absolute Werte.
+- **V4 Bild vor Text:** Wo der Organizer ein Flyer- oder Profilbild hat, ist es der Blickfang des Screens (PP-10, UX-22), nicht ein Kasten mit Text.
+- **V5 Persönliche Texte an Schlüsselmomenten:** Leerzustände, Erfolg und Fehler dürfen im Ton der Szene sprechen (§5.1), kurz, ohne Floskel.
+- **V6 Container schneiden nichts ab:** Rahmen, Schatten und Fokusringe werden in Figma und Code nie von einem Container abgeschnitten (kein Zuschneiden an Karten, Zeilen, Feldern). Prüfung im Zoom (200 %). *(Anlass: Fund im Review vom 05.11., abgeschnittene Ränder an Buttons und Feldern.)*
+- **V7 Fünf-Sekunden-Test mit Text:** Zu jedem Screen im Review ein Satz: „Wer hier ankommt, sieht zuerst …, danach …, und tut als Nächstes …“. Passt der Satz nicht zum Ziel, ist die Hierarchie falsch.
+- **V8 Kontrast auf Farbflächen:** Text auf Akzent- und Pastellflächen mit Wert im Review nennen (≥ 4,5 : 1), Iris nur für Text, wenn der Wert erreicht ist, sonst nur für Flächen, Linien und Icons.
 
 ## 6. Screen-Checkliste (Prüfblatt)
 Wird für jeden Screen ausgefüllt (Antwort **Ja**, **Nein** mit Begründung oder **n. a.** mit Begründung). Sie ist Teil der Abweichungsliste vor dem Bauen und des PR-Abschnitts „UX-Check“.
@@ -212,6 +233,14 @@ Wird für jeden Screen ausgefüllt (Antwort **Ja**, **Nein** mit Begründung ode
 - [ ] G5 Sprache, Gestaltung und Bildwelt passen zur Szene (PP-10, §5.1).
 - [ ] G6 Nichts Verbreitendes steht hinter einer Bezahlschranke (PP-11).
 
+**H. Hierarchie, Farbe und Schrift (§5.3)**
+- [ ] H1 Es gibt einen Blickfang; Squint-Test und Fünf-Sekunden-Satz passen zum Ziel (UX-23).
+- [ ] H2 Rangfolge von Titel, Abschnitt, Text, Nebeninfo ist über Größe, Gewicht und Farbe erkennbar; gleiche Rolle = gleicher Textstil.
+- [ ] H3 Farbe lenkt gezielt (Fokus, Fortschritt, Status, Erfolg); nicht grau in grau, nicht bunt ohne Grund (UX-24).
+- [ ] H4 Alle Schriften sind Tokens; fehlt eine, liegt ein Vorschlag nach UX-25 vor.
+- [ ] H5 Lesebreite und Abstandsrhythmus passen (Vorschläge V1, V2, falls bestätigt).
+- [ ] H6 Rahmen, Schatten und Fokusringe sind im Zoom vollständig sichtbar (V6, falls bestätigt).
+
 ## 7. Verankerung im Prozess
 Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 
@@ -235,8 +264,10 @@ Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 7. Im Eventstart bleibt neben dem Flyer sichtbar, dass Text und Link später folgen: ja.
 8. Produktprinzipien PP-01 bis PP-11 (§2) übernommen wie formuliert, einschließlich der von Claude ergänzten PP-02, PP-07, PP-08, PP-09, PP-11 (Founder, 05.11., 14:46).
 9. Alle weiteren Vorschläge aus dem Entwurf (Maße §5.2, Reihenfolge bei Konflikten §2) zugestimmt (Founder, 05.11., 14:46).
+10. UX-23 (Hierarchie), UX-24 (Farbe lenkt Aufmerksamkeit) und UX-25 (fehlende Schrift als Token vorschlagen) in das Framework aufnehmen (Founder, 05.11., 15:16). Ausgestaltung in §5.3, Checkliste H.
 
 **Offen:**
+0. **Vorschläge V1 bis V8 in §5.3** bestätigen, ändern oder streichen (Founder).
 1. ~~Editor-UX-Punkte 1–8~~ **Erledigt durch Verfahren (Founder, 05.11., 14:50):** Die Liste aus dem Test vom 04.11. ist nicht mehr auffindbar. Der Eventeditor (ORG-B) wird in Welle 1 Screen für Screen mit diesem Framework durchgearbeitet; Funde werden dabei sofort in Repo-Doku festgehalten (je Screen ein Review-Protokoll in `docs/reviews/`) und, wenn sie allgemein sind, als neue UX-Regel aufgenommen.
 2. **Maße (§5.2):** Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen.
 3. **Tippziele:** Button und Feld sind 36 px hoch. Ab welcher Breite gilt 44 px?
