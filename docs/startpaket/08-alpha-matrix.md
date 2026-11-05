@@ -47,7 +47,7 @@ Die Gruppen folgen dem Weg des ersten Organizers. Alpha: **Ja** heißt in der Al
 |---|---|---|---|---|---|
 | Event manuell anlegen: Titel, Format, Beschreibung, Termin mit Zeitzone, Ort als Text, Preis, Zugang, Bild, Atmosphäre, konkrete Lückenprüfung | PUBLISH-01, Slice 4 | Ja | gebaut | ORG-B, GELTEND | Die Editor-UX-Punkte 1–8 aus dem Test stehen für die Design-Runde noch aus |
 | Zusatzfragen je Format (Club, Vernissage, Film, Zugänglichkeit) | S3-Fragenpool, B13 | Ja | nicht belegt | ORG-C, GELTEND | Prüfen, was davon im Editor schon steckt |
-| KI-Erfassung aus bis zu drei Flyern, Text und Link, mit adaptiven Rückfragen und manuellem Fallback | PUBLISH-01 bis 03, Featurematrix 22.10. | Ja, bestätigt 05.11. | nicht gebaut | ORG-B (Erfassung), GELTEND | Freigabe, Kostengrenze, Anbieter. Link-Import ist laut Notion der erste Kandidat zum Streichen |
+| KI-Erfassung aus bis zu drei Flyern, Text und Link, mit adaptiven Rückfragen und manuellem Fallback | PUBLISH-01 bis 03, Featurematrix 22.10. | Ja, bestätigt 05.11. | nicht gebaut | ORG-B (Erfassung), GELTEND | Freigegeben 05.11. (Google-Modell, Guthaben). Zuerst Flyerbilder. Link-Import ist laut Notion der erste Kandidat zum Streichen |
 | Duplizieren mit erneuter Prüfung | PUBLISH-06 | Ja | nicht belegt | nicht belegt | Slice 5 nennt „Weiteres Event anlegen“ als UX-seitig zu überdenken |
 | Eventbild mit Bildbeschreibung (Pflicht zur Veröffentlichung) | Slice 4, Delta v0.4 | Ja | gebaut | ORG-94, GELTEND | – |
 
@@ -128,10 +128,10 @@ Sieben Stellen widersprechen sich. Die Entscheidungen vom 05.11. lösen die erst
 
 | Widerspruch | Quellen | Vorschlag zur Auflösung |
 |---|---|---|
-| Follow, Merken und Kalender sind laut Delta v0.5 §11 „Free in der Alpha“, stehen aber als „nicht im Durchstich“ und in `AGENTS.md` ist jede Mail an Besucher verboten. | Delta v0.5, `02-durchstich.md`, `AGENTS.md` | Durch die Entscheidung vom 05.11. gilt Delta v0.5. `AGENTS.md` wird um Mails an Besucher (Follow) erweitert, mit Umfang und Datum. |
-| Live-KI auf Nutzerdaten ist „nicht autorisiert“, die Featurematrix nennt KI-Erfassung aber Free in der Alpha. | `AGENTS.md`, Featurematrix 22.10. | Beschlossen ist sie. Es fehlt nur die Entwicklungsfreigabe mit Kostengrenze. |
-| Notion hat einen Stufenplan (Alpha 1, Alpha 2), der noch nicht entschieden ist. Heute kommt alles in die Alpha. | Aufwandsschätzung 22.10. | Die Reihenfolge nach dem Weg des Organizers ersetzt den Stufenplan. Notion wird entsprechend angepasst. |
-| Die Reihenfolge der Folgeschichten im Repo (Gestaltung, KI, Follow, Netzwerk, Plus, Besucher) passt nicht zum Organizer-Weg. | `02-durchstich.md` | Neue Reihenfolge siehe nächster Abschnitt. `02-durchstich.md` wird nach der Bestätigung aktualisiert. |
+| Follow, Merken und Kalender sind laut Delta v0.5 §11 „Free in der Alpha“, stehen aber als „nicht im Durchstich“ und in `AGENTS.md` ist jede Mail an Besucher verboten. | Delta v0.5, `02-durchstich.md`, `AGENTS.md` | Aufgelöst am 05.11.: Delta v0.5 gilt; `AGENTS.md` erlaubt Systemmails des Besucherablaufs mit Umfang und Datum. |
+| Live-KI auf Nutzerdaten ist „nicht autorisiert“, die Featurematrix nennt KI-Erfassung aber Free in der Alpha. | `AGENTS.md`, Featurematrix 22.10. | Aufgelöst am 05.11.: Entwicklungsfreigabe für Flyerbilder im Google-Guthaben, siehe `AGENTS.md`. |
+| Notion hat einen Stufenplan (Alpha 1, Alpha 2), der noch nicht entschieden ist. Heute kommt alles in die Alpha. | Aufwandsschätzung 22.10. | Aufgelöst am 05.11.: Die Reihenfolge nach dem Weg des Organizers ersetzt den Stufenplan. Die Notion-Aufwandsseite ist noch nachzuziehen (offen). |
+| Die Reihenfolge der Folgeschichten im Repo (Gestaltung, KI, Follow, Netzwerk, Plus, Besucher) passt nicht zum Organizer-Weg. | `02-durchstich.md` | Aufgelöst am 05.11.: Wellenfolge siehe nächster Abschnitt; `02-durchstich.md` verweist darauf. |
 | Figma-Sektionen heißen „nicht im Durchstich“. Das klingt nach „nicht in der Alpha“, meint aber nur „noch nicht gebaut“. | `03-screens-figma.md` | Sektionsnamen nach der Matrix umbenennen (Alpha, Welle, Status). |
 | Künstlerseiten: „öffentlich erst nach Rechtsprüfung“ in der Featurematrix, „vorsichtiger Weg ohne Kanzlei“ im späteren Beschluss vom 22.10. | Featurematrix §2, Featurematrix §9 | Der spätere Beschluss gilt: erreichbar, noindex, Entfernen-Link, Bestätigung durch den Organizer. Prüfung bei Budget. |
 | `SLICE-2-SUMMARY.md` nennt SES „nicht beantragt“. Das Runbook nennt den Produktionszugang seit 28.10. als erteilt. Notion-Seite „Umsetzungsstand“ vom 28.10. ist ebenfalls überholt. | Slice-Zusammenfassung, Runbook, Notion | Runbook gilt. Die beiden alten Stellen mit „überholt durch“ kennzeichnen. |
