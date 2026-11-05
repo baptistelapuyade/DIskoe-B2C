@@ -231,16 +231,17 @@ Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 3. WCAG 2.2 AA als Ziel.
 4. Öffentliche Seiten mobil zuerst; Tippziel 44 px.
 5. CI-Prüfung für den UX-Check: ja (gebaut, §7.8).
-6. Claude leitet Abstandsraster, Radien und Icons aus Figma ab: ja (§5.2, Werte noch zu bestätigen).
+6. Claude leitet Abstandsraster, Radien und Icons aus Figma ab: ja (§5.2, Vorschlag am 05.11. bestätigt).
 7. Im Eventstart bleibt neben dem Flyer sichtbar, dass Text und Link später folgen: ja.
+8. Produktprinzipien PP-01 bis PP-11 (§2) übernommen wie formuliert, einschließlich der von Claude ergänzten PP-02, PP-07, PP-08, PP-09, PP-11 (Founder, 05.11., 14:46).
+9. Alle weiteren Vorschläge aus dem Entwurf (Maße §5.2, Reihenfolge bei Konflikten §2) zugestimmt (Founder, 05.11., 14:46).
 
 **Offen:**
-1. **Editor-UX-Punkte 1–8** aus deinem Test des Eventeditors im Preview: Claude hat die Liste nicht mehr. Bitte noch einmal nennen oder eine Notiz ablegen; sie werden als Regeln ins Framework eingearbeitet.
-2. **Produktprinzipien (§2):** Feinschliff der sechs Founder-Prinzipien und Bestätigung der von Claude ergänzten (PP-02, PP-07, PP-08, PP-09, PP-11).
-3. **Maße (§5.2):** Werte des Vorschlags bestätigen; Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen.
-4. **Tippziele:** Button und Feld sind 36 px hoch. Ab welcher Breite gilt 44 px?
-5. **Barrierefreiheitsstärkungsgesetz:** Prüfung, ob es gilt, vor dem Alpha-Start.
-6. **Branch-Schutz:** Die CI-Prüfung (§7.8) in GitHub als erforderlichen Status für `main` eintragen (Founder).
+1. **Editor-UX-Punkte 1–8** aus dem Test des Eventeditors im Preview (04.11.): Die Liste ist weder im Repo noch in Notion, in PR-Kommentaren oder in den Sitzungsdaten abgelegt und muss vom Founder noch einmal genannt werden. Danach sofort in Repo-Doku und Notion schreiben und als Regeln (neue UX-Nummern) einarbeiten.
+2. **Maße (§5.2):** Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen.
+3. **Tippziele:** Button und Feld sind 36 px hoch. Ab welcher Breite gilt 44 px?
+4. **Barrierefreiheitsstärkungsgesetz:** Prüfung, ob es gilt, vor dem Alpha-Start.
+5. **Branch-Schutz:** Die CI-Prüfung (§7.8) in GitHub als erforderlichen Status für `main` eintragen (Founder).
 
 ## 9. Quellen
 - Nielsen Norman Group: 10 Usability Heuristics; Formularrichtlinien.
