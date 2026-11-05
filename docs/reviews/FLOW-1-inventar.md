@@ -59,7 +59,7 @@ Anmelden → Profil bearbeiten (Angaben, Bild) → Vorschau → Einreichen → P
 
 ## 2. Zahlen
 - **Frames je Zustand und Viewport (Framework §6, B2):** Mobil gibt es in Flow 1 nur für den Profileditor (ORG-88). Alle anderen Screens brauchen einen Mobil-Frame.
-- **Fehlende Zustände:** 21 der 40 Zeilen haben keinen Figma-Frame, obwohl der Code sie schon umsetzt (Fehler, Wartezustände, Startseite, Live-Änderungen).
+- **Fehlende Desktop-Frames:** 19 der 40 Zeilen haben keinen Figma-Frame. In 16 davon setzt der Code den Zustand schon um (Fehler, Wartezustände, Startseite, Live-Änderungen, Abmelden, Rechtliches). Zwei weitere (Nr. 23, 29) sind unklar.
 - **Widerspruch Figma ↔ Code im Ablauf selbst:** Nr. 1 (wer legt das Profil an), Nr. 28/32 (Profil allein oder mit erstem Event freigeben).
 
 ## 3. Vorschlag für Schritt 2 (fehlende Screens)
