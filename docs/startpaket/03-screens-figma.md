@@ -1,23 +1,99 @@
 # 03 — Screen-Index (Figma)
 
-Datei: `4wtHBUljZkvFetSA9ZujjY`. Link-Muster: `https://www.figma.com/design/4wtHBUljZkvFetSA9ZujjY?node-id=<ID mit - statt :>`. Beispiel: `2643:9414` → `node-id=2643-9414`.
+Datei: `4wtHBUljZkvFetSA9ZujjY`. Link-Muster: `https://www.figma.com/design/4wtHBUljZkvFetSA9ZujjY?node-id=<ID mit - statt :>`. Beispiel: `2643:9417` → `node-id=2643-9417`.
 Hinweis: Figma ist visuelle Referenz. Fachregeln stehen in den Verträgen. Alles hier sind statische Entwürfe, keine Funktionsnachweise.
 
-## Seiten der Datei (Struktur seit 30.10.2026)
-Status im Namen jeder Section: GELTEND, ENTWURF oder ARCHIV. Screens tragen eine durchgehende Nummer (`ORG-nn`, `NACH-nn`, `PUB-nn`), der alte Code steht in Klammern dahinter. Knoten-IDs sind beim Umsortieren gleich geblieben.
+## Arbeiten mit Figma (seit 04.11.2026)
+- **Ein Frame zeigt einen Screen in einem Zustand und einem Viewport.** Keine Screens in Sammelrahmen. Notizen und Review-Hinweise stehen als Text links in der Section, nie im Screen-Frame.
+- **Eine Section ist ein Bereich oder Flow.** Jede Zeile ist ein Screen: links der Normalzustand, rechts die weiteren Zustände, Mobil am Zeilenende. Öffentliche Seiten: Mobil als eigene Zeile direkt unter Desktop.
+- **Viewports:** Organizer-Desktop 1128 px (das ist das Desktop-Fenster, Founder 04.11.2026), öffentliche Seiten 1440 px, Mobil 390 px.
+- **Frame-Namen:** `BEREICH-Nummer[Zustand] · Screen — Zustand · Viewport (alter Code)`, z. B. `PUB-01b · Eventseite — Abgesagt · Desktop`, `ORG-19 · Eventeditor — privater Entwurf · Desktop (T19 / 01)`. Bereiche: `ORG` (bis zur Prüfung), `NACH` (nach der Veröffentlichung), `PUB` (öffentlich), `INT` (intern), `D11`–`D21` (Netzwerk-Bausteine, z. B. `D11.2 · Ort suchen · Desktop`).
+- **Section-Namen:** `STATUS · [nicht im Durchstich ·] Kürzel Titel`. Status: `GELTEND`, `ENTWURF`, `ÜBERHOLT` (anzugleichen oder zu klären), `REGELN` (Prüfmaterial, kein Screen), `ARCHIV`. „nicht im Durchstich“ beschreibt den heutigen Bauumfang; was in die Alpha kommt, entscheidet der Founder.
+- **Bau-Signal im Dev Mode:** „Ready for dev“ = darf gebaut werden, „Completed“ = gebaut (PR-Nummer als Anmerkung). Frames ohne Status werden nicht gebaut.
+- **Ablauf beim Bauen:** Founder und Claude gehen Flow für Flow und Screen für Screen durch. Der Founder passt den Screen in Figma an, wo nötig, und setzt „Ready for dev“. Claude liest genau diesen Frame (Code-Auszug und Screenshot), legt vor dem Bauen eine Abweichungsliste vor (Figma sagt A, Daten/Regeln im Repo sagen B, Vorschlag C) und baut erst nach Okay. Wo Figma schweigt, wird nichts erfunden. Fertig ist ein Screen erst nach einem Vergleich des gerenderten Bildes mit dem Figma-Screenshot; im PR steht eine Tabelle „Figma gegen Umsetzung“.
+
+## Seiten der Datei (Struktur seit 04.11.2026)
+Die Legende auf Seite 00 enthält dieselben Regeln. Vor der Neuordnung wurde eine Version im Figma-Versionsverlauf gesichert („Vor Neuordnung 04.11.“). Alle Screen-Frames haben ihre Knoten-ID behalten; nur Sammelrahmen und Zwischenüberschriften wurden entfernt.
 
 | Seite | Inhalt |
 |---|---|
-| 00 Start hier | Legende, Status-Regeln, Nummernschema |
-| 10 Design-System — DISKOE-Komponenten | Eigene Komponenten, u. a. `DISKOE / Action Bar` (2876:1802) |
-| 11 Design-System — UI-Kit (Basis) | shadcn-basiertes Fundament; nur Icons, Select, Tabs, Internal Components und Button werden außerhalb des Kits benutzt |
-| 20 Organizer — Ablauf bis zur Prüfung | Master: Kernflow v1 (2533:3521, `ORG-01` bis `ORG-90`), dazu D11, D12, D15–D18, D20, D21, Preis und Zugang, Eventeditor-Review |
-| 30 Organizer — nach der Veröffentlichung | `NACH-00` Übersicht, `NACH-01` bis `NACH-16` Freigabe, Rückfrage, Eventverwaltung, Ändern, Verschieben, Absage; Section „ENTWURF · Slice 5“ (2859:40104) |
-| 40 Öffentliche Seiten | `PUB-01` bis `PUB-24`; geltende Eventseite ist `PUB-01` (2643:9414) |
-| 50 Intern (Founder) | D8 Interne Prüfseite (2764:44857) |
-| 60 Besucher-Prototyp | Klickprototyp (Desktop 1440×900, Mobile 390×844) |
-| 80 Geparkt — Discovery (spätere Phase) | Bausteine für die Discovery nach der Alpha (Poll, Plan, District, Merken, Kategorien, Account row, Event-detailpage u. a.), nicht löschen |
-| 90 Archiv | ersetzte Stände mit Datum und Grund im Namen |
+| 00 Start hier | Legende: Seiten, Aufbau, Namen, Status, Bau-Signal |
+| 10 Design-System — DISKOE-Komponenten | Eigene Komponenten in Bereichen DS-A bis DS-H (siehe „Seite 10 — Komponenten“), u. a. `DISKOE / Action Bar` (2876:1802) |
+| 11 Design-System — UI-Kit (Basis) | shadcn-Kit mit funktionalen Bausteinen (Akkordeon, Input File, Select, Tabs, Dialog, Tooltip, Table, Pagination, Breadcrumb, Sheet, Command …); zweite Komponentenquelle neben Seite 10, unverändert |
+| 20 Organizer — Ablauf bis zur Prüfung | Zeile 1 Durchstich: ORG-A bis ORG-D. Zeile 2 nicht im Durchstich: ORG-E, D21, D11, D12, D15, D20, D16–D18 |
+| 30 Organizer — nach der Veröffentlichung | NACH-A bis NACH-C; darunter der Slice-5-Review-Stand (ÜBERHOLT) |
+| 40 Öffentliche Seiten | Zeile 1 Eventseite, Zeile 2 Profile |
+| 50 Intern (Founder) | INT-A Founder-Prüfung, INT-B Ortsbindung (nicht im Durchstich) |
+| 60 Besucher-Prototyp | Klickprototyp (Desktop 1440×900, Mobile 390×844); nicht umsortiert, sonst brechen die Verknüpfungen |
+| 80 Geparkt — Discovery (spätere Phase) | Bausteine für die Discovery nach der Alpha, nicht löschen; unverändert |
+| 90 Archiv | ersetzte Stände mit Datum und Grund im Namen; neu: alter Dateiaufbau vom 22.10. |
+
+### Seite 10 und 11 — Komponenten (seit 05.11.2026)
+**Zwei Quellen, feste Reihenfolge beim Bauen:**
+1. Seite 10 „DISKOE-Komponenten“: eigene Bausteine des Produkts. Zuerst hier suchen.
+2. Seite 11 „UI-Kit (Basis)“: shadcn-Kit für funktionale Bausteine ohne DISKOE-Version (z. B. Akkordeon, Input File, Select, Tabs, Dialog, Tooltip, Table). Von dort darf Claude Komponenten nehmen.
+3. Hat keine der beiden Seiten den Baustein, fragt Claude nach, statt ihn zu erfinden.
+
+Farben, Schrift und Abstände gelten nach den DISKOE-Tokens (`04-design-tokens.md`), auch bei Bausteinen aus dem Kit. Weicht ein Kit-Baustein davon ab, steht das in der Abweichungsliste vor dem Bauen. Wird ein Kit-Baustein im Produkt benutzt, kann der Founder entscheiden, ihn als `DISKOE / …` auf Seite 10 nachzubauen. Seite 11 bleibt unverändert (Kit-Struktur), trägt aber oben links eine Hinweiskarte „DISKOE: So nutzen wir dieses Kit“ (2952:34393).
+
+**Seite 10 ist nach Bereichen geordnet:** Komponenten-Sets liegen nebeneinander und brechen in Zeilen um, Bereiche liegen in einem Raster. In Sets mit Viewport-Eigenschaft steht Mobil rechts neben Desktop, jede Zeile ist ein Zustand. Neue Komponenten kommen in den passenden Bereich, nicht lose auf die Seite. Auf der Seite liegt links oben die Legende „DS · Legende“ (2952:1846). Alle Komponenten-IDs sind unverändert, Instanzen auf anderen Seiten bleiben verbunden.
+
+| Bereich (Section) | Knoten | Inhalt |
+|---|---|---|
+| DS-0 Stilübersicht (Frame, Referenz) | 2454:392 | Farben, Typografie, Beispiele (vorher „DISKOE / Review“) |
+| GELTEND · DS-A Aktionen und Formular | 2952:1841 | Button, Icon Button, Checkbox, Switch, Tabs, Input, Textarea, Select, File Input, Form Field, Image Upload |
+| GELTEND · DS-B Rückmeldung und Kleinteile | 2952:1842 | Badge, Alert, Dialog, Avatar, Atmosphere Chip, Media, Empty State |
+| GELTEND · DS-C Seitenstruktur und Navigation | 2952:1843 | Section Heading, Color Block, Page Header (+ Desktop), Navigation Item, Workspace Switcher, Action Bar |
+| GELTEND · DS-D Event- und Profilkarten | 2952:1844 | Event Card, Event Row, Profile Banner, Profile Header / Cover, Spotify Placeholder |
+| ENTWURF · nicht in der Alpha · DS-H Event-Follow | 2952:1845 | Event Follow / Organizer Card, Change Card (Mails an Besucher sind außerhalb der Mail-Freigabe) |
+| GELTEND · DS-G Event-Infokarten | 2786:40643 | Info-Balken, Gut zu wissen v3 (Desktop/Mobile), Event-Tag, Tag-Farben |
+| GELTEND · DS-E Profilmodule | 2577:5297 | Profile Module (Identity, Event Item, Upcoming Events, Manifest, Music, Gallery, Recommendations, Archive, Links and Contact), Venue Section |
+| ENTWURF · nicht im Durchstich · DS-F Artist-Profil und Listen | 2731:50998 | Artist Section (Hero, Kommende Events, Bio, Links, Gespielt bei, Archiv, Über diese Seite), Profile Event Row, Link Card, Archive Poster, Type Label, Tag, Show More |
+
+### Seite 20 — Organizer bis zur Prüfung
+| Section | Knoten | Zeilen |
+|---|---|---|
+| GELTEND · ORG-A Zugang und Profil anlegen | 2943:5576 | Teststart, E-Mail (`ORG-01`), Code (`02`), Profiltyp (`52`), Profileditor (`03`, `04`, Mobil `88`), Profilbild (`05`, `51`, `49`, `93`), Cover/Venue-Pfad (`50`, `06`, nicht im Durchstich), Vorschau (`09`), Bestätigen (`10`–`13`), in Prüfung (`14`, `41`) |
+| GELTEND · ORG-B Event erfassen und bearbeiten | 2943:5589 | Eventstart (`15`, `16`, Mobil `89`, `90`), Erfassung (`17`, `18`), Entwurf fortsetzen (`84`, `40`, `45`), Eventeditor (`19`, `39`, `30`, `31`, `43`, `44`, `94`, Mobil `53`), Programm und Besuch (`ORG-91`), Preis und Zugang (`ORG-92a`–`l`: fixed, free, from, range, donation, minimum_donation, unknown, registration, soldout, fees_known, fees_unknown, urlerror), Atmosphäre (`20`, `21`, Mobil `54`, `55`) |
+| GELTEND · ORG-C Zusatzfragen (Ergänzungen) | 2943:5599 | Start (`22`, Mobil `85`), Club (`23`–`27`, Mobil `86`), Zugänglichkeit (`28`), Vernissage (`75`–`78`), Film (`79`–`83`), Abschluss (`29`, `46`–`48`, Mobil `87`) |
+| GELTEND · ORG-D Vorschau, Bestätigung und Erstprüfung | 2943:5608 | Vorschau (`33`, `32`, Mobil `56`), Bestätigung (`34`–`37`), eingereicht (`38`, `42`) |
+| ENTWURF · nicht im Durchstich · ORG-E Profilgestaltung und Module | 2943:5614 | Gestaltung (`07`, `65`, `66`), Module (`08`, `62`), Modulinhalte (`57`–`61`, `64`), Profilvorschau (`63`), Galerie (`67`–`70`), Empfehlungen (`71`–`74`) |
+| ENTWURF · nicht im Durchstich · D21, D21 c/d, D11, D12, D15, D20, D16–D18 | 2777:44971, 2779:45721, 2715:43598, 2719:43976, 2720:44069, 2760:44388, 2721:44178 | Netzwerk-Bausteine, Gestaltung, Plus/Pro. D21-Frames sind 1440 breit (übrige Organizer-Screens 1128) |
+
+Neu vergeben: `ORG-91` (Programm und Besuch, 2688:9788), `ORG-92a`–`l` (Preis und Zugang, z. B. fixed 2688:10292, unknown 2688:12129), `ORG-93` (Profilbild mit Bildbeschreibung, 2857:39275, vorher S5-B1), `ORG-94` (Eventbild mit Bildbeschreibung, 2857:39307, vorher S5-B2). Prototyp-Startpunkte (14) sind erhalten.
+
+### Seite 30 — nach der Veröffentlichung
+| Section | Knoten | Zeilen |
+|---|---|---|
+| GELTEND · NACH-A Freigabe und Rückfrage | 2945:642 | Testanleitung, Freigabe (`NACH-01`), Rückfrage (`02`–`04`), Systemmails (`NACH-19`, 2894:1178, vorher S5-E, Textentwurf) |
+| GELTEND · NACH-B Eventverwaltung und Änderungen | 2945:649 | Eventverwaltung (`05`), weiteres Event (`NACH-17` 2855:38933, `NACH-18` 2896:735, vorher S5-C/S5-F), Text ändern (`06`–`08`), Ort ändern (`09`, `10`) |
+| GELTEND · NACH-C Verschieben und Absage | 2945:656 | Verschieben (`11`–`14`), Absage (`15`, `16`) |
+| ÜBERHOLT · Slice 5 Review-Flow (29.10.2026) | 2859:40104 | Review-Labels und „Kopien“. Sechs von neun Kopien weichen in Text oder Höhe vom Original ab; beim Screen-Review klären, welche Fassung gilt, danach archivieren |
+
+### Seite 40 — öffentliche Seiten
+| Section | Knoten | Frames |
+|---|---|---|
+| GELTEND · PUB-01 Eventseite | 2936:11700 | Desktop/Mobil: a Normal (2643:9417 / 2652:7621), b Abgesagt (2676:9868 / 2676:10041), c Verschoben, Termin folgt (2676:10193 / 2676:10312), d Verschoben, neuer Termin (2676:10434 / 2676:10554), e Vorbei (2676:10677 / 2676:10826), f Vernissage (2792:48358), g Film (2792:48780). Nach einer Änderung: h–l (2702:11091, 11240, 11389, 11543, 11692). Teilen: m–o (2661:8159, 8560, 8789) |
+| REGELN · PUB-16 Gut zu wissen — Farbtest und Randfall | 2936:11706 | vier Paletten, Randfall 6 Balken Desktop/Mobil |
+| ENTWURF · nicht im Durchstich · PUB-07 Eventseite mit Ortsstatus, Co-Hosts, Line-up (D13) | 2716:41215 | 07a–c Desktop, 07a Mobil |
+| ENTWURF · nicht im Durchstich · PUB-18 Besucheraktionen | 2939:11702 | Merken, E-Mail-Abos, Kalender: `PUB-18.01a` … `PUB-18.10d` |
+| GELTEND · PUB-06 Veranstalterprofil | 2940:11700 | a Normal (2632:7096 / 2632:7267), b ohne kommende Termine (2580:6685 / 2602:15795, noch alter Stil), c Liste eingeklappt (2732:51616 / 2732:51892), d Liste ausgeklappt (2732:51754) |
+| ENTWURF · nicht im Durchstich · PUB-03 Profilmodule und Kombinationen | 2577:5862 | 03a–g Desktop (inkl. frühere PUB-04-Regeln), 03a, h–j Mobil (frühere PUB-05) |
+| ENTWURF · nicht im Durchstich · PUB-11, PUB-08, PUB-09 | 2747:43479, 2730:56314, 2758:43625 | Venue-Profil, Künstler:innen-Seite, Künstler-Zustände |
+| REGELN · PUB-12 Profiltypen | 2753:52940 | Vergleich Kopf, Kennzeichen, Karten |
+| ENTWURF · nicht im Durchstich · PUB-13 Profilgestaltung | 2769:44367 | Richtungen und Paletten |
+| GELTEND · nicht im Durchstich · PUB-17 Follow-Platzierung | 2839:47447 | Entscheidung 26.10.2026, 17a–e |
+
+Aufgelöst am 04.11.2026: `PUB-01`- und `PUB-19`-Sammelrahmen (Zustände jetzt `PUB-01b`–`e`), `PUB-20`–`24` (jetzt `PUB-01h`–`l`), `PUB-14`/`15` (jetzt `PUB-01f`/`g`), `PUB-04`/`05` (jetzt in `PUB-03`), `PUB-10` (jetzt `PUB-06c`/`d`), `PUB-16`-Rahmen, `PUB-18`-Rahmen. Offen: `PUB-01h`–`l` überschneiden sich mit `b`–`d`; beim Screen-Review klären, welche Fassung gilt.
+
+### Seite 50 — intern
+| Section | Knoten | Frames |
+|---|---|---|
+| GELTEND · INT-A Founder-Prüfung | 2945:6270 | `INT-01` Prüfungen offen (2764:44858, vorher D8/I01), `INT-03` Profil und erstes Event prüfen (2855:38880, vorher S5-A), `INT-04` Rückfrage eingeben (2894:1019, vorher S5-D) |
+| ENTWURF · nicht im Durchstich · INT-B Ortsbindung | 2945:6276 | `INT-02` Ortsbindung ablehnen (2764:45285, vorher D8/I02) |
+
+## Verlauf
+Die Abschnitte ab hier sind Stand ihres Datums und nennen teils alte Nummern oder aufgelöste Rahmen (z. B. `PUB-19`–`24`, `PUB-04`/`05`, `PUB-10`, Kernflow 2533:3521). Die Zuordnung zur neuen Struktur steht oben.
 
 ### Umzüge am 30.10.2026
 | Vorher | Jetzt |
@@ -33,47 +109,6 @@ Status im Namen jeder Section: GELTEND, ENTWURF oder ARCHIV. Screens tragen eine
 | 17 handgebaute „Gut zu wissen / zwei Spalten“ (D13, Eventsonderzustände, Ergebnis) | durch Komponente „Gut zu wissen v3“ ersetzt; Altbestand im Archivrahmen auf Seite 90 |
 
 Geltende Eventseite: „Öffentliche Eventseite — Contententwurf / Review - NEW“ (`PUB-01`). D13, Eventsonderzustände und Öffentliches Ergebnis sind noch an sie anzugleichen.
-
-## Öffentliche Seiten
-| Screen | Knoten | Vertrag |
-|---|---|---|
-| Eventseite, Contententwurf (Desktop 2643:9417, Mobile 2652:7621) | 2643:9414 | R07, v0.5 §6.7 Gut zu wissen, §6.8 Tag-Farben |
-| Format-Beispiele Vernissage / Film | 2792:48358 / 2792:48780 | v0.3 §7, Formatvarianten der Balken |
-| Randfall 6 Balken, Farbtest | 2797:58145 und Frames „Randfall · 6 Balken“ | v0.5 §6.7 |
-| Eventseite mit Ortsstatus, Co-Hosts, Line-up-Links (D13) | 2716:41215 | v0.5 §2–§3 |
-| Veranstalter-Profile Desktop/Mobile | 2632:7093 | Q29, v0.5 §4.1 |
-| Profilmodule und Kombinationen | 2577:5862, 2591:39999 (Desktop-Regeln), 2602:13733 (Mobile) | Delta v0.4 §17 |
-| Regel: Listen mit mehr als drei Einträgen | 2732:51615 | „Mehr anzeigen“ ab 4 Events |
-| Venue-Profil mit Programm (D19) | 2747:43479 | v0.5 §4, §3 |
-| Profiltypen-Vergleich | 2753:52940 | v0.5 §4.1 |
-| Künstler:innen-Seite (D14 v3 + Zustände) | 2730:56314, 2758:43625 | v0.5 §6 |
-| Profilgestaltung: Richtungen, Paletten | 2769:44367 | v0.5 §4.2 |
-| Follow-Platzierung (GELTEND seit 02.11.2026), Animation, Palettenprüfung, Merken-Dialog | 2839:47447 | Q32, S9, D10 |
-
-## Organizer-Flows
-| Screen | Knoten | Vertrag |
-|---|---|---|
-| Organizer-Einstieg (Flow 00, archiviert; jetzt `ORG-01` bis `ORG-18` im Kernflow) | 2514:1943 | S4, R03 |
-| Zusammenhängender Profileditor (archiviert; Master im Kernflow) | 2519:5757 | Q29–Q35 |
-| Flow 01 Erfassung und adaptive Ergänzungen (archiviert; Master im Kernflow) | 2496:2924, 2504:1579 | S3, R05 |
-| Master-Flow Kernflow v1 (GELTEND, `ORG-01` bis `ORG-90`) | 2533:3521 | Kernflow |
-| Eventeditor: Programm, Besuch, Preis, Zugang | 2686:10021 | v0.3 §4–§5 |
-| D11 Ort, Line-up, Mitveranstalter wählen | 2715:43598 | v0.5 §2 |
-| D12 Venue einladen und bestätigen | 2719:43976 | v0.5 §3, §5 |
-| D15 Briefing-Link | 2720:44069 | v0.5 §7 |
-| D16–D18 Plus/Pro reservieren | 2721:44178 | Featurematrix |
-| D20 Venue-Einstieg, Profilwechsel | 2760:44388 | v0.5 §4 |
-| D8 Interne Prüfseite (nur Founder) | 2764:44857 | v0.5 §4 |
-| D21 Gestaltung: Vorlage und Anpassen (Profil) | 2777:44971 | v0.5 §4.2 |
-| D21 c/d Eventgestaltung: übernimmt Profil | 2779:45721 | v0.5 §4.3 |
-
-## Zustände und Besucher
-| Screen | Knoten |
-|---|---|
-| Freigabe, Rückfrage, Eventänderungen (16 Zustände) | 2699:10718 |
-| Eventsonderzustände Desktop und Mobile | 2675:9863 |
-| Besucheraktionen: Merken, E-Mail-Abos | 2653:7643 |
-| Besucher-Klickprototyp mit Overlays | 2663:8327 |
 
 ## Komponenten (DISKOE — Komponenten)
 Button 2453:242 (Varianten Primary/Outline/Ghost, Size Regular/Large), Alert 2453:739, Dialog 2453:755, Form Field 2454:356, Image Upload 2454:391, Atmosphere Chip 2454:235, Event Card 2487:42626, Event Row 2479:801, Profile Banner 2479:706, Profile Header Cover 2624:6973, Empty State 2479:802, Spotify Placeholder 2561:5143. Abschnitte: Profilmodule 2577:5297, Artist-Profil und Listen 2731:50998, Event-Infokarten 2786:40643 (enthält **Info-Balken**, **Event-Tag**, **Tag-Farben**, **Gut zu wissen v3**).

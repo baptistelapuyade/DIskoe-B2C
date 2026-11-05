@@ -64,6 +64,7 @@ Stack und Entscheidungen: `docs/startpaket/01-architektur.md` (Next.js, Supabase
 - **Tokens und personenbezogene Daten** (Einladungs-, Bestätigungs-, Briefing-Tokens, E-Mail-Adressen) nie in Logs, Analytics oder URLs, die geloggt werden.
 - **Versand:** unmittelbar vor der Übergabe an den Anbieter Abo, Eventstand und bisherigen Versand erneut prüfen. „Vom Anbieter angenommen“ ist nicht „zugestellt“.
 - **Gestaltung:** Farb- und Schriftwerte nur über Tokens (`docs/startpaket/04-design-tokens.md`). Kontrast wird im Backend beim Speichern geprüft.
+- **Figma:** Gebaut wird nur nach Frames mit Dev-Mode-Status „Ready for dev“, ein Frame je Screen, Zustand und Viewport. Vor dem Bauen Abweichungsliste vorlegen, nach dem Bauen gerendertes Bild mit dem Figma-Screenshot vergleichen. Komponenten zuerst von Figma-Seite 10 („DISKOE-Komponenten“), für funktionale Bausteine ohne DISKOE-Version von Seite 11 („UI-Kit“); fehlt beides, nachfragen. Ablauf, Namen und Struktur: `docs/startpaket/03-screens-figma.md` („Arbeiten mit Figma“, „Seite 10 und 11“).
 - **Sprache:** UI-Texte Deutsch wie in den Figma-Screens; Code, Bezeichner und Commit-Nachrichten Englisch.
 - **Migrationen** nur als SQL im Repo. Next.js-Version fest pinnen (Amplify-Kompatibilität). Keine neuen Abhängigkeiten ohne Begründung im PR.
 - **Quellenrangfolge bei Widerspruch:** `docs/startpaket/README.md`. Echte Widersprüche melden, nicht raten.
