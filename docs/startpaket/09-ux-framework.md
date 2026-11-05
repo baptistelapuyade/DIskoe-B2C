@@ -169,13 +169,13 @@ Verbindlich, weil aus Verträgen und Beschlüssen abgeleitet. Die Kennung (UX-nn
 - **Seitenränder und Spaltenbreiten:** je Screen aus Figma lesen (z. B. Eventkopf Desktop 64 px Innenabstand), nicht pauschal festlegen.
 
 ### 5.3 Hierarchie, Farbe und Schrift (Ausgestaltung zu UX-23 bis UX-25)
-**Gilt als Arbeitsregel**, soweit es die drei Founder-Regeln konkretisiert. Zahlen sind Startwerte und werden im Review geschärft.
+Konkretisiert die drei Founder-Regeln. Zahlen sind Startwerte und werden im Review geschärft.
 
 - **Rangfolge:** Titel > Abschnittstitel > Text > Nebeninfo. Pro Screen ein Titel (H1). Gleiche Rolle = gleicher Textstil auf allen Screens. Größe, Gewicht und Farbe tragen zusammen die Rangfolge; ein Element, das „wichtig“ ist, ist nie nur größer, sondern auch klar abgesetzt.
 - **Farbe als Rangfolge:** Hauptaktion in `primary` (Ink); Fortschritt, aktueller Schritt und Auswahl in Iris; Status in den Soft-Tönen mit Text und Icon; Erfolg und Abschluss (Peak-End) dürfen eine Pastellfläche (Pink, Gelb, Pfirsich, Blau, Lavendel) bekommen, Text darauf in Ink. Graue Fläche ist Hintergrund, kein Akzent.
 - **Schrift:** Die vorhandenen Textstile (§5.2) reichen für Plattform-Screens. Ein Screen nutzt höchstens drei Größenstufen neben Eyebrow und Caption. Neue Stile nur über UX-25.
 
-**Vorschläge von Claude (noch nicht bestätigt, bitte entscheiden):**
+**Von Claude vorgeschlagen, vom Founder bestätigt (05.11., 15:22), gelten als Arbeitsregeln:**
 - **V1 Lesebreite:** Fließtext höchstens 75 Zeichen oder rund 680 px breit, auch auf breiten Bildschirmen. Formulare höchstens 560 px, Mehrspaltiges nur bei Vergleich oder Übersicht.
 - **V2 Rhythmus statt Einheitsabstand:** Zusammengehörendes näher (8–12 px), Abschnitte weiter (32–48 px), nicht überall 24 px. Gruppierung durch Nähe vor Linien und Kästen.
 - **V3 Titelgröße je Viewport:** Mobil Titel kleiner als Desktop (z. B. 24 statt 32), Fließtext bleibt 16 px; die Hierarchie bleibt über die Größenunterschiede erhalten, nicht über absolute Werte.
@@ -238,8 +238,8 @@ Wird für jeden Screen ausgefüllt (Antwort **Ja**, **Nein** mit Begründung ode
 - [ ] H2 Rangfolge von Titel, Abschnitt, Text, Nebeninfo ist über Größe, Gewicht und Farbe erkennbar; gleiche Rolle = gleicher Textstil.
 - [ ] H3 Farbe lenkt gezielt (Fokus, Fortschritt, Status, Erfolg); nicht grau in grau, nicht bunt ohne Grund (UX-24).
 - [ ] H4 Alle Schriften sind Tokens; fehlt eine, liegt ein Vorschlag nach UX-25 vor.
-- [ ] H5 Lesebreite und Abstandsrhythmus passen (Vorschläge V1, V2, falls bestätigt).
-- [ ] H6 Rahmen, Schatten und Fokusringe sind im Zoom vollständig sichtbar (V6, falls bestätigt).
+- [ ] H5 Lesebreite und Abstandsrhythmus passen (V1, V2).
+- [ ] H6 Rahmen, Schatten und Fokusringe sind im Zoom vollständig sichtbar (V6).
 
 ## 7. Verankerung im Prozess
 Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
@@ -264,10 +264,10 @@ Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 7. Im Eventstart bleibt neben dem Flyer sichtbar, dass Text und Link später folgen: ja.
 8. Produktprinzipien PP-01 bis PP-11 (§2) übernommen wie formuliert, einschließlich der von Claude ergänzten PP-02, PP-07, PP-08, PP-09, PP-11 (Founder, 05.11., 14:46).
 9. Alle weiteren Vorschläge aus dem Entwurf (Maße §5.2, Reihenfolge bei Konflikten §2) zugestimmt (Founder, 05.11., 14:46).
-10. UX-23 (Hierarchie), UX-24 (Farbe lenkt Aufmerksamkeit) und UX-25 (fehlende Schrift als Token vorschlagen) in das Framework aufnehmen (Founder, 05.11., 15:16). Ausgestaltung in §5.3, Checkliste H.
+10. V1 bis V8 (§5.3) bestätigt (Founder, 05.11., 15:22).
+11. UX-23 (Hierarchie), UX-24 (Farbe lenkt Aufmerksamkeit) und UX-25 (fehlende Schrift als Token vorschlagen) in das Framework aufnehmen (Founder, 05.11., 15:16). Ausgestaltung in §5.3, Checkliste H.
 
 **Offen:**
-0. **Vorschläge V1 bis V8 in §5.3** bestätigen, ändern oder streichen (Founder).
 1. ~~Editor-UX-Punkte 1–8~~ **Erledigt durch Verfahren (Founder, 05.11., 14:50):** Die Liste aus dem Test vom 04.11. ist nicht mehr auffindbar. Der Eventeditor (ORG-B) wird in Welle 1 Screen für Screen mit diesem Framework durchgearbeitet; Funde werden dabei sofort in Repo-Doku festgehalten (je Screen ein Review-Protokoll in `docs/reviews/`) und, wenn sie allgemein sind, als neue UX-Regel aufgenommen.
 2. **Maße (§5.2):** Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen.
 3. **Tippziele:** Button und Feld sind 36 px hoch. Ab welcher Breite gilt 44 px?
