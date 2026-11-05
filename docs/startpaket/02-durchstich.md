@@ -22,5 +22,5 @@ KI-Erfassung, Follow und E-Mail, Merken, Plus/Reservierung, Profilgestaltung (Ed
 - Absage ändert Seitenstatus sofort, ohne andere private Änderungen zu veröffentlichen.
 - JSON-LD enthält kein erfundenes `endDate` und keinen Preis 0 bei unbekanntem Preis.
 
-## Reihenfolge der Folgeschichten (Vorschlag)
-Profilgestaltung und Module → KI-Erfassung → Follow/E-Mail → Venue/Künstler/Briefing (Netzwerk-Bausteine) → Plus-Reservierung → Besucher (Merken, Kalender).
+## Reihenfolge der Folgeschichten
+**Überholt am 05.11.2026.** Der Alpha-Umfang ist größer als der Durchstich (KI-Erfassung, Follow, Merken und Kalender, Netzwerk, Editor und Plus-Reservierungstest gehören in die Alpha). Gültig sind die Wellen 0 bis 6 in `08-alpha-matrix.md`; die Alpha wird erst nach Welle 6 geöffnet. Die frühere Reihenfolge (Profilgestaltung und Module → KI-Erfassung → Follow/E-Mail → Netzwerk → Plus-Reservierung → Besucher) gilt nicht mehr. Die Liste „Nicht im Durchstich“ oben beschreibt nur den ersten Bauabschnitt, nicht den Alpha-Umfang.
