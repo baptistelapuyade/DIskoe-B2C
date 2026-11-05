@@ -68,7 +68,7 @@ Quellen: Baymard Institute, GOV.UK Design System, NN/g.
 
 ### 3.4 Mobil und Touch
 Quellen: Apple Human Interface Guidelines, Material Design, WCAG 2.2.
-- Tippziele mindestens 44 × 44 px (**bestätigt 05.11.**; WCAG 2.2 AA verlangt 24 × 24 px); Abstand zwischen Zielen. **Bekannte Abweichung:** Die gebauten Komponenten `Button` und `Feld` sind 36 px hoch (`min-h-9` im Code, nicht gegen Figma geprüft). Vorschlag: mobil 44 px, Desktop darf kleiner bleiben; Entscheidung in der Abweichungsliste von Welle 1.
+- Tippziele mindestens 44 × 44 px (**bestätigt 05.11.**; WCAG 2.2 AA verlangt 24 × 24 px); Abstand zwischen Zielen. **Entschieden (Founder, 05.11., 16:25): 44 px auf allen Viewports, auch auf Desktop.** In Figma gilt dafür die Button-Variante `Size = Large` (44 px). **Bekannte Abweichung:** Die gebauten Komponenten `Button` und `Feld` sind 36 px hoch (`min-h-9` im Code, nicht gegen Figma geprüft) und werden beim Bau von Welle 1 auf 44 px gebracht. Die Eingabefeld-Komponente (Figma 36 px) ist noch zu prüfen.
 - Eingabetext mindestens 16 px, damit iOS nicht zoomt. Kein Hover-only: alles Wichtige ist ohne Hover erreichbar.
 - Wichtige Aktionen in Daumenreichweite (unten), keine Pflicht-Mehrfinger-Gesten.
 - Öffentliche Seiten werden **mobil zuerst** geprüft (**bestätigt 05.11.**; Zugriff kommt überwiegend über geteilte Links aus Stories und Chats).
@@ -158,7 +158,7 @@ Verbindlich, weil aus Verträgen und Beschlüssen abgeleitet. Die Kennung (UX-nn
 | Fokus | Ring 3 px in Iris, außen (`ring`) | Outline 2 px Iris, Abstand 2 px |
 | Typografie | Space Grotesk: Display XL 112/112, L 80/82, M 56/60, S 40/44; Heading L 32/38, M 24/30; Title S 16/24; Body Regular 16/24; Body Small und Label 14/20; Eyebrow 13/16 mit Sperrung; Caption 12/16. Zusätzlich Instrument Serif Italic (Accent L 96/100) | Space Grotesk selbst gehostet |
 | Icons | Komponenten `Icon / …` nach Lucide-Namen (z. B. `badge-euro`, `circle-help`), 24 px Raster | Eigene SVG-Komponenten in `components/public/icons.tsx`, Strich 1,5 px rund, `currentColor` |
-| Tippziele | nicht festgelegt | Button und Feld 36 px hoch (siehe §3.4) |
+| Tippziele | Button `Size = Large` 44 px (entschieden 05.11.); Feld 36 px, noch zu prüfen | Button und Feld 36 px hoch (siehe §3.4) |
 
 **Vorschlag (bestätigt am 05.11., dass Claude ihn ableiten soll; Werte noch zu bestätigen):**
 - **Raster:** 4-px-Basis. Erlaubte Stufen für neue Komponenten: 4, 8, 12, 16, 24, 32, 48, 64. 6 und 20 bleiben als vorhandene Sonderfälle, werden aber nicht neu verwendet.
@@ -270,7 +270,7 @@ Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 **Offen:**
 1. ~~Editor-UX-Punkte 1–8~~ **Erledigt durch Verfahren (Founder, 05.11., 14:50):** Die Liste aus dem Test vom 04.11. ist nicht mehr auffindbar. Der Eventeditor (ORG-B) wird in Welle 1 Screen für Screen mit diesem Framework durchgearbeitet; Funde werden dabei sofort in Repo-Doku festgehalten (je Screen ein Review-Protokoll in `docs/reviews/`) und, wenn sie allgemein sind, als neue UX-Regel aufgenommen.
 2. **Maße (§5.2):** Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen.
-3. **Tippziele:** Button und Feld sind 36 px hoch. Ab welcher Breite gilt 44 px?
+3. ~~Tippziele~~ **Entschieden (Founder, 05.11., 16:25):** Buttons 44 px auf allen Viewports. Offen bleibt das Eingabefeld (36 px in Figma und Code): ebenfalls 44 px?
 4. **Barrierefreiheitsstärkungsgesetz:** Prüfung, ob es gilt, vor dem Alpha-Start.
 5. **Branch-Schutz:** Die CI-Prüfung (§7.8) in GitHub als erforderlichen Status für `main` eintragen (Founder).
 
