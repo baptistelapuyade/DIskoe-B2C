@@ -18,6 +18,7 @@ Stand: 23.10.2026. Dieses Paket übergibt Produktentscheidungen und Design an di
 | `06-delta-v0.5-lesefassung.md` | Gültige Regeln aus Delta v0.5 (22./23.10.) in kurzer Form |
 | `07-start-prompt.md` | Fertige Prompts für Claude Code / Codex |
 | `08-alpha-matrix.md` | Alpha-Umfang (05.11.2026): Entscheidungsmatrix, Wellen 0 bis 6, Widersprüche zwischen Quellen; ersetzt die Folgeschicht-Reihenfolge in `02-durchstich.md` |
+| `09-ux-framework.md` | UX-Framework und Styleguide-Regeln (UX-01 ff.), Text und Ton, Screen-Checkliste; gilt für jeden Screen, jede Mail und jeden Fehlertext |
 
 ## Quellenrangfolge bei Widerspruch (neu → alt)
 1. Beschlüsse im Chat nach dem 23.10.2026 (Founder)
