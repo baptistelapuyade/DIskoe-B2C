@@ -1,6 +1,6 @@
 # 09 — UX-Framework und Styleguide
 
-**Status:** Entwurf vom 05.11.2026 zur Abstimmung mit dem Founder. Mit der Bestätigung gilt dieses Dokument für jeden Screen, jeden Zustand, jede Mail und jeden Fehlertext. Bis dahin sind Abschnitte, die nicht aus einer Quelle stammen, als **Vorschlag** gekennzeichnet; offene Entscheidungen stehen in §8.
+**Status:** Entwurf, Stand 05.11.2026 (zweite Fassung). Der Founder hat am 05.11. die Punkte Anrede (Du), Gendern (Doppelpunkt), WCAG 2.2 AA, Mobil zuerst mit 44-px-Tippzielen, CI-Prüfung und Styleguide-Vorschlag bestätigt und Produktprinzipien ergänzt. Das Dokument gilt als Ganzes, sobald der Founder es freigibt (PR-Merge). Abschnitte ohne Quelle sind als **Vorschlag** gekennzeichnet; offene Entscheidungen stehen in §8.
 
 ## 1. Zweck und Geltung
 Das Framework macht Screen-Reviews wiederholbar. Statt jeden Screen neu zu beurteilen, prüfen wir ihn gegen dieselben Regeln, und was wir beim Review lernen, wird eine Regel (§7.6).
@@ -10,15 +10,26 @@ Das Framework macht Screen-Reviews wiederholbar. Statt jeden Screen neu zu beurt
 - **Werte, Farben, Komponenten** stehen nicht hier, sondern in `04-design-tokens.md` und auf den Figma-Seiten 10 und 11 (`03-screens-figma.md`). Hier stehen die Regeln, nach denen sie eingesetzt werden.
 - **Kennzeichnung:** **Regel** = gilt, Quelle genannt. **Vorschlag** = Claude schlägt vor, Founder bestätigt. **Offen** = Entscheidung fehlt (§8).
 
-## 2. Leitprinzipien DISKOE
-Aus der Netzwerkstrategie v0.2 (Notion, §11), dem Outcome Brief und `AGENTS.md`. Sie entscheiden, wenn zwei Regeln kollidieren.
+## 2. Produktprinzipien
+Grundlage sind die sechs Prinzipien des Founders vom 05.11.2026, ergänzt um Prinzipien aus der Netzwerkstrategie v0.2 (Notion, §11), dem Outcome Brief und `AGENTS.md`. Sie entscheiden, wenn zwei Regeln kollidieren, und sind in der Checkliste (§6, Bereich G) abgefragt.
 
-1. **Flyer rein, Seite raus.** Jeder Ablauf spart dem Organizer Arbeit. Wir fragen nur nach dem, was fehlt, und nehmen nie etwas zweimal auf.
-2. **Standalone und Eigennutz zuerst.** Jeder Screen nützt dem Handelnden sofort, auch ohne Netzwerk.
-3. **Bestätigte Fakten vor selbstsicheren Texten.** Nichts wird erfunden, geraten oder als sicher dargestellt, was es nicht ist.
-4. **Nichts wird still öffentlich.** Entwürfe sind privat; öffentlich wird nur, was der Mensch ausdrücklich bestätigt hat.
-5. **Vertrauen vor Reichweite.** Das gilt besonders bei Seiten über Dritte und bei Mails an Besucher.
-6. **Kulturelle Passung.** Gestaltung und Ton gehören in die Szene. Kein Corporate-Eventtool, keine Marketing-Floskeln.
+| ID | Prinzip | Was es für Screens heißt | Prüffrage |
+|---|---|---|---|
+| PP-01 | **Single-Player zuerst.** Am Anfang bringen die meisten Funktionen auch allein genug Wert. Das Netzwerk ist Bonus, nie Voraussetzung. | Kein Screen verlangt eine zweite Person, ein Publikum oder ein Netzwerk, um nützlich zu sein. Verknüpfungen sind optional und haben einen Weg ohne Gegenüber (z. B. Ort als Text). | Hilft der Screen einer einzelnen Person, die sonst niemanden bei DISKOE kennt? |
+| PP-02 | **Wenig Arbeit, viel Ergebnis.** Flyer rein, Seite raus. | Wir fragen nur, was fehlt, und nie etwas doppelt. Vorbelegen statt Abtippen. | Was könnte das System ausfüllen oder weglassen? |
+| PP-03 | **Verlinkung zeigen, Nutzen nennen.** Wo sich etwas verknüpfen lässt (Venue, Line-up, Co-Hosts, Empfehlungen, Follower), sieht man die Möglichkeit klar, und ein Satz sagt, was man davon hat. | Verknüpfungen sind sichtbare Aktionen, keine versteckten Optionen. Neben jeder steht der Nutzen („Dein Programm erscheint auch bei der Venue“). | Sieht man, was sich verknüpfen lässt, und steht dort, was es bringt? |
+| PP-04 | **Teilen und Verlinken, wo es Sinn ergibt.** Das ist unser Netzwerkeffekt. | Jeder Abschluss hat einen Teilen-Moment; jede öffentliche Seite hat einen Weg nach außen (teilen) und einen Weg hinein (folgen, verknüpfen). | Gibt es an dieser Stelle einen Weg zu teilen oder zu verlinken? Wenn nein, warum nicht? |
+| PP-05 | **Teilen so einfach wie möglich.** | Ein Tipp statt mehrerer Schritte; Systemdialog mobil, Link kopieren am Desktop; kein Konto für die Empfangenden; Linkvorschau (Titel, Bild) ist fertig. | Kommt man in höchstens zwei Schritten vom Screen zum geteilten Link? |
+| PP-06 | **Viralität mitdenken.** Wir haben kein großes Marketingbudget. | Jede Funktion fragt: Wer sieht das Ergebnis außerhalb von DISKOE, und was bringt diese Person zu uns? Verbreitung ist Nebenprodukt des Eigennutzes. | Gibt es einen Hebel, über den das Ergebnis Neue erreicht, ohne dass wir etwas senden? |
+| PP-07 | **Vertrauen vor Reichweite.** Grenze für PP-03 bis PP-06. | Viralität nur mit Einwilligung: keine Dark Patterns, kein Versand an Dritte ohne Auslöser der Person (Einladungen sind Links, die die Reihe selbst teilt; DISKOE speichert keine Empfängeradressen). | Würde sich die betroffene Person fair behandelt fühlen? |
+| PP-08 | **Bestätigte Fakten, nichts still öffentlich.** | Entwürfe sind privat; KI-Vorschläge sind Vorschläge; nichts wird erfunden oder als sicher gezeigt, was es nicht ist. | Ist erkennbar, was bestätigt, vorgeschlagen und unbekannt ist? |
+| PP-09 | **Fairness bei Dritten.** | Seiten über Personen sind minimal, nennen die Quelle und sind sofort entfernbar. | Kann die betroffene Person es sehen und mit einem Klick beenden? |
+| PP-10 | **Kultureller Bezug ist nicht optional.** Kommunikation, Gestaltung, Ton und Begriffe gehören in die Szene. | Kein Corporate-Eventtool: Sprache der Szene, Typografie und Bilder mit Haltung, die Organizer-Inhalte stehen im Vordergrund. | Würde die Szene das so sagen und so aussehen lassen? |
+| PP-11 | **Frei ist, was verbreitet.** Bezahlt wird Häufigkeit, Kontrolle und Geldfluss. | Teilen, Folgen, Merken, Verknüpfen und die Basis der Erfassung stehen nie hinter einer Bezahlschranke. Hinweise auf Plus blockieren nie den Kernablauf. | Steht etwas Verbreitendes hinter einer Bezahlung oder einem Upsell-Hindernis? |
+
+**Reihenfolge bei Konflikt:** Vertrauen und Wahrheit (PP-07 bis PP-09) vor Verbreitung (PP-03 bis PP-06) vor Bequemlichkeit (PP-02). PP-01 und PP-10 gelten immer.
+
+*Herkunft der sechs Founder-Prinzipien:* Verlinkung zeigen → PP-03, Teilen und Verlinken → PP-04, Viralität → PP-06, Teilen einfach → PP-05, Single-Player → PP-01, Kultureller Bezug → PP-10. Neu ergänzt von Claude (Vorschlag, noch zu bestätigen): PP-02, PP-07, PP-08, PP-09, PP-11.
 
 ## 3. Allgemeine UX-Regeln (Kanon)
 Anerkannte Regeln, jeweils mit der Bedeutung für DISKOE. Wer sie nicht erfüllt, nennt den Grund in der Abweichungsliste.
@@ -57,13 +68,13 @@ Quellen: Baymard Institute, GOV.UK Design System, NN/g.
 
 ### 3.4 Mobil und Touch
 Quellen: Apple Human Interface Guidelines, Material Design, WCAG 2.2.
-- Tippziele mindestens 44 × 44 px (WCAG 2.2 AA verlangt 24 × 24 px, wir halten 44 aus Komfort); Abstand zwischen Zielen.
+- Tippziele mindestens 44 × 44 px (**bestätigt 05.11.**; WCAG 2.2 AA verlangt 24 × 24 px); Abstand zwischen Zielen. **Bekannte Abweichung:** Die gebauten Komponenten `Button` und `Feld` sind 36 px hoch (`min-h-9` im Code, nicht gegen Figma geprüft). Vorschlag: mobil 44 px, Desktop darf kleiner bleiben; Entscheidung in der Abweichungsliste von Welle 1.
 - Eingabetext mindestens 16 px, damit iOS nicht zoomt. Kein Hover-only: alles Wichtige ist ohne Hover erreichbar.
 - Wichtige Aktionen in Daumenreichweite (unten), keine Pflicht-Mehrfinger-Gesten.
-- Öffentliche Seiten werden **mobil zuerst** geprüft (Vorschlag: Zugriff kommt überwiegend über geteilte Links aus Stories und Chats).
+- Öffentliche Seiten werden **mobil zuerst** geprüft (**bestätigt 05.11.**; Zugriff kommt überwiegend über geteilte Links aus Stories und Chats).
 
 ### 3.5 Barrierefreiheit (Orientierung WCAG 2.2, Stufe AA)
-Ob eine Rechtspflicht besteht (Barrierefreiheitsstärkungsgesetz) ist **nicht geprüft**; wir arbeiten trotzdem nach AA, weil die Szene Zugänglichkeit als Thema ernst nimmt und `Zugänglichkeit` selbst ein Datenfeld am Event ist.
+**Ziel bestätigt (05.11.).** Ob eine Rechtspflicht besteht (Barrierefreiheitsstärkungsgesetz), ist **nicht geprüft**; wir arbeiten trotzdem nach AA, weil die Szene Zugänglichkeit als Thema ernst nimmt und `Zugänglichkeit` selbst ein Datenfeld am Event ist.
 - Kontrast: Text ≥ 4,5 : 1, großer Text und Akzentflächen ≥ 3 : 1 (`04-design-tokens.md`, Backend prüft beim Speichern).
 - Information nie nur über Farbe (Status immer auch mit Text oder Symbol: Abgesagt, Verschoben, Vorbei, Fehler).
 - Sichtbarer Fokus, vollständige Tastaturbedienung, sinnvolle Reihenfolge, Labels für alle Felder, Überschriftenhierarchie, `lang="de"`.
@@ -100,7 +111,7 @@ Verbindlich, weil aus Verträgen und Beschlüssen abgeleitet. Die Kennung (UX-nn
 
 ### 4.2 Organizer-Abläufe
 - **UX-09 Ein Ziel, eine Hauptaktion.** Pro Screen genau ein primärer Button. Ablauf, Fortschritt und „Wo bin ich?“ sind sichtbar.
-- **UX-10 Nur fragen, was fehlt.** Die Erfassung füllt vor, fragt gezielt nach und fragt nichts doppelt (Prinzip 1, WCAG 3.3.7).
+- **UX-10 Nur fragen, was fehlt.** Die Erfassung füllt vor, fragt gezielt nach und fragt nichts doppelt (PP-02, WCAG 3.3.7).
 - **UX-11 Folgen vorher nennen.** Absagen, Verschieben, Ort ändern, Entfernen: die Bestätigung nennt, was Besucher sehen und, sobald es Follow gibt, wer informiert wird. Keine Sätze über Abos, wo es keine Abos gibt. *(Slice 5)*
 - **UX-12 Nichts geht still verloren.** Entwürfe bleiben bei Abbruch, Fehler und Sitzungsende erhalten; Änderungen an Live-Seiten bleiben privat, bis der Organizer sie bestätigt. *(Variante B, Slice 5)*
 - **UX-13 Kein Zwang zur Gestaltung.** Standard-Theme sieht gut aus; Anpassung ist optional. Der Editor bietet nur Kombinationen mit ausreichendem Kontrast und meldet „n ausgeblendet“. *(04-design-tokens.md)*
@@ -116,19 +127,42 @@ Verbindlich, weil aus Verträgen und Beschlüssen abgeleitet. Die Kennung (UX-nn
 ### 4.4 Gestaltung und Marke
 - **UX-20 Tokens und Komponenten zuerst.** Farben, Schrift, Abstände nur über Tokens; Komponenten zuerst von Figma-Seite 10, dann 11, sonst nachfragen. Tag-Farben (Format, Atmosphäre, Profiltyp) sind fest. *(AGENTS.md, 04-design-tokens.md)*
 - **UX-21 Profilgestaltung bricht die Plattform nicht.** Organizer gestalten Profil und Event; Fehlerzustände, Pflichthinweise und Rechtliches bleiben im Plattformstil lesbar.
-- **UX-22 Die Szene darf man sehen.** Typografisch und im Bild eigensinnig statt Standard-SaaS; Fotos und Flyer der Organizer sind die Hauptdarsteller, die Oberfläche tritt zurück. *(Prinzip 6; Vorschlag zur Ausgestaltung im Review)*
+- **UX-22 Die Szene darf man sehen.** Typografisch und im Bild eigensinnig statt Standard-SaaS; Fotos und Flyer der Organizer sind die Hauptdarsteller, die Oberfläche tritt zurück. *(PP-10; Vorschlag zur Ausgestaltung im Review)*
 
-## 5. Text und Ton
-Vorschlag, bis der Founder bestätigt (§8).
-- **Anrede:** Offen, ob „du“ (einzeln) oder „ihr“ (Kollektive). Heute: Founder-Seite in Du-Form, Figma 01 „Eure Seiten sind veröffentlicht“.
+## 5. Text, Ton und Maße
+
+### 5.1 Text und Ton
+- **Anrede: „du“** (bestätigt 05.11.), überall: Organizer-Bereich, öffentliche Seiten, Mails. Auch wenn ein Kollektiv gemeinsam handelt, spricht der Screen die Person am Bildschirm an. Figma-Texte mit „ihr/eure“ (z. B. „Eure Seiten sind veröffentlicht“, ORG-D/NACH-A) werden in der Abweichungsliste auf „du/deine“ angeglichen.
+- **Gendern mit Doppelpunkt** (bestätigt 05.11.): „Künstler:innen“, „Veranstalter:innen“, „Besucher:innen“. Wo es einfach geht, neutral formulieren („Personen im Line-up“, „wer folgt“). „Organizer“ bleibt als Produktbegriff.
 - **Stil:** kurz, aktiv, konkret. Ein Gedanke pro Satz. Keine Ausrufezeichen-Euphorie, keine Marketing-Superlative, kein „leider“, kein Behördendeutsch.
 - **Buttons:** Verb plus Objekt („Event veröffentlichen“, „Absage bestätigen“), nie „OK“ oder „Weiter“, wenn etwas passiert.
-- **Fehler:** 1. was ist passiert, 2. was kann ich tun. Keine Schuldzuweisung („Du hast …“), keine technischen Codes.
+- **Fehler:** 1. was ist passiert, 2. was kannst du tun. Keine Schuldzuweisung („Du hast …“), keine technischen Codes.
 - **Leere Zustände:** was hier entsteht, plus nächster Schritt.
 - **Begriffe:** Format-Namen und Atmosphäre-Begriffe wie in `04-design-tokens.md` und Figma. Ein Ding heißt überall gleich (nicht Event/Veranstaltung/Termin gemischt).
-- **Gendern:** Offen (Notion nutzt „Künstler:innen“).
 - **Zahlen und Zeit:** deutsches Format, 24-Stunden-Uhr, „Uhr“ nach der Zeit, Datum mit Wochentag in Listen.
-- **Mails:** Betreff nennt den Zweck; erster Satz sagt, was der Empfänger tun soll; Absender und Grund des Empfangs stehen drin.
+- **Mails:** Betreff nennt den Zweck; erster Satz sagt, was du tun sollst; Absender und Grund des Empfangs stehen drin.
+- **Nutzen nennen** (PP-03): Wo eine Verknüpfung, ein Teilen-Schritt oder eine Einwilligung gefragt wird, steht ein Satz zum Nutzen vor dem Button.
+
+### 5.2 Maße und Raster
+**Ist-Stand** aus den Figma-Variablen der Stilübersicht (DS-0 `2454:392`) und der Komponenten DS-A (`2952:1841`), gelesen am 05.11.2026, und aus `app/globals.css` sowie `components/ui/`. Kein Abgleich Pixel für Pixel.
+
+| Bereich | Ist in Figma | Ist im Code |
+|---|---|---|
+| Abstände (Variablen) | 0, 4, 6, 8, 12, 16, 20, 24, 32 px | Tailwind-Standardskala (4 px Schritte), meist `gap-2/3/4`, `p-4/6` |
+| Eckenradius | 4, 6, 8, 10, 12 px und Pille (9999) | Buttons und Felder `rounded-lg` (8 px), Chips `rounded-full` |
+| Schatten | `xs`, `sm` | `shadow-xs` an Feldern |
+| Fokus | Ring 3 px in Iris, außen (`ring`) | Outline 2 px Iris, Abstand 2 px |
+| Typografie | Space Grotesk: Display XL 112/112, L 80/82, M 56/60, S 40/44; Heading L 32/38, M 24/30; Title S 16/24; Body Regular 16/24; Body Small und Label 14/20; Eyebrow 13/16 mit Sperrung; Caption 12/16. Zusätzlich Instrument Serif Italic (Accent L 96/100) | Space Grotesk selbst gehostet |
+| Icons | Komponenten `Icon / …` nach Lucide-Namen (z. B. `badge-euro`, `circle-help`), 24 px Raster | Eigene SVG-Komponenten in `components/public/icons.tsx`, Strich 1,5 px rund, `currentColor` |
+| Tippziele | nicht festgelegt | Button und Feld 36 px hoch (siehe §3.4) |
+
+**Vorschlag (bestätigt am 05.11., dass Claude ihn ableiten soll; Werte noch zu bestätigen):**
+- **Raster:** 4-px-Basis. Erlaubte Stufen für neue Komponenten: 4, 8, 12, 16, 24, 32, 48, 64. 6 und 20 bleiben als vorhandene Sonderfälle, werden aber nicht neu verwendet.
+- **Radien:** vier Stufen: 4 (Tags, kleine Elemente), 8 (Buttons, Felder), 12 (Karten, Dialoge), Pille. 6 und 10 sind zu prüfen und möglichst auf 8 oder 12 zu vereinheitlichen. Die Profil-Einstellung `eckig/leicht/rund` bleibt `TODO(spec)` bis zum Review von ORG-E.
+- **Fokus:** der Figma-Ring (3 px Iris) gilt; der Code zieht nach.
+- **Icons:** Lucide-Stil bleibt Vorbild (24-px-Raster, Strich 1,5 px, rund, `currentColor`). Neue Icons kommen aus der Figma-Komponente `Icon / …`, nicht frei gezeichnet. Ein Icon trägt nie allein die Bedeutung (Text oder Beschriftung dabei).
+- **Tippziele:** siehe §3.4.
+- **Seitenränder und Spaltenbreiten:** je Screen aus Figma lesen (z. B. Eventkopf Desktop 64 px Innenabstand), nicht pauschal festlegen.
 
 ## 6. Screen-Checkliste (Prüfblatt)
 Wird für jeden Screen ausgefüllt (Antwort **Ja**, **Nein** mit Begründung oder **n. a.** mit Begründung). Sie ist Teil der Abweichungsliste vor dem Bauen und des PR-Abschnitts „UX-Check“.
@@ -147,7 +181,7 @@ Wird für jeden Screen ausgefüllt (Antwort **Ja**, **Nein** mit Begründung ode
 - [ ] B5 Entwürfe und Eingaben gehen bei Fehlern und Abbruch nicht verloren (UX-12).
 
 **C. Inhalt und Text**
-- [ ] C1 Alle Texte folgen §5 (Ton, Buttons, Fehler, Begriffe).
+- [ ] C1 Alle Texte folgen §5.1 (Du-Form, Doppelpunkt, Ton, Buttons, Fehler, Begriffe).
 - [ ] C2 Pflichtlücken sind konkret benannt, mit Sprung zum Feld (UX-05).
 - [ ] C3 KI-Inhalte sind als Vorschlag markiert; Original sichtbar (UX-04).
 - [ ] C4 Zeit und Geld folgen UX-06/07.
@@ -168,6 +202,15 @@ Wird für jeden Screen ausgefüllt (Antwort **Ja**, **Nein** mit Begründung ode
 - [ ] F1 Nur Tokens, Komponenten von Seite 10/11 (UX-20), Abweichungen gelistet.
 - [ ] F2 Figma-Frame hat „Ready for dev“; gerendertes Bild wurde mit dem Frame verglichen.
 - [ ] F3 Linkvorschau und geteilter Link sind bedacht (UX-19).
+- [ ] F4 Maße folgen §5.2 (Raster, Radien, Fokus, Icons); Abweichungen sind gelistet.
+
+**G. Produktprinzipien (§2)**
+- [ ] G1 Der Screen nützt auch einer einzelnen Person ohne Netzwerk (PP-01).
+- [ ] G2 Mögliche Verknüpfungen sind sichtbar und der Nutzen ist in einem Satz genannt (PP-03).
+- [ ] G3 Es gibt einen Teilen- oder Verlinken-Moment, in höchstens zwei Schritten und ohne Konto für die Empfangenden, oder die Auslassung ist begründet (PP-04, PP-05).
+- [ ] G4 Ein Verbreitungshebel ist bedacht und kommt ohne Dark Pattern und ohne Versand an Dritte ohne Auslöser aus (PP-06, PP-07).
+- [ ] G5 Sprache, Gestaltung und Bildwelt passen zur Szene (PP-10, §5.1).
+- [ ] G6 Nichts Verbreitendes steht hinter einer Bezahlschranke (PP-11).
 
 ## 7. Verankerung im Prozess
 Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
@@ -179,17 +222,25 @@ Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 5. **Figma:** Die Legende auf Seite 00 verweist auf dieses Dokument; neue Komponenten und Frames werden gegen §6 geprüft.
 6. **Lernschleife:** Jeder Fund aus einem Review oder Test (z. B. die Editor-UX-Punkte aus dem Abnahme-Durchlauf) wird, wenn er allgemein ist, zur Regel (neue UX-Nummer) und nicht nur am Screen behoben. Änderungen am Framework laufen per PR mit Founder-Okay und Datum.
 7. **Startprompts** (`07-start-prompt.md`) und `README.md` nennen das Dokument; `docs/STATUS.md` hält den Stand.
-8. **Vorschlag, noch nicht gebaut:** Eine CI-Prüfung, die PRs mit Änderungen in `app/` oder `components/` ablehnt, wenn der Abschnitt „UX-Check“ im PR-Text fehlt. Braucht Zustimmung (§8).
+8. **CI-Prüfung (bestätigt 05.11., gebaut):** Der Workflow `.github/workflows/ux-check.yml` (Skript `scripts/check-ux-section.sh`) lässt einen PR scheitern, der `app/` oder `components/` ändert, aber die Abschnitte „Figma gegen Umsetzung“ und „UX-Check“ nicht enthält oder deren Platzhalter („ja / nein“) nicht ausgefüllt hat. Die Prüfung ist nur ein Mindeststandard und ersetzt nicht das Review. Damit sie PRs blockiert, muss der Founder sie in GitHub unter Branch-Schutz für `main` als erforderlichen Status eintragen.
 
-## 8. Offene Entscheidungen (Founder)
-1. **Anrede:** „du“ (einzelne Person) oder „ihr“ (Kollektive)? Einheitlich im ganzen Produkt oder je Zielgruppe?
-2. **Gendern:** Doppelpunkt („Künstler:innen“) wie in Notion oder neutrale Formulierungen?
-3. **Zugänglichkeitsziel:** WCAG 2.2 AA als Ziel bestätigen. Ob das Barrierefreiheitsstärkungsgesetz greift, wäre vor dem Alpha-Start zu prüfen.
-4. **Mobil zuerst für öffentliche Seiten** und Tippziel 44 px bestätigen.
-5. **CI-Prüfung für den UX-Check** (§7.8) bauen: ja oder nein.
-6. **Lücken im Styleguide:** Abstandsraster, Eckenradius je Stufe und Icon-Satz sind noch nicht festgelegt (`TODO(spec)` in `04-design-tokens.md`). Soll Claude aus den vorhandenen Figma-Frames einen Vorschlag ableiten?
-7. **Editor-UX-Punkte 1–8 aus dem Test:** bitte noch einmal nennen oder ablegen; sie werden hier als Regeln eingearbeitet.
-8. **Text- und Link-Import:** Rein als UX-Frage: Beim Flyer-Start bleiben Text einfügen und Link einfügen als sichtbare Alternative im Eventstart, auch wenn sie später gebaut werden?
+## 8. Entscheidungen und offene Punkte
+**Entschieden am 05.11.2026 (Founder):**
+1. Anrede: du.
+2. Gendern mit Doppelpunkt.
+3. WCAG 2.2 AA als Ziel.
+4. Öffentliche Seiten mobil zuerst; Tippziel 44 px.
+5. CI-Prüfung für den UX-Check: ja (gebaut, §7.8).
+6. Claude leitet Abstandsraster, Radien und Icons aus Figma ab: ja (§5.2, Werte noch zu bestätigen).
+7. Im Eventstart bleibt neben dem Flyer sichtbar, dass Text und Link später folgen: ja.
+
+**Offen:**
+1. **Editor-UX-Punkte 1–8** aus deinem Test des Eventeditors im Preview: Claude hat die Liste nicht mehr. Bitte noch einmal nennen oder eine Notiz ablegen; sie werden als Regeln ins Framework eingearbeitet.
+2. **Produktprinzipien (§2):** Feinschliff der sechs Founder-Prinzipien und Bestätigung der von Claude ergänzten (PP-02, PP-07, PP-08, PP-09, PP-11).
+3. **Maße (§5.2):** Werte des Vorschlags bestätigen; Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen.
+4. **Tippziele:** Button und Feld sind 36 px hoch. Ab welcher Breite gilt 44 px?
+5. **Barrierefreiheitsstärkungsgesetz:** Prüfung, ob es gilt, vor dem Alpha-Start.
+6. **Branch-Schutz:** Die CI-Prüfung (§7.8) in GitHub als erforderlichen Status für `main` eintragen (Founder).
 
 ## 9. Quellen
 - Nielsen Norman Group: 10 Usability Heuristics; Formularrichtlinien.
@@ -197,5 +248,5 @@ Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 - Yablonski: Laws of UX (Hick, Fitts, Miller, Jakob, Zeigarnik, Peak-End, Postel).
 - Apple Human Interface Guidelines; Google Material Design (Tippziele, Touch).
 - Baymard Institute; GOV.UK Design System (Formulare, Fehlermeldungen).
-- DISKOE intern: `AGENTS.md`, `04-design-tokens.md`, `03-screens-figma.md`, `06-delta-v0.5-lesefassung.md`, `08-alpha-matrix.md`, Notion „Organizer Network Strategy v0.2“ und „Alpha-Featurematrix v0.1“.
+- DISKOE intern: Produktprinzipien des Founders (05.11.2026), `AGENTS.md`, `04-design-tokens.md`, `03-screens-figma.md`, `06-delta-v0.5-lesefassung.md`, `08-alpha-matrix.md`, Notion „Organizer Network Strategy v0.2“ und „Alpha-Featurematrix v0.1“.
 - Nicht geprüft: aktuelle Wortlaute der externen Quellen. Die Regeln sind aus dem Fachwissen zusammengefasst, nicht aus den Seiten übernommen.
