@@ -43,7 +43,7 @@ Farben, Schrift und Abstände gelten nach den DISKOE-Tokens (`04-design-tokens.m
 | DS-0 Stilübersicht (Frame, Referenz) | 2454:392 | Farben, Typografie, Beispiele (vorher „DISKOE / Review“) |
 | GELTEND · DS-A Aktionen und Formular | 2952:1841 | Button, Icon Button, Checkbox, Switch, Tabs, Input, Textarea, Select, File Input, Form Field, Image Upload |
 | GELTEND · DS-B Rückmeldung und Kleinteile | 2952:1842 | Badge, Alert, Dialog, Avatar, Atmosphere Chip, Media, Empty State |
-| GELTEND · DS-C Seitenstruktur und Navigation | 2952:1843 | Section Heading, Color Block, Page Header (+ Desktop), Navigation Item, Workspace Switcher, Action Bar |
+| GELTEND · DS-C Seitenstruktur und Navigation | 2952:1843 | Section Heading, Color Block, Page Header (+ Desktop), Navigation Item, Workspace Switcher, Action Bar, **Footer** (`2978:1861`, Viewport Desktop/Mobil, Divider Aus/An; Impressum und Datenschutz, 44 px Tippfläche, seit 05.11.2026) |
 | GELTEND · DS-D Event- und Profilkarten | 2952:1844 | Event Card, Event Row, Profile Banner, Profile Header / Cover, Spotify Placeholder |
 | ENTWURF · nicht in der Alpha · DS-H Event-Follow | 2952:1845 | Event Follow / Organizer Card, Change Card (Mails an Besucher sind außerhalb der Mail-Freigabe) |
 | GELTEND · DS-G Event-Infokarten | 2786:40643 | Info-Balken, Gut zu wissen v3 (Desktop/Mobile), Event-Tag, Tag-Farben |
