@@ -18,8 +18,8 @@ Die Legende auf Seite 00 enthält dieselben Regeln. Vor der Neuordnung wurde ein
 | Seite | Inhalt |
 |---|---|
 | 00 Start hier | Legende: Seiten, Aufbau, Namen, Status, Bau-Signal |
-| 10 Design-System — DISKOE-Komponenten | Eigene Komponenten, u. a. `DISKOE / Action Bar` (2876:1802) |
-| 11 Design-System — UI-Kit (Basis) | shadcn-basiertes Fundament; nur Icons, Select, Tabs, Internal Components und Button werden außerhalb des Kits benutzt |
+| 10 Design-System — DISKOE-Komponenten | Eigene Komponenten in Bereichen DS-A bis DS-H (siehe „Seite 10 — Komponenten“), u. a. `DISKOE / Action Bar` (2876:1802) |
+| 11 Design-System — UI-Kit (Basis) | shadcn-Kit mit funktionalen Bausteinen (Akkordeon, Input File, Select, Tabs, Dialog, Tooltip, Table, Pagination, Breadcrumb, Sheet, Command …); zweite Komponentenquelle neben Seite 10, unverändert |
 | 20 Organizer — Ablauf bis zur Prüfung | Zeile 1 Durchstich: ORG-A bis ORG-D. Zeile 2 nicht im Durchstich: ORG-E, D21, D11, D12, D15, D20, D16–D18 |
 | 30 Organizer — nach der Veröffentlichung | NACH-A bis NACH-C; darunter der Slice-5-Review-Stand (ÜBERHOLT) |
 | 40 Öffentliche Seiten | Zeile 1 Eventseite, Zeile 2 Profile |
@@ -27,6 +27,28 @@ Die Legende auf Seite 00 enthält dieselben Regeln. Vor der Neuordnung wurde ein
 | 60 Besucher-Prototyp | Klickprototyp (Desktop 1440×900, Mobile 390×844); nicht umsortiert, sonst brechen die Verknüpfungen |
 | 80 Geparkt — Discovery (spätere Phase) | Bausteine für die Discovery nach der Alpha, nicht löschen; unverändert |
 | 90 Archiv | ersetzte Stände mit Datum und Grund im Namen; neu: alter Dateiaufbau vom 22.10. |
+
+### Seite 10 und 11 — Komponenten (seit 05.11.2026)
+**Zwei Quellen, feste Reihenfolge beim Bauen:**
+1. Seite 10 „DISKOE-Komponenten“: eigene Bausteine des Produkts. Zuerst hier suchen.
+2. Seite 11 „UI-Kit (Basis)“: shadcn-Kit für funktionale Bausteine ohne DISKOE-Version (z. B. Akkordeon, Input File, Select, Tabs, Dialog, Tooltip, Table). Von dort darf Claude Komponenten nehmen.
+3. Hat keine der beiden Seiten den Baustein, fragt Claude nach, statt ihn zu erfinden.
+
+Farben, Schrift und Abstände gelten nach den DISKOE-Tokens (`04-design-tokens.md`), auch bei Bausteinen aus dem Kit. Weicht ein Kit-Baustein davon ab, steht das in der Abweichungsliste vor dem Bauen. Wird ein Kit-Baustein im Produkt benutzt, kann der Founder entscheiden, ihn als `DISKOE / …` auf Seite 10 nachzubauen. Seite 11 bleibt unverändert (Kit-Struktur), trägt aber oben links eine Hinweiskarte „DISKOE: So nutzen wir dieses Kit“ (2952:34393).
+
+**Seite 10 ist nach Bereichen geordnet:** Komponenten-Sets liegen nebeneinander und brechen in Zeilen um, Bereiche liegen in einem Raster. In Sets mit Viewport-Eigenschaft steht Mobil rechts neben Desktop, jede Zeile ist ein Zustand. Neue Komponenten kommen in den passenden Bereich, nicht lose auf die Seite. Auf der Seite liegt links oben die Legende „DS · Legende“ (2952:1846). Alle Komponenten-IDs sind unverändert, Instanzen auf anderen Seiten bleiben verbunden.
+
+| Bereich (Section) | Knoten | Inhalt |
+|---|---|---|
+| DS-0 Stilübersicht (Frame, Referenz) | 2454:392 | Farben, Typografie, Beispiele (vorher „DISKOE / Review“) |
+| GELTEND · DS-A Aktionen und Formular | 2952:1841 | Button, Icon Button, Checkbox, Switch, Tabs, Input, Textarea, Select, File Input, Form Field, Image Upload |
+| GELTEND · DS-B Rückmeldung und Kleinteile | 2952:1842 | Badge, Alert, Dialog, Avatar, Atmosphere Chip, Media, Empty State |
+| GELTEND · DS-C Seitenstruktur und Navigation | 2952:1843 | Section Heading, Color Block, Page Header (+ Desktop), Navigation Item, Workspace Switcher, Action Bar |
+| GELTEND · DS-D Event- und Profilkarten | 2952:1844 | Event Card, Event Row, Profile Banner, Profile Header / Cover, Spotify Placeholder |
+| ENTWURF · nicht in der Alpha · DS-H Event-Follow | 2952:1845 | Event Follow / Organizer Card, Change Card (Mails an Besucher sind außerhalb der Mail-Freigabe) |
+| GELTEND · DS-G Event-Infokarten | 2786:40643 | Info-Balken, Gut zu wissen v3 (Desktop/Mobile), Event-Tag, Tag-Farben |
+| GELTEND · DS-E Profilmodule | 2577:5297 | Profile Module (Identity, Event Item, Upcoming Events, Manifest, Music, Gallery, Recommendations, Archive, Links and Contact), Venue Section |
+| ENTWURF · nicht im Durchstich · DS-F Artist-Profil und Listen | 2731:50998 | Artist Section (Hero, Kommende Events, Bio, Links, Gespielt bei, Archiv, Über diese Seite), Profile Event Row, Link Card, Archive Poster, Type Label, Tag, Show More |
 
 ### Seite 20 — Organizer bis zur Prüfung
 | Section | Knoten | Zeilen |
