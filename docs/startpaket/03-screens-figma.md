@@ -31,7 +31,7 @@ Die Legende auf Seite 00 enthält dieselben Regeln. Vor der Neuordnung wurde ein
 ### Seite 10 und 11 — Komponenten (seit 05.11.2026)
 **Zwei Quellen, feste Reihenfolge beim Bauen:**
 1. Seite 10 „DISKOE-Komponenten“: eigene Bausteine des Produkts. Zuerst hier suchen.
-2. Seite 11 „UI-Kit (Basis)“: shadcn-Kit für funktionale Bausteine ohne DISKOE-Version (z. B. Akkordeon, Input File, Select, Tabs, Dialog, Tooltip, Table). Von dort darf Claude Komponenten nehmen.
+2. Seite 11 „UI-Kit (Basis)“: shadcn-Kit für funktionale Bausteine ohne DISKOE-Version (z. B. Akkordeon, Input File, Select, Tabs, Dialog, Tooltip, Table). Von dort darf Claude Komponenten jederzeit nehmen und die Instanzen an die DISKOE-Tokens anpassen, ohne vorher zu fragen (Founder, 06.11.2026).
 3. Hat keine der beiden Seiten den Baustein, fragt Claude nach, statt ihn zu erfinden.
 
 Farben, Schrift und Abstände gelten nach den DISKOE-Tokens (`04-design-tokens.md`), auch bei Bausteinen aus dem Kit. Weicht ein Kit-Baustein davon ab, steht das in der Abweichungsliste vor dem Bauen. Wird ein Kit-Baustein im Produkt benutzt, kann der Founder entscheiden, ihn als `DISKOE / …` auf Seite 10 nachzubauen. Seite 11 bleibt unverändert (Kit-Struktur), trägt aber oben links eine Hinweiskarte „DISKOE: So nutzen wir dieses Kit“ (2952:34393).
