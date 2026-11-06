@@ -42,9 +42,9 @@ Farben, Schrift und Abstände gelten nach den DISKOE-Tokens (`04-design-tokens.m
 |---|---|---|
 | DS-0 Stilübersicht (Frame, Referenz) | 2454:392 | Farben, Typografie, Beispiele (vorher „DISKOE / Review“) |
 | GELTEND · DS-A Aktionen und Formular | 2952:1841 | Button, Icon Button, Checkbox, Switch, Tabs, Input, Textarea, Select, File Input, Form Field, Image Upload |
-| GELTEND · DS-B Rückmeldung und Kleinteile | 2952:1842 | Badge, Alert, Dialog, Avatar, Atmosphere Chip, Media, Empty State |
-| GELTEND · DS-C Seitenstruktur und Navigation | 2952:1843 | Section Heading, Color Block, Page Header (+ Desktop), Navigation Item, Workspace Switcher, Action Bar |
-| GELTEND · DS-D Event- und Profilkarten | 2952:1844 | Event Card, Event Row, Profile Banner, Profile Header / Cover, Spotify Placeholder |
+| GELTEND · DS-B Rückmeldung und Kleinteile | 2952:1842 | Badge (Varianten Primary, Secondary, Outline, Success, Warning, Info, Error, Iris; Größe Regular/Large; Schalter „Show dot“), Alert (Neutral, Error, Success, Warning, Info), Dialog, Avatar (rund und quadratisch/Large), Atmosphere Chip, Media, Empty State |
+| GELTEND · DS-C Seitenstruktur und Navigation | 2952:1843 | Section Heading, Color Block, Page Header (+ Desktop), Navigation Item, Workspace Switcher, Action Bar, **Footer** (`2978:1861`, Viewport Desktop/Mobil, Divider Aus/An; Impressum und Datenschutz, 44 px Tippfläche, seit 05.11.2026), **App Header** (`2980:8182`, Viewport Desktop/Mobil; Wortmarke links, Aktion rechts, Standard „Abmelden“, Schalter „Show action“), **Progress / Fortschrittsleiste** (`2984:8323`, Viewport Desktop mit Beschriftungen / Mobil „Schritt n von 5“, Step 1–5, erreicht Iris), **Weg Panel** (`2985:8287`, Viewport Desktop-Panel / Mobil-Band, Step 1–3 mit Akzent Iris/Blau/Pink, Eigenschaft „Show wordmark“), **Navigation Row** (`2985:8294`, Viewport Desktop/Mobil, „Zurück“ links) |
+| GELTEND · DS-D Event- und Profilkarten | 2952:1844 | Event Card, Event Row, Profile Banner, Profile Header / Cover, Spotify Placeholder, **Profile Card / Profilkarte** (`2985:8579`, Viewport Desktop/Mobil × Tone Neutral/Success/Warning; nutzt Avatar, Badge, Progress, Button; Texteigenschaften Name, Nachricht, Hinweistext; Schalter Zweit-/Drittaktion und zweiter Status) |
 | ENTWURF · nicht in der Alpha · DS-H Event-Follow | 2952:1845 | Event Follow / Organizer Card, Change Card (Mails an Besucher sind außerhalb der Mail-Freigabe) |
 | GELTEND · DS-G Event-Infokarten | 2786:40643 | Info-Balken, Gut zu wissen v3 (Desktop/Mobile), Event-Tag, Tag-Farben |
 | GELTEND · DS-E Profilmodule | 2577:5297 | Profile Module (Identity, Event Item, Upcoming Events, Manifest, Music, Gallery, Recommendations, Archive, Links and Contact), Venue Section |
@@ -111,7 +111,7 @@ Die Abschnitte ab hier sind Stand ihres Datums und nennen teils alte Nummern ode
 Geltende Eventseite: „Öffentliche Eventseite — Contententwurf / Review - NEW“ (`PUB-01`). D13, Eventsonderzustände und Öffentliches Ergebnis sind noch an sie anzugleichen.
 
 ## Komponenten (DISKOE — Komponenten)
-Button 2453:242 (Varianten Primary/Outline/Ghost, Size Regular/Large), Alert 2453:739, Dialog 2453:755, Form Field 2454:356, Image Upload 2454:391, Atmosphere Chip 2454:235, Event Card 2487:42626, Event Row 2479:801, Profile Banner 2479:706, Profile Header Cover 2624:6973, Empty State 2479:802, Spotify Placeholder 2561:5143. Abschnitte: Profilmodule 2577:5297, Artist-Profil und Listen 2731:50998, Event-Infokarten 2786:40643 (enthält **Info-Balken**, **Event-Tag**, **Tag-Farben**, **Gut zu wissen v3**).
+Button 2453:242 (Varianten Primary/Outline/Ghost, Size Regular/Large; Ghost hat seit 06.11.2026 einen 1-px-Rand in `borderStrong`, vorher ohne Rand), Alert 2453:739, Dialog 2453:755, Form Field 2454:356, Image Upload 2454:391, Atmosphere Chip 2454:235, Event Card 2487:42626, Event Row 2479:801, Profile Banner 2479:706, Profile Header Cover 2624:6973, Empty State 2479:802, Spotify Placeholder 2561:5143. Abschnitte: Profilmodule 2577:5297, Artist-Profil und Listen 2731:50998, Event-Infokarten 2786:40643 (enthält **Info-Balken**, **Event-Tag**, **Tag-Farben**, **Gut zu wissen v3**).
 
 ## Bauhinweise aus den Reviews
 - Buttons: bestehende Varianten wählen, Größe nicht strecken, keine Schatten auf Outline-Buttons, Kontur innen 1 px (Delta v0.4 §17.6).

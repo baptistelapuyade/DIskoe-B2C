@@ -27,7 +27,7 @@ Setze nach meiner Freigabe des Plans das Projektgerüst auf: Next.js (App Router
 
 ## Standardsatz für jede Aufgabe
 ```
-Halte dich an AGENTS.md. Nenne vor dem Coding die betroffenen Vertragsabschnitte und Prüffälle. Ändere keine Dokumente unter docs/ außer docs/startpaket/ nach Absprache. Beende mit: geänderte Dateien, ausgeführte Prüfungen (mit Ergebnis), offene Punkte.
+Halte dich an AGENTS.md. Bei jeder UI-Aufgabe: Lies docs/startpaket/09-ux-framework.md, füge die ausgefüllte Checkliste (§6) der Abweichungsliste und dem PR-Abschnitt „UX-Check“ bei. Nenne vor dem Coding die betroffenen Vertragsabschnitte und Prüffälle. Ändere keine Dokumente unter docs/ außer docs/startpaket/ nach Absprache. Beende mit: geänderte Dateien, ausgeführte Prüfungen (mit Ergebnis), offene Punkte.
 ```
 
 ## Mit zwei Agenten parallel
