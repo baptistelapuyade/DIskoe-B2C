@@ -17,6 +17,12 @@ Stand 2026-10-14 (Ausgangslage): Autorisiert waren ausschließlich Projektvorber
 - **Weiterhin nicht autorisiert:** Produktions-Deployment mit echten Organizern, Billing/Checkout (der Plus-Test ist nur eine Reservierung ohne Zahlung), kostenpflichtige Dienste über die Guthabenrahmen hinaus, Änderungen an bestehenden Projekten (DMO, MVP).
 - Der Plus-Schwellenwert (Arbeitswert 4 von 20) und die Erfolgskriterien der Alpha sind keine Freigabe; sie werden nach den ersten Organizern bzw. später festgelegt.
 
+**Erweiterung (Founder, 06.11.2026): Founder-Dashboard, Sperren und zugehörige Systemmails.** Autorisiert ist in Entwicklung und Preview, in der Reihenfolge der Wellen:
+- Anwendungscode, Datenbankschema und Migrationen für den Founder-Bereich (Überblick, Profile, Events, Anmeldungen, Prüfungen, Netzwerk, Plus, Zahlen, Protokoll, System) nach den Figma-Entwürfen „Founder-Bereich“ und „Sperre“, einschließlich Sperren und Entsperren von Profilen (mit allen ihren Events), Ausblenden einzelner Events, Antworten des Organizers (mehrfach), Protokoll, Änderung der Login-Adresse durch den Founder und erneutes Senden nicht übergebener Mails mit Prüfung unmittelbar vor der Übergabe.
+- Systemmails an Organizer: Profil gesperrt (Hinweis, Grund nicht in der Mail), Event ausgeblendet, wieder öffentlich, Login geändert (nur an die alte Adresse). Es gelten die Regeln der Erweiterung vom 27.10. (nur Systemzwecke, SES, Prüfung unmittelbar vor der Übergabe, „vom Anbieter angenommen“ ist nicht „zugestellt“).
+- Weiterhin nicht autorisiert: Produktions-Deployment mit echten Organizern (eigene Freigabe laut Alpha-Öffnung), Sperre eines ganzen Kontos (nicht entworfen), automatische KI-Prüfung oder KI-Sperren, Selbstbedienung für die Login-Adresse, Werbung und Newsletter.
+- Offene Produktentscheidungen (Liste der Sperrgründe, Plus-Schwelle) sind keine Freigabe; bis dahin gelten die Vorschläge aus `docs/STATUS.md` als Arbeitsstand.
+
 Eine spätere ausdrückliche Nutzerfreigabe hat Vorrang; Umfang und Datum werden in `docs/STATUS.md` festgehalten.
 
 ## Vor jeder Session
