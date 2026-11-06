@@ -111,7 +111,7 @@ Die Abschnitte ab hier sind Stand ihres Datums und nennen teils alte Nummern ode
 Geltende Eventseite: „Öffentliche Eventseite — Contententwurf / Review - NEW“ (`PUB-01`). D13, Eventsonderzustände und Öffentliches Ergebnis sind noch an sie anzugleichen.
 
 ## Komponenten (DISKOE — Komponenten)
-Button 2453:242 (Varianten Primary/Outline/Ghost, Size Regular/Large), Alert 2453:739, Dialog 2453:755, Form Field 2454:356, Image Upload 2454:391, Atmosphere Chip 2454:235, Event Card 2487:42626, Event Row 2479:801, Profile Banner 2479:706, Profile Header Cover 2624:6973, Empty State 2479:802, Spotify Placeholder 2561:5143. Abschnitte: Profilmodule 2577:5297, Artist-Profil und Listen 2731:50998, Event-Infokarten 2786:40643 (enthält **Info-Balken**, **Event-Tag**, **Tag-Farben**, **Gut zu wissen v3**).
+Button 2453:242 (Varianten Primary/Outline/Ghost, Size Regular/Large; Ghost hat seit 06.11.2026 einen 1-px-Rand in `borderStrong`, vorher ohne Rand), Alert 2453:739, Dialog 2453:755, Form Field 2454:356, Image Upload 2454:391, Atmosphere Chip 2454:235, Event Card 2487:42626, Event Row 2479:801, Profile Banner 2479:706, Profile Header Cover 2624:6973, Empty State 2479:802, Spotify Placeholder 2561:5143. Abschnitte: Profilmodule 2577:5297, Artist-Profil und Listen 2731:50998, Event-Infokarten 2786:40643 (enthält **Info-Balken**, **Event-Tag**, **Tag-Farben**, **Gut zu wissen v3**).
 
 ## Bauhinweise aus den Reviews
 - Buttons: bestehende Varianten wählen, Größe nicht strecken, keine Schatten auf Outline-Buttons, Kontur innen 1 px (Delta v0.4 §17.6).
