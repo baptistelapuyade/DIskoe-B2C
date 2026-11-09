@@ -89,6 +89,11 @@ Section „Flow 1 Block 2b“ (3010:11350). Weiter-Buttons sind nie deaktiviert;
 | EVT-05a / b / c | 3010:17209 / 17434 / 17673 | Eventbild leer / gewählt / Fehler | Weiter zur Atmosphäre → `EVT-06a` | Bild nicht zugeschnitten, Bildbeschreibung freiwillig |
 | EVT-06a / b | 3010:17989 / 18278 | Atmosphäre keine / ausgewählt | Weiter zu den freiwilligen Angaben → `EVT-07` | zehn Atmosphärebegriffe |
 | EVT-07 | 3010:18544 | Mehr zum Abend (freiwillig) | Format Club, Vernissage oder Filmabend → `EVT-07b`/`c`/`d`; sonst Weiter zur Vorschau → `EIN-01a`; Überspringen → dasselbe | |
+| EVT-07m-a (neu 09.11., Vorschlag) | 3109:31869 (Mobil 3109:33214) | Mehr zum Abend, modular: Club mit vorgeschlagenen Bausteinen | + Baustein hinzufügen → `EVT-07m-b`; Weiter zur Vorschau / Überspringen → `EIN-01a` | ersetzt `EVT-07b`/`e`; Karten je Baustein, aufklappbar, Entfernen |
+| EVT-07m-b (neu 09.11., Vorschlag) | 3109:32188 (Mobil 3109:33500) | Baustein hinzufügen | Hinzufügen / Abbrechen → `EVT-07m-a` | Auswahl der noch nicht gewählten Bausteine |
+| EVT-07m-c (neu 09.11., Vorschlag) | 3109:32379 (Mobil 3109:33680) | Vernissage, Pflichtbaustein „Besuchsmodus“ | wie `m-a` | ersetzt `EVT-07c`; Pflicht nicht entfernbar |
+| EVT-07m-d (neu 09.11., Vorschlag) | 3109:32651 (Mobil 3109:33941) | Filmabend, Pflichtbaustein „Sprache und Untertitel“ fehlt | wie `m-a` | ersetzt `EVT-07d`; Fehlerhinweis, „Noch nicht bekannt“ erlaubt |
+| EVT-07m-e (neu 09.11., Vorschlag) | 3109:33025 (Mobil 3109:34247) | Format ohne Vorschläge | + Baustein hinzufügen → `EVT-07m-b` | leere Liste |
 | EVT-07b / c / d (neu 09.11., Vorschlag) | 3102:2 / 3102:979 / 3102:1633 (je mit Mobil) | Zusatzfragen je Format: Club (5 freiwillige Fragen) / Vernissage (Besuchsmodus Pflicht, Besuchsfenster, Zeitbedarf) / Filmabend (Sprache und Untertitel Pflicht, Gesamtdauer) | Weiter zur Vorschau → `EIN-01a`; Überspringen → dasselbe | ersetzt die 12 Einzelfragen-Screens von `ORG-C`; Pflichtfragen mit „Noch nicht bekannt“ erlaubt, Überspringen erfüllt sie nicht (prüft `EIN-01`) |
 | EVT-07e (neu 09.11.) | 3102:2307 (Mobil 3102:2735) | Club: „Teilweise stufenlos“ ohne Erklärung | wie `EVT-07b` | Ohne Erklärung bleibt die Frage offen |
 | EVT-08 | 3010:19017 | Entwurf gesichert | Zum Entwurf → Schritt, an dem er stand (`EVT-01a` ff.); Zur Startseite → `103a`/`103b` | Entwurf privat, 90 Tage Inaktivität |
@@ -273,7 +278,7 @@ Sections „PUB-17 Follow-Platzierung“ (2839:47447) und „PUB-18 Besucherakti
 4. **Besucher-Entwürfe `PUB-17`/`18`** sind im Alt-Stil (Dialog-Ausschnitte); Anpassung an v2 und an „Bestätigen statt Dialoge“ steht aus.
 5. **Mailumfang Follow (entschieden 09.11., 17:55):** `AGENTS.md` erlaubt jetzt auch den gebündelten Hinweis auf neue Events (`FOLLOW-02`), für Free und Plus gleich. Offen: Einwilligungstext der Follow-Section und `MAIL-13` nennen „neue Events“ ausdrücklich (Figma nachziehen). Nachrichten, die der Organizer selbst schreibt (Plus „eigene Nachrichten“), sind nicht freigegeben und brauchen Einwilligungstext, Abmeldekategorie und Entwurf (siehe `docs/STATUS.md` 09.11., 17:55). Eine Mail zur Founder-Antwort (`FDB-17`) bleibt ohne Mail (Vorschlag).
 6. **`ORG-102a`:** „DISKOE löscht den Entwurf“ als manueller Schritt des Founders (Vorschlag); die Rückmeldung in der Anmeldeliste `FDB-07a` ist nicht gezeichnet.
-7. **Zusatzfragen als Vorschlag:** Format-Fragen in einer Seite je Format statt zwölf Einzelfragen; Einstieg über `EVT-07`. Pflichtfragen (Vernissage, Film) werden in `EIN-01` geprüft.
+7. **Zusatzfragen modular (Vorschlag 09.11., 18:10):** Bausteine statt Formatseiten, `EVT-07m-a`–`e` (Figma Seite 20, Section Flow 1 Block 2b, unterstes Band). `EVT-07b`–`e` bleiben bis zur Abnahme stehen und gehen dann ins Archiv. Pflichtbausteine (Vernissage: Besuchsmodus, Film: Sprache und Untertitel) werden in `EIN-01` geprüft.
 8. **Founder-Bereich mobil:** Beschluss steht aus.
 9. **Einladungsmail** (nicht freigegeben) und **Plus-Startmail** (erst bei buchbarem Plus) bleiben ohne Screen und Code.
 
