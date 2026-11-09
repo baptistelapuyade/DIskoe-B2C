@@ -67,7 +67,7 @@ Die Gruppen folgen dem Weg des ersten Organizers. Alpha: **Ja** heißt in der Al
 | Funktion | Quelle | Alpha | Code-Stand | Figma | Offen oder Voraussetzung |
 |---|---|---|---|---|---|
 | Follow: Besucher folgt einem Organizer per E-Mail, mit Bestätigungslink, Verwaltung und Abmeldung in jeder Mail | FOLLOW-01, Q32 | Ja, bestätigt 05.11. | nicht gebaut | PUB-17, GELTEND (Platzierung), Profilköpfe mit Follow | Freigabe für Mails an Besucher, Einwilligungstext, Missbrauchsbegrenzung |
-| Automatische Hinweise: neue Events gebündelt, Änderung von Datum, Beginn und Ort, Absage | FOLLOW-02, Q33 | Ja, bestätigt 05.11. | nicht gebaut | Texte der Statusspalten im Design noch zu füllen | Versand 10:00 Uhr Europe/Berlin, 15-Minuten-Fenster, Entdopplung, Zustellprotokoll |
+| Automatische Hinweise: neue Events gebündelt, Änderung von Datum, Beginn und Ort, Absage | FOLLOW-02, Q33 | Ja, bestätigt 05.11. | nicht gebaut | Texte der Statusspalten im Design noch zu füllen | Versand 10:00 Uhr Europe/Berlin, 15-Minuten-Fenster, Entdopplung, Zustellprotokoll. Hinweis auf neue Events in `AGENTS.md` ausdrücklich freigegeben am 09.11., für Free und Plus gleich |
 | Änderungsabo für ein einzelnes Event | FOLLOW-03, Delta v0.4 §5 | Ja, bestätigt 05.11. | nicht gebaut | PUB-18, ENTWURF | Wirkt wie Follow nur für ein Event. Geringer Hebel, deshalb spät bauen |
 | Merken (privat, lokal, nach Login geräteübergreifend) | VISIT-01 | Ja, bestätigt 05.11. | nur deaktivierter Platzhalter auf der Eventseite | PUB-18, ENTWURF | Lokale Merkungen und Login-Sync |
 | Kalenderexport (Datei für ein Event) | VISIT-02 | Ja, bestätigt 05.11. | nicht gebaut | PUB-18, ENTWURF | Ohne Mail, ohne Einwilligung, deshalb billig |
@@ -104,7 +104,7 @@ Die Datenbank kennt heute nur das Profil „Veranstalter“. Alles in dieser Gru
 | Funktion | Quelle | Alpha | Code-Stand | Figma | Offen oder Voraussetzung |
 |---|---|---|---|---|---|
 | Plus-Reservierungstest: Preis- und Funktionsseite, Auswahl der drei wichtigsten Funktionen, Bestätigung, Rückzug, Liste für den Founder | Featurematrix 22.10., Beschluss 22.10. | Ja, bestätigt 05.11. | nicht gebaut | D16–D18, ENTWURF | Keine Zahlung. Schwelle und Frist sind Vorschläge. Einwilligungstext ist rechtlich nicht geprüft. Löschung 3 Monate nach der Entscheidung |
-| Plus-Funktionen: Vorlagen, eigene Nachrichten, Befragung, Assistent mit 50 Läufen, QR-Download, Plus-Analytics | Delta v0.4 | Nein, erst nach der Auswertung des Tests | – | – | Notion schätzt 60–100 Stunden, ungeprüft |
+| Plus-Funktionen: Vorlagen, eigene Nachrichten, Befragung, Assistent mit 50 Läufen, QR-Download, Plus-Analytics | Delta v0.4 | Nein, erst nach der Auswertung des Tests | – | – | Notion schätzt 60–100 Stunden, ungeprüft. „Eigene Nachrichten“ an Follower sind die Plus-Funktion für direkten Kontakt; nicht freigegeben, Entwurf siehe `docs/STATUS.md` 09.11., 17:55 |
 | Testzugang, Checkout, Billing | PREMIUM-01, `AGENTS.md` | Nein | – | – | Manuelle Rechnung genügt laut Delta v0.4 |
 
 ### 8. Betrieb und Recht
