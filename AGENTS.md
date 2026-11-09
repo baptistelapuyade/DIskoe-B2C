@@ -24,6 +24,8 @@ Stand 2026-10-14 (Ausgangslage): Autorisiert waren ausschließlich Projektvorber
 - Weiterhin nicht autorisiert: Produktions-Deployment mit echten Organizern (eigene Freigabe laut Alpha-Öffnung), automatische KI-Prüfung oder KI-Sperren, Selbstbedienung für die Login-Adresse, Werbung und Newsletter.
 - Offene Produktentscheidungen (Liste der Sperrgründe, Plus-Schwelle) sind keine Freigabe; bis dahin gelten die Vorschläge aus `docs/STATUS.md` als Arbeitsstand.
 
+**Erweiterung (Founder, 09.11.2026): Startmail der Plus-Warteliste.** Freigegeben ist eine einmalige Systemmail an Organizer, die sich in die Plus-Warteliste eingetragen und der Mail ausdrücklich zugestimmt haben, sobald Plus öffentlich buchbar ist. Es gelten die Regeln vom 27.10. (nur dieser Systemzweck, SES, Prüfung unmittelbar vor der Übergabe auf Eintrag und nicht widerrufene Einwilligung, „vom Anbieter angenommen“ ist nicht „zugestellt“). Weiterhin nicht erlaubt: Werbung, Newsletter, weitere Mails an die Warteliste. Billing/Checkout bleibt nicht autorisiert; vor dem Start von Plus gibt es deshalb keinen Versand und keinen Code dafür.
+
 Eine spätere ausdrückliche Nutzerfreigabe hat Vorrang; Umfang und Datum werden in `docs/STATUS.md` festgehalten.
 
 ## Vor jeder Session
