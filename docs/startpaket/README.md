@@ -19,6 +19,7 @@ Stand: 23.10.2026. Dieses Paket übergibt Produktentscheidungen und Design an di
 | `07-start-prompt.md` | Fertige Prompts für Claude Code / Codex |
 | `08-alpha-matrix.md` | Alpha-Umfang (05.11.2026): Entscheidungsmatrix, Wellen 0 bis 6, Widersprüche zwischen Quellen; ersetzt die Folgeschicht-Reihenfolge in `02-durchstich.md` |
 | `09-ux-framework.md` | UX-Framework und Styleguide-Regeln (UX-01 ff.), Text und Ton, Screen-Checkliste; gilt für jeden Screen, jede Mail und jeden Fehlertext |
+| `10-flow-karte.md` | Flow-Karte der v2-Screens: Zustände, Aktionen mit Ziel-Screen, Mails, Protokoll, Regeln, Wellen; Lücken und Archivliste (Stand 09.11.2026, Entwurf) |
 
 ## Quellenrangfolge bei Widerspruch (neu → alt)
 1. Beschlüsse im Chat nach dem 23.10.2026 (Founder)
