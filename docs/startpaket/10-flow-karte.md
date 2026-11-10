@@ -285,7 +285,7 @@ Bestand: `PUB-17`/`PUB-18` mit rund 41 Dialog-Ausschnitten (954 px) und der Klic
 
 | Block | Screens (neu) | Ersetzt | Mails |
 |---|---|---|---|
-| 0 Gäste-Rahmen (Founder, 10.11., 12:06: „fehlt noch“) | Navigationsleiste für Gäste (Desktop und Mobil) und Bereich „Deine Seite“ (Merkliste, E-Mail-Abos, Anmeldestand, Abmelden); Einstieg aus Kopfzeile und aus den Mails | – | `MAIL-12` Einstieg per Code |
+| 0 Gäste-Rahmen (Founder, 10.11., 12:06: „fehlt noch“) | Navigationsleiste für Gäste (Desktop und Mobil) und Bereich „Deine Merkliste und Abos“ (Merkliste, E-Mail-Abos, Anmeldestand, Abmelden); Einstieg aus Kopfzeile und aus den Mails | – | `MAIL-12` Einstieg per Code |
 | 1 Follow | `FOL-01` E-Mail und Einwilligung (Fehler: M7, M2), `FOL-02` Bestätigung ausstehend (erneut senden), `FOL-03a` bestätigt, `03b` Link abgelaufen, `03c` schon bestätigt | `PUB-18.03a–c`, `18.04a–c` | `MAIL-13` Bestätigung |
 | 2 Merken und Besucher-Login | `MRK-01a` Merkliste (lokal) leer, `01b` befüllt, `MRK-02` Merkliste mitnehmen (E-Mail), `MRK-03a` Code eingeben, `03b` falsch oder abgelaufen, `MRK-04a` zusammenführen, `04b` zusammengeführt | `PUB-18.01a–e`, `18.04b` | `MAIL-12` Code |
 | 3 Verwalten | `VWL-01` Übersicht der E-Mail-Abos, `VWL-02` Abo beenden (Bestätigung), `VWL-03` beendet, `VWL-04` alle beenden (Umfang vorher), `VWL-05` alle beendet, `VWL-06` Verwaltungslink abgelaufen, `VWL-07` neuer Link angefordert | `PUB-18.05`–`08` | Abmeldelink in jeder Mail |
@@ -296,12 +296,12 @@ Bestand: `PUB-17`/`PUB-18` mit rund 41 Dialog-Ausschnitten (954 px) und der Klic
 Rund 25 Screens in zwei Viewports. **Entschieden (Founder, 10.11., 12:09, alle fünf Punkte):** (1) Organizer-Nachrichten weggelassen, als Plus-Vorhaben in der Alpha-Matrix vermerkt; (2) Seiten statt Dialoge; (3) Gäste-Bereich „Deine Seite“ plus Navigationsleiste (Block 0); (4) Event-Abo als Variante des Follow gezeichnet; (5) Reihenfolge wie in der Tabelle. Ursprüngliche Fragen: (1) Das Häkchen „Zusätzliche Eventnachrichten“ (Organizer-Nachrichten) bleibt **aus den Alpha-Screens** (`AGENTS.md`: weder Code noch Versand ohne eigene Freigabe); (2) Seiten statt Dialoge; (3) ein Gäste-Bereich „Deine Seite“ mit Merkliste und Abos statt getrennter Seiten; (4) Event-Abo jetzt als Variante zeichnen; (5) Reihenfolge der Blöcke wie in der Tabelle.
 
 ### F13 in v2: gezeichnet (Block 0 und 1, 10.11.2026, Review ausstehend)
-Section „ENTWURF v2 · F13 Gäste — Rahmen, Deine Seite, Follow“ (3132:32606), Seite 20. Frames je Desktop und Mobil. Alle Seiten tragen die Gäste-Kopfzeile `NAV-01` (Wortmarke links, Button „Deine Seite“, mit Zahl der Merkungen in Klammern, sobald es welche gibt).
+Section „ENTWURF v2 · F13 Gäste — Rahmen, Merkliste und Abos, Folgen“ (3132:32606), Seite 20. Frames je Desktop und Mobil. Alle Seiten tragen die Gäste-Kopfzeile `NAV-01` (Wortmarke links, Button „Gemerkt“ (Option A, Founder 10.11., 13:07; vorher „Deine Seite“), mit Zahl der Merkungen in Klammern, sobald es welche gibt).
 
 | Kennung | Knoten (Desktop / Mobil) | Zustand | Aktion → Ziel | Anmerkung |
 |---|---|---|---|---|
-| NAV-01a / b | 3132:32607, 3132:32695 / 3132:32735, 3132:32775 | Gäste-Kopfzeile ohne / mit Merkungen | „Deine Seite“ → `GST-01a`–`c` | Vorschlag für eine Komponente auf Seite 10; nicht angelegt, bis der Founder zustimmt |
-| GST-01a | 3133:257 / 3133:644 | Deine Seite, angemeldet | Entfernen, Beenden, Abmelden, Alle E-Mail-Abos beenden → `VWL-02`/`04` (Block 3) | Merkliste, E-Mail-Abos, Anmeldung (E-Mail) |
+| NAV-01a / b | 3132:32607, 3132:32695 / 3132:32735, 3132:32775 | Gäste-Kopfzeile ohne / mit Merkungen | „Gemerkt“ → `GST-01a`–`c` | Vorschlag für eine Komponente auf Seite 10; nicht angelegt, bis der Founder zustimmt |
+| GST-01a | 3133:257 / 3133:644 | Deine Merkliste und Abos, angemeldet | Entfernen, Beenden, Abmelden, Alle E-Mail-Abos beenden → `VWL-02`/`04` (Block 3) | Merkliste, E-Mail-Abos, Anmeldung (E-Mail) |
 | GST-01b | 3135:245 / 3135:571 | angemeldet, noch leer | – | Leertexte sind Einzeltexte, noch ohne Katalog-ID |
 | GST-01c | 3135:343 / 3135:669 | nicht angemeldet, lokale Merkungen | Mit E-Mail anmelden → `MRK-02` (Block 2) | Karte „Merkliste mitnehmen“; Hinweis zu Abos über den Mail-Link ist Annahme (TODO(spec) bei Block 3) |
 | FOL-01a / b / c | 3136:153 / 3136:1728; 3136:408 / 3136:1877; 3136:711 / 3136:2064 | Folgen: E-Mail eingeben / E-Mail passt nicht (Z01) / Senden fehlgeschlagen (Z03) | Bestätigungslink senden → `FOL-02a`; Zurück → Profil | Einwilligungstext nennt gebündelte Hinweise auf neue Events sowie Termin-, Ort- und Absagehinweise und den Abmeldelink; kein Häkchen. „E-Mail fehlt“ nutzt Z01 mit „Die E-Mail-Adresse fehlt noch.“ (kein eigener Frame) |
