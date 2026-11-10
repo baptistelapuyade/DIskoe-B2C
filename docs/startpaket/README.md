@@ -21,6 +21,7 @@ Stand: 23.10.2026. Dieses Paket übergibt Produktentscheidungen und Design an di
 | `09-ux-framework.md` | UX-Framework und Styleguide-Regeln (UX-01 ff.), Text und Ton, Screen-Checkliste; gilt für jeden Screen, jede Mail und jeden Fehlertext |
 | `10-flow-karte.md` | Flow-Karte der v2-Screens: Zustände, Aktionen mit Ziel-Screen, Mails, Protokoll, Regeln, Wellen; Lücken und Archivliste (Stand 09.11.2026, Entwurf) |
 | `11-muster-und-zustaende.md` | Muster (M1–M6) für Speichern, Laden, Fehler und Zustandsmatrix je Screen (Stand 10.11.2026, Entwurf) |
+| `12-zustandstexte.md` | Katalog der Zustandstexte (Hinweisboxen, Buttons) mit IDs und Platzhaltern; Abweichungen im Bestand (Stand 10.11.2026, Entwurf) |
 
 ## Quellenrangfolge bei Widerspruch (neu → alt)
 1. Beschlüsse im Chat nach dem 23.10.2026 (Founder)
