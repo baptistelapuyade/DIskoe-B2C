@@ -280,6 +280,20 @@ Sections „PUB-17 Follow-Platzierung“ (2839:47447) und „PUB-18 Besucherakti
 | PUB-18.05a–b, 06a–d, 07a–b, 08a–b | 2658:7978 … 2658:9364 | Verwalten: Event, Veranstalter, alle, abgelaufen/angefordert | Abbestellen, Zweck bestätigen | |
 | PUB-18.10a–d | 2661:9020, 9189, 9352, 9513 | Kalender: Auswahl / Download gestartet / fehlgeschlagen / ohne Datum | Datei herunterladen (keine Mail) | |
 
+### F13 in v2: Vorschlag für die Überarbeitung (10.11.2026, nicht abgenommen)
+Bestand: `PUB-17`/`PUB-18` mit rund 41 Dialog-Ausschnitten (954 px) und der Klickprototyp auf Seite 60. Vorschlag: **Seiten statt Dialoge** (Beschluss „Bestätigen statt Dialoge“), Mobil zuerst, Desktop danach, Texte aus dem Katalog `12-zustandstexte.md`, Fehler und Laden über die Muster in `11`. Der Bestand ist 1:1 zuordenbar:
+
+| Block | Screens (neu) | Ersetzt | Mails |
+|---|---|---|---|
+| 1 Follow | `FOL-01` E-Mail und Einwilligung (Fehler: M7, M2), `FOL-02` Bestätigung ausstehend (erneut senden), `FOL-03a` bestätigt, `03b` Link abgelaufen, `03c` schon bestätigt | `PUB-18.03a–c`, `18.04a–c` | `MAIL-13` Bestätigung |
+| 2 Merken und Besucher-Login | `MRK-01a` Merkliste (lokal) leer, `01b` befüllt, `MRK-02` Merkliste mitnehmen (E-Mail), `MRK-03a` Code eingeben, `03b` falsch oder abgelaufen, `MRK-04a` zusammenführen, `04b` zusammengeführt | `PUB-18.01a–e`, `18.04b` | `MAIL-12` Code |
+| 3 Verwalten | `VWL-01` Übersicht der E-Mail-Abos, `VWL-02` Abo beenden (Bestätigung), `VWL-03` beendet, `VWL-04` alle beenden (Umfang vorher), `VWL-05` alle beendet, `VWL-06` Verwaltungslink abgelaufen, `VWL-07` neuer Link angefordert | `PUB-18.05`–`08` | Abmeldelink in jeder Mail |
+| 4 Kalender | `KAL-01` Datei laden, `KAL-02` Download gestartet, `KAL-03` fehlgeschlagen, `KAL-04` Event ohne Datum | `PUB-18.10a–d` | keine |
+| 5 Event-Abo (zuletzt) | wie Block 1 mit Bereich „Event“: `FOL-11` bis `FOL-13` | `PUB-18.02a–c`, `18.05` | `MAIL-13` Variante |
+| Mails an Gäste | `MAIL-12`, `MAIL-13`; Hinweis auf Termin, Ort oder Absage (`MAIL-08` Stand prüfen); gebündelter Hinweis auf neue Events | | Abmeldelink, Absender, Grund des Empfangs |
+
+Rund 25 Screens in zwei Viewports. Zu entscheiden: (1) Das Häkchen „Zusätzliche Eventnachrichten“ (Organizer-Nachrichten) bleibt **aus den Alpha-Screens** (`AGENTS.md`: weder Code noch Versand ohne eigene Freigabe); (2) Seiten statt Dialoge; (3) ein Gäste-Bereich „Deine Seite“ mit Merkliste und Abos statt getrennter Seiten; (4) Event-Abo jetzt als Variante zeichnen; (5) Reihenfolge der Blöcke wie in der Tabelle.
+
 ## Lücken und offene Zuordnungen (Stand 09.11.2026, abends)
 **Seit dem ersten Entwurf gezeichnet (Review ausstehend):** ORG-01/02 in v2; Vorschau `VOR-01a`/`b`; Einstiege „Dein Bereich“ auf der Startseite; `ORG-102a`–`c`; Founder: `FDB-17a`–`d` (Antwort), `FDB-06e`–`h` mit `MAIL-11` (Event einblenden), `FDB-09c`–`g` (Ortsbindung); Preisformen `EVT-04f`–`n`; Zusatzfragen `EVT-07b`–`e` (Vorschlag); Besucher-Mails `MAIL-12`, `MAIL-13`.
 
