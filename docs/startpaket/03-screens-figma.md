@@ -33,7 +33,7 @@ Anlass: Die Datei war für den Überblick zu groß geworden (Flows, Entwürfe un
 - **Seiten nach Zielgruppe:** 20 Organizer bis zur Prüfung, 30 Organizer nach der Veröffentlichung, 40 öffentliche Seiten (unverändert), 50 Founder, 60 Gäste (umbenannt von „Besucher-Prototyp“), 80 und 90 unverändert. Die Seiten 30, 50 und 60, die am 09. und 10.11. geleert worden waren, tragen wieder Inhalt; ihre Hinweistexte wurden umgeschrieben, die Archivierung vom 09./10.11. bleibt gültig (alte NACH-A bis C, INT-A/B und der Klickprototyp liegen weiter auf Seite 90).
 - **Sammelrahmen zu Sections:** `Flow 1 Block 2b`, `Block 2c`, `Block 3`, `Founder-Bereich`, `Sperre` waren Frames und sind jetzt echte Sections (neue Section-IDs unten). Alle Frames darin haben ID und Position behalten. Die fünf leeren Hüllen liegen in der Archiv-Section „Leere Hüllen der fünf Sammelrahmen“ (Seite 90, alte IDs `3010:11350`, `3018:14952`, `3027:18219`, `3032:22070`, `3035:22106`).
 - **Namen:** Welle statt „nicht im Durchstich“, Review-Hinweise aus den Namen entfernt (siehe Tabelle). Seite 20 ist in zwei Reihen geordnet (Flow 1 oben, Reste und Entwürfe darunter).
-- **Archiv:** 33 lose Einzelteile von Seite 00 (Gruppe, Auswahl, Zeile, Form Field) und die lose Checkbox von Seite 20 liegen in der Archiv-Section „Lose Einzelteile von Seite 00 und Seite 20“ (Seite 90). Archivkandidaten, die noch der Founder entscheiden muss: `EVT-07b`–`e` (bis zur Abnahme der Bausteine), `ORG-91`.
+- **Archiv:** 33 lose Einzelteile von Seite 00 (Gruppe, Auswahl, Zeile, Form Field) und die lose Checkbox von Seite 20 liegen in der Archiv-Section „Lose Einzelteile von Seite 00 und Seite 20“ (Seite 90). Danach (Founder 10.11., 16:20, nach Abnahme der Bausteine) ebenfalls archiviert: `EVT-07b`–`e` mit Bandtext (Section „EVT-07b–e Zusatzfragen je Format“) und `ORG-91` (Section „ORG-91 Programm und Besuch (alt)“), beide auf Seite 90 mit unveränderten IDs. Die „Breiten Musikrichtungen“ aus `ORG-91` stehen jetzt im Baustein Musik (`EVT-07m-h`). Die Lücke in Block 2b wurde geschlossen (untere Bänder um 5.080 px nach oben, IDs unverändert).
 
 #### Sections nach Seite (Stand 10.11.2026)
 Review = Vermerk aus dem früheren Namen; Welle nach `08-alpha-matrix.md` und `10-flow-karte.md`.
@@ -45,7 +45,7 @@ Review = Vermerk aus dem früheren Namen; Welle nach `08-alpha-matrix.md` und `1
 | 20 | ENTWURF v2 · Flow 1 Block 2c (vorher Frame 3018:14952) | 3173:39716 | W1 | ausstehend |
 | 20 | ENTWURF v2 · Flow 1 Block 3 (vorher Frame 3027:18219) | 3173:39714 | W1 | ausstehend |
 | 20 | GELTEND · ORG-A Teststart und Moderationsnotizen | 2943:5576 | – | – |
-| 20 | GELTEND · ORG-B ORG-43/44 und ORG-91 | 2943:5589 | ORG-43/44: W6; ORG-91: offen | – |
+| 20 | GELTEND · ORG-B Profilstil ORG-43/44 (ORG-91 archiviert 10.11.) | 2943:5589 | W6 | – |
 | 20 | MUSTER · Speichern, Laden, Fehler | 3113:35519 | übergreifend | Entwurf |
 | 20 | ENTWURF · D11, D12, D15, D20 | 2715:43598, 2719:43976, 2720:44069, 2760:44388 | W5 | – |
 | 20 | ENTWURF · ORG-E, D21, D21 c/d | 2943:5614, 2777:44971, 2779:45721 | W6 | – |
@@ -99,7 +99,7 @@ Farben, Schrift und Abstände gelten nach den DISKOE-Tokens (`04-design-tokens.m
 | Section | Knoten | Zeilen |
 |---|---|---|
 | GELTEND · ORG-A Zugang und Profil anlegen | 2943:5576 | Teststart, E-Mail (`ORG-01`), Code (`02`), Profiltyp (`52`), Profileditor (`03`, `04`, Mobil `88`), Profilbild (`05`, `51`, `49`, `93`), Cover/Venue-Pfad (`50`, `06`, nicht im Durchstich), Vorschau (`09`), Bestätigen (`10`–`13`), in Prüfung (`14`, `41`) |
-| GELTEND · ORG-B Event erfassen und bearbeiten | 2943:5589 | Eventstart (`15`, `16`, Mobil `89`, `90`), Erfassung (`17`, `18`), Entwurf fortsetzen (`84`, `40`, `45`), Eventeditor (`19`, `39`, `30`, `31`, `43`, `44`, `94`, Mobil `53`), Programm und Besuch (`ORG-91`), Preis und Zugang (`ORG-92a`–`l`: fixed, free, from, range, donation, minimum_donation, unknown, registration, soldout, fees_known, fees_unknown, urlerror), Atmosphäre (`20`, `21`, Mobil `54`, `55`) |
+| GELTEND · ORG-B Event erfassen und bearbeiten | 2943:5589 | Eventstart (`15`, `16`, Mobil `89`, `90`), Erfassung (`17`, `18`), Entwurf fortsetzen (`84`, `40`, `45`), Eventeditor (`19`, `39`, `30`, `31`, `43`, `44`, `94`, Mobil `53`), Programm und Besuch (`ORG-91`, archiviert 10.11.2026), Preis und Zugang (`ORG-92a`–`l`: fixed, free, from, range, donation, minimum_donation, unknown, registration, soldout, fees_known, fees_unknown, urlerror), Atmosphäre (`20`, `21`, Mobil `54`, `55`) |
 | GELTEND · ORG-C Zusatzfragen (Ergänzungen) | 2943:5599 | Start (`22`, Mobil `85`), Club (`23`–`27`, Mobil `86`), Zugänglichkeit (`28`), Vernissage (`75`–`78`), Film (`79`–`83`), Abschluss (`29`, `46`–`48`, Mobil `87`) |
 | GELTEND · ORG-D Vorschau, Bestätigung und Erstprüfung | 2943:5608 | Vorschau (`33`, `32`, Mobil `56`), Bestätigung (`34`–`37`), eingereicht (`38`, `42`) |
 | ENTWURF · W6 · ORG-E Profilgestaltung und Module | 2943:5614 | Gestaltung (`07`, `65`, `66`), Module (`08`, `62`), Modulinhalte (`57`–`61`, `64`), Profilvorschau (`63`), Galerie (`67`–`70`), Empfehlungen (`71`–`74`) |
