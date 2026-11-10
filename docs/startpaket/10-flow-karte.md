@@ -32,7 +32,7 @@ Section „Flow 1 Block 1“ (2965:6020). ORG-01 und ORG-02 sind seit 09.11. in 
 | ORG-96 | 2966:6134 | Code wird gesendet | (Warten) → `ORG-02` | |
 | ORG-02 (neu 09.11.) | 3095:136 (Mobil 3095:153) | Code eingeben | Anmelden → Startseite je Stand, oder `ORG-100` ohne Profil; falsch → `ORG-97` | Sitzung beginnt |
 | ORG-01b (neu 10.11.) | 3113:32849 (Mobil 3113:33084) | Code senden fehlgeschlagen | Noch einmal versuchen → `ORG-96` | Muster M2/M3 |
-| ORG-02b (neu 10.11., Vorschlag) | 3113:33228 (Mobil 3113:33400) | Zu viele falsche Codes | Neuen Code senden → `ORG-98`; Andere E-Mail-Adresse → `ORG-01` | „zehn Minuten“ ist ein **Vorschlag**; Sperrlogik im Code |
+| ORG-02b (neu 10.11., Vorschlag) | 3113:33228 (Mobil 3113:33400) | Zu viele falsche Codes | Neuen Code senden → `ORG-98`; Andere E-Mail-Adresse → `ORG-01` | zehn Minuten (Founder 10.11.); Sperrlogik im Code |
 | ORG-97 | 2965:6380 | Code falsch oder abgelaufen | Anmelden → Startseite; Neuen Code senden → `ORG-98`; Andere E-Mail-Adresse → `ORG-01` | |
 | ORG-98 | 2966:6588 | Neuer Code gesendet | wie `ORG-97` | neue `MAIL-01` |
 | ORG-99 | 2966:7038 | Link abgelaufen | Neuen Code senden → `ORG-96` | Link aus `MAIL-01` |
@@ -105,7 +105,7 @@ Section „Flow 1 Block 2b“ (3010:11350). Weiter-Buttons sind nie deaktiviert;
 | EVT-09c (neu 10.11., Vorschlag) | 3111:33192 (Mobil 3111:33723) | Ohne Sichern verlassen (Bestätigungsseite) | Zurück und noch einmal versuchen → Schritt; Trotzdem verlassen → Startseite | ehrlich: Eingaben des Schritts gehen verloren, keine lokale Browser-Sicherung |
 | EVT-00i / j (neu 10.11.) | 3113:33505 / 3113:33711 (Mobil 3113:33612 / 3113:33886) | Material: Datei nicht verwendbar / zu viele Bilder | wie `EVT-00b`/`c` | Muster M5; Grenzen 5 MB, drei Bilder |
 | EVT-03c (neu 10.11.) | 3113:35334 (Mobil 3113:35425) | Ort ausgefüllt | Weiter zu Preis und Zugang → `EVT-04a`/`b`/`c` | |
-| EVT-05d / e / f (neu 10.11.) | 3113:34005 / 34306 / 34468 (Mobil 3113:34200 / 34391 / 34553) | Eventbild: lädt hoch / zu klein / falsches Format | wie `EVT-05a` | „zu klein“: 400 × 400 Pixel ist ein **Vorschlag** (wie Profilbild) |
+| EVT-05d / e / f (neu 10.11.) | 3113:34005 / 34306 / 34468 (Mobil 3113:34200 / 34391 / 34553) | Eventbild: lädt hoch / zu klein / falsches Format | wie `EVT-05a` | „zu klein“: 400 × 400 Pixel (Founder 10.11.) |
 | EVT-07m-g (neu 10.11., Vorschlag) | 3113:34630 (Mobil 3113:34944) | Feld in Baustein fehlerhaft | wie `EVT-07m-a` | Muster Feldfehler |
 | EVT-07m-f (neu 10.11., Vorschlag) | 3111:33877 (Mobil 3111:34036) | Baustein entfernt, Rückgängig | Rückgängig → Karte kehrt zurück | Schutz vor Datenverlust beim Entfernen |
 
