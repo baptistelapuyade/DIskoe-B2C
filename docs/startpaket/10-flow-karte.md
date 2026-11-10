@@ -293,7 +293,7 @@ Sections „PUB-17 Follow-Platzierung“ (2839:47447) und „PUB-18 Besucherakti
 9. **Einladungsmail** (nicht freigegeben) und **Plus-Startmail** (erst bei buchbarem Plus) bleiben ohne Screen und Code.
 
 ## Fehlende Zustände
-Die Prüfung vom 10.11. und die Matrix stehen in `docs/startpaket/11-muster-und-zustaende.md`. Gezeichnet am 10.11.: `ORG-01b`, `ORG-02b`, `EVT-00i`/`j`, `EVT-03c`, `EVT-05d`–`f`, `EVT-07m-g`, `EVT-09a`–`c`, `EVT-07m-f`. Entschieden: Rückfrage-Korrektur über den Datenvertrag bzw. Code (kein Figma-Screen je Feldtyp), Eingaben bleiben bei abgelaufener Sitzung.
+Die Prüfung vom 10.11. und die Matrix stehen in `docs/startpaket/11-muster-und-zustaende.md`; Hinweis- und Zustandstexte stehen im Katalog `docs/startpaket/12-zustandstexte.md`. Gezeichnet am 10.11.: `ORG-01b`, `ORG-02b`, `EVT-00i`/`j`, `EVT-03c`, `EVT-05d`–`f`, `EVT-07m-g`, `EVT-09a`–`c`, `EVT-07m-f`. Entschieden: Rückfrage-Korrektur über den Datenvertrag bzw. Code (kein Figma-Screen je Feldtyp), Eingaben bleiben bei abgelaufener Sitzung.
 
 **Nach der Abnahme zu archivieren (nicht archiviert, weil nicht abgenommen):** alte `ORG-01`/`02`, `ORG-32`/`33`/`56`, `ORG-C` (Zusatzfragen) und `ORG-92a`–`l`; `ORG-91` erst nach Punkt 3.
 
