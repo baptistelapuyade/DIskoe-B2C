@@ -119,7 +119,31 @@ Mails: `MAIL-04`, `05`, `06`, `07`, `09`, `10`, `11` sind gezeichnet. Mischfall 
 - **Texte der Antwortseiten:** `SPR-02a` bis `02c` tragen den Wortlaut für Profilsperren. Für Event-Ausblendungen gilt derselbe Screen mit `{Objekt}` („dieses Event“ statt „dein Profil“), für Konten `SPR-04c`/`04f`. Der Hinweis in `SPR-02c` sagte bisher „Du kannst dein Profil in der Zwischenzeit weiter bearbeiten.“ und widersprach der Regel „ein gesperrter Organizer ändert nichts“ (Founder, 09.11.); jetzt „Du siehst dein Profil weiter. Ändern kannst du gerade nichts.“
 - **Bestand aufgeräumt (10.11.):** Die alten freistehenden `PLS-01a`/`PLS-01b` sind archiviert (Seite 90).
 
-**Nicht geprüft:** F13 (Besucher, Alt-Stil; kommt mit der Überarbeitung auf v2).
+## Zustandsmatrix Gäste (F13; Prüfung 10.11.2026, Vorschlag, Review ausstehend)
+Typen und Legende wie oben. Prüfung gegen die Frames der Section „ENTWURF v2 · F13 Gäste“ (Desktop und Mobil, Maße und Hinweisnamen per Skript, Rest durch Lesen). **Vorschlag:** Die Muster M1 (Speichert → „Wird gesendet …“, Z02) und M3 (Keine Verbindung, Z04) gelten auch für Gäste-Formulare; sie bekommen dort keine eigenen Frames. Die Muster-Referenzen (`EVT-09a`, `EVT-09b`) liegen im Organizer-Bereich; Gäste-Texte kommen aus demselben Katalog.
+
+| Screen | Typ | Normal | Variante / Validierung | Fehlgeschlagen | Erledigt | Sonst |
+|---|---|---|---|---|---|---|
+| NAV-01 Gäste-Kopfzeile | Komponente | ✓ `01a`/`b` | – | – | – | Mobil nur Symbol: Zugänglichkeitstext „Gemerkt“ im Code; noch keine Komponente auf Seite 10 |
+| GST-01 Merkliste und Abos | Liste | ✓ `01a` | leer `01b`, nicht angemeldet `01c`/`d`, mit Status und Vorbei `01e` | **✗** „Entfernen“ fehlgeschlagen (Vorschlag: Z03 über der Karte, kein eigener Frame) | – | lädt: M10 |
+| FOL-01 Folgen | Formular | ✓ `01a` | E-Mail passt nicht (Z01) `01b` | ✓ `01c` (Z03); Offline M3 | → `FOL-02a` | Senden: M1 |
+| FOL-02 Bestätigung ausstehend | Warteseite | ✓ `02a` | erneut gesendet `02b`, Wartezeit `02c` | M9 (erneutes Senden fehlgeschlagen) | – | |
+| FOL-03 Bestätigung per Link | Ergebnisseite | ✓ `03a` | abgelaufen `03b`, schon bestätigt `03c` | M9 | ✓ `03a` | Unbekannter Link: wie `03b` (Vorschlag: gleiche Seite, damit nichts verraten wird) |
+| MRK-02 E-Mail für Code | Formular | ✓ `02a` | passt nicht `02b` | ✓ `02c`; Offline M3 | → `MRK-03a` | Senden: M1 |
+| MRK-03 Code eingeben | Formular | ✓ `03a` | falsch oder abgelaufen `03b`, zu viele Versuche `03c` | M9 | → `GST-01a` oder `MRK-04a` | Neuer Code: M9 bei Fehler |
+| MRK-04 Merkungen zusammenführen | Bestätigung | ✓ `04a` | – | M9 | ✓ `04b` | |
+| VWL-01 Abo beenden | Bestätigung | ✓ `01a` | – | ✓ `01b` (Z03, Abo läuft weiter) | ✓ `VWL-02` | Link passt nicht `VWL-03` |
+| VWL-04 Alle Abos beenden | Bestätigung | ✓ `04a` | – | M9 | ✓ `VWL-05` | |
+| KAL-01 Termin in den Kalender | Bestätigung | ✓ `01` | – | ✓ `03` (Z03) | ✓ `02` | Event ohne Termin `04` |
+| FOL-11 Event-Abo | Formular | ✓ `11` | wie `FOL-01b` (M7, Z01) | wie `FOL-01c` (Z03); Offline M3 | → `FOL-12` | Senden: M1 |
+| FOL-12 / 13 Event-Abo bestätigen | Warteseite / Ergebnis | ✓ `12`, `13` | Wartezeit, abgelaufen: wie `FOL-02c`, `03b` | M9 | ✓ `13` | Endet mit dem Event (Text) |
+| VWL-06 Event-Abo beenden | Bestätigung | ✓ `06a` | – | M9 | ✓ `06b` | |
+
+### Ergebnis F13
+- **Neu gezeichnet:** `GST-01e` (Status und Vorbei, Event-Abo endet mit dem Event).
+- **Lücke (Founder entscheidet):** „Entfernen“ in der Merkliste ohne Bestätigung; Fehlerfall nur als Vorschlag (Z03, kein Frame). Ob „Entfernen“ bestätigt werden soll, ist nicht entschieden; es betrifft nur eine lokale Merkung bzw. eine Zeile der eigenen Liste.
+- **Texte:** Hinweise tragen Katalog-IDs (Z01, Z03, Z11, Z14) oder „Einzeltext“ (Leertexte, `FOL-03b`/`c`, Karten in `GST-01`); Einzeltexte werden bei Wellenbeginn als Z20 ff. aufgenommen.
+- **Noch nicht geprüft:** Kontrast, Tastaturreihenfolge, Mails auf Mobil, Teilen-Dialoge `PUB-01m`–`o` (Alt-Stil), `PUB-06c`/`d`.
 
 ## Pflege
 - Neue Screens bekommen in der Flow-Karte eine Zeile und hier eine Zelle; ein fehlender Zustand wird als **✗** geführt, bis er gezeichnet oder als Muster markiert ist.

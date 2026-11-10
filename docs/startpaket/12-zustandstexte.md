@@ -9,6 +9,13 @@
 4. **Immer sagen, was nach einem Fehler gilt** (`{Stand danach}`): was bleibt, was ist öffentlich.
 5. **Mails:** „an den Versanddienst übergeben“ steht nie ohne den Zusatz, dass das nicht „angekommen“ heißt (`AGENTS.md`).
 
+## Begriffe für Gäste-Seiten (Vorschlag 10.11., Founder-Review 13:45)
+- **Profil:** „folgen“ (Button „Folgen“, „Du folgst …“, „Wieder folgen“).
+- **Event:** „abonnieren“ (Button „Änderungen abonnieren“, „Wieder abonnieren“).
+- **Substantiv:** immer „E-Mail-Abo“ (Listen, Titel, Abmeldeseiten); im Satz darf „Abo“ stehen. „Folgen beenden“ und „Follow“ entfallen.
+- **Merkliste:** „merken“, „Gemerkt (n)“; die Zahl zählt Events, die nicht vorbei sind. Status-Badges: „Abgesagt“, „Verschoben“, „Vorbei“.
+- **Eine Aktion, ein Name:** Der Button im Formular, der Einwilligungstext und die Mail nennen dieselbe Aktion beim gleichen Namen.
+
 ## Katalog (Vorschlag)
 | ID | Muster | Art | Zeile 1 | Zeile 2 | Platzhalter |
 |---|---|---|---|---|---|
