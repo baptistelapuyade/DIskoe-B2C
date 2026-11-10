@@ -297,7 +297,7 @@ Sections „PUB-17 Follow-Platzierung“ (2839:47447) und „PUB-18 Besucherakti
 ## Fehlende Zustände
 Die Prüfung vom 10.11. und die Matrix stehen in `docs/startpaket/11-muster-und-zustaende.md`; Hinweis- und Zustandstexte stehen im Katalog `docs/startpaket/12-zustandstexte.md`. Gezeichnet am 10.11.: `ORG-01b`, `ORG-02b`, `EVT-00i`/`j`, `EVT-03c`, `EVT-05d`–`f`, `EVT-07m-g`, `EVT-09a`–`c`, `EVT-07m-f`. Entschieden: Rückfrage-Korrektur über den Datenvertrag bzw. Code (kein Figma-Screen je Feldtyp), Eingaben bleiben bei abgelaufener Sitzung.
 
-**Nach der Abnahme zu archivieren (nicht archiviert, weil nicht abgenommen):** alte `ORG-01`/`02`, `ORG-32`/`33`/`56`, `ORG-C` (Zusatzfragen) und `ORG-92a`–`l`; `ORG-91` erst nach Punkt 3.
+**Archiviert am 10.11.2026 (Founder: „Ja fang bitte damit an“):** alte `ORG-01`/`02`, `ORG-32`/`33`/`56`, `ORG-92a`–`l`, Section `ORG-C` (Zusatzfragen, ersetzt durch die Bausteine `EVT-07m`), Section `ORG-D` (nur Beschriftungen übrig), Section D16–D18 und die alten freistehenden `PLS-01a`/`PLS-01b` („Plus reserviert“). Alles auf Seite 90, Knoten-IDs unverändert. **Noch nicht archiviert:** `ORG-91` (erst nach Klärung von Punkt 3), `EVT-07b`–`e` (bis zur Abnahme der Bausteine).
 
 ## Archiv (09.11.2026)
 Ersetzte Frames liegen auf Seite 90 „Archiv“, Knoten-IDs unverändert. Die Seiten 30 und 50 sind leer und tragen einen Hinweis.
@@ -314,4 +314,4 @@ Ersetzte Frames liegen auf Seite 90 „Archiv“, Knoten-IDs unverändert. Die S
 | Einzelframes aus `ORG-B` (19): ORG-15 bis 21, 30, 31, 39, 40, 45, 53 bis 55, 84, 89, 90, 94 | Block 2b: `EVT-00a` bis `EVT-09` |
 | Einzelframes aus `ORG-D` (6): ORG-34 bis 38, 42 | Block 2c: `EIN-02`, `PRF-01`, `PRF-02` |
 
-**Bleibt in den alten Sections (nicht neu gezeichnet):** `ORG-A`: ORG-01, ORG-02, Teststart und Moderationsnotizen. `ORG-B`: ORG-43, 44, 91, 92a bis l. `ORG-C` (Zusatzfragen) vollständig. `ORG-D`: ORG-32, 33, 56 (Vorschau). Seite 40 (öffentliche Seiten) unverändert. Die Zuordnung der archivierten Einzelframes beruht auf Namen und Beschlüssen in `STATUS.md`; die Prototyp-Verknüpfungen der alten Frames sind damit unterbrochen.
+**Bleibt in den alten Sections (nicht neu gezeichnet):** `ORG-A`: Teststart und Moderationsnotizen. `ORG-B`: ORG-43, 44, 91. Außerdem D11, D12, D15, D20, D21 und `ORG-E` (Wellen 5 und 6) sowie Seite 40 (öffentliche Seiten) und Seite 60 (Besucher-Prototyp). Die Prototyp-Verknüpfungen der archivierten Frames sind unterbrochen.

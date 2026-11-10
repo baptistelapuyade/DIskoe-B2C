@@ -146,7 +146,7 @@ Verbindlich, weil aus Verträgen und Beschlüssen abgeleitet. Die Kennung (UX-nn
 - **Zahlen und Zeit:** deutsches Format, 24-Stunden-Uhr, „Uhr“ nach der Zeit, Datum mit Wochentag in Listen.
 - **Mails:** Betreff nennt den Zweck; erster Satz sagt, was du tun sollst; Absender und Grund des Empfangs stehen drin.
 - **Nutzen nennen** (PP-03): Wo eine Verknüpfung, ein Teilen-Schritt oder eine Einwilligung gefragt wird, steht ein Satz zum Nutzen vor dem Button.
-- **Zustandstexte nur aus dem Katalog** (Founder, 10.11.2026): Hinweisboxen und Zustandstexte (Speichern, Fehler, Hochladen, Bestätigung, Mail-Übergabe, Verwerfen) kommen aus `12-zustandstexte.md` (IDs Z01 ff.). Im Frame steht die ID im Ebenennamen, im Code gibt es ein Textverzeichnis mit denselben IDs. Änderungen zuerst im Katalog. Ein eigener Wortlaut braucht einen neuen Katalogeintrag mit Begründung. Für Gäste und Besucher:innen im Plural gilt „Gäste“.
+- **Zustandstexte nur aus dem Katalog** (Founder, 10.11.2026): Hinweisboxen und Zustandstexte (Speichern, Fehler, Hochladen, Bestätigung, Mail-Übergabe, Verwerfen) kommen aus `12-zustandstexte.md` (IDs Z01 ff.). Im Frame steht die ID im Ebenennamen, im Code gibt es ein Textverzeichnis mit denselben IDs. Änderungen zuerst im Katalog. Ein eigener Wortlaut braucht einen neuen Katalogeintrag mit Begründung. Für Besucher:innen der öffentlichen Seiten im Plural gilt „Gäste“, auch in Mails (Founder, 10.11.2026).
 
 ### 5.2 Maße und Raster
 **Ist-Stand** aus den Figma-Variablen der Stilübersicht (DS-0 `2454:392`) und der Komponenten DS-A (`2952:1841`), gelesen am 05.11.2026, und aus `app/globals.css` sowie `components/ui/`. Kein Abgleich Pixel für Pixel.

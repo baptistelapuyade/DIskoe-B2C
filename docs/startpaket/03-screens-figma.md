@@ -28,6 +28,9 @@ Die Legende auf Seite 00 enthält dieselben Regeln. Vor der Neuordnung wurde ein
 | 80 Geparkt — Discovery (spätere Phase) | Bausteine für die Discovery nach der Alpha, nicht löschen; unverändert |
 | 90 Archiv | ersetzte Stände mit Datum und Grund im Namen; 09.11.2026: NACH-A bis C, ORG-A+, Slice-5-Review, INT-A/B und ersetzte Einzelframes aus ORG-A, B, D (Liste in `10-flow-karte.md`, „Archiv“) |
 
+### Archivierung am 10.11.2026
+Auf Seite 90 zusätzlich: alte `ORG-01`/`02`, `ORG-32`/`33`/`56`, `ORG-92a`–`l`, `ORG-C`, `ORG-D`, D16–D18 und die alten `PLS-01a`/`PLS-01b`. Die Sections tragen „ARCHIV 10.11.2026“ und den Ersatz im Namen. Knoten-IDs unverändert.
+
 ### Archivierung am 09.11.2026
 Alle Screens, die in den „ENTWURF v2“-Sections neu gezeichnet wurden, ersetzen ihre alten Frames. Die alten Frames liegen auf Seite 90 (Knoten-IDs unverändert); Seiten 30 und 50 sind leer und tragen einen Hinweis. **Nicht ersetzt und deshalb weiter aktiv:** `ORG-01`, `ORG-02`, `ORG-32`/`33`/`56` (Vorschau), `ORG-43`/`44`, `ORG-91`, `ORG-92a`–`l`, die Zusatzfragen `ORG-C` und alle öffentlichen Seiten (Seite 40). Die Tabellen unten zu Seite 20, 30 und 50 beschreiben den Stand vor dem 09.11.2026 (Knoten bleiben gültig, auch im Archiv). Ablauf und Zusammenhänge der v2-Screens: `10-flow-karte.md`. Neue Screens kommen nur noch in „ENTWURF v2“-Sections auf Seite 20 oder in die Sections ihres Bereichs.
 
