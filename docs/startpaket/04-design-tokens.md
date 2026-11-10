@@ -9,7 +9,7 @@ Quelle: Figma-Variablen (Collections `DISKOE / Primitives`, `DISKOE / Theme`, `D
 | muted | #676762 | surface | #f1f1ed |
 | border | #dfdfd9 | hover | #e8e8e2 |
 | focus | #77689a | white | #ffffff |
-| iris | #7758da | irisLight | #a795ee |
+| iris | #7455d8 | irisLight | #a795ee |
 | pink | #f39cc3 | blue | #a9cce9 |
 | peach | #ffb58e | yellow | #f5d95c |
 | lavender | #c3a4cc | borderStrong | #8e8e87 |
@@ -33,7 +33,7 @@ Rollen: Seite, Fläche, Kopf, Kopf Text, Text, Text gedämpft, Linie, Akzent, Ak
 | Text | #2b2a29 | #1b1a19 | #14163a | #1f1e1b | #1d2a1f | #15171c | #231f1a | #f2f2f2 | #2a2340 |
 | Text gedämpft | #6b6966 | #5e574c | #555a7a | #6e6a62 | #5c6a5e | #61646d | #6d655a | #a3a3a3 | #6e6688 |
 | Linie | #e2e0db | #e8dfc4 | #d5dbf5 | #e3ded3 | #d3ddcc | #e1e2e6 | #231f1a | #d4ff3a | #2a2340 |
-| Akzent | #7758da | #1b1a19 | #ff7ab8 | #9c3d25 | #2f5d3a | #c8a24a | #e2462f | #d4ff3a | #6b4eff |
+| Akzent | #7455d8 | #1b1a19 | #ff7ab8 | #9c3d25 | #2f5d3a | #c8a24a | #e2462f | #d4ff3a | #6b4eff |
 | Akzent Text | #ffffff | #ffffff | #14163a | #ffffff | #ffffff | #15171c | #ffffff | #111111 | #ffffff |
 
 ## Kontrastregeln (Frontend und Backend)
