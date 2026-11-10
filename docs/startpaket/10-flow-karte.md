@@ -2,13 +2,15 @@
 
 **Status:** Entwurf, vom Founder noch nicht abgenommen. Stand 09.11.2026 abends: Die fehlenden Screens aus der ersten Lückenliste sind gezeichnet (Zeilen mit **neu 09.11.**). Die Karte beschreibt, wie die Screens der „ENTWURF v2“-Sections in Figma (Seite 20) zusammenhängen. Sie ist aus Frame-Namen, Beschriftungen der Schaltflächen und den Entscheidungen in `docs/STATUS.md` abgeleitet, **nicht** aus Prototyp-Verknüpfungen (die v2-Frames haben keine). Alles mit **⚠** ist in Figma nicht gezeichnet oder aus der Beschriftung nur vermutet und wird im Review entschieden. Die Karte ist Arbeitsgrundlage für Planung und Bauen, kein Vertrag; bei Widerspruch gelten die Entscheidungen in `STATUS.md` und die Verträge (`README.md`, Quellenrangfolge).
 
+**Figma-Seiten seit 10.11.2026 (Aufräumen, Founder-Freigabe 16:03):** Die Sections liegen nach Bereich auf Seite 20 (Flow 1 Block 1 bis 3), Seite 30 (Flow 2 A, B, C, E, G), Seite 50 (Founder-Bereich, H Konto-Sperre, Sperre) und Seite 60 (F13 Gäste). Wo unten noch „Seite 20“ steht, gilt die Seite des Datums der Zeile; die aktuelle Zuordnung steht in `03-screens-figma.md` („Sections nach Seite“). Knoten-IDs der Frames sind unverändert; geändert haben sich nur die IDs der fünf früheren Sammelrahmen (jetzt Sections).
+
 ## So liest du die Karte
 - **Eine Zeile ist ein Screen in einem Zustand.** Die Knoten-ID ist die des Desktop-Frames; der Mobil-Frame hat denselben Namen mit „Mobil“ (Founder-Bereich: nur Desktop).
 - **Aktionen:** `Beschriftung → Ziel`. „Zurück“ (Navigationszeile) führt zum vorherigen Screen oder Schritt und steht nur, wenn es davon abweicht. Fehlerzustände behalten die Eingaben; „Noch einmal versuchen“ wiederholt die Aktion.
 - **Bestätigen statt Dialoge:** Sperren, Absagen, Verwerfen, Einreichen sind eigene Seiten mit Bestätigung (UX-Framework), keine Dialoge.
 - **Welle** nach `08-alpha-matrix.md`: W1 Kernflow, W2 KI-Erfassung, W3 Publikum, W4 Plus-Reservierungstest, W5 Netzwerk, W6 Profil-Editor. Die Founder-Bereiche werden in der Reihenfolge der Wellen gebaut.
 - **Folgen** nennt Mails, Protokolleinträge und Regeln, die an dem Übergang hängen. Mails an Organizer und Besucher nur im Rahmen der Freigaben in `AGENTS.md`; „vom Anbieter angenommen“ heißt nie „zugestellt“.
-- **Externe Ziele** (nicht v2, bleiben wie in Figma Seite 40): Eventseite `PUB-01a` (2643:9417), abgesagt `PUB-01b`, vorbei `PUB-01e`, Veranstalterprofil `PUB-06a` (2632:7096), nicht verfügbar `PUB-SPR-01` (3035:23979).
+- **Externe Ziele** (nicht v2, bleiben wie in Figma Seite 40): Eventseite `PUB-01a` (2643:9417), abgesagt `PUB-01b`, vorbei `PUB-01e`, Veranstalterprofil `PUB-06a` (2632:7096), nicht verfügbar `PUB-SPR-01` (3035:23979, in der Section „Sperre“ auf Seite 50).
 
 ## Übergreifende Regeln für Übergänge
 | Regel | Gilt für |
@@ -70,7 +72,7 @@ Section „Flow 1 Block 2a“ (2993:9017). Adresse nach der Freigabe nicht mehr 
 | ORG-10 | 2996:11868 | Venue Vorschau | Weiter zum ersten Event → `EVT-00a`; Profil ohne Event einreichen → `EIN-01c` | |
 
 ## F3 · Erstes Event anlegen (Block 2b, W1; Material und KI W2)
-Section „Flow 1 Block 2b“ (3010:11350). Weiter-Buttons sind nie deaktiviert; fehlende Pflichtangaben prüft erst `EIN-01`.
+Section „Flow 1 Block 2b“ (3173:39715; bis 10.11. ein Frame mit der ID 3010:11350). Weiter-Buttons sind nie deaktiviert; fehlende Pflichtangaben prüft erst `EIN-01`.
 
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
 |---|---|---|---|---|
@@ -110,7 +112,7 @@ Section „Flow 1 Block 2b“ (3010:11350). Weiter-Buttons sind nie deaktiviert;
 | EVT-07m-f (neu 10.11., Vorschlag) | 3111:33877 (Mobil 3111:34036) | Baustein entfernt, Rückgängig | Rückgängig → Karte kehrt zurück | Schutz vor Datenverlust beim Entfernen |
 
 ## F4 · Einreichen, Prüfung, Rückfrage, Live (Block 2c, W1)
-Section „Flow 1 Block 2c“ (3018:14952). Profil und erstes Event werden gemeinsam geprüft; Profil allein einreichen ist erlaubt.
+Section „Flow 1 Block 2c“ (3173:39716; bis 10.11. Frame 3018:14952). Profil und erstes Event werden gemeinsam geprüft; Profil allein einreichen ist erlaubt.
 
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
 |---|---|---|---|---|
@@ -147,7 +149,7 @@ Section „Flow 1 Block 2c“ (3018:14952). Profil und erstes Event werden gemei
 Mails des Blocks: `MAIL-01` Anmeldecode (3021:22879, Direkt anmelden → Startseite), `MAIL-02a`/`b` Live (3021:22975 / 23069, Zu deinem Profil → `LIV-01`), `MAIL-03` Rückfrage (3021:23161, Rückfrage ansehen → `RFG-01`).
 
 ## F5 · Live-Profil ändern und veröffentlichen (Block 3, W1)
-Section „Flow 1 Block 3“ (3027:18219). Änderungen an einem live Profil gehen ohne Prüfung durch; Adresse ist schreibgeschützt.
+Section „Flow 1 Block 3“ (3173:39714; bis 10.11. Frame 3027:18219). Änderungen an einem live Profil gehen ohne Prüfung durch; Adresse ist schreibgeschützt.
 
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
 |---|---|---|---|---|
@@ -216,7 +218,7 @@ Section (3072:267). Regeln (STATUS 09.11.): Standard gebündelt um 10:00 Uhr `Eu
 | MAIL-08a / b / c / d | 3072:17 / 75 / 153 / 207 | an Follower: Termin verschoben / Beginn und Ort geändert / Absage / Neuer Termin folgt | Zum Event, Zur Eventseite → `PUB-01x` | nur Systemzweck, Besucher-Mail-Freigabe vom 05.11.; Follow selbst ist W3 |
 
 ## F10 · Founder-Bereich (nur Desktop, Reihenfolge der Wellen)
-Section (3032:22070). Seitenleiste: Heute `FDB-01`, Profile `FDB-02a`, Events `FDB-06a`, Anmeldungen `FDB-07a`, Prüfungen `FDB-08`, Netzwerk `FDB-09a`, Plus `FDB-10`, Zahlen `FDB-11`, Protokoll `FDB-12`, System `FDB-13`. Listenstandard: Suche, Filter, sortierbare Spalten, 25 je Seite, Zustände leer, lädt, Ladefehler. E-Mail-Adressen in Listen gekürzt, Entwürfe nie lesbar.
+Section (3173:39717, Seite 50; bis 10.11. Frame 3032:22070). Seitenleiste: Heute `FDB-01`, Profile `FDB-02a`, Events `FDB-06a`, Anmeldungen `FDB-07a`, Prüfungen `FDB-08`, Netzwerk `FDB-09a`, Plus `FDB-10`, Zahlen `FDB-11`, Protokoll `FDB-12`, System `FDB-13`. Listenstandard: Suche, Filter, sortierbare Spalten, 25 je Seite, Zustände leer, lädt, Ladefehler. E-Mail-Adressen in Listen gekürzt, Entwürfe nie lesbar.
 
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
 |---|---|---|---|---|
@@ -240,7 +242,7 @@ Section (3032:22070). Seitenleiste: Heute `FDB-01`, Profile `FDB-02a`, Events `F
 | FDB-14a / b / c | 3039:32672 / 33043 / 33405 | Login-Adresse ändern / ungültig / geändert | Login-Adresse ändern → `14c`; Abbrechen → `FDB-03`; Zum Profil → `FDB-03a` | `MAIL-07` nur an die alte Adresse; Pflicht-Grund; Protokoll |
 
 ## F11 · Sperren: Profil, Event, Konto (Founder und Organizer, W1)
-Sections „Founder-Bereich“, „Sperre — Sicht von Organizer und Besucher“ (3035:22106) und „H — Konto-Sperre“ (3082:27793). Gemeinsame Regeln: Grund und Nachricht an den Organizer sind Pflicht, interne Notiz freiwillig, die Mail nennt den Grund nicht, Besucher sehen nur „Diese Seite ist nicht verfügbar“, Entsperren stellt den alten Stand wieder her, mehrere Antworten des Organizers sind möglich.
+Sections „Founder-Bereich“, „Sperre — Sicht von Organizer und Besucher“ (3173:39718; bis 10.11. Frame 3035:22106) und „H — Konto-Sperre“ (3082:27793), alle auf Seite 50. Gemeinsame Regeln: Grund und Nachricht an den Organizer sind Pflicht, interne Notiz freiwillig, die Mail nennt den Grund nicht, Besucher sehen nur „Diese Seite ist nicht verfügbar“, Entsperren stellt den alten Stand wieder her, mehrere Antworten des Organizers sind möglich.
 
 | Sperre | Founder | Mail | Organizer | Entsperren |
 |---|---|---|---|---|
@@ -296,7 +298,7 @@ Bestand: `PUB-17`/`PUB-18` mit rund 41 Dialog-Ausschnitten (954 px) und der Klic
 Rund 25 Screens in zwei Viewports. **Entschieden (Founder, 10.11., 12:09, alle fünf Punkte):** (1) Organizer-Nachrichten weggelassen, als Plus-Vorhaben in der Alpha-Matrix vermerkt; (2) Seiten statt Dialoge; (3) Gäste-Bereich „Deine Seite“ plus Navigationsleiste (Block 0); (4) Event-Abo als Variante des Follow gezeichnet; (5) Reihenfolge wie in der Tabelle. Ursprüngliche Fragen: (1) Das Häkchen „Zusätzliche Eventnachrichten“ (Organizer-Nachrichten) bleibt **aus den Alpha-Screens** (`AGENTS.md`: weder Code noch Versand ohne eigene Freigabe); (2) Seiten statt Dialoge; (3) ein Gäste-Bereich „Deine Seite“ mit Merkliste und Abos statt getrennter Seiten; (4) Event-Abo jetzt als Variante zeichnen; (5) Reihenfolge der Blöcke wie in der Tabelle.
 
 ### F13 in v2: gezeichnet (Block 0 und 1, 10.11.2026, Review ausstehend)
-Section „ENTWURF v2 · F13 Gäste — Rahmen, Merkliste und Abos, Folgen“ (3132:32606), Seite 20. Frames je Desktop und Mobil. Alle Seiten tragen die Gäste-Kopfzeile `NAV-01` (Wortmarke links, Button „Gemerkt“ (Option A, Founder 10.11., 13:07; vorher „Deine Seite“), mit Zahl der Merkungen in Klammern, sobald es welche gibt).
+Section „ENTWURF v2 · W3 · F13 Gäste — Rahmen, Merkliste und Abos, Follow“ (3132:32606), seit 10.11. auf Seite 60 (vorher Seite 20). Frames je Desktop und Mobil. Alle Seiten tragen die Gäste-Kopfzeile `NAV-01` (Wortmarke links, Button „Gemerkt“ (Option A, Founder 10.11., 13:07; vorher „Deine Seite“), mit Zahl der Merkungen in Klammern, sobald es welche gibt).
 
 | Kennung | Knoten (Desktop / Mobil) | Zustand | Aktion → Ziel | Anmerkung |
 |---|---|---|---|---|
@@ -338,7 +340,7 @@ Section „ENTWURF v2 · F13 Gäste — Rahmen, Merkliste und Abos, Folgen“ (3
 | FOL-11 / 12 / 13 | 3145:873 / 3145:1970; 3145:934 / 3145:2031; 3145:1070 / 3145:2167 | Event-Abo: E-Mail eingeben / Bestätigung ausstehend (Z14) / bestätigt (Z11) | wie Follow (`FOL-01a`–`03c`) | Einwilligung nennt nur Termin, Ort und Absage (keine neuen Events). Fehlerzustände (E-Mail passt nicht, Senden fehlgeschlagen, Wartezeit, Link abgelaufen, schon bestätigt) wie bei Follow mit Event-Text; nicht einzeln gezeichnet |
 | VWL-06a / b | 3145:1209 / 3145:2306; 3145:1315 / 3145:2412 | Event-Abo beenden, Bestätigung / beendet | Abo beenden; Wieder abonnieren → `FOL-11` | Ziel des Abmeldelinks in Mails zum Event-Abo |
 
-**Mails an Gäste, Prüfung 10.11. (Seite 20, Section „Flow 2 E“, 3072:267).**
+**Mails an Gäste, Prüfung 10.11. (Seite 30, Section „Flow 2 E“, 3072:267; vorher Seite 20).**
 - Abmeldelink: `MAIL-08a`–`d` haben „Nicht mehr folgen“ in der Fußzeile (Ziel `VWL-01a`). Für Gäste mit Event-Abo gilt dieselbe Mail mit der Fußzeile „Du bekommst diese Systemmail, weil du Änderungen zu {Event} abonniert hast. Abo beenden.“ (Ziel `VWL-06a`); als Textvariante festgelegt, nicht einzeln gezeichnet.
 - `MAIL-12` (Login-Code) und `MAIL-13` (Folgen bestätigen) brauchen keinen Abmeldelink (kein Abo, Systemmail zum Code bzw. zur Bestätigung). Angepasst: „Follows“ zu „E-Mail-Abos“; `MAIL-13` Betreff „Bestätige, dass du … folgen willst“, Button „Folgen bestätigen“, Zeile „Du kannst das Abo jederzeit beenden. In jeder Mail steht ein Link dafür.“
 - **Neu:** `MAIL-14` Neue Events gebündelt (3145:48120 / 3145:48254, Abmeldelink in der Fußzeile, nur bestätigte Events; Versandzeitpunkt laut Versandregel 09.11. in `docs/STATUS.md`, nicht in der Mail genannt) und `MAIL-13b` Event-Abo bestätigen (3145:48073 / 3145:48207).
@@ -431,6 +433,6 @@ Ersetzte Frames liegen auf Seite 90 „Archiv“, Knoten-IDs unverändert. Die S
 
 ## Sprache im Entwurf (10.11., 15:23)
 - **Komponente `DISKOE / Gäste-Kopfzeile`** (Seite 10, Bereich DS-C, Node 3170:2269): Varianten Viewport (Desktop, Mobile) × Sprache (Deutsch, English). Enthält Wortmarke, Sprachumschalter (`DISKOE / Tabs`, EN / DE) und „Gemerkt“ / „Saved“. Zahl der Merkungen als Textüberschreibung am Button. Padding und Hintergrund gehören dem umgebenden Frame (`NAV-01*`).
-- **Eingesetzt** in allen 105 `NAV-01*`-Frames (82 auf Seite 20, 23 auf Seite 40, darunter alle `PUB-01`-Frames); Rahmengrößen unverändert. Die Frames zeigen die deutsche Fassung (DE aktiv), `NAV-01c`/`d` die englische.
+- **Eingesetzt** in allen 105 `NAV-01*`-Frames (82 auf Seite 20, 23 auf Seite 40, darunter alle `PUB-01`-Frames; Stand 15:23, seit dem Aufräumen verteilt auf die Seiten 20, 30, 40, 50 und 60); Rahmengrößen unverändert. Die Frames zeigen die deutsche Fassung (DE aktiv), `NAV-01c`/`d` die englische.
 - **Organizer-Bereich:** keine Einstellungsseite im Entwurf. Der Umschalter sitzt in der Kopfzeile (`DISKOE / App Header`, neue Eigenschaft „Show language“, Standard an); die Sprache wird am Konto gespeichert und bestimmt die Mails. Im Founder-Bereich (`FDB`, `FND`, 67 Instanzen) ist er ausgeblendet. Die Organizer-Frames zeigen die deutsche Fassung.
 
