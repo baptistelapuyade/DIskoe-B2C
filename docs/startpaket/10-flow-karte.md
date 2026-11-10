@@ -317,6 +317,16 @@ Section „ENTWURF v2 · F13 Gäste — Rahmen, Merkliste und Abos, Folgen“ (3
 | MRK-03a / b / c | 3140:720 / 3140:2266; 3140:1035 / 3140:2497; 3140:1247 / 3140:2709 | Code eingeben (Z14) / falsch oder abgelaufen (Z01) / zu viele Versuche (zehn Minuten Wartezeit, wie `ORG-02b`) | Anmelden → `GST-01a` oder `MRK-04a`, wenn lokale Merkungen vorhanden sind; Neuen Code senden; Andere E-Mail-Adresse verwenden → `MRK-02a` | 6-stelliger Code wie beim Organizer-Login; Anmelden bei `03c` gesperrt wie in `ORG-02b` |
 | MRK-04a / b | 3140:1541 / 3140:2943; 3140:1726 / 3140:3092 | Merkungen zusammenführen / zusammengeführt (Z11) | Zusammenführen → `04b`; Nicht übernehmen → `GST-01a` | Zahlen im Beispiel: 2 im Browser, 3 in der Merkliste; Doppelte werden nicht doppelt gezählt (Code) |
 
+**Block 3 (E-Mail-Abos beenden), gezeichnet 10.11. 13:40, Review ausstehend.** Nach der Entscheidung vom 10.11. (13:10) beendet der Abmeldelink in jeder Mail genau dieses eine Abo; die Gesamtübersicht gibt es nur nach dem Login (`GST-01a`). Dadurch entfallen die früheren `VWL-06`/`07` (Verwaltungslink abgelaufen, neuer Link): Ein Abmeldelink läuft nicht ab. Die Übersicht der Abos ist `GST-01a`. Dieselbe Seite `VWL-01a` dient als Ziel des Abmeldelinks und des Buttons „Beenden“ in `GST-01a`; nur das Ziel von „Abbrechen“ unterscheidet sich (Profil bzw. Merkliste und Abos). „Entfernen“ einer Merkung in `GST-01a` geschieht sofort in der Liste, ohne eigene Seite.
+
+| Kennung | Knoten (Desktop / Mobil) | Zustand | Aktion → Ziel | Anmerkung |
+|---|---|---|---|---|
+| VWL-01a / b | 3143:153 / 3143:1161; 3143:337 / 3143:1270 | Abo beenden, Bestätigung / Beenden fehlgeschlagen (Z03, Abo läuft weiter) | Abo beenden → `VWL-02`; Abbrechen | Bestätigungsseite statt Dialog; Aufruf des Links beendet noch nichts (Schutz vor automatischem Vorladen) |
+| VWL-02 | 3143:579 / 3143:1419 | Abo beendet (Z11) | Zum Profil; Wieder folgen → `FOL-01a` | |
+| VWL-03 | 3143:718 / 3143:1558 | Link passt nicht (Einzeltext) | Mit E-Mail anmelden → `MRK-02a` | Falls der Link beschädigt ist |
+| VWL-04a | 3143:867 / 3143:1707 | Alle Abos beenden, Bestätigung (nennt die betroffenen Abos) | Alle beenden → `VWL-05`; Abbrechen → `GST-01a` | Von „Alle E-Mail-Abos beenden“ in `GST-01a` |
+| VWL-05 | 3143:1052 / 3143:1856 | Alle Abos beendet (Z11) | Zu Merkliste und Abos → `GST-01a`/`b` | Merkliste bleibt |
+
 ## Lücken und offene Zuordnungen (Stand 09.11.2026, abends)
 **Seit dem ersten Entwurf gezeichnet (Review ausstehend):** ORG-01/02 in v2; Vorschau `VOR-01a`/`b`; Einstiege „Dein Bereich“ auf der Startseite; `ORG-102a`–`c`; Founder: `FDB-17a`–`d` (Antwort), `FDB-06e`–`h` mit `MAIL-11` (Event einblenden), `FDB-09c`–`g` (Ortsbindung); Preisformen `EVT-04f`–`n`; Zusatzfragen `EVT-07b`–`e` (Vorschlag); Besucher-Mails `MAIL-12`, `MAIL-13`.
 
