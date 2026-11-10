@@ -34,7 +34,7 @@
 
 **Button-Regel:** Wiederholen heißt immer „Noch einmal {versuchen / laden / kopieren}“; zweite Aktion „Später weitermachen“ bzw. „Abbrechen“. Verb plus Objekt bei Hauptaktionen (§5.1).
 
-## Abweichungen heute (Prüfung 10.11., rund 140 Hinweisboxen auf den Desktop-Frames der v2-Sections)
+## Abweichungen heute (Prüfung 10.11., mindestens 90 Hinweisboxen (erste Zählung 90 Boxen mit 84 verschiedenen Texten; nach dem Nachscannen weiterer Sections steigt die Zahl, eine genaue Gesamtzahl ist noch nicht festgehalten))
 | Befund | Beispiele (Kennung: heutiger Text) | Vorschlag |
 |---|---|---|
 | **Fehlgeschlagen in vier Familien** | „Speichern hat nicht geklappt.“ (`EVB-01c`, `EVV-02b`, `EVA-01c`, `PLS-02e`), „Das Speichern hat nicht geklappt.“ (`LPA-01c`, `EIN-02e`, `PRF-03c`, `FDB-15e`), „Der Ausschnitt konnte nicht gespeichert werden.“ (`ORG-05g`), „Dein Entwurf konnte nicht gespeichert werden.“ (`EVT-09`), „Das hat nicht geklappt.“ (`ORG-102c`) | Z03: „Das {Aktion} hat nicht geklappt.“ |
@@ -47,7 +47,7 @@
 | **Mail-Zusatz fehlt** | `FDB-16b` „Die Mail ist an unseren Versanddienst übergeben.“ ohne „Das heißt noch nicht, dass sie angekommen ist.“ | Z14 |
 | **Verwerfen** | „Die Änderungen sind weg.“ (`EVB-06b`), „Der Entwurf ist weg.“ (`EVB-07b`) vs. „Die Änderungen sind verworfen.“ (`LPA-06b`) | Z17: „verworfen“ (wie der Button) |
 | **Bestätigung fehlt** | „Dann kannst du veröffentlichen.“ (`EVB-04b`) vs. „Setze den Haken, dann kannst du absagen.“ (`EVA-01b`) | Z09 |
-| **„Besucher“ statt Gendern** | über 20 Hinweise („Besucher sehen …“, `EVM-01b`, `EVB-02`, `EVB-05`, `EVV-04a`, `HNW-02a` …); §5.1 verlangt Doppelpunkt oder neutrale Form | „Gäste“ (neutral, kurz) |
+| **„Besucher“ statt Gendern** | mehrere Hinweise („Besucher sehen …“, `EVM-01b`, `EVB-02`, `EVB-05`, `EVV-04a`, `HNW-02a` …); §5.1 verlangt Doppelpunkt oder neutrale Form | „Gäste“ (neutral, kurz) |
 | **Alte Wortwahl** | `PLS-01b` zweiter Hinweis „Du hast Plus reserviert.“, Wortlaut seit 09.11. „Warteliste“ | „Du stehst auf der Warteliste für Plus.“ (nur ein Hinweis) |
 | **ihr/eure in Venue-Frames** | `D20.V01` bis `V05`, `D11.3`, `D11.6`, `D21.b` | bekannte Abweichung zu §5.1 (du); bei Überarbeitung angleichen |
 | **Imperativ** | „trag das Event von Hand ein“ (`EVT-00e`, `EVT-00f`) vs. „Trage …“ | „Trage das Event von Hand ein.“ |
