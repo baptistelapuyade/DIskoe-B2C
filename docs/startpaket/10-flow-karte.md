@@ -327,6 +327,20 @@ Section „ENTWURF v2 · F13 Gäste — Rahmen, Merkliste und Abos, Folgen“ (3
 | VWL-04a | 3143:867 / 3143:1707 | Alle Abos beenden, Bestätigung (nennt die betroffenen Abos) | Alle beenden → `VWL-05`; Abbrechen → `GST-01a` | Von „Alle E-Mail-Abos beenden“ in `GST-01a` |
 | VWL-05 | 3143:1052 / 3143:1856 | Alle Abos beendet (Z11) | Zu Merkliste und Abos → `GST-01a`/`b` | Merkliste bleibt |
 
+**Block 4 (Kalender) und Block 5 (Event-Abo), gezeichnet 10.11. 14:00, Review ausstehend.**
+
+| Kennung | Knoten (Desktop / Mobil) | Zustand | Aktion → Ziel | Anmerkung |
+|---|---|---|---|---|
+| KAL-01 | 3145:153 / 3145:1454 | Termin in den Kalender | Kalenderdatei laden → `KAL-02`/`03`; Abbrechen | Datei (.ics), keine Mail; Einstieg „Zum Kalender“ auf `PUB-01` (Seite 40, offen) |
+| KAL-02 / 03 / 04 | 3145:337 / 3145:1563; 3145:533 / 3145:1702; 3145:718 / 3145:1851 | Datei geladen (Z11) / Laden fehlgeschlagen (Z03) / Event ohne festen Termin | Zum Event; Noch einmal versuchen | Die Datei aktualisiert sich nicht von selbst; der Hinweis sagt das („Ändert sich der Termin, lade die Datei neu“) |
+| FOL-11 / 12 / 13 | 3145:873 / 3145:1970; 3145:934 / 3145:2031; 3145:1070 / 3145:2167 | Event-Abo: E-Mail eingeben / Bestätigung ausstehend (Z14) / bestätigt (Z11) | wie Follow (`FOL-01a`–`03c`) | Einwilligung nennt nur Termin, Ort und Absage (keine neuen Events). Fehlerzustände (E-Mail passt nicht, Senden fehlgeschlagen, Wartezeit, Link abgelaufen, schon bestätigt) wie bei Follow mit Event-Text; nicht einzeln gezeichnet |
+| VWL-06a / b | 3145:1209 / 3145:2306; 3145:1315 / 3145:2412 | Event-Abo beenden, Bestätigung / beendet | Abo beenden; Wieder abonnieren → `FOL-11` | Ziel des Abmeldelinks in Mails zum Event-Abo |
+
+**Mails an Gäste, Prüfung 10.11. (Seite 20, Section „Flow 2 E“, 3072:267).**
+- Abmeldelink: `MAIL-08a`–`d` haben „Nicht mehr folgen“ in der Fußzeile (Ziel `VWL-01a`). Für Gäste mit Event-Abo gilt dieselbe Mail mit der Fußzeile „Du bekommst diese Systemmail, weil du Änderungen zu {Event} abonniert hast. Abo beenden.“ (Ziel `VWL-06a`); als Textvariante festgelegt, nicht einzeln gezeichnet.
+- `MAIL-12` (Login-Code) und `MAIL-13` (Folgen bestätigen) brauchen keinen Abmeldelink (kein Abo, Systemmail zum Code bzw. zur Bestätigung). Angepasst: „Follows“ zu „E-Mail-Abos“; `MAIL-13` Betreff „Bestätige, dass du … folgen willst“, Button „Folgen bestätigen“, Zeile „Du kannst das Abo jederzeit beenden. In jeder Mail steht ein Link dafür.“
+- **Neu:** `MAIL-14` Neue Events gebündelt (3145:48120 / 3145:48254, Abmeldelink in der Fußzeile, nur bestätigte Events; Versandzeitpunkt laut Versandregel 09.11. in `docs/STATUS.md`, nicht in der Mail genannt) und `MAIL-13b` Event-Abo bestätigen (3145:48073 / 3145:48207).
+
 ## Lücken und offene Zuordnungen (Stand 09.11.2026, abends)
 **Seit dem ersten Entwurf gezeichnet (Review ausstehend):** ORG-01/02 in v2; Vorschau `VOR-01a`/`b`; Einstiege „Dein Bereich“ auf der Startseite; `ORG-102a`–`c`; Founder: `FDB-17a`–`d` (Antwort), `FDB-06e`–`h` mit `MAIL-11` (Event einblenden), `FDB-09c`–`g` (Ortsbindung); Preisformen `EVT-04f`–`n`; Zusatzfragen `EVT-07b`–`e` (Vorschlag); Besucher-Mails `MAIL-12`, `MAIL-13`.
 
