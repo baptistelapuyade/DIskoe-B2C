@@ -156,3 +156,14 @@ Typen und Legende wie oben. Prüfung gegen die Frames der Section „ENTWURF v2 
 ## Pflege
 - Neue Screens bekommen in der Flow-Karte eine Zeile und hier eine Zelle; ein fehlender Zustand wird als **✗** geführt, bis er gezeichnet oder als Muster markiert ist.
 - Ein neuer Zustand, der sich in mehreren Schritten wiederholt, wird zuerst als Muster (M-Nummer) aufgenommen.
+
+## Hover- und Fokuszustände (Bestand und Plan, 10.11., 15:23)
+**Bestand (Seite 10, Prüfung der Komponentensätze auf State-Varianten):**
+- **Mit Hover und/oder Fokus:** Button, Icon Button, Checkbox, Switch, Input, Textarea, Select, File Input, Form Field, Atmosphere Chip, Navigation Item, Workspace Switcher, Badge (nur Fokus).
+- **Ohne Zustände, aber bedienbar:** Tabs (Sprachumschalter), Show More, Profile Link Card, Event Card, Event Row, Profile Event Row, Profile Module / Event Item (nur Aktiv/Abgesagt), Event Follow-Karten, Footer-Links und Textlinks („Zurück“, „Impressum“, „Datenschutz“), Image Upload, Image Crop (Griffe), Dialog (Fokus beim Öffnen und Schließen).
+**Plan:**
+1. Fokus ist eine Regel (Ring 3 px in Iris, außen, UX-24), kein Zeichnen je Screen. Für die bedienbaren Komponenten ohne Zustände je eine Variante „Fokus“ und, für Desktop, „Hover“ ergänzen (Tabs, Show More, Link Card, Event Card/Row, Profile Event Row, Textlink, Image Upload, Image Crop). Hover gibt es auf Mobil nicht.
+2. Textlink als eigene Komponente (Standard, Hover, Fokus), damit „Zurück“, Impressum und Datenschutz einheitlich sind.
+3. Tastaturreihenfolge, Fokusfalle im Dialog und „Esc“ schließt sind Code-Aufgaben mit einer Checkliste im Framework (noch zu schreiben); in Figma nicht prüfbar.
+4. Status: nicht begonnen; Reihenfolge: nach dem Aufräumen der Datei, vor dem Bauen der Welle, die die Komponente braucht.
+

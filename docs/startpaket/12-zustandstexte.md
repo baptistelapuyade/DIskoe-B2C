@@ -112,5 +112,8 @@ Gleiche IDs, gleiche Regeln (Ton: du → „you“, kurz, aktiv; Fehler: erst wa
 - Sonderfälle, die bewusst vom Standardsatz abweichen: `EVT-09` (`Z03b`, zusätzlich „Klappt es weiter nicht, schreib uns.“), `EVV-06b` („Die Absage ist aufgehoben.“ statt „weg“), `EVT-07m-d` (Pflichtlücke mit Grund in Zeile 2).
 - Stichproben nach dem Umbau per Screenshot geprüft: `EVT-00j`, `FDB-16b`, `PLS-01b`. Die Boxen wachsen mit dem Text, abgeschnittene Boxen gibt es in Frames mit beschnittenem Inhalt nicht. Kein vollständiger Sichtvergleich aller Frames.
 
-## Nicht erfasst
-Button-Beschriftungen, Mails (`MAIL-01` bis `13`), Leere Zustände und Dialogtexte ohne Hinweisbox. Sie folgen nach der Freigabe dieses Katalogs.
+## Nicht erfasst (Umfang der Zweisprachigkeit, Founder 10.11., 15:23)
+Der Katalog deckt bisher nur Hinweisboxen ab. **Zweisprachig (Deutsch und Englisch) wird die gesamte Copy des Produkts**, nicht nur Mails: Button-Beschriftungen, Feldbeschriftungen und Hilfetexte, Überschriften, Leere Zustände, Dialoge, Fehlertexte, Mails (`MAIL-01` bis `14`), Einwilligungstexte und Rechtstexte. Ausgenommen sind Texte, die Organizer schreiben (Name, Beschreibung, Eventtitel, Bio).
+- **Größenordnung (Messung 10.11.):** in den aktuellen Entwurfs-Sections auf Seite 20 und 40 stehen 13.750 Textebenen mit 1.959 verschiedenen Texten. Darin stecken viele Beispieldaten (Eventnamen, Orte, Uhrzeiten); die echten Oberflächentexte sind weniger, ihre Zahl ermittelt die Bestandsaufnahme beim Aufräumen.
+- **Vorgehen:** Texte werden je Welle in den Katalog aufgenommen (IDs ab Z20, nach Bereich gruppiert), jeweils mit Deutsch und Englisch, bevor die Welle gebaut wird. Die Figma-Frames führen Deutsch; die englische Fassung steht nur im Katalog. Mails folgen als eigener Abschnitt (Betreff, Vorschautext, Text, Fußzeile mit Abmeldelink) in beiden Sprachen.
+
