@@ -236,6 +236,7 @@ Section (3032:22070). Seitenleiste: Heute `FDB-01`, Profile `FDB-02a`, Events `F
 | FDB-10 / 10b | 3034:26453 / 3075:41486 | Plus-Reservierungen / Detail (W4) | Zeile öffnen → `10b`; Als CSV exportieren; Adresse kopieren; Zur Liste → `FDB-10` | |
 | FDB-11 / 12 | 3034:26718 / 26934 | Zahlen / Protokoll (unveränderlich) | Pager | |
 | FDB-13 / b / c / d | 3034:27208 / 3039:31233 / 32096 / 32412 | System / Mails nicht übergeben / Liste lädt nicht / lädt | Erneut senden, Alle 7 erneut senden; In Sentry öffnen (extern); Noch einmal laden | Prüfung unmittelbar vor SES; abgelaufene Codes gehen nicht erneut raus |
+| FDB-13e (neu 10.11.) | 3125:1159 | System: Ergebnis nach „Alle 7 erneut senden“ | Liste mit „Übergeben“ und „Nicht mehr nötig“; Hinweis: übergeben ist nicht angekommen | Vorprüfung vor SES |
 | FDB-14a / b / c | 3039:32672 / 33043 / 33405 | Login-Adresse ändern / ungültig / geändert | Login-Adresse ändern → `14c`; Abbrechen → `FDB-03`; Zum Profil → `FDB-03a` | `MAIL-07` nur an die alte Adresse; Pflicht-Grund; Protokoll |
 
 ## F11 · Sperren: Profil, Event, Konto (Founder und Organizer, W1)
@@ -244,8 +245,8 @@ Sections „Founder-Bereich“, „Sperre — Sicht von Organizer und Besucher�
 | Sperre | Founder | Mail | Organizer | Entsperren |
 |---|---|---|---|---|
 | **Profil** (mit allen Events) | `FDB-03a` → `FDB-04a` (Formular), `04b` Grund fehlt, `04e` fehlgeschlagen → `04c` Mail übergeben / `04d` nicht übergeben (Mail erneut senden) | `MAIL-04` (3035:24087) → Zur Nachricht | `SPR-01a` (3035:22107) Hinweis → Auf die Sperre antworten → `SPR-02a` (3035:22623) → `02b` leer, `02c` gesendet, `02d` fehlgeschlagen; `SPR-01c` (3039:33640) mit Antworten, Noch eine Antwort schreiben | `FDB-03b` → `FDB-05a` → `05b`; Antwort an den Organizer `FDB-17a`–`d`; `MAIL-06` (3035:24275); `SPR-03` (3035:23709) |
-| **Event** (Profil bleibt öffentlich) | `FDB-06b` → `06c` → `06d` | `MAIL-05` (3035:24181) | `EVM-01e` / `EVL-01d` → `SPR-01b` (3035:22389) → `SPR-02a` | `FDB-06d` → `FDB-06e` bis `06h`; `MAIL-11` (3098:3043) |
-| **Konto** (Login, alle Profile und Events) | `FDB-03a`/`b`/`c` → `FDB-15a` (3082:27795), `15b` Grund fehlt, `15e` fehlgeschlagen → `15c` / `15d` | `MAIL-09` (3083:28894) | `SPR-04a` (3083:28419) Hinweis; `SPR-04b` (3083:28533) „Das geht gerade nicht“ bei Änderungsversuch; `SPR-04c` (3083:28729) Antwort (Fehler wie `SPR-02b`–`d`) | `FDB-03c` → `FDB-16a` (3082:28424) → `16b`; `MAIL-10` (3083:28928); `SPR-04d` (3083:28807). Einzelne Profil- oder Event-Sperren bleiben bestehen |
+| **Event** (Profil bleibt öffentlich) | `FDB-06b` → `06c` → `06d` | `MAIL-05` (3035:24181) | `EVM-01e` / `EVL-01d` → `SPR-01b` (3035:22389), mit Antworten `SPR-01d` (3125:153) → `SPR-02a` | `FDB-06d` → `FDB-06e` bis `06h`; `MAIL-11` (3098:3043) |
+| **Konto** (Login, alle Profile und Events) | `FDB-03a`/`b`/`c` → `FDB-15a` (3082:27795), `15b` Grund fehlt, `15e` fehlgeschlagen → `15c` / `15d` | `MAIL-09` (3083:28894) | `SPR-04a` (3083:28419) Hinweis, mit Antworten `SPR-04e` (3125:389), Antwort gesendet `SPR-04f` (3125:589); `SPR-04b` (3083:28533) „Das geht gerade nicht“ bei Änderungsversuch; `SPR-04c` (3083:28729) Antwort (Fehler wie `SPR-02b`–`d`) | `FDB-03c` → `FDB-16a` (3082:28424) → `16b`; `MAIL-10` (3083:28928); `SPR-04d` (3083:28807). Einzelne Profil- oder Event-Sperren bleiben bestehen |
 | **Besucher** | `PUB-SPR-01` (3035:23979) bei jeder der drei Sperren | | | |
 
 Ein gesperrter Organizer bleibt angemeldet, sieht alles und antwortet, ändert aber nichts (Vorschlag, Founder 09.11.: „passt“). Konto-Sperrgründe sind noch ein Vorschlag (STATUS).
@@ -256,6 +257,7 @@ Section „G — Plus-Warteliste“ (3075:28000). Wortlaut „Warteliste“ stat
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
 |---|---|---|---|---|
 | PLS-01a | 3077:41911 | Preise (Free, Plus hervorgehoben, Pro) | Auf die Warteliste → `PLS-02a` | Einstieg ⚠ nicht gezeichnet (Fußzeile „Preise“, Startseitenkarte) |
+| PLS-01c (neu 10.11.) | 3125:1730 (Mobil 3125:1976) | Preise, nicht angemeldet | Anmelden und eintragen → Anmeldung → `PLS-02a` | Eintragung nur mit Konto, ein Eintrag je Konto |
 | PLS-01b | 3077:42357 | Preise, bereits eingetragen | Angaben ansehen → `PLS-03a` | |
 | PLS-02a–e | 3077:38089, 38496, 38813, 39299, 39698 | leer / drei Funktionen / Funktion und E-Mail fehlen / Anmerkung zu lang, Einwilligung fehlt / Eintragen fehlgeschlagen | Auf die Warteliste → `PLS-03a`; Abbrechen → `PLS-01a`; `02e`: Noch einmal versuchen | Einwilligung zur einmaligen Startmail, Anmerkung bis 500 Zeichen; erscheint in `FDB-10` |
 | PLS-03a | 3077:40101 | Auf der Warteliste | Angaben ändern → `PLS-04a`; Zu den Preisen → `PLS-01b`; Von der Warteliste austreten → `PLS-05a` | |

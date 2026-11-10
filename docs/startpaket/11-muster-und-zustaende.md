@@ -91,7 +91,7 @@ Grundlage: Frame-Liste der Sections „Founder-Bereich“, „Sperre“, „G �
 | FDB-06e Event einblenden | Bestätigung | ✓ `06e` | – | ✓ `06h` | ✓ `06f`, Mail nicht übergeben `06g` | |
 | FDB-07 Profil zuordnen | Formular | ✓ `07b` | Adresse ungültig: M7 | M2 | ✓ `07c` | keine Mail |
 | FDB-09 Ortsbindung | Prüfen | ✓ `09b` | Rückfrage leer: M7 | M9 | ✓ `09c`, `09e`, `09g` | Formulare `09d`, `09f` |
-| FDB-13 System, Mails | Liste | ✓ `13b` | – | `13c` | **✗ Ergebnis nach „Erneut senden“** | lädt `13d` |
+| FDB-13 System, Mails | Liste | ✓ `13b` | – | `13c` | ✓ Ergebnis nach „Erneut senden“ `13e` | lädt `13d` |
 | FDB-14 Login-Adresse | Formular | ✓ `14a` | ungültig `14b` | M2 | ✓ `14c` | Mail nicht übergeben: M11 |
 | FDB-17 Antwort | Formular | ✓ `17a` | Nachricht fehlt `17b` | ✓ `17d` | ✓ `17c` | |
 
@@ -99,23 +99,24 @@ Grundlage: Frame-Liste der Sections „Founder-Bereich“, „Sperre“, „G �
 | Sperre | Sperren: Formular · Grund fehlt · fehlgeschlagen | Mail übergeben · nicht übergeben | Entsperren: Bestätigen · erledigt · fehlgeschlagen | Organizer sieht | Antworten |
 |---|---|---|---|---|---|
 | Profil | `04a` · `04b` · `04e` | `04c` · `04d` | `05a` · `05b` · M9; nicht übergeben M11 | `SPR-01a`, mit Antworten `01c`, `SPR-03` | `SPR-02a`–`d` |
-| Event | `06c` · M7 · M2 | `06d` · M11 | `06e` · `06f` · `06h`; nicht übergeben `06g` | `SPR-01b`, **✗ mit Antworten**, `SPR-03` | `SPR-02a`–`d` |
-| Konto | `15a` · `15b` · `15e` | `15c` · `15d` | `16a` · `16b` · M9; nicht übergeben M11 | `SPR-04a`, `04b`, `04d`; **✗ mit Antworten** | `SPR-04c`; **✗ gesendet** |
+| Event | `06c` · M7 · M2 | `06d` · M11 | `06e` · `06f` · `06h`; nicht übergeben `06g` | `SPR-01b`, mit Antworten `01d`, `SPR-03` | `SPR-02a`–`d` |
+| Konto | `15a` · `15b` · `15e` | `15c` · `15d` | `16a` · `16b` · M9; nicht übergeben M11 | `SPR-04a`, `04b`, mit Antworten `04e`, `04d` | `SPR-04c`; gesendet `04f` |
 | Besucher | `PUB-SPR-01` bei jeder der drei Sperren | | | | |
 Mails: `MAIL-04`, `05`, `06`, `07`, `09`, `10`, `11` sind gezeichnet. Mischfall (Profil und Konto gesperrt): Konto geht vor Profil, Regel steht in der Flow-Karte, kein eigener Frame.
 
 ### F12 · Plus-Warteliste
 | Screen | Typ | Normal | Variante / Validierung | Fehlgeschlagen | Erledigt | Sonst |
 |---|---|---|---|---|---|---|
-| PLS-01 Preise | Seite | ✓ `01a`, `01b` | – | – | – | nicht angemeldet: **✗ offen** (Einstieg nicht gezeichnet) |
+| PLS-01 Preise | Seite | ✓ `01a`, `01b` | – | – | – | nicht angemeldet ✓ `01c` |
 | PLS-02 Eintragen | Formular | ✓ `02a`, `02b` | `02c`, `02d` | ✓ `02e` | ✓ `PLS-03a` | Speichert M1, Offline M3 |
 | PLS-04 Angaben ändern | Formular | ✓ `04a` | M7 (wie `02c`/`02d`) | M2 | ✓ `04b` | |
 | PLS-05 Austreten | Bestätigung | ✓ `05a` | – | ✓ `05c` | ✓ `05b` | |
 
 ### Ergebnis F10 bis F12
 - **Neues Muster M11 (Vorschlag):** „Mail nicht übergeben“ ersetzt vier einzelne Frames (`05`, `06`, `14`, `16`). Ohne M11 wären es vier neue Frames.
-- **Es fehlen noch drei bis vier Frames:** `FDB-13e` (Ergebnis nach „Erneut senden“: gesendet, nicht mehr nötig, wieder nicht übergeben), Organizer-Sicht „Event ausgeblendet mit Antworten“, „Konto gesperrt mit Antworten“ und „Antwort auf Kontosperre gesendet“.
-- **Offen als Frage:** Preise-Seite und Warteliste für nicht angemeldete Personen (Anmeldung zuerst oder nur im Organizer-Bereich).
+- **Gezeichnet am 10.11. (Review ausstehend):** `FDB-13e` (Ergebnis nach „Erneut senden“: 5 übergeben, 2 nicht mehr nötig), `SPR-01d` (Event ausgeblendet, mit Antworten), `SPR-04e` (Konto gesperrt, mit Antworten), `SPR-04f` (Antwort auf Kontosperre gesendet), `PLS-01c` (Preise, nicht angemeldet). M11 braucht keinen eigenen Frame (Referenzen `FDB-04d`, `06g`, `15d`).
+- **Warteliste nur mit Anmeldung (Vorschlag, Founder-Frage 10.11.):** Die Preise-Seite ist ohne Anmeldung sichtbar, der Button heißt dort „Anmelden und eintragen“ und führt über die Anmeldung (Code per E-Mail) zurück zu `PLS-02a`. Eintragung nur für angemeldete Konten, ein Eintrag je Konto, serverseitig erzwungen (nicht nur in der Oberfläche). Das hindert nicht jeden Mehrfachwunsch: Wer mehrere E-Mail-Adressen hat, kann mehrere Konten anlegen. Deshalb sieht der Founder in `FDB-10` jede Eintragung mit Adresse und Zeitpunkt; Auffälligkeiten (viele Einträge in kurzer Zeit, gleiche Anmerkung) werden dort von Hand erkannt. Die Plus-Schwelle zählt Konten, nicht Funktionswünsche.
+- **Texte der Antwortseiten:** `SPR-02a` bis `02c` tragen den Wortlaut für Profilsperren. Für Event-Ausblendungen gilt derselbe Screen mit `{Objekt}` („dieses Event“ statt „dein Profil“), für Konten `SPR-04c`/`04f`. Der Hinweis in `SPR-02c` sagte bisher „Du kannst dein Profil in der Zwischenzeit weiter bearbeiten.“ und widersprach der Regel „ein gesperrter Organizer ändert nichts“ (Founder, 09.11.); jetzt „Du siehst dein Profil weiter. Ändern kannst du gerade nichts.“
 - **Bestand zum Aufräumen:** Auf Seite 20 liegen noch die älteren, freistehenden Frames `PLS-01a`/`PLS-01b` (Desktop und Mobil, „Plus reserviert“) außerhalb der Section „G — Plus-Warteliste“. Gültig sind die Frames in der Section. Archivieren nach Freigabe.
 
 **Nicht geprüft:** F13 (Besucher, Alt-Stil; kommt mit der Überarbeitung auf v2).
