@@ -285,6 +285,7 @@ Bestand: `PUB-17`/`PUB-18` mit rund 41 Dialog-Ausschnitten (954 px) und der Klic
 
 | Block | Screens (neu) | Ersetzt | Mails |
 |---|---|---|---|
+| 0 Gäste-Rahmen (Founder, 10.11., 12:06: „fehlt noch“) | Navigationsleiste für Gäste (Desktop und Mobil) und Bereich „Deine Seite“ (Merkliste, E-Mail-Abos, Anmeldestand, Abmelden); Einstieg aus Kopfzeile und aus den Mails | – | `MAIL-12` Einstieg per Code |
 | 1 Follow | `FOL-01` E-Mail und Einwilligung (Fehler: M7, M2), `FOL-02` Bestätigung ausstehend (erneut senden), `FOL-03a` bestätigt, `03b` Link abgelaufen, `03c` schon bestätigt | `PUB-18.03a–c`, `18.04a–c` | `MAIL-13` Bestätigung |
 | 2 Merken und Besucher-Login | `MRK-01a` Merkliste (lokal) leer, `01b` befüllt, `MRK-02` Merkliste mitnehmen (E-Mail), `MRK-03a` Code eingeben, `03b` falsch oder abgelaufen, `MRK-04a` zusammenführen, `04b` zusammengeführt | `PUB-18.01a–e`, `18.04b` | `MAIL-12` Code |
 | 3 Verwalten | `VWL-01` Übersicht der E-Mail-Abos, `VWL-02` Abo beenden (Bestätigung), `VWL-03` beendet, `VWL-04` alle beenden (Umfang vorher), `VWL-05` alle beendet, `VWL-06` Verwaltungslink abgelaufen, `VWL-07` neuer Link angefordert | `PUB-18.05`–`08` | Abmeldelink in jeder Mail |
