@@ -24,7 +24,7 @@ Die Legende auf Seite 00 enthält dieselben Regeln. Vor der Neuordnung wurde ein
 | 30 Organizer — nach der Veröffentlichung | leer seit 09.11.2026 (alle Frames archiviert, ersetzt durch Flow 2 und Block 2c) |
 | 40 Öffentliche Seiten | Zeile 1 Eventseite, Zeile 2 Profile |
 | 50 Intern (Founder) | leer seit 09.11.2026 (INT-A, INT-B archiviert, ersetzt durch Block 2c `FND-01` bis `04` und den Founder-Bereich) |
-| 60 Besucher-Prototyp | Klickprototyp (Desktop 1440×900, Mobile 390×844); nicht umsortiert, sonst brechen die Verknüpfungen |
+| 60 Besucher-Prototyp | leer seit 10.11.2026 (Klickprototyp mit Dialogen archiviert auf Seite 90, ersetzt durch F13 v2 auf Seite 20) |
 | 80 Geparkt — Discovery (spätere Phase) | Bausteine für die Discovery nach der Alpha, nicht löschen; unverändert |
 | 90 Archiv | ersetzte Stände mit Datum und Grund im Namen; 09.11.2026: NACH-A bis C, ORG-A+, Slice-5-Review, INT-A/B und ersetzte Einzelframes aus ORG-A, B, D (Liste in `10-flow-karte.md`, „Archiv“) |
 
@@ -82,7 +82,7 @@ Neu vergeben: `ORG-91` (Programm und Besuch, 2688:9788), `ORG-92a`–`l` (Preis 
 | GELTEND · PUB-01 Eventseite | 2936:11700 | Desktop/Mobil: a Normal (2643:9417 / 2652:7621), b Abgesagt (2676:9868 / 2676:10041), c Verschoben, Termin folgt (2676:10193 / 2676:10312), d Verschoben, neuer Termin (2676:10434 / 2676:10554), e Vorbei (2676:10677 / 2676:10826), f Vernissage (2792:48358), g Film (2792:48780). Nach einer Änderung: h–l (2702:11091, 11240, 11389, 11543, 11692). Teilen: m–o (2661:8159, 8560, 8789) |
 | REGELN · PUB-16 Gut zu wissen — Farbtest und Randfall | 2936:11706 | vier Paletten, Randfall 6 Balken Desktop/Mobil |
 | ENTWURF · nicht im Durchstich · PUB-07 Eventseite mit Ortsstatus, Co-Hosts, Line-up (D13) | 2716:41215 | 07a–c Desktop, 07a Mobil |
-| ENTWURF · nicht im Durchstich · PUB-18 Besucheraktionen | 2939:11702 | Merken, E-Mail-Abos, Kalender: `PUB-18.01a` … `PUB-18.10d` |
+| ~~ENTWURF · nicht im Durchstich · PUB-18 Besucheraktionen~~ | 2939:11702 | archiviert 10.11.2026 (Seite 90), ersetzt durch F13 v2 auf Seite 20 |
 | GELTEND · PUB-06 Veranstalterprofil | 2940:11700 | a Normal (2632:7096 / 2632:7267), b ohne kommende Termine (2580:6685 / 2602:15795, noch alter Stil), c Liste eingeklappt (2732:51616 / 2732:51892), d Liste ausgeklappt (2732:51754) |
 | ENTWURF · nicht im Durchstich · PUB-03 Profilmodule und Kombinationen | 2577:5862 | 03a–g Desktop (inkl. frühere PUB-04-Regeln), 03a, h–j Mobil (frühere PUB-05) |
 | ENTWURF · nicht im Durchstich · PUB-11, PUB-08, PUB-09 | 2747:43479, 2730:56314, 2758:43625 | Venue-Profil, Künstler:innen-Seite, Künstler-Zustände |
@@ -155,7 +155,7 @@ Regeln:
 ### Abweichungen und offene Punkte
 - Am 02.11.2026 wurden beim Einsetzen acht Status-Spalten (`PUB-19` abgesagt, verschoben ohne Termin, vorbei; `PUB-23`, `PUB-24`) mit der aktiven Karte überschrieben. Der ursprüngliche Inhalt ist nicht wiederherstellbar (keine gespeicherte Version nach dem 30.10.). Die Spalten tragen jetzt die Status-Varianten, deren Texte neu entworfen wurden. Der Founder hat die Wortlaute am 03.11.2026 bestätigt: „Neuer Termin“ (Der Termin unten ist der neue Termin.), „Neuer Termin folgt“ (Ein neuer Termin steht noch nicht fest.), „Abgesagt“ (Dieses Event findet nicht statt.), „Vorbei“ (Dieses Event ist vorbei.). Die Figma-Spalten müssen noch mit diesen Texten gefüllt werden.
 - Der Merken-Dialog verweist noch auf die alte Änderungs-Anmeldung. Er sollte nur „Merken“ und die Veranstalter-Anmeldung anbieten.
-- Der Besucher-Prototyp (Seite 60) trägt noch die alte Spalte „Wenn sich etwas ändert“ und den alten Veranstalter-Block.
+- Der Besucher-Prototyp (Seite 60) ist am 10.11.2026 archiviert.
 - Die Profile ohne Termine („Keine kommenden Events · Neue Termine folgen“ in `PUB-03`, `05`) sind im alten Stil.
 - Vor der Umsetzung im Code fehlen Texte für die Bestätigungs-E-Mails dieser beiden Anmeldungen und die Entscheidung, ob die Änderungs-Anmeldung in der Alpha enthalten ist (öffentliche Eventseiten gehören zu Slice 6).
 

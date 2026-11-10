@@ -373,7 +373,7 @@ Section „ENTWURF v2 · F13 Gäste — Rahmen, Merkliste und Abos, Folgen“ (3
 | PUB-01r | 3154:47056 / 3154:47256 | Teilen: Kopieren fehlgeschlagen (Z03) | Hinweis, Feld „Link zum Event“ zum Markieren, „Noch einmal kopieren“, wie `LIV-03` |
 
 - **Mobil mit Teilen-Funktion des Geräts:** Das Betriebssystem öffnet seinen eigenen Dialog; dafür gibt es keinen Frame. `PUB-01q`/`r` gelten, wenn der Browser das nicht kann.
-- **Entfallen im Vorschlag (Founder entscheidet):** „Über WhatsApp teilen“ und „Weitere Optionen“ (der Systemdialog enthält beides; ein eigener WhatsApp-Knopf wäre ein zweiter Weg zum selben Ziel), der Satz „Es wurde noch keine Nachricht verschickt“ (kein Nutzen) und „Deine private Merkliste bleibt privat“ (im Dialog entfällt der Platz dafür). Die alten `PUB-01m`–`o` bleiben bis zur Abnahme, dann Archiv (Seite 90).
+- **Entfallen im Vorschlag (Founder entscheidet):** „Über WhatsApp teilen“ und „Weitere Optionen“ (der Systemdialog enthält beides; ein eigener WhatsApp-Knopf wäre ein zweiter Weg zum selben Ziel), der Satz „Es wurde noch keine Nachricht verschickt“ (kein Nutzen) und „Deine private Merkliste bleibt privat“ (im Dialog entfällt der Platz dafür). Die alten `PUB-01m`–`o` sind am 10.11. (14:40) archiviert (Seite 90).
 
 **Profil-Liste `PUB-06c`/`d` (Eventzeilen mit „Merken“).** Geprüft und geändert in der Komponente „DISKOE / Profile Event Row“ (Seite 10): Button „Merken“ war 40 px hoch, jetzt 44 px (Desktop und Mobil). Mobil ragte „Mehr anzeigen · 2 weitere Events“ über den Rand (404 px in 390 px Rahmen), jetzt 352 px (`PUB-06a`, `PUB-06c`). **Offen:** Zustand „Gemerkt“ der Eventzeile ist nicht gezeichnet (Vorschlag: Button heißt „Gemerkt“, wie auf `PUB-01p`; kein eigener Frame, Muster wie M8).
 
@@ -415,5 +415,8 @@ Ersetzte Frames liegen auf Seite 90 „Archiv“, Knoten-IDs unverändert. Die S
 | Einzelframes aus `ORG-A` (17): ORG-03, 04, 05, 06, 09, 10 bis 14, 41, 49, 50, 51, 52, 88, 93 | Block 2a: `ORG-03a` bis `ORG-10`, `EIN-02`, `PRF-01`/`02` |
 | Einzelframes aus `ORG-B` (19): ORG-15 bis 21, 30, 31, 39, 40, 45, 53 bis 55, 84, 89, 90, 94 | Block 2b: `EVT-00a` bis `EVT-09` |
 | Einzelframes aus `ORG-D` (6): ORG-34 bis 38, 42 | Block 2c: `EIN-02`, `PRF-01`, `PRF-02` |
+| **10.11., 14:40:** Section `PUB-18` Besucheraktionen (2939:11702, 41 Dialog-Entwürfe) | F13 v2 (Seite 20, Section „F13 Gäste“): `GST`, `FOL`, `MRK`, `VWL`, `KAL`; Organizer-Nachrichten und Verwaltungslink entfallen (Plus-Vorhaben bzw. Abmeldelink) |
+| **10.11., 14:40:** Seite 60 Besucher-Klickprototyp (103 Frames) | F13 v2; kein neuer Prototyp (die Flows sind Seiten) |
+| **10.11., 14:40:** `PUB-01m`–`o` Teilen-Dialoge (2661:8159, 8560, 8789) | `PUB-01q`/`r` (Teilen als Zustände) |
 
-**Bleibt in den alten Sections (nicht neu gezeichnet):** `ORG-A`: Teststart und Moderationsnotizen. `ORG-B`: ORG-43, 44, 91. Außerdem D11, D12, D15, D20, D21 und `ORG-E` (Wellen 5 und 6) sowie Seite 40 (öffentliche Seiten) und Seite 60 (Besucher-Prototyp). Die Prototyp-Verknüpfungen der archivierten Frames sind unterbrochen.
+**Bleibt in den alten Sections (nicht neu gezeichnet):** `ORG-A`: Teststart und Moderationsnotizen. `ORG-B`: ORG-43, 44, 91. Außerdem D11, D12, D15, D20, D21 und `ORG-E` (Wellen 5 und 6) sowie Seite 40 (öffentliche Seiten; `PUB-17` bleibt, `17c`–`e` sind Material zur Follow-Karte). Die Prototyp-Verknüpfungen der archivierten Frames sind unterbrochen. Seite 60 ist leer und trägt einen Hinweis (wie 30 und 50).
