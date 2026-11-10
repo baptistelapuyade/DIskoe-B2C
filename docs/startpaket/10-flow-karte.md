@@ -89,15 +89,19 @@ Section „Flow 1 Block 2b“ (3010:11350). Weiter-Buttons sind nie deaktiviert;
 | EVT-05a / b / c | 3010:17209 / 17434 / 17673 | Eventbild leer / gewählt / Fehler | Weiter zur Atmosphäre → `EVT-06a` | Bild nicht zugeschnitten, Bildbeschreibung freiwillig |
 | EVT-06a / b | 3010:17989 / 18278 | Atmosphäre keine / ausgewählt | Weiter zu den freiwilligen Angaben → `EVT-07` | zehn Atmosphärebegriffe |
 | EVT-07 | 3010:18544 | Mehr zum Abend (freiwillig) | Format Club, Vernissage oder Filmabend → `EVT-07b`/`c`/`d`; sonst Weiter zur Vorschau → `EIN-01a`; Überspringen → dasselbe | |
-| EVT-07m-a (neu 09.11., Vorschlag) | 3109:31869 (Mobil 3109:33214) | Mehr zum Abend, modular: Club mit vorgeschlagenen Bausteinen | + Baustein hinzufügen → `EVT-07m-b`; Weiter zur Vorschau / Überspringen → `EIN-01a` | ersetzt `EVT-07b`/`e`; Karten je Baustein, aufklappbar, Entfernen |
-| EVT-07m-b (neu 09.11., Vorschlag) | 3109:32188 (Mobil 3109:33500) | Baustein hinzufügen | Hinzufügen / Abbrechen → `EVT-07m-a` | Auswahl der noch nicht gewählten Bausteine |
+| EVT-07m-a (neu 09.11., Vorschlag) | 3109:31869 (Mobil 3109:33214) | Mehr zum Abend, modular: Club mit vorgeschlagenen Bausteinen | Weiteren Baustein wählen → `EVT-07m-b`; Weiter zur Vorschau / Überspringen → `EIN-01a` | ersetzt `EVT-07b`/`e`; Karten je Baustein, aufklappbar, Entfernen |
+| EVT-07m-b (neu 09.11., Vorschlag) | 3109:32188 (Mobil 3109:33500) | Weitere Bausteine (Picker, nur vorgefertigte Bausteine) | Hinzufügen / Abbrechen → `EVT-07m-a` | Auswahl der noch nicht gewählten Bausteine |
 | EVT-07m-c (neu 09.11., Vorschlag) | 3109:32379 (Mobil 3109:33680) | Vernissage, Pflichtbaustein „Besuchsmodus“ | wie `m-a` | ersetzt `EVT-07c`; Pflicht nicht entfernbar |
 | EVT-07m-d (neu 09.11., Vorschlag) | 3109:32651 (Mobil 3109:33941) | Filmabend, Pflichtbaustein „Sprache und Untertitel“ fehlt | wie `m-a` | ersetzt `EVT-07d`; Fehlerhinweis, „Noch nicht bekannt“ erlaubt |
-| EVT-07m-e (neu 09.11., Vorschlag) | 3109:33025 (Mobil 3109:34247) | Format ohne Vorschläge | + Baustein hinzufügen → `EVT-07m-b` | leere Liste |
+| EVT-07m-e (neu 09.11., Vorschlag) | 3109:33025 (Mobil 3109:34247) | Format ohne Vorschläge | Weiteren Baustein wählen → `EVT-07m-b` | leere Liste |
 | EVT-07b / c / d (neu 09.11., Vorschlag) | 3102:2 / 3102:979 / 3102:1633 (je mit Mobil) | Zusatzfragen je Format: Club (5 freiwillige Fragen) / Vernissage (Besuchsmodus Pflicht, Besuchsfenster, Zeitbedarf) / Filmabend (Sprache und Untertitel Pflicht, Gesamtdauer) | Weiter zur Vorschau → `EIN-01a`; Überspringen → dasselbe | ersetzt die 12 Einzelfragen-Screens von `ORG-C`; Pflichtfragen mit „Noch nicht bekannt“ erlaubt, Überspringen erfüllt sie nicht (prüft `EIN-01`) |
 | EVT-07e (neu 09.11.) | 3102:2307 (Mobil 3102:2735) | Club: „Teilweise stufenlos“ ohne Erklärung | wie `EVT-07b` | Ohne Erklärung bleibt die Frage offen |
 | EVT-08 | 3010:19017 | Entwurf gesichert | Zum Entwurf → Schritt, an dem er stand (`EVT-01a` ff.); Zur Startseite → `103a`/`103b` | Entwurf privat, 90 Tage Inaktivität |
-| EVT-09 | 3010:19342 | Speichern fehlgeschlagen | Noch einmal versuchen → wiederholt; Später weitermachen → ⚠ unklar, was dann gesichert ist | |
+| EVT-09 | 3010:19342 | Speichern fehlgeschlagen (Serverfehler; gilt als Muster für alle Schritte) | Noch einmal versuchen → wiederholt; Später weitermachen → `EVT-09c` | |
+| EVT-09a (neu 10.11.) | 3111:32643 (Mobil 3111:33387) | Speichert (Button „Speichere …“ gesperrt, Info-Hinweis) | Erfolg → nächster Schritt bzw. `EVT-08`; Fehler → `EVT-09`/`09b` | gilt als Muster für alle Schritte |
+| EVT-09b (neu 10.11.) | 3111:33062 (Mobil 3111:33635) | Keine Verbindung (Warnhinweis, Eingaben bleiben) | Noch einmal versuchen → wiederholt; Später weitermachen → `EVT-09c` | |
+| EVT-09c (neu 10.11., Vorschlag) | 3111:33192 (Mobil 3111:33723) | Ohne Sichern verlassen (Bestätigungsseite) | Zurück und noch einmal versuchen → Schritt; Trotzdem verlassen → Startseite | ehrlich: Eingaben des Schritts gehen verloren, keine lokale Browser-Sicherung |
+| EVT-07m-f (neu 10.11., Vorschlag) | 3111:33877 (Mobil 3111:34036) | Baustein entfernt, Rückgängig | Rückgängig → Karte kehrt zurück | Schutz vor Datenverlust beim Entfernen |
 
 ## F4 · Einreichen, Prüfung, Rückfrage, Live (Block 2c, W1)
 Section „Flow 1 Block 2c“ (3018:14952). Profil und erstes Event werden gemeinsam geprüft; Profil allein einreichen ist erlaubt.
@@ -272,7 +276,7 @@ Sections „PUB-17 Follow-Platzierung“ (2839:47447) und „PUB-18 Besucherakti
 **Seit dem ersten Entwurf gezeichnet (Review ausstehend):** ORG-01/02 in v2; Vorschau `VOR-01a`/`b`; Einstiege „Dein Bereich“ auf der Startseite; `ORG-102a`–`c`; Founder: `FDB-17a`–`d` (Antwort), `FDB-06e`–`h` mit `MAIL-11` (Event einblenden), `FDB-09c`–`g` (Ortsbindung); Preisformen `EVT-04f`–`n`; Zusatzfragen `EVT-07b`–`e` (Vorschlag); Besucher-Mails `MAIL-12`, `MAIL-13`.
 
 **Offen (Entscheidung des Founders nötig):**
-1. **`EVT-09`:** unklar, was „Später weitermachen“ bei fehlgeschlagenem Speichern sichert (technische Entscheidung: lokale Sicherung im Browser oder nur Hinweis).
+1. **`EVT-09` (Vorschlag 10.11.):** „Später weitermachen“ nach einem Fehler führt zu `EVT-09c` (nichts gesichert, Bestätigung zum Verlassen); keine lokale Browser-Sicherung. Dazu `EVT-09a` (Speichert) und `EVT-09b` (Keine Verbindung).
 2. **Eventgestaltung und Profilgestaltung** (alt `ORG-43`, `44`, Section `ORG-E`, `PUB-13`) sowie **Plus „Gespeicherte Eventvorlagen“**: nicht in v2. Gehören zu Welle 6 (Profil-Editor) und brauchen zuerst die Entscheidung, was Organizer gestalten dürfen.
 3. **`ORG-91` „Programm und Besuch“:** `EVT-07` deckt Einlass, Altersregel, Programm und Musik ab. Es fehlen weitere Teilnahmebedingungen, Beteiligte und breite Musikrichtungen. Streichen oder nachtragen?
 4. **Besucher-Entwürfe `PUB-17`/`18`** sind im Alt-Stil (Dialog-Ausschnitte); Anpassung an v2 und an „Bestätigen statt Dialoge“ steht aus.
@@ -281,6 +285,19 @@ Sections „PUB-17 Follow-Platzierung“ (2839:47447) und „PUB-18 Besucherakti
 7. **Zusatzfragen modular (Vorschlag 09.11., 18:10):** Bausteine statt Formatseiten, `EVT-07m-a`–`e` (Figma Seite 20, Section Flow 1 Block 2b, unterstes Band). `EVT-07b`–`e` bleiben bis zur Abnahme stehen und gehen dann ins Archiv. Pflichtbausteine (Vernissage: Besuchsmodus, Film: Sprache und Untertitel) werden in `EIN-01` geprüft.
 8. **Founder-Bereich mobil:** Beschluss steht aus.
 9. **Einladungsmail** (nicht freigegeben) und **Plus-Startmail** (erst bei buchbarem Plus) bleiben ohne Screen und Code.
+
+## Fehlende Zustände (Prüfung 10.11.2026, F1 bis F5 vollständig, F6 bis F9 nur Listenstruktur)
+Grundzustände je Formularschritt: leer, ausgefüllt, Validierungsfehler, **speichert**, **Speichern fehlgeschlagen**, **keine Verbindung**. Diese drei letzten sind jetzt als Muster an `EVT-09`/`09a`/`09b` gezeichnet; für Profil- und Eventschritte gilt dasselbe Verhalten, ohne dass jeder Schritt einen eigenen Frame bekommt. Eigene Frames haben nur `LPA-01c` und `EVB-01c`.
+
+| Stelle | Fehlt | Vorschlag |
+|---|---|---|
+| `ORG-01`/`02` Anmeldung | Code senden fehlgeschlagen (Server oder offline); zu viele falsche Codes (Wartezeit) | zwei Zustände zeichnen |
+| `EVT-00b`/`c` Material | Datei zu groß, falsches Format, zu viele Bilder (bei `ORG-05` vorhanden) | Zustände analog `ORG-05` |
+| `EVT-03` Ort | „ausgefüllt“ (es gibt nur leer und Fehler) | Zustand zeichnen |
+| `EVT-05` Eventbild | „lädt“, „zu klein“, falsches Format (bei `ORG-05` vorhanden) | Zustände analog `ORG-05` |
+| `EVT-07m` Bausteine | Validierungsfehler in einem Baustein (nur „Pflicht fehlt“ gezeichnet) | Fehlerzustand je Feldtyp als Muster |
+| `RFG-02` Korrigieren | nur „Ort“ gezeichnet; Rückfragen können jede Angabe betreffen (Titel, Datum, Preis, Bild, Profil) | ein Muster je Angabentyp oder Verweis auf die Schritt-Screens |
+| global | Sitzung läuft ab während des Bearbeitens (Eingaben bleiben?); Konflikt, wenn DISKOE ein Event währenddessen ausblendet | Regel festlegen, dann `ERR-01` ergänzen |
 
 **Nach der Abnahme zu archivieren (nicht archiviert, weil nicht abgenommen):** alte `ORG-01`/`02`, `ORG-32`/`33`/`56`, `ORG-C` (Zusatzfragen) und `ORG-92a`–`l`; `ORG-91` erst nach Punkt 3.
 
