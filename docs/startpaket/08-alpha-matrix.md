@@ -72,6 +72,7 @@ Die Gruppen folgen dem Weg des ersten Organizers. Alpha: **Ja** heißt in der Al
 | Merken (privat, lokal, nach Login geräteübergreifend) | VISIT-01 | Ja, bestätigt 05.11. | nur deaktivierter Platzhalter auf der Eventseite | PUB-18, ENTWURF | Lokale Merkungen und Login-Sync |
 | Kalenderexport (Datei für ein Event) | VISIT-02 | Ja, bestätigt 05.11. | nicht gebaut | PUB-18, ENTWURF | Ohne Mail, ohne Einwilligung, deshalb billig |
 | Free-Grundzählungen: Aufrufe, Ticketlink-Klicks, bestätigte Abos | DIST-01 | Ja | nicht gebaut | nicht belegt | Datenschutzarme Messung, keine Unique-Personen |
+| Eigene Nachrichten von Organizern an Follower (Plus-Funktion) | Strategie v0.2, STATUS 09.11. | **Nein, nicht Alpha, nicht freigegeben** | nicht gebaut | in den Alpha-Screens für Gäste weggelassen (Founder, 10.11., 12:09); bleibt Plus-Vorhaben | Eigene Freigabe des Founders, frühestens zum Plus-Start (`AGENTS.md`, 09.11.). Beim Zeichnen von Follow und Abo-Verwaltung bleibt Platz für ein späteres Häkchen „Eventnachrichten“. Kein ausgegrautes Häkchen (UX-16) |
 | Mail-Grundlagen: Double-Opt-in, Abmeldelink, Versandprotokoll, Bounce- und Beschwerdebehandlung | Q32, `AGENTS.md` | Ja, Teil von Follow | nicht gebaut | – | DMARC, Zustellkennzahlen aus SES |
 
 ### 5. Netzwerk
