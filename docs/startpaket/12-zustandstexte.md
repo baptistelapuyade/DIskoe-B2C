@@ -48,7 +48,7 @@
 
 **Button-Regel:** Wiederholen heißt immer „Noch einmal {versuchen / laden / kopieren}“; zweite Aktion „Später weitermachen“ bzw. „Abbrechen“. Verb plus Objekt bei Hauptaktionen (§5.1).
 
-## Englische Fassung (Vorschlag 10.11.2026, Claude; Founder prüft)
+## Englische Fassung (Wortlaut vom Founder bestätigt 10.11.2026, 14:51)
 Gleiche IDs, gleiche Regeln (Ton: du → „you“, kurz, aktiv; Fehler: erst was passiert ist, dann was du tun kannst). Die Gerundien in `{Action}` entsprechen den deutschen Aktionen.
 
 | ID | Line 1 | Line 2 | Placeholders |
@@ -81,7 +81,7 @@ Gleiche IDs, gleiche Regeln (Ton: du → „you“, kurz, aktiv; Fehler: erst wa
 | Gäste | guests | neutral, wie im Deutschen |
 | Profil: folgen („Folgen“, „Du folgst …“, „Wieder folgen“) | follow („Follow“, „You follow …“, „Follow again“) | im Englischen ist „follow“ das übliche Verb; „Follower“ → „followers“ |
 | Event: abonnieren („Änderungen abonnieren“) | subscribe („Subscribe to changes“, „Subscribe again“) | Substantiv: „email subscription“ |
-| merken, „Gemerkt (n)“ | save, „Saved (n)“ | **Offen:** „Save“ kollidiert mit „Speichern“ in Formularen („Save changes“). Vorschlag: „Save event“ / „Saved“ für die Merkliste, „Save changes“ für Formulare; Founder entscheidet. |
+| merken, „Gemerkt (n)“ | save, „Saved (n)“ | Entschieden (Founder, 10.11., 14:51): „Save event“ / „Saved“ für die Merkliste, „Save changes“ für Formulare (kein Konflikt: verschiedene Objekte). |
 | Abgesagt / Verschoben / Vorbei | Cancelled / Postponed / Past | Status-Badges |
 | Veranstalter:in | organizer | |
 | E-Mail-Abo | email subscription | |

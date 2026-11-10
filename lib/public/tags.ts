@@ -5,7 +5,7 @@ import type { PrimaryFormat } from "../domain/event-publication";
 
 export const FORMAT_TAG_CLASS: Record<PrimaryFormat, string> = {
   concert: "bg-brand-pink text-foreground",
-  dj_set: "bg-brand-iris text-foreground",
+  dj_set: "bg-brand-iris text-white",
   club_night: "bg-brand-yellow text-foreground",
   listening_session: "bg-brand-blue text-foreground",
   opening: "bg-brand-lavender text-foreground",
