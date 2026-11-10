@@ -119,13 +119,13 @@ Mails: `MAIL-04`, `05`, `06`, `07`, `09`, `10`, `11` sind gezeichnet. Mischfall 
 - **Texte der Antwortseiten:** `SPR-02a` bis `02c` tragen den Wortlaut für Profilsperren. Für Event-Ausblendungen gilt derselbe Screen mit `{Objekt}` („dieses Event“ statt „dein Profil“), für Konten `SPR-04c`/`04f`. Der Hinweis in `SPR-02c` sagte bisher „Du kannst dein Profil in der Zwischenzeit weiter bearbeiten.“ und widersprach der Regel „ein gesperrter Organizer ändert nichts“ (Founder, 09.11.); jetzt „Du siehst dein Profil weiter. Ändern kannst du gerade nichts.“
 - **Bestand aufgeräumt (10.11.):** Die alten freistehenden `PLS-01a`/`PLS-01b` sind archiviert (Seite 90).
 
-## Zustandsmatrix Gäste (F13; Prüfung 10.11.2026, Vorschlag, Review ausstehend)
-Typen und Legende wie oben. Prüfung gegen die Frames der Section „ENTWURF v2 · F13 Gäste“ (Desktop und Mobil, Maße und Hinweisnamen per Skript, Rest durch Lesen). **Vorschlag:** Die Muster M1 (Speichert → „Wird gesendet …“, Z02) und M3 (Keine Verbindung, Z04) gelten auch für Gäste-Formulare; sie bekommen dort keine eigenen Frames. Die Muster-Referenzen (`EVT-09a`, `EVT-09b`) liegen im Organizer-Bereich; Gäste-Texte kommen aus demselben Katalog.
+## Zustandsmatrix Gäste (F13; Prüfung 10.11.2026, Muster und „Entfernen“ vom Founder bestätigt 14:05, Rest Review ausstehend)
+Typen und Legende wie oben. Prüfung gegen die Frames der Section „ENTWURF v2 · F13 Gäste“ (Desktop und Mobil, Maße und Hinweisnamen per Skript, Rest durch Lesen). **Entschieden (Founder, 10.11., 14:05):** Die Muster M1 (Speichert → „Wird gesendet …“, Z02) und M3 (Keine Verbindung, Z04) gelten auch für Gäste-Formulare; sie bekommen dort keine eigenen Frames. Die Muster-Referenzen (`EVT-09a`, `EVT-09b`) liegen im Organizer-Bereich; Gäste-Texte kommen aus demselben Katalog.
 
 | Screen | Typ | Normal | Variante / Validierung | Fehlgeschlagen | Erledigt | Sonst |
 |---|---|---|---|---|---|---|
 | NAV-01 Gäste-Kopfzeile | Komponente | ✓ `01a`/`b` | – | – | – | Mobil nur Symbol: Zugänglichkeitstext „Gemerkt“ im Code; noch keine Komponente auf Seite 10 |
-| GST-01 Merkliste und Abos | Liste | ✓ `01a` | leer `01b`, nicht angemeldet `01c`/`d`, mit Status und Vorbei `01e` | **✗** „Entfernen“ fehlgeschlagen (Vorschlag: Z03 über der Karte, kein eigener Frame) | – | lädt: M10 |
+| GST-01 Merkliste und Abos | Liste | ✓ `01a` | leer `01b`, nicht angemeldet `01c`/`d`, mit Status und Vorbei `01e` | „Entfernen“ fehlgeschlagen: Z03 über der Karte, kein eigener Frame (entschieden 10.11., 14:05) | – | lädt: M10 |
 | FOL-01 Folgen | Formular | ✓ `01a` | E-Mail passt nicht (Z01) `01b` | ✓ `01c` (Z03); Offline M3 | → `FOL-02a` | Senden: M1 |
 | FOL-02 Bestätigung ausstehend | Warteseite | ✓ `02a` | erneut gesendet `02b`, Wartezeit `02c` | M9 (erneutes Senden fehlgeschlagen) | – | |
 | FOL-03 Bestätigung per Link | Ergebnisseite | ✓ `03a` | abgelaufen `03b`, schon bestätigt `03c` | M9 | ✓ `03a` | Unbekannter Link: wie `03b` (Vorschlag: gleiche Seite, damit nichts verraten wird) |
@@ -141,7 +141,7 @@ Typen und Legende wie oben. Prüfung gegen die Frames der Section „ENTWURF v2 
 
 ### Ergebnis F13
 - **Neu gezeichnet:** `GST-01e` (Status und Vorbei, Event-Abo endet mit dem Event).
-- **Lücke (Founder entscheidet):** „Entfernen“ in der Merkliste ohne Bestätigung; Fehlerfall nur als Vorschlag (Z03, kein Frame). Ob „Entfernen“ bestätigt werden soll, ist nicht entschieden; es betrifft nur eine lokale Merkung bzw. eine Zeile der eigenen Liste.
+- **Entschieden (Founder, 10.11., 14:05):** „Entfernen“ in der Merkliste bleibt ohne Bestätigung (betrifft nur eine eigene Zeile); der Fehlerfall zeigt Z03 („Das Entfernen hat nicht geklappt.“) über der Karte, kein eigener Frame. Keine offene Lücke mehr in F13 außer den nicht geprüften Punkten unten.
 - **Texte:** Hinweise tragen Katalog-IDs (Z01, Z03, Z11, Z14) oder „Einzeltext“ (Leertexte, `FOL-03b`/`c`, Karten in `GST-01`); Einzeltexte werden bei Wellenbeginn als Z20 ff. aufgenommen.
 - **Noch nicht geprüft:** Kontrast, Tastaturreihenfolge, Mails auf Mobil, Teilen-Dialoge `PUB-01m`–`o` (Alt-Stil), `PUB-06c`/`d`.
 
