@@ -1,6 +1,6 @@
 # 12 — Zustandstexte (Katalog, Stand 10.11.2026)
 
-**Status:** Wortlaut und fünf Grundentscheidungen vom Founder freigegeben am 10.11.2026, 11:34 (Standard „Das {Aktion} hat nicht geklappt.“; „Gäste“ statt „Besucher“; Fehlgeschlagen = Fehler, Mail nicht übergeben = Warnung; „verworfen“; Mail-Zusatz immer). Button-Beschriftungen und Mails folgen. Einzige Quelle für Hinweisboxen und Zustandstexte in Profil-, Event- und Founder-Flows. Gilt zusammen mit `09-ux-framework.md` §5.1 (du, Doppelpunkt, kurz, aktiv, Fehler: erst was passiert ist, dann was du tun kannst) und den Mustern in `11-muster-und-zustaende.md`.
+**Status:** Wortlaut und fünf Grundentscheidungen vom Founder freigegeben am 10.11.2026, 11:34 (Standard „Das {Aktion} hat nicht geklappt.“; „Gäste“ statt „Besucher“; Fehlgeschlagen = Fehler, Mail nicht übergeben = Warnung; „verworfen“; Mail-Zusatz immer). Button-Beschriftungen und Mails folgen. Zweisprachig ab 10.11.2026, 14:46 (siehe „Sprachen“). Einzige Quelle für Hinweisboxen und Zustandstexte in Profil-, Event- und Founder-Flows. Gilt zusammen mit `09-ux-framework.md` §5.1 (du, Doppelpunkt, kurz, aktiv, Fehler: erst was passiert ist, dann was du tun kannst) und den Mustern in `11-muster-und-zustaende.md`.
 
 ## Regeln
 1. **Zustandstexte kommen aus diesem Katalog.** Frames tragen die Text-ID im Ebenennamen (z. B. `Z03`). Änderungen zuerst hier, dann in den Frames und im Code (gemeinsames Textverzeichnis mit denselben IDs).
@@ -8,6 +8,13 @@
 3. **Art der Hinweisbox:** Fehler = die Aktion wurde nicht ausgeführt. Warnung = die Aktion ist gelaufen oder noch möglich, aber mit Einschränkung. Info = Erklärung. Erfolg = erledigt.
 4. **Immer sagen, was nach einem Fehler gilt** (`{Stand danach}`): was bleibt, was ist öffentlich.
 5. **Mails:** „an den Versanddienst übergeben“ steht nie ohne den Zusatz, dass das nicht „angekommen“ heißt (`AGENTS.md`).
+
+## Sprachen (Beschluss Founder, 10.11.2026, 14:46)
+- **Alpha-Copy in Deutsch und Englisch, zur Auswahl.** Standardsprache ist **Englisch**; Umschalter auf Deutsch an fester Stelle (Kopf- oder Fußzeile), die Wahl wird im Browser gemerkt. Erkennung der Browsersprache ist eine spätere Zugabe.
+- **Feste Überschriften der Plattform** (z. B. „Kommende Events“ / „Upcoming events“ auf der Profilseite) kommen aus diesem Katalog und wechseln mit der Sprache. Texte der Organizer (Name, Beschreibung, Eventtitel) bleiben in der Sprache, in der sie geschrieben wurden, und werden nicht übersetzt. Die englischen Überschriften in `PUB-06a` waren Platzhalter; sie werden bei der Aufnahme der Plattform-Überschriften als Z20 ff. sauber in beiden Sprachen geführt.
+- **Mails:** Die Sprache wird beim Anlegen gespeichert: am E-Mail-Abo (Sprache der Seite beim Bestätigen), beim Besucher-Login-Code (Sprache der Seite, auf der der Code angefordert wurde), bei Organizern am Konto (in den Einstellungen änderbar). Ohne gespeicherten Wert: Englisch. Einwilligungstexte und Mails gibt es in beiden Sprachen.
+- **Rechtstexte:** Impressum und Datenschutz in Deutsch (maßgebliche Fassung) und Englisch (Übersetzung, als solche gekennzeichnet). Rechtliche Prüfung vor der Alpha-Öffnung bleibt beim Founder.
+- **Pflege:** Die englischen Texte stehen nur in diesem Katalog (gleiche IDs). Änderungen zuerst hier, in beiden Sprachen.
 
 ## Begriffe für Gäste-Seiten (Vorschlag 10.11., Founder-Review 13:45)
 - **Profil:** „folgen“ (Button „Folgen“, „Du folgst …“, „Wieder folgen“).
@@ -40,6 +47,44 @@
 | Z17 | Verwerfen erledigt | Erfolg | {Objekt} {ist / sind} verworfen. | {Stand} | – |
 
 **Button-Regel:** Wiederholen heißt immer „Noch einmal {versuchen / laden / kopieren}“; zweite Aktion „Später weitermachen“ bzw. „Abbrechen“. Verb plus Objekt bei Hauptaktionen (§5.1).
+
+## Englische Fassung (Vorschlag 10.11.2026, Claude; Founder prüft)
+Gleiche IDs, gleiche Regeln (Ton: du → „you“, kurz, aktiv; Fehler: erst was passiert ist, dann was du tun kannst). Die Gerundien in `{Action}` entsprechen den deutschen Aktionen.
+
+| ID | Line 1 | Line 2 | Placeholders |
+|---|---|---|---|
+| Z01 | Please check {one entry / two entries / n entries}. | One field: `{reason}` („The title is missing.“). Several missing: „The marked fields are still missing.“ Several invalid: „The marked fields aren't right yet.“ | count, reason |
+| Z02 | {Object} is being {saved / uploaded / sent} … | This takes a moment. Stay on this page for a bit. | object, verb |
+| Z03 | {Action} didn't work. | {State afterwards} Try again. | Action (Saving, Sending, Uploading, Loading, Publishing, Cancelling, Rescheduling, Signing up, Leaving, Suspending, Unsuspending, Submitting, Withdrawing) |
+| Z03a | Loading didn't work. | That's not your fault. Try again. | – |
+| Z03b | Saving didn't work. | {State afterwards} Try again. If it keeps failing, write to us. | – |
+| Z04 | No connection. | {State afterwards} Once you're back online, try again. | state afterwards |
+| Z05 | The file is too big. | JPG, PNG or WebP up to {limit} are allowed. Yours is {size}. | limit (5 MB), size |
+| Z06 | The image is too small. | It needs at least {width} × {height} pixels. Yours is {width} × {height} pixels. | 400 × 400 (profile, event), 1600 × 900 (venue cover) |
+| Z07 | This format isn't supported. | JPG, PNG or WebP up to 5 MB are allowed. | – |
+| Z08 | That's too many images. | You can add up to {n} images. Remove one to continue. | n (3) |
+| Z09 | Please confirm {both points / the cancellation / …}. | Tick {the box / both boxes}, then you can {action}. | action |
+| Z10 | This can't be undone. | {Consequence}. | consequence |
+| Z11 | Saved. / Published. / {Object} {participle}. | {State for guests or consequence}. | – |
+| Z12 | Guests {still see the previous / now see the new} version. | {Consequence}. | state |
+| Z13 | Followers get a notice{ about {reason}}. It goes out {time}. | {n} guests follow your profile. {Option}. | reason, time, n |
+| Z14 | {Object} {participle}, email handed over. | The email has been handed over to our sending service. That doesn't mean it has arrived yet. | – |
+| Z15 | {The email / The notice} was not handed over. | {State afterwards} Send the email again. | state afterwards |
+| Z16 | Kept in this browser only. | This step is still missing on other devices. | – |
+| Z17 | {Object} {is / are} discarded. | {State} | – |
+
+**Button rule (EN):** „Try again“ / „Load again“ / „Copy again“; second action „Continue later“ or „Cancel“.
+
+**Begriffe (EN):**
+| Deutsch | English | Anmerkung |
+|---|---|---|
+| Gäste | guests | neutral, wie im Deutschen |
+| Profil: folgen („Folgen“, „Du folgst …“, „Wieder folgen“) | follow („Follow“, „You follow …“, „Follow again“) | im Englischen ist „follow“ das übliche Verb; „Follower“ → „followers“ |
+| Event: abonnieren („Änderungen abonnieren“) | subscribe („Subscribe to changes“, „Subscribe again“) | Substantiv: „email subscription“ |
+| merken, „Gemerkt (n)“ | save, „Saved (n)“ | **Offen:** „Save“ kollidiert mit „Speichern“ in Formularen („Save changes“). Vorschlag: „Save event“ / „Saved“ für die Merkliste, „Save changes“ für Formulare; Founder entscheidet. |
+| Abgesagt / Verschoben / Vorbei | Cancelled / Postponed / Past | Status-Badges |
+| Veranstalter:in | organizer | |
+| E-Mail-Abo | email subscription | |
 
 ## Befund vor der Umstellung (Prüfung 10.11.; in den Frames behoben, Stand siehe „Umsetzung“)
 | Befund | Beispiele (Kennung: heutiger Text) | Vorschlag |
