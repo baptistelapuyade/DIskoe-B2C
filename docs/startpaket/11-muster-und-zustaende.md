@@ -143,7 +143,8 @@ Typen und Legende wie oben. Prüfung gegen die Frames der Section „ENTWURF v2 
 - **Neu gezeichnet:** `GST-01e` (Status und Vorbei, Event-Abo endet mit dem Event).
 - **Entschieden (Founder, 10.11., 14:05):** „Entfernen“ in der Merkliste bleibt ohne Bestätigung (betrifft nur eine eigene Zeile); der Fehlerfall zeigt Z03 („Das Entfernen hat nicht geklappt.“) über der Karte, kein eigener Frame. Keine offene Lücke mehr in F13 außer den nicht geprüften Punkten unten.
 - **Texte:** Hinweise tragen Katalog-IDs (Z01, Z03, Z11, Z14) oder „Einzeltext“ (Leertexte, `FOL-03b`/`c`, Karten in `GST-01`); Einzeltexte werden bei Wellenbeginn als Z20 ff. aufgenommen.
-- **Noch nicht geprüft:** Kontrast, Tastaturreihenfolge, Mails auf Mobil, Teilen-Dialoge `PUB-01m`–`o` (Alt-Stil), `PUB-06c`/`d`.
+- **Teilen und Profil-Liste (Review 14:10):** `PUB-01q`/`r` (Teilen als Zustände, M8) ersetzen im Vorschlag die Dialoge `PUB-01m`–`o`; `PUB-06c`/`d` geprüft (Merken 44 px, „Mehr anzeigen“ mobil). Offen: Zustand „Gemerkt“ der Eventzeile, Tippgröße 40 px in Follow-Karten und `PUB-06a`. Siehe Flow-Karte.
+- **Noch nicht geprüft:** Kontrast, Tastaturreihenfolge, Mails auf Mobil, `PUB-06` Mobil-Zustände außer `06a`/`c`.
 
 ## Pflege
 - Neue Screens bekommen in der Flow-Karte eine Zeile und hier eine Zelle; ein fehlender Zustand wird als **✗** geführt, bis er gezeichnet oder als Muster markiert ist.

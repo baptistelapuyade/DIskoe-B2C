@@ -347,7 +347,7 @@ Section „ENTWURF v2 · F13 Gäste — Rahmen, Merkliste und Abos, Folgen“ (3
 - **Follow-Karten:** Button „Folgen“ (vorher „Neue Events erhalten“), Einwilligungstext mit Verweis auf den Button, gebündelte Hinweise auf neue Events, Termin-, Ort- und Absagehinweise, Bestätigungslink, Abmeldelink in jeder Mail (`AGENTS.md`, 09.11.). „sofort“ entfernt (Versandregel: gebündelt, nur bei naher Änderung sofort). Das Eingabefeld sitzt in der Karte; Fehler, „Link gesendet“ und Bestätigung zeigen die Seiten `FOL-01b`/`02a`/`03a`. `FOL-01a` ist der Einstieg aus „Wieder folgen“ und „Andere Adresse“. Die Change-Karte (Event-Abo) verweist ebenso auf `FOL-11`–`13`.
 - **Kalender:** „Zum Kalender hinzufügen“ öffnet `KAL-01` (kein Dialog, Pfeil entfernt). Der Link ist ausgeblendet bei abgesagt, Termin folgt, vorbei, Ersatztermin offen, abgesagt nach Änderung (`PUB-01b`, `c`, `e`, `k`, `l`); `KAL-04` bleibt für alte Links.
 - **Merken:** „Merken“ speichert in diesem Browser; neuer Zustand `PUB-01p` (3146:94053 / 3146:94259): Button „Gemerkt“, Zeile „Nur in diesem Browser gemerkt. Mit E-Mail anmelden, um die Merkliste auf anderen Geräten zu sehen.“ (Ziel `MRK-02a`), Kopfzeile „Gemerkt (1)“.
-- **Nicht geändert:** Zustände der Change-Karte „Abgesagt“ und „Vorbei“ (kein Abo möglich, wie bisher); Teilen-Dialoge `PUB-01m`–`o` (954 px, Alt-Stil, noch zu überführen).
+- **Nicht geändert:** Zustände der Change-Karte „Abgesagt“ und „Vorbei“ (kein Abo möglich, wie bisher); Teilen-Dialoge `PUB-01m`–`o` (954 px, Alt-Stil): Ersatz als Vorschlag gezeichnet, siehe „Teilen und Profil-Liste (Review 10.11., 14:10)“.
 
 ### F13 Review (Founder, 10.11.2026, 13:45)
 **Entschieden (Founder):**
@@ -363,6 +363,24 @@ Section „ENTWURF v2 · F13 Gäste — Rahmen, Merkliste und Abos, Folgen“ (3
 - **Missbrauchsschutz** (Bestätigungs- und Code-Mails): Antwort immer gleich („Wir haben dir einen Link geschickt“), egal ob die Adresse bekannt ist; Grenze 3 Mails je Adresse und Stunde (bereits entschieden), zusätzlich Grenze je IP-Adresse und je Tag (Arbeitswerte, im Code als Konfiguration), unsichtbares Formularfeld als Bot-Falle, kein Captcha eines Drittanbieters (Datenschutz, neue Abhängigkeit). Neue Adressen bekommen höchstens die Bestätigungsmail, keine weitere Mail ohne bestätigtes Abo.
 
 **Noch offen:** Matrix F13 (siehe `11-muster-und-zustaende.md`), Teilen-Dialoge `PUB-01m`–`o`, `NAV-01` als Komponente, Archiv der alten `PUB-17`/`PUB-18` nach Abnahme.
+
+### Teilen und Profil-Liste (Review 10.11., 14:10, Vorschlag, Review ausstehend)
+**Teilen ohne Dialog (Vorschlag).** Die alten Frames `PUB-01m`–`o` zeigen einen Dialog mit „Link kopieren“, „Über WhatsApp teilen“ und „Weitere Optionen“. Das widerspricht PP-05 (ein Tipp; Systemdialog mobil, Link kopieren am Desktop) und dem gebauten Stand (`SHARE-01`: `navigator.share`, sonst Link kopieren). Neu gezeichnet, Seite 40, Section „GELTEND · PUB-01 Eventseite“ (unterhalb der alten Frames; Section vergrößert), je Desktop und Mobil, als Zustände der Eventseite statt als Dialog (Muster M8):
+
+| Kennung | Knoten (Desktop / Mobil) | Zustand | Anmerkung |
+|---|---|---|---|
+| PUB-01q | 3154:46856 / 3154:46956 | Teilen: Link kopiert (Z11: „Link kopiert.“ / „Du kannst ihn jetzt einfügen, wo du willst.“) | Hinweis unter „Merken“ und „Teilen“, wie `LIV-02` |
+| PUB-01r | 3154:47056 / 3154:47256 | Teilen: Kopieren fehlgeschlagen (Z03) | Hinweis, Feld „Link zum Event“ zum Markieren, „Noch einmal kopieren“, wie `LIV-03` |
+
+- **Mobil mit Teilen-Funktion des Geräts:** Das Betriebssystem öffnet seinen eigenen Dialog; dafür gibt es keinen Frame. `PUB-01q`/`r` gelten, wenn der Browser das nicht kann.
+- **Entfallen im Vorschlag (Founder entscheidet):** „Über WhatsApp teilen“ und „Weitere Optionen“ (der Systemdialog enthält beides; ein eigener WhatsApp-Knopf wäre ein zweiter Weg zum selben Ziel), der Satz „Es wurde noch keine Nachricht verschickt“ (kein Nutzen) und „Deine private Merkliste bleibt privat“ (im Dialog entfällt der Platz dafür). Die alten `PUB-01m`–`o` bleiben bis zur Abnahme, dann Archiv (Seite 90).
+
+**Profil-Liste `PUB-06c`/`d` (Eventzeilen mit „Merken“).** Geprüft und geändert in der Komponente „DISKOE / Profile Event Row“ (Seite 10): Button „Merken“ war 40 px hoch, jetzt 44 px (Desktop und Mobil). Mobil ragte „Mehr anzeigen · 2 weitere Events“ über den Rand (404 px in 390 px Rahmen), jetzt 352 px (`PUB-06a`, `PUB-06c`). **Offen:** Zustand „Gemerkt“ der Eventzeile ist nicht gezeichnet (Vorschlag: Button heißt „Gemerkt“, wie auf `PUB-01p`; kein eigener Frame, Muster wie M8).
+
+**Weitere Befunde (Review 14:10):**
+- **Event-Karte:** Der Button hieß „Bei Änderungen benachrichtigen“ und der Link „Bei Änderungen benachrichtigt werden ↓“. Nach dem Begriff „abonnieren“ (Katalog) jetzt „Änderungen abonnieren“; der Einwilligungstext nennt den Button und „Das Abo endet mit dem Event.“ (Komponente „Event Follow / Change Card“, 4 Texte auf Seite 10, 22 auf Seite 40).
+- **Du-Form:** „Was ihr vor dem Besuch wissen wollt.“ (Gut zu wissen, 23 Vorkommen) ist jetzt „Was du vor dem Besuch wissen willst.“ In `components/public/event-view.tsx` (Zeile 253) steht noch die alte Fassung; Anpassung im Code folgt mit der nächsten Code-Aufgabe.
+- **Tippgröße (offen, Founder entscheidet):** In fast allen GELTEND-Frames von `PUB-01` und `PUB-06` stehen Buttons mit 40 statt 44 px (Follow-Karten: „Follow / Button“ 334 × 40 und 78 × 40, weitere „Button“ 164 × 40; `PUB-06a` viele Buttons zwischen 72 und 162 × 40). Vorschlag: in den Komponenten auf Seite 10 `Size=Large` setzen. Das ändert Höhen um 4 px und verschiebt die Layouts leicht.
 
 ## Lücken und offene Zuordnungen (Stand 09.11.2026, abends)
 **Seit dem ersten Entwurf gezeichnet (Review ausstehend):** ORG-01/02 in v2; Vorschau `VOR-01a`/`b`; Einstiege „Dein Bereich“ auf der Startseite; `ORG-102a`–`c`; Founder: `FDB-17a`–`d` (Antwort), `FDB-06e`–`h` mit `MAIL-11` (Event einblenden), `FDB-09c`–`g` (Ortsbindung); Preisformen `EVT-04f`–`n`; Zusatzfragen `EVT-07b`–`e` (Vorschlag); Besucher-Mails `MAIL-12`, `MAIL-13`.
