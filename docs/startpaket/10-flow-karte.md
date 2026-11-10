@@ -31,6 +31,8 @@ Section „Flow 1 Block 1“ (2965:6020). ORG-01 und ORG-02 sind seit 09.11. in 
 | ORG-95 | 2965:6022 | E-Mail ungültig | Code senden → `ORG-96` | Eingabe bleibt |
 | ORG-96 | 2966:6134 | Code wird gesendet | (Warten) → `ORG-02` | |
 | ORG-02 (neu 09.11.) | 3095:136 (Mobil 3095:153) | Code eingeben | Anmelden → Startseite je Stand, oder `ORG-100` ohne Profil; falsch → `ORG-97` | Sitzung beginnt |
+| ORG-01b (neu 10.11.) | 3113:32849 (Mobil 3113:33084) | Code senden fehlgeschlagen | Noch einmal versuchen → `ORG-96` | Muster M2/M3 |
+| ORG-02b (neu 10.11., Vorschlag) | 3113:33228 (Mobil 3113:33400) | Zu viele falsche Codes | Neuen Code senden → `ORG-98`; Andere E-Mail-Adresse → `ORG-01` | „zehn Minuten“ ist ein **Vorschlag**; Sperrlogik im Code |
 | ORG-97 | 2965:6380 | Code falsch oder abgelaufen | Anmelden → Startseite; Neuen Code senden → `ORG-98`; Andere E-Mail-Adresse → `ORG-01` | |
 | ORG-98 | 2966:6588 | Neuer Code gesendet | wie `ORG-97` | neue `MAIL-01` |
 | ORG-99 | 2966:7038 | Link abgelaufen | Neuen Code senden → `ORG-96` | Link aus `MAIL-01` |
@@ -101,6 +103,10 @@ Section „Flow 1 Block 2b“ (3010:11350). Weiter-Buttons sind nie deaktiviert;
 | EVT-09a (neu 10.11.) | 3111:32643 (Mobil 3111:33387) | Speichert (Button „Speichere …“ gesperrt, Info-Hinweis) | Erfolg → nächster Schritt bzw. `EVT-08`; Fehler → `EVT-09`/`09b` | gilt als Muster für alle Schritte |
 | EVT-09b (neu 10.11.) | 3111:33062 (Mobil 3111:33635) | Keine Verbindung (Warnhinweis, Eingaben bleiben) | Noch einmal versuchen → wiederholt; Später weitermachen → `EVT-09c` | |
 | EVT-09c (neu 10.11., Vorschlag) | 3111:33192 (Mobil 3111:33723) | Ohne Sichern verlassen (Bestätigungsseite) | Zurück und noch einmal versuchen → Schritt; Trotzdem verlassen → Startseite | ehrlich: Eingaben des Schritts gehen verloren, keine lokale Browser-Sicherung |
+| EVT-00i / j (neu 10.11.) | 3113:33505 / 3113:33711 (Mobil 3113:33612 / 3113:33886) | Material: Datei nicht verwendbar / zu viele Bilder | wie `EVT-00b`/`c` | Muster M5; Grenzen 5 MB, drei Bilder |
+| EVT-03c (neu 10.11.) | 3113:35334 (Mobil 3113:35425) | Ort ausgefüllt | Weiter zu Preis und Zugang → `EVT-04a`/`b`/`c` | |
+| EVT-05d / e / f (neu 10.11.) | 3113:34005 / 34306 / 34468 (Mobil 3113:34200 / 34391 / 34553) | Eventbild: lädt hoch / zu klein / falsches Format | wie `EVT-05a` | „zu klein“: 400 × 400 Pixel ist ein **Vorschlag** (wie Profilbild) |
+| EVT-07m-g (neu 10.11., Vorschlag) | 3113:34630 (Mobil 3113:34944) | Feld in Baustein fehlerhaft | wie `EVT-07m-a` | Muster Feldfehler |
 | EVT-07m-f (neu 10.11., Vorschlag) | 3111:33877 (Mobil 3111:34036) | Baustein entfernt, Rückgängig | Rückgängig → Karte kehrt zurück | Schutz vor Datenverlust beim Entfernen |
 
 ## F4 · Einreichen, Prüfung, Rückfrage, Live (Block 2c, W1)
@@ -286,18 +292,8 @@ Sections „PUB-17 Follow-Platzierung“ (2839:47447) und „PUB-18 Besucherakti
 8. **Founder-Bereich mobil:** Beschluss steht aus.
 9. **Einladungsmail** (nicht freigegeben) und **Plus-Startmail** (erst bei buchbarem Plus) bleiben ohne Screen und Code.
 
-## Fehlende Zustände (Prüfung 10.11.2026, F1 bis F5 vollständig, F6 bis F9 nur Listenstruktur)
-Grundzustände je Formularschritt: leer, ausgefüllt, Validierungsfehler, **speichert**, **Speichern fehlgeschlagen**, **keine Verbindung**. Diese drei letzten sind jetzt als Muster an `EVT-09`/`09a`/`09b` gezeichnet; für Profil- und Eventschritte gilt dasselbe Verhalten, ohne dass jeder Schritt einen eigenen Frame bekommt. Eigene Frames haben nur `LPA-01c` und `EVB-01c`.
-
-| Stelle | Fehlt | Vorschlag |
-|---|---|---|
-| `ORG-01`/`02` Anmeldung | Code senden fehlgeschlagen (Server oder offline); zu viele falsche Codes (Wartezeit) | zwei Zustände zeichnen |
-| `EVT-00b`/`c` Material | Datei zu groß, falsches Format, zu viele Bilder (bei `ORG-05` vorhanden) | Zustände analog `ORG-05` |
-| `EVT-03` Ort | „ausgefüllt“ (es gibt nur leer und Fehler) | Zustand zeichnen |
-| `EVT-05` Eventbild | „lädt“, „zu klein“, falsches Format (bei `ORG-05` vorhanden) | Zustände analog `ORG-05` |
-| `EVT-07m` Bausteine | Validierungsfehler in einem Baustein (nur „Pflicht fehlt“ gezeichnet) | Fehlerzustand je Feldtyp als Muster |
-| `RFG-02` Korrigieren | nur „Ort“ gezeichnet; Rückfragen können jede Angabe betreffen (Titel, Datum, Preis, Bild, Profil) | ein Muster je Angabentyp oder Verweis auf die Schritt-Screens |
-| global | Sitzung läuft ab während des Bearbeitens (Eingaben bleiben?); Konflikt, wenn DISKOE ein Event währenddessen ausblendet | Regel festlegen, dann `ERR-01` ergänzen |
+## Fehlende Zustände
+Die Prüfung vom 10.11. und die Matrix stehen in `docs/startpaket/11-muster-und-zustaende.md`. Gezeichnet am 10.11.: `ORG-01b`, `ORG-02b`, `EVT-00i`/`j`, `EVT-03c`, `EVT-05d`–`f`, `EVT-07m-g`, `EVT-09a`–`c`, `EVT-07m-f`. Entschieden: Rückfrage-Korrektur über den Datenvertrag bzw. Code (kein Figma-Screen je Feldtyp), Eingaben bleiben bei abgelaufener Sitzung.
 
 **Nach der Abnahme zu archivieren (nicht archiviert, weil nicht abgenommen):** alte `ORG-01`/`02`, `ORG-32`/`33`/`56`, `ORG-C` (Zusatzfragen) und `ORG-92a`–`l`; `ORG-91` erst nach Punkt 3.
 
