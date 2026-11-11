@@ -49,4 +49,76 @@ export const en: Record<MessageId, string> = {
   "Z21.link.title": "This link is no longer valid",
   "Z21.link.lead":
     "The link in your email has expired or was already used. Request a new code and you can continue.",
+  "Z22.noProfile.eyebrow": "Signed in",
+  "Z22.noProfile.title": "Your account has no profile yet",
+  "Z22.noProfile.lead":
+    "You're signed in, but your account doesn't belong to a profile yet. Get in touch with DISKOE and we'll assign one to you.",
+  "Z22.home.title": "Your profile",
+  "Z22.home.titleMany": "Your profiles",
+  "Z22.home.lead":
+    "Here you can see what to do next and what happens after that.",
+  "Z22.pill.draft": "Draft · private",
+  "Z22.pill.review": "In review · not public yet",
+  "Z22.pill.question": "Question · not public yet",
+  "Z22.pill.live": "Live",
+  "Z22.pill.changes": "Changes not public yet",
+  "Z22.progress.label": "Progress",
+  "Z22.step.profile": "Profile",
+  "Z22.step.event": "First event",
+  "Z22.step.submit": "Submit",
+  "Z22.step.review": "Review",
+  "Z22.step.live": "Live",
+  "Z22.gap.name": "name",
+  "Z22.gap.shortIntro": "short introduction",
+  "Z22.gap.linkOrContact": "official link or public contact",
+  "Z22.gap.profileImage": "profile picture",
+  "Z22.gap.revisionMissing": "first draft",
+  "Z22.a.message": "You're still missing details: {gaps}.",
+  "Z22.a.hint":
+    "After that you create your first event. You send both to review together. Until then only you can see the profile.",
+  "Z22.a.action": "Add details",
+  "Z22.b.message": "Your profile is done. Next you create your first event.",
+  "Z22.b.hint":
+    "Profile and event go to review together. Until then only you can see them.",
+  "Z22.b.action": "Create first event",
+  "Z22.b.view": "View profile",
+  "Z22.c.message":
+    "Your profile and first event are complete. Look at the preview and submit both.",
+  "Z22.c.hint":
+    "DISKOE reviews both together. Once approved, profile and event become public.",
+  "Z22.c.action": "View preview and submit",
+  "Z22.d.message":
+    "Thank you! We're reviewing your profile and event together as fast as we can. You don't need to do anything.",
+  "Z22.d.hint":
+    "We'll email you as soon as both are approved or we have a question.",
+  "Z22.d.action": "View what you submitted",
+  "Z22.e.fallback": "DISKOE has a question about your submission.",
+  "Z22.e.hint":
+    "This isn't a rejection. Correct the detail and submit profile and event again afterwards. Until then everything stays private.",
+  "Z22.e.action": "Correct the detail",
+  "Z22.f.message": "Your profile and your first event are live.",
+  "Z22.f.profileOnly": "Your profile is live.",
+  "Z22.f.hint":
+    "Share the link so people can see what's on. Changes stay private until you publish them yourself.",
+  "Z22.f.share": "Share profile",
+  "Z22.f.newEvent": "Create another event",
+  "Z22.g.message": "You have changes that aren't public yet.",
+  "Z22.g.incomplete":
+    "Your profile is live. Your new version isn't complete yet.",
+  "Z22.g.hint":
+    "Until you publish them, the previous public version stays visible.",
+  "Z22.g.action": "View preview and publish",
+  "Z22.area.title": "Your area",
+  "Z22.area.events.title": "Events",
+  "Z22.area.events.text": "View and manage your events or create a new one.",
+  "Z22.area.edit.title": "Edit profile",
+  "Z22.area.edit.text": "Changes stay private until you publish them.",
+  "Z22.events.heading": "Your events",
+  "Z22.events.empty": "You haven't created an event yet.",
+  "Z22.events.untitled": "Untitled event",
+  "Z22.events.published": "Published",
+  "Z22.events.draft": "Draft – private",
+  "Z22.events.new": "Create event",
+  "Z22.share.copied": "Link copied.",
+  "Z22.share.failed": "Copying didn't work. Try again.",
 };

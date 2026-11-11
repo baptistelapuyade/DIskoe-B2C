@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import type { Lang } from "@/lib/i18n";
 
-import { AppHeader } from "./app-header";
+import { AppHeader, SignOutForm } from "./app-header";
 import { Footer } from "./footer";
 import { LanguageSwitch } from "./language-switch";
 import { WegBand, WegPanel, type WegStep } from "./weg-panel";
@@ -13,16 +13,18 @@ import { WegBand, WegPanel, type WegStep } from "./weg-panel";
 export function AuthShell({
   lang,
   step,
+  signedIn = false,
   children,
 }: {
   lang: Lang;
   step: WegStep;
+  signedIn?: boolean;
   children: ReactNode;
 }) {
   return (
     <div className="bg-background flex min-h-screen flex-col">
       <div className="md:hidden">
-        <AppHeader lang={lang} />
+        <AppHeader lang={lang} signedIn={signedIn} />
         <div className="px-6 py-2">
           <WegBand lang={lang} current={step} />
         </div>
@@ -30,8 +32,9 @@ export function AuthShell({
       <div className="flex flex-1">
         <WegPanel lang={lang} current={step} />
         <div className="flex min-w-0 flex-1 flex-col gap-12 px-6 py-8 md:px-12">
-          <div className="hidden justify-end md:flex">
+          <div className="hidden items-center justify-end gap-2 md:flex">
             <LanguageSwitch lang={lang} />
+            {signedIn ? <SignOutForm lang={lang} /> : null}
           </div>
           <main className="flex w-full max-w-[560px] flex-col gap-8 md:gap-10">
             {children}

@@ -81,17 +81,24 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await signInWithCode(page, emails.founder);
   const founderId = userIdByEmail(emails.founder);
   makeFounder(founderId);
-  provisionAs(founderId, userIdByEmail(emails.ownerA), `ev-a-${run}`, "Alpha");
+  const profileA = provisionAs(
+    founderId,
+    userIdByEmail(emails.ownerA),
+    `ev-a-${run}`,
+    "Alpha",
+  );
   provisionAs(founderId, userIdByEmail(emails.ownerB), `ev-b-${run}`, "Beta");
   await page.getByRole("button", { name: "Abmelden" }).click();
   await page.waitForURL("**/login", SLOW);
   await signInWithCode(page, emails.ownerA);
 
   // 1. Eventstart: only "Manuell eingeben" exists; it opens an empty draft.
-  await expect(page.getByText("Du hast noch kein Event angelegt.")).toBeVisible(
+  // The start page leads a new profile through its details first (ORG-103a),
+  // so the event start is opened directly.
+  await expect(page.getByRole("heading", { name: "Dein Profil" })).toBeVisible(
     SLOW,
   );
-  await page.getByRole("link", { name: "Event anlegen" }).click();
+  await page.goto(`/organizer/events/new?profile=${profileA}`);
   await expect(
     page.getByRole("heading", { name: "Was steht als Nächstes an?" }),
   ).toBeVisible(SLOW);

@@ -193,7 +193,7 @@ test.describe("sign-in and organizer assignment", () => {
 
     await page.goto("/organizer");
     await expect(
-      page.getByRole("heading", { name: "Noch kein Organizer-Profil zugeordnet" }),
+      page.getByRole("heading", { name: "Dein Konto hat noch kein Profil" }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /anlegen|erstellen/i }),
@@ -213,7 +213,7 @@ test.describe("sign-in and organizer assignment", () => {
 
     await page.goto("/organizer");
     await expect(
-      page.getByRole("heading", { name: "Noch kein Organizer-Profil zugeordnet" }),
+      page.getByRole("heading", { name: "Dein Konto hat noch kein Profil" }),
     ).toBeVisible();
 
     await context.close();
@@ -224,7 +224,7 @@ test.describe("sign-in and organizer assignment", () => {
     const page = await context.newPage();
 
     await page.goto("/organizer");
-    await expect(page.getByRole("heading", { name: "Deine Profile" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Dein Profil", exact: true })).toBeVisible();
     await expect(page.getByText("Alpha Events")).toBeVisible();
     await expect(page.getByText("Beta Events")).toHaveCount(0);
 

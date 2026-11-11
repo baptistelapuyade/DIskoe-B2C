@@ -101,10 +101,10 @@ test.describe("profile editor, preview and hand-in", () => {
     const { context, page } = await pageFor(browser, "ownerA");
     await page.goto("/organizer");
 
-    await expect(page.getByRole("heading", { name: "Deine Profile" })).toBeVisible();
-    await expect(page.getByText("Dir fehlen noch Angaben.")).toBeVisible();
-    await expect(page.getByText("Ein bestätigtes Profilbild fehlt.")).toBeVisible();
-    await page.getByRole("link", { name: "Angaben vervollständigen" }).click();
+    await expect(page.getByRole("heading", { name: "Dein Profil", exact: true })).toBeVisible();
+    await expect(page.getByText("Dir fehlen noch Angaben:")).toBeVisible();
+    await expect(page.getByText(/Profilbild/).first()).toBeVisible();
+    await page.getByRole("link", { name: "Angaben ergänzen" }).click();
     await expect(page.getByRole("heading", { name: "Profil bearbeiten" })).toBeVisible();
 
     await context.close();
@@ -290,9 +290,9 @@ test.describe("profile editor, preview and hand-in", () => {
 
     // The start page says what is going on and that nothing is left to do.
     await page.goto("/organizer");
-    await expect(page.getByText("Wir schauen uns dein Profil so schnell wie möglich an.")).toBeVisible();
+    await expect(page.getByText("Wir prüfen Profil und Event gemeinsam")).toBeVisible();
     await expect(page.getByText("Du musst nichts tun.")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Eingereichtes Profil ansehen" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Eingereichtes ansehen" })).toBeVisible();
 
     await context.close();
   });

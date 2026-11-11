@@ -22,14 +22,21 @@ export default async function OrganizerLayout({
   const access = await requireAccess("/organizer");
   const lang = await getLang();
 
+  // "Signed in, no profile" (ORG-100) brings its own frame with the Weg Panel.
+  if (access.kind === "no_assignment" && !access.isFounder) {
+    return <>{children}</>;
+  }
+
   // The founder gets a direct way to the review list, with the number of
   // profiles that wait for a decision.
   const open = access.isFounder
     ? await countOpenReviews(await createClient())
     : undefined;
 
+  // A page that marks itself with data-surface="accent" gets the grey page
+  // colour including header and footer (start page, Figma ORG-103).
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="has-[[data-surface=accent]]:bg-accent flex min-h-screen flex-col">
       <AppHeader
         lang={lang}
         signedIn

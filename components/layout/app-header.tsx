@@ -5,6 +5,16 @@ import { t, type Lang } from "@/lib/i18n";
 
 import { LanguageSwitch } from "./language-switch";
 
+export function SignOutForm({ lang }: { lang: Lang }) {
+  return (
+    <form action="/auth/signout" method="post">
+      <button type="submit" className={buttonClass("ghostLg")}>
+        {t(lang, "Z20.nav.signOut")}
+      </button>
+    </form>
+  );
+}
+
 // DISKOE / App Header (Figma 2980:8182). Wordmark left; language switch and,
 // when signed in, "Sign out" right. Desktop 76 px high, mobile 60 px.
 export function AppHeader({
@@ -29,13 +39,7 @@ export function AppHeader({
       <div className="flex items-center gap-2">
         {extra}
         <LanguageSwitch lang={lang} />
-        {signedIn ? (
-          <form action="/auth/signout" method="post">
-            <button type="submit" className={buttonClass("ghostLg")}>
-              {t(lang, "Z20.nav.signOut")}
-            </button>
-          </form>
-        ) : null}
+        {signedIn ? <SignOutForm lang={lang} /> : null}
       </div>
     </header>
   );
