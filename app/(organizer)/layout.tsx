@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { AppHeader } from "@/components/layout/app-header";
+import { Footer } from "@/components/layout/footer";
 import { requireAccess } from "@/lib/auth/server";
+import { t } from "@/lib/i18n";
+import { getLang } from "@/lib/i18n/server";
 import { countOpenReviews } from "@/lib/profile/founder";
 import { createClient } from "@/lib/supabase/server";
 
@@ -16,6 +20,7 @@ export default async function OrganizerLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const access = await requireAccess("/organizer");
+  const lang = await getLang();
 
   // The founder gets a direct way to the review list, with the number of
   // profiles that wait for a decision.
@@ -24,30 +29,25 @@ export default async function OrganizerLayout({
     : undefined;
 
   return (
-    <div className="min-h-screen">
-      <header className="border-border border-b">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <span className="text-sm font-medium tracking-[0.16em] uppercase">
-            DISKOE Organizer
-          </span>
-          <div className="flex items-center gap-6">
-            {access.isFounder ? (
-              <Link href="/internal/approvals" className="text-sm font-medium">
-                Prüfung{typeof open === "number" ? ` (${open})` : ""}
-              </Link>
-            ) : null}
-            <form action="/auth/signout" method="post">
-              <button
-                type="submit"
-                className="text-muted-foreground focus-visible:outline-ring text-sm underline focus-visible:outline-2 focus-visible:outline-offset-2"
-              >
-                Abmelden
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
-      {children}
+    <div className="flex min-h-screen flex-col">
+      <AppHeader
+        lang={lang}
+        signedIn
+        homeHref="/organizer"
+        extra={
+          access.isFounder ? (
+            <Link
+              href="/internal/approvals"
+              className="focus-visible:outline-ring mr-2 flex min-h-11 items-center text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              {t(lang, "Z20.nav.review")}
+              {typeof open === "number" ? ` (${open})` : ""}
+            </Link>
+          ) : null
+        }
+      />
+      <div className="flex-1">{children}</div>
+      <Footer lang={lang} />
     </div>
   );
 }

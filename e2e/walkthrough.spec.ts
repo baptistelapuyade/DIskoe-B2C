@@ -7,6 +7,7 @@ import {
   waitForMail,
 } from "./support/inbucket";
 import { makeFounder, provisionAs, userIdByEmail } from "./support/seed";
+import { germanContext } from "./support/language";
 
 // One browser window, one video. The whole profile flow is played through the
 // user interface, with a real sign-out and sign-in at every change of role, so
@@ -76,7 +77,7 @@ test("the whole profile flow, from the first entry to the live profile", async (
 }) => {
   test.setTimeout(360_000);
 
-  const context = await browser.newContext({
+  const context = await germanContext(browser, {
     baseURL: BASE_URL,
     viewport: { width: 1280, height: 800 },
     recordVideo: { dir: VIDEO_DIR, size: { width: 1280, height: 800 } },

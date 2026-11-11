@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 import { clearMailbox, waitForCode } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
+import { germanContext } from "./support/language";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the private
 // event draft (Slice 4) through the Figma screens: Eventstart, Editor,
@@ -64,7 +65,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
 }) => {
   test.setTimeout(300_000);
 
-  const context = await browser.newContext({
+  const context = await germanContext(browser, {
     baseURL: BASE_URL,
     viewport: { width: 1128, height: 900 },
   });
@@ -74,7 +75,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await signInWithCode(page, emails.ownerA);
   await page.getByRole("button", { name: "Abmelden" }).click();
   await page.waitForURL("**/login", SLOW);
-  const otherContext = await browser.newContext({ baseURL: BASE_URL });
+  const otherContext = await germanContext(browser, { baseURL: BASE_URL });
   const otherPage = await otherContext.newPage();
   await signInWithCode(otherPage, emails.ownerB);
   await signInWithCode(page, emails.founder);

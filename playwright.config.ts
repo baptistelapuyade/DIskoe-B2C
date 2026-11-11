@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+import { GERMAN_COOKIE } from "./e2e/support/language";
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -9,6 +11,9 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:3000",
     trace: "on-first-retry",
+    // Platform copy is English by default; the specs check German texts, so
+    // their pages start with the German choice (see e2e/support/language.ts).
+    storageState: { cookies: [GERMAN_COOKIE], origins: [] },
   },
   projects: [
     {

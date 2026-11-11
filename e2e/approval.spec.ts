@@ -16,6 +16,7 @@ import {
   waitForMail,
 } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
+import { germanContext } from "./support/language";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the
 // founder's decision (approval that publishes at once, or a question), the copy
@@ -160,7 +161,7 @@ test.describe("first approval, publication and public image", () => {
     test.setTimeout(300_000);
 
     for (const [key, email] of Object.entries(emails)) {
-      const context = await browser.newContext({ baseURL: BASE_URL });
+      const context = await germanContext(browser, { baseURL: BASE_URL });
       const page = await context.newPage();
       await signInWithCode(page, email);
       states[key] = await context.storageState();
@@ -181,7 +182,7 @@ test.describe("first approval, publication and public image", () => {
   });
 
   async function pageFor(browser: Browser, key: string) {
-    const context = await browser.newContext({
+    const context = await germanContext(browser, {
       baseURL: BASE_URL,
       storageState: states[key],
     });

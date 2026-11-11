@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
+import { getLang } from "@/lib/i18n/server";
 import { indexingEnabled } from "@/lib/public/site";
 
 import "./globals.css";
@@ -24,13 +25,17 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function RootLayout({
+// The document language follows the language choice (cookie `lang`, default
+// English). Every page already renders per request, so reading the cookie here
+// costs no caching.
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = await getLang();
   return (
-    <html lang="de">
+    <html lang={lang}>
       <body className={spaceGrotesk.variable}>{children}</body>
     </html>
   );

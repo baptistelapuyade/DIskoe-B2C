@@ -11,6 +11,7 @@ import type { Database } from "../lib/db/types";
 
 import { clearMailbox, waitForCode, waitForLink } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
+import { germanContext } from "./support/language";
 
 // Needs the local Supabase stack (see the e2e-auth CI job and
 // docs/runbooks/supabase-auth-setup.md). Anyone can sign in; only the
@@ -47,7 +48,7 @@ async function signedInContext(
   states: Record<string, Awaited<ReturnType<BrowserContext["storageState"]>>>,
   key: string,
 ) {
-  return browser.newContext({ baseURL: BASE_URL, storageState: states[key] });
+  return germanContext(browser, { baseURL: BASE_URL, storageState: states[key] });
 }
 
 async function apiClientFor(email: string) {
@@ -85,7 +86,7 @@ test.describe("sign-in and organizer assignment", () => {
     // 1. Everyone signs in through the real UI. This creates the accounts and
     //    nothing else: no profile, no role.
     for (const [key, email] of Object.entries(emails)) {
-      const context = await browser.newContext({ baseURL: BASE_URL });
+      const context = await germanContext(browser, { baseURL: BASE_URL });
       const page = await context.newPage();
       await signInWithCode(page, email);
       states[key] = await context.storageState();
@@ -213,7 +214,7 @@ test.describe("sign-in and organizer assignment", () => {
   test("the e-mail link signs in and keeps the target inside the organizer area", async ({
     browser,
   }) => {
-    const context = await browser.newContext({ baseURL: BASE_URL });
+    const context = await germanContext(browser, { baseURL: BASE_URL });
     const page = await context.newPage();
 
     await clearMailbox(emails.ownerA);
@@ -239,6 +240,36 @@ test.describe("sign-in and organizer assignment", () => {
 
     expect(response.status()).toBe(303);
     expect(response.headers().location).toBe(`${BASE_URL}/login?error=link`);
+  });
+
+  test("the language switch changes the texts and is remembered", async ({
+    browser,
+  }) => {
+    const context = await signedInContext(browser, states, "ownerA");
+    const page = await context.newPage();
+
+    await page.goto("/organizer");
+    await expect(page.locator("html")).toHaveAttribute("lang", "de");
+    await expect(page.getByRole("button", { name: "Abmelden" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Impressum" })).toBeVisible();
+
+    await page.getByRole("button", { name: "EN" }).click();
+    await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Imprint" })).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+
+    // The choice is kept for the next visit.
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "EN" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+
+    await page.getByRole("button", { name: "DE" }).click();
+    await expect(page.getByRole("button", { name: "Abmelden" })).toBeVisible();
+
+    await context.close();
   });
 
   test("signing out ends the session", async ({ browser }) => {
