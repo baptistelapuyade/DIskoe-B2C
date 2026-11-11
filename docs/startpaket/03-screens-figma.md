@@ -83,6 +83,8 @@ Farben, Schrift und Abstände gelten nach den DISKOE-Tokens (`04-design-tokens.m
 
 **Seite 10 ist nach Bereichen geordnet:** Komponenten-Sets liegen nebeneinander und brechen in Zeilen um, Bereiche liegen in einem Raster. In Sets mit Viewport-Eigenschaft steht Mobil rechts neben Desktop, jede Zeile ist ein Zustand. Neue Komponenten kommen in den passenden Bereich, nicht lose auf die Seite. Auf der Seite liegt links oben die Legende „DS · Legende“ (2952:1846). Alle Komponenten-IDs sind unverändert, Instanzen auf anderen Seiten bleiben verbunden.
 
+**Zustände Hover und Fokus (Founder-Freigabe 11.11.2026, „Hover/Fokus: ja“; Claude, in Figma):** Fokus ist eine Regel (Ring 3 px Iris außen, wie beim Eingabefeld, `09-ux-framework.md` §5.2). Zusätzlich haben die bedienbaren Komponenten Varianten **Default / Hover / Fokus**: `DISKOE / Tabs` (2453:637), `Show More` (2731:51007), `Profile Link Card` (2733:42004), `Event Card` (2487:42626), `Event Row` (2479:801), `Profile Event Row` (2733:41973), `Image Upload` (2454:391) und `Image Crop` (3000:12571) sowie neu `DISKOE / Textlink` (3183:93874). Die Eigenschaft heißt `State`, bei `Show More` und `Image Upload` `Interaction` (dort belegt `State` schon Collapsed/Expanded bzw. Empty/Filled). Hover (Vorschlag): dunklerer Rand (`Profile Link Card`, `Event Card`, `Event Row`, `Image Upload`, `Image Crop`), Hover-Fläche (`Tabs`, `Profile Event Row`), 88 % Deckkraft (`Show More`), Textfarbe wie Haupttext (`Textlink`). Größe und Layout bleiben je Zustand gleich; Hover und Fokus werden nicht je Screen gezeichnet. Eingabefeld und Auswahl (`DISKOE / Input`, `Select`) haben seit 11.11. eine Mindesthöhe von 44 px.
+
 | Bereich (Section) | Knoten | Inhalt |
 |---|---|---|
 | DS-0 Stilübersicht (Frame, Referenz) | 2454:392 | Farben, Typografie, Beispiele (vorher „DISKOE / Review“) |
@@ -127,7 +129,7 @@ Neu vergeben: `ORG-91` (Programm und Besuch, 2688:9788), `ORG-92a`–`l` (Preis 
 | ENTWURF · W5 · PUB-11, PUB-08, PUB-09 | 2747:43479, 2730:56314, 2758:43625 | Venue-Profil, Künstler:innen-Seite, Künstler-Zustände |
 | REGELN · PUB-12 Profiltypen | 2753:52940 | Vergleich Kopf, Kennzeichen, Karten |
 | ENTWURF · W6 · PUB-13 Profilgestaltung | 2769:44367 | Richtungen und Paletten |
-| GELTEND · W3 · PUB-17 Follow-Platzierung | 2839:47447 | Entscheidung 26.10.2026, 17a–e |
+| GELTEND · W3 · PUB-17 Follow-Platzierung | 2839:47447 | Entscheidung 26.10.2026, 17a und 17b (17c–e am 11.11.2026 ins Archiv, Section 3183:21833 auf Seite 90) |
 
 Aufgelöst am 04.11.2026: `PUB-01`- und `PUB-19`-Sammelrahmen (Zustände jetzt `PUB-01b`–`e`), `PUB-20`–`24` (jetzt `PUB-01h`–`l`), `PUB-14`/`15` (jetzt `PUB-01f`/`g`), `PUB-04`/`05` (jetzt in `PUB-03`), `PUB-10` (jetzt `PUB-06c`/`d`), `PUB-16`-Rahmen, `PUB-18`-Rahmen. Offen: `PUB-01h`–`l` überschneiden sich mit `b`–`d`; beim Screen-Review klären, welche Fassung gilt.
 

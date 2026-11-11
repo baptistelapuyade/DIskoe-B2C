@@ -151,7 +151,7 @@ Wir bauen so, wie der erste echte Organizer die Alpha durchläuft (beschlossen 0
 | 5. Netzwerk | Verknüpfte Felder, Venue-Profil mit Bestätigung und Ortsbindung, Einladungen, Artist-Seiten, Briefing-Link | Ein Event mit Venue und Line-up läuft vom Einladungslink bis zur Bestätigung | 82–141 h |
 | 6. Profil-Editor | Module mit Empfehlungen, dann Gestaltung, dann Eventgestaltung | Ein Profil wird gestaltet, veröffentlicht und auf neue Events angewendet | 48–86 h |
 
-**Beschlossen (Founder, 05.11.):** Die Wellen werden in dieser Reihenfolge umgesetzt. Die Alpha wird trotzdem erst nach Welle 6 geöffnet, weil das Coding meist schneller geht als geplant. Vor der Öffnung müssen Produktionsumgebung, Rechtstexte, Impressumsdaten und Zustellbarkeit stehen; das Produktions-Deployment braucht eine eigene Freigabe. Die Notion-Schätzung nennt selbst, dass sie nach dem ersten Durchstich neu geprüft werden soll. Die Neuschätzung ist fällig und kommt vor Welle 3.
+**Beschlossen (Founder, 05.11.):** Die Wellen werden in dieser Reihenfolge umgesetzt. Die Alpha wird trotzdem erst nach Welle 6 geöffnet, weil das Coding meist schneller geht als geplant. Vor der Öffnung müssen Produktionsumgebung, Rechtstexte, Impressumsdaten und Zustellbarkeit stehen; das Produktions-Deployment braucht eine eigene Freigabe. Die Notion-Schätzung nennt selbst, dass sie nach dem ersten Durchstich neu geprüft werden soll. Die Neuschätzung ist fällig und kommt vor Welle 3. **Entfällt (Founder, 11.11.2026):** Es gibt keine Neuschätzung der Stunden.
 
 ## Entscheidungen und offene Punkte
 

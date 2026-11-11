@@ -273,10 +273,10 @@ Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 
 **Offen:**
 1. ~~Editor-UX-Punkte 1–8~~ **Erledigt durch Verfahren (Founder, 05.11., 14:50):** Die Liste aus dem Test vom 04.11. ist nicht mehr auffindbar. Der Eventeditor (ORG-B) wird in Welle 1 Screen für Screen mit diesem Framework durchgearbeitet; Funde werden dabei sofort in Repo-Doku festgehalten (je Screen ein Review-Protokoll in `docs/reviews/`) und, wenn sie allgemein sind, als neue UX-Regel aufgenommen.
-2. **Maße (§5.2):** Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen.
-3. ~~Tippziele~~ **Entschieden (Founder, 05.11., 16:25):** Buttons 44 px auf allen Viewports. Offen bleibt das Eingabefeld (36 px in Figma und Code): ebenfalls 44 px?
-4. **Barrierefreiheitsstärkungsgesetz:** Prüfung, ob es gilt, vor dem Alpha-Start.
-5. **Branch-Schutz:** Die CI-Prüfung (§7.8) in GitHub als erforderlichen Status für `main` eintragen (Founder).
+2. **Maße (§5.2):** Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen (Welle 6; Founder 11.11.: die Gestaltung bleibt im Alpha-Umfang, alle Wellen werden vor der Alpha entwickelt).
+3. ~~Tippziele~~ **Entschieden (Founder, 05.11., 16:25):** Buttons 44 px auf allen Viewports. **Eingabefeld: ebenfalls 44 px (Founder, 11.11.2026)**; Komponenten `DISKOE / Input`, `Select`, `Textarea` (Seite 10) und `components/ui` im Code werden angepasst (Code mit Welle 1).
+4. **Barrierefreiheitsstärkungsgesetz:** Prüfung, ob es gilt, vor dem Alpha-Start. Founder 11.11.: „ja bitte“, Claude recherchiert. **Befund 11.11. (keine Rechtsberatung):** Das Gesetz erfasst Dienstleistungen im elektronischen Geschäftsverkehr, also digitale Dienste, die auf Anfrage eines Verbrauchers erbracht werden, um einen Verbrauchervertrag abzuschließen (§ 1 Abs. 3, § 2 Nr. 26 BFSG). Kleinstunternehmen (weniger als 10 Beschäftigte und höchstens 2 Mio. € Jahresumsatz oder Bilanzsumme, § 2 Nr. 17) sind bei Dienstleistungen ausgenommen (§ 3 Abs. 3). Die Alpha hat weder Ticketing noch Billing noch Verträge mit Verbrauchern, die Organizer sind gewerblich oder selbständig tätig. Einschätzung: Pflicht in der Alpha unwahrscheinlich, vor Billing/Plus und vor einer Skalierung erneut und mit juristischer Prüfung klären. Die Anforderungen dieses Frameworks (Kontrast, Fokus, Tastatur, Labels, 44 px) bleiben unabhängig davon Ziel.
+5. **Branch-Schutz:** Die CI-Prüfung (§7.8) in GitHub als erforderlichen Status für `main` eintragen. **Geprüft 11.11.:** Nicht möglich, solange das Repo privat ist und kein GitHub Pro besteht (API: HTTP 403 „Upgrade to GitHub Pro or make this repository public“). Bis dahin merged der Founder nur bei grüner CI. Pro wäre ein kostenpflichtiger Dienst und braucht seine Entscheidung.
 
 ## 9. Quellen
 - Nielsen Norman Group: 10 Usability Heuristics; Formularrichtlinien.
