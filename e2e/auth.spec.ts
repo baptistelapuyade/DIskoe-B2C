@@ -38,7 +38,7 @@ async function signInWithCode(page: Page, email: string) {
   await page.getByRole("button", { name: "Code senden" }).click();
 
   const code = await waitForCode(email);
-  await page.getByLabel("Code", { exact: true }).fill(code);
+  await page.getByLabel("Code aus der E-Mail").fill(code);
   await page.getByRole("button", { name: "Anmelden", exact: true }).click();
   await page.waitForURL("**/organizer");
 }
@@ -121,8 +121,68 @@ test.describe("sign-in and organizer assignment", () => {
     await page.getByLabel("E-Mail-Adresse").fill("not-an-address");
     await page.getByRole("button", { name: "Code senden" }).click();
     await expect(
-      page.getByText("Bitte gib eine gültige E-Mail-Adresse ein."),
+      page.getByText("Das ist keine vollständige E-Mail-Adresse. Prüfe sie."),
     ).toBeVisible();
+  });
+
+  test("a wrong code shows the error and keeps the address (ORG-97)", async ({
+    page,
+  }) => {
+    const email = `wrong-${run}@example.test`;
+    await clearMailbox(email);
+    await page.goto("/login");
+    await page.getByLabel("E-Mail-Adresse").fill(email);
+    await page.getByRole("button", { name: "Code senden" }).click();
+    await expect(page.getByText(email)).toBeVisible();
+
+    await page.getByLabel("Code aus der E-Mail").fill("000000");
+    await page.getByRole("button", { name: "Anmelden", exact: true }).click();
+    await expect(
+      page.getByText("Der Code stimmt nicht oder ist abgelaufen."),
+    ).toBeVisible();
+    await expect(page.getByText(email)).toBeVisible();
+    await expect(page.getByLabel("Code aus der E-Mail")).toBeEnabled();
+  });
+
+  test("five wrong codes lock the sign-in for ten minutes (ORG-02b)", async ({
+    page,
+  }) => {
+    const email = `locked-${run}@example.test`;
+    await clearMailbox(email);
+    await page.goto("/login");
+    await page.getByLabel("E-Mail-Adresse").fill(email);
+    await page.getByRole("button", { name: "Code senden" }).click();
+    await expect(page.getByLabel("Code aus der E-Mail")).toBeVisible();
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      await page.getByLabel("Code aus der E-Mail").fill("000000");
+      await page.getByRole("button", { name: "Anmelden", exact: true }).click();
+      if (attempt < 4) {
+        await expect(
+          page.getByText("Der Code stimmt nicht oder ist abgelaufen."),
+        ).toBeVisible();
+      }
+    }
+
+    await expect(page.getByText("Zu viele falsche Codes.")).toBeVisible();
+    await expect(page.getByLabel("Code aus der E-Mail")).toBeDisabled();
+    await expect(
+      page.getByRole("button", { name: "Anmelden", exact: true }),
+    ).toBeDisabled();
+  });
+
+  test("an expired link leads to a new code (ORG-99)", async ({ page }) => {
+    const email = `expired-${run}@example.test`;
+    await clearMailbox(email);
+    await page.goto("/login?error=link");
+    await expect(
+      page.getByRole("heading", { name: "Dieser Link gilt nicht mehr" }),
+    ).toBeVisible();
+
+    await page.getByLabel("E-Mail-Adresse").fill(email);
+    await page.getByRole("button", { name: "Neuen Code senden" }).click();
+    await expect(page.getByLabel("Code aus der E-Mail")).toBeVisible();
+    await expect(page.getByText(email)).toBeVisible();
   });
 
   test("a signed-in user without assignment gets no organizer rights", async ({
@@ -221,7 +281,7 @@ test.describe("sign-in and organizer assignment", () => {
     await page.goto("/login");
     await page.getByLabel("E-Mail-Adresse").fill(emails.ownerA);
     await page.getByRole("button", { name: "Code senden" }).click();
-    await expect(page.getByLabel("Code", { exact: true })).toBeVisible();
+    await expect(page.getByLabel("Code aus der E-Mail")).toBeVisible();
 
     await page.goto(await waitForLink(emails.ownerA));
     await expect(page).toHaveURL(`${BASE_URL}/organizer`);

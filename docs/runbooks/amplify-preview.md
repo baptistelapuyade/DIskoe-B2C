@@ -17,6 +17,7 @@ Diese Anleitung ist vorbereitet, aber noch nicht durchlaufen. Dass Next.js 15.5.
 | `NEXT_PUBLIC_SUPABASE_URL` | Pflicht | API-URL des Dev-Projekts (Supabase → Project Settings → API) |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Pflicht | Publishable Key des Dev-Projekts. Nie einen Service-Role-Key eintragen |
 | `NEXT_PUBLIC_SITE_URL` | Pflicht | Adresse des Previews, ohne Schrägstrich am Ende |
+| `AUTH_ATTEMPT_PEPPER` | Pflicht für die Sperre nach falschen Codes | Zufälliger Wert, mindestens 16 Zeichen (z. B. 32 Bytes hex), nur serverseitig. Er schützt den Schlüssel, unter dem falsche Anmeldecodes gezählt werden (`ORG-02b`). Fehlt er, ist die Zählung in Produktion/Preview aus und es gelten nur die Grenzen von Supabase |
 | `SITE_INDEXING` | **nicht setzen** | Nur in Produktion `on`; ohne bleibt das Preview für Suchmaschinen zu |
 | `MAIL_SMTP_HOST`, `MAIL_SMTP_PORT`, `MAIL_SMTP_USER`, `MAIL_SMTP_PASSWORD`, `MAIL_FROM` | zunächst leer | Systemmails der App (Details: `system-mails.md`). Ohne sie sendet die App nichts; die Prüfseite sagt „Der Mailversand ist hier nicht eingerichtet“. Anmeldecodes verschickt Supabase Auth selbst |
 | `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `NEXT_PUBLIC_SENTRY_ENVIRONMENT` | optional | Monitoring, EU-Projekt; `…ENVIRONMENT=preview` |

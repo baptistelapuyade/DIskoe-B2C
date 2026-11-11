@@ -16,6 +16,20 @@ Jeder kann sich per E-Mail anmelden (offene Alpha, kein Testerlimit). Die Anmeld
 3. **Mailversand:** Ohne eigenes SMTP ist die Vorlage nicht editierbar, es kommen nur Mails an Team-Adressen an und das Limit ist sehr niedrig. Deshalb läuft das Dev-Projekt über SES (siehe unten).
 4. **Vorlagen:** Vorlagen aus `supabase/templates/magic_link.html` und `confirmation.html` in **Email Templates** (Magic link und Confirm sign up) übernehmen. Beide enthalten `{{ .Token }}` und `{{ .ConfirmationURL }}`.
 
+## Werte im gehosteten Dev-Projekt (Founder, Dashboard; Stand 2026-11-11)
+
+Die Anmeldung nach Figma (`ORG-01` bis `ORG-99`) setzt zwei Werte voraus, die im Dashboard gelten, nicht nur in `supabase/config.toml`:
+
+1. **Authentication → Sign In / Providers → Email → Email OTP Expiration: 600 Sekunden** (Beschluss: der Code gilt 10 Minuten, siehe `MAIL-01`). Vorher stand 3600.
+2. **Authentication → Rate Limits → Mindestabstand zwischen Mails an dieselbe Adresse: 60 Sekunden** (Arbeitswert; die Anmeldeseite sperrt „Neuen Code senden“ 60 Sekunden lang, damit der Nutzer nie in die Grenze des Anbieters läuft).
+3. **Vorlagen „Magic link“ und „Confirm sign up“ und Betreff** aus `supabase/templates/*.html` bzw. `config.toml` neu übernehmen (zweisprachig, siehe unten).
+
+Lokal und in der CI setzt `config.toml` den Code auf 600 Sekunden, den Mindestabstand aber auf 1 Sekunde, damit Tests mehrfach einen Code für dieselbe Adresse anfordern können.
+
+**Sperre nach falschen Codes:** fünf falsche Codes, danach zehn Minuten Sperre (`ORG-02b`). Der Zähler liegt in `public.auth_code_attempts` (Migration `20261111120000_auth_code_attempts.sql`), Schlüssel ist ein HMAC der Adresse mit `AUTH_ATTEMPT_PEPPER` (siehe `amplify-preview.md`). Das ist eine Nutzerführung, keine Sicherheitsgrenze: wer den öffentlichen Schlüssel hat, kann Supabase Auth direkt aufrufen. Den Schutz gegen Raten leisten die Rate Limits des Anbieters (Token-Prüfungen je Zeit und IP, im Dashboard unter Rate Limits).
+
+**Sprache der Mail:** Supabase füllt eine Vorlage für alle Sprachen. `MAIL-01` steht deshalb zweisprachig in einer Mail (Englisch zuerst, Deutsch darunter). Eine Mail in der Sprache der Anmeldeseite braucht den Versand durch die App selbst; das ist nicht gebaut.
+
 ## Amazon SES (eingerichtet am 2026-10-26)
 
 - Region `eu-central-1` (Frankfurt). Domain-Identität `diskoe.world` per Easy DKIM (drei CNAME-Einträge bei United Domains) verifiziert; DMARC als TXT `_dmarc` mit `v=DMARC1; p=none;` (nur Beobachtung).

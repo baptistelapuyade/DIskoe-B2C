@@ -87,8 +87,12 @@
   --font-sans: var(--font-space-grotesk);
 }
 
-* {
-  border-color: var(--border);
+/* In the base layer, so that colour utilities such as border-border-strong or
+   border-error win. Unlayered, this rule beat every utility. */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
 }
 
 body {

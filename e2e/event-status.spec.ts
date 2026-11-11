@@ -206,7 +206,7 @@ test.describe("cancel and reschedule a live event", () => {
     await page.goto("/login");
     await page.getByLabel("E-Mail-Adresse").fill(email);
     await page.getByRole("button", { name: "Code senden" }).click();
-    await page.getByLabel("Code", { exact: true }).fill(await waitForCode(email));
+    await page.getByLabel("Code aus der E-Mail").fill(await waitForCode(email));
     await page.getByRole("button", { name: "Anmelden", exact: true }).click();
     await page.waitForURL("**/organizer");
     const state = await context.storageState();

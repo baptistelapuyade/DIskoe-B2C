@@ -42,16 +42,21 @@ token_verifications = 100
 [auth.email]
 enable_signup = true
 enable_confirmations = true
+# Local and CI keep one second so that tests can request codes for the same
+# address repeatedly. The hosted projects use 60 seconds (set in the dashboard,
+# see docs/runbooks/supabase-auth-setup.md); the sign-in screen waits 60 seconds
+# before it offers "Send a new code" again.
 max_frequency = "1s"
 otp_length = 6
-otp_expiry = 3600
+# Ten minutes (MAIL-01 says "10 minutes and only once").
+otp_expiry = 600
 
 # New users receive the "confirmation" template, returning users "magic_link".
 # Both carry the code ({{ .Token }}) and the link ({{ .ConfirmationURL }}).
 [auth.email.template.magic_link]
-subject = "Dein DISKOE-Anmeldecode"
+subject = "Your DISKOE sign-in code / Dein DISKOE-Anmeldecode"
 content_path = "./supabase/templates/magic_link.html"
 
 [auth.email.template.confirmation]
-subject = "Dein DISKOE-Anmeldecode"
+subject = "Your DISKOE sign-in code / Dein DISKOE-Anmeldecode"
 content_path = "./supabase/templates/confirmation.html"

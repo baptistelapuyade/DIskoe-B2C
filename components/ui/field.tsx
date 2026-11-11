@@ -5,12 +5,17 @@ import type { ReactNode } from "react";
 export const controlClass =
   "border-border-strong bg-input text-foreground block min-h-9 w-full rounded-lg border px-3 py-[7.5px] text-sm shadow-xs placeholder:text-muted-foreground";
 
+// Control of the v2 screens: 44 px high, 16 px text (framework §3.4, D3).
+export const controlClassLg =
+  "border-border-strong bg-input text-foreground placeholder:text-muted-foreground aria-invalid:border-error block min-h-11 w-full rounded-lg border px-3 py-[9.5px] text-base shadow-xs disabled:cursor-not-allowed disabled:opacity-60";
+
 export function Field({
   id,
   label,
   hint,
   error,
   className = "",
+  large = false,
   children,
 }: {
   id: string;
@@ -18,6 +23,8 @@ export function Field({
   hint?: string;
   error?: string;
   className?: string;
+  // v2 look: hints and errors at 14 px.
+  large?: boolean;
   children: (props: {
     id: string;
     "aria-describedby"?: string;
@@ -40,7 +47,10 @@ export function Field({
         "aria-invalid": error ? true : undefined,
       })}
       {hint ? (
-        <p id={`${id}-hint`} className="text-muted-foreground text-xs leading-4">
+        <p
+          id={`${id}-hint`}
+          className={`text-muted-foreground ${large ? "text-sm leading-5" : "text-xs leading-4"}`}
+        >
           {hint}
         </p>
       ) : null}

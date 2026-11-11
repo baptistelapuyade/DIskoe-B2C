@@ -786,6 +786,18 @@ export type Database = {
       }
     }
     Functions: {
+      auth_code_clear: {
+        Args: { p_key: string }
+        Returns: undefined
+      }
+      auth_code_fail: {
+        Args: { p_key: string }
+        Returns: string
+      }
+      auth_code_status: {
+        Args: { p_key: string }
+        Returns: string
+      }
       approve_first_event: {
         Args: { p_event_id: string; p_expected_draft_revision_id: string }
         Returns: undefined
