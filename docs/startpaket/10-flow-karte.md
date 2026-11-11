@@ -47,7 +47,7 @@ Section „Flow 1 Block 1“ (2965:6020). ORG-01 und ORG-02 sind seit 09.11. in 
 | ORG-103a | 2966:7696 | Startseite: Profil in Arbeit | Angaben ergänzen → `ORG-04` | |
 | ORG-103b | 2966:7908 | Profil fertig, erstes Event fehlt | Erstes Event anlegen → `EVT-00a`; Profil ansehen → `ORG-06` | |
 | ORG-103c | 2966:8194 | Bereit zum Einreichen | Vorschau ansehen und einreichen → `EIN-01a` | |
-| ORG-103d | 2966:8406 | In Prüfung | Eingereichtes ansehen → `PRF-02` | |
+| ORG-103d | 2966:8406 | In Prüfung | Eingereichtes ansehen → `PRF-02` (Ghost-Button, 11.11.) | Vorschlag offen: „Events“ in der Prüfung nur ansehen, Bearbeiten erst nach `PRF-03a` (Zurückziehen); Zustand „Events-Liste in Prüfung“ ist nicht gezeichnet |
 | ORG-103e | 2966:8648 | Rückfrage von DISKOE | Angabe korrigieren → `RFG-01a`/`b` | |
 | ORG-103f | 2965:7079 | Live | Profil teilen → `LIV-02`; Profil ansehen → `PUB-06a`; Weiteres Event anlegen → `EVT-00a` | |
 | ORG-103g | 2966:8862 | Live, Änderungen bereit | Vorschau ansehen und veröffentlichen → `LPA-03a`; Profil ansehen → `PUB-06a` | |
