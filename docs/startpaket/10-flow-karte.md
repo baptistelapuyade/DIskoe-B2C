@@ -30,7 +30,7 @@ Section „Flow 1 Block 1“ (2965:6020). ORG-01 und ORG-02 sind seit 09.11. in 
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
 |---|---|---|---|---|
 | ORG-01 (neu 09.11.) | 3095:107 (Mobil 3095:122) | E-Mail eingeben | Code senden → `ORG-96`; Fehler → `ORG-95` | Anmeldecode per `MAIL-01` |
-| ORG-95 | 2965:6022 | E-Mail ungültig | Code senden → `ORG-96` | Eingabe bleibt |
+| ORG-95 | 2965:6022 | E-Mail ungültig | Code senden → `ORG-96` | Eingabe bleibt; Fehlertext „Das ist keine vollständige E-Mail-Adresse. Prüfe sie.“ (11.11.) |
 | ORG-96 | 2966:6134 | Code wird gesendet | (Warten) → `ORG-02` | |
 | ORG-02 (neu 09.11.) | 3095:136 (Mobil 3095:153) | Code eingeben | Anmelden → Startseite je Stand, oder `ORG-100` ohne Profil; falsch → `ORG-97` | Sitzung beginnt |
 | ORG-01b (neu 10.11.) | 3113:32849 (Mobil 3113:33084) | Code senden fehlgeschlagen | Noch einmal versuchen → `ORG-96` | Muster M2/M3 |
