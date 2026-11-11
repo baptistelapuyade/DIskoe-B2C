@@ -34,10 +34,10 @@ Section „Flow 1 Block 1“ (2965:6020). ORG-01 und ORG-02 sind seit 09.11. in 
 | ORG-96 | 2966:6134 | Code wird gesendet | (Warten) → `ORG-02` | |
 | ORG-02 (neu 09.11.) | 3095:136 (Mobil 3095:153) | Code eingeben | Anmelden → Startseite je Stand, oder `ORG-100` ohne Profil; falsch → `ORG-97` | Sitzung beginnt |
 | ORG-01b (neu 10.11.) | 3113:32849 (Mobil 3113:33084) | Code senden fehlgeschlagen | Noch einmal versuchen → `ORG-96` | Muster M2/M3 |
-| ORG-02b (neu 10.11., Vorschlag) | 3113:33228 (Mobil 3113:33400) | Zu viele falsche Codes | Neuen Code senden → `ORG-98`; Andere E-Mail-Adresse → `ORG-01` | zehn Minuten (Founder 10.11.); Sperrlogik im Code |
-| ORG-97 | 2965:6380 | Code falsch oder abgelaufen | Anmelden → Startseite; Neuen Code senden → `ORG-98`; Andere E-Mail-Adresse → `ORG-01` | |
-| ORG-98 | 2966:6588 | Neuer Code gesendet | wie `ORG-97` | neue `MAIL-01` |
-| ORG-99 | 2966:7038 | Link abgelaufen | Neuen Code senden → `ORG-96` | Link aus `MAIL-01` |
+| ORG-02b (neu 10.11., Vorschlag) | 3113:33228 (Mobil 3113:33400) | Zu viele falsche Codes | Neuen Code senden → `ORG-98`; Andere E-Mail-Adresse → `ORG-01` | zehn Minuten (Founder 10.11.); Sperrlogik im Code; Codefeld deaktiviert, kein „Zurück“ (11.11.) |
+| ORG-97 | 2965:6380 | Code falsch oder abgelaufen | Anmelden → Startseite; Neuen Code senden → `ORG-98`; Andere E-Mail-Adresse → `ORG-01` | kein „Zurück“ (führt zum selben Ziel wie „Andere E-Mail-Adresse“, 11.11.) |
+| ORG-98 | 2966:6588 | Neuer Code gesendet | wie `ORG-97` | neue `MAIL-01`; Wartezeit für den nächsten Code 60 Sekunden (Arbeitswert, 11.11.) |
+| ORG-99 | 2966:7038 | Link abgelaufen | Neuen Code senden → `ORG-96` | Link aus `MAIL-01`; kein „Zurück“ (Einstieg aus der Mail); E-Mail-Feld nur vorbefüllt, wenn der Server die Adresse zum Link kennt, sonst leer (11.11.) |
 | ORG-100 | 2966:7314 | Angemeldet, noch kein Profil | Profil anlegen → `ORG-52` | |
 | ORG-101 | 2966:7498 | Einladung vor der Anmeldung | Code senden → `ORG-96`, danach `ORG-02` → `ORG-102` | Einladungsmail ist nicht freigegeben, der Founder schickt den Link selbst |
 | ORG-102 | 2965:6806 | Einladung: Entwurf übernehmen | Profil prüfen und ergänzen → `ORG-04` (Veranstalter) oder `ORG-07` (Venue); Das ist nicht mein Projekt → `ORG-102a` | Profil wird dem Login zugeordnet (`FDB-07`) |
