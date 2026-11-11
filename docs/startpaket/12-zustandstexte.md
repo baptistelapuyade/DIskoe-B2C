@@ -28,7 +28,7 @@
 |---|---|---|---|---|---|
 | Z01 | Feldfehler | Fehler | Bitte prüfe {eine Angabe / zwei Angaben / n Angaben}. | Ein Feld: `{Grund}` („Der Titel fehlt noch.“). Mehrere fehlend: „Die markierten Felder fehlen noch.“ Mehrere ungültig: „Die markierten Felder passen noch nicht.“ | Anzahl, Grund |
 | Z02 | Speichert, lädt hoch, sendet | Info | {Objekt} wird {gespeichert / hochgeladen / gesendet} … | Das dauert einen Moment. Bleib kurz auf dieser Seite. | Objekt, Verb |
-| Z03 | Aktion fehlgeschlagen | Fehler | Das {Aktion} hat nicht geklappt. | {Stand danach} Versuche es noch einmal. | Aktion (Speichern, Senden, Hochladen, Laden, Veröffentlichen, Absagen, Verschieben, Eintragen, Austreten, Sperren, Entsperren, Einreichen, Zurückziehen) |
+| Z03 | Aktion fehlgeschlagen | Fehler | Das {Aktion} hat nicht geklappt. | {Stand danach} Versuche es noch einmal. | Aktion (Speichern, Senden, Hochladen, Laden, Veröffentlichen, Absagen, Verschieben, Eintragen, Austreten, Sperren, Entsperren, Einreichen, Zurückziehen, Löschen) |
 | Z03a | wie Z03, Liste lädt nicht | Fehler | Das Laden hat nicht geklappt. | Das liegt nicht an dir. Versuche es noch einmal. | – |
 | Z03b | wie Z03, Entwurf wiederholt | Fehler | Das Speichern hat nicht geklappt. | {Stand danach} Versuche es noch einmal. Klappt es weiter nicht, schreib uns. | – |
 | Z04 | Keine Verbindung | Warnung | Keine Verbindung. | {Stand danach} Sobald du wieder online bist, versuche es noch einmal. | Stand danach |
@@ -55,7 +55,7 @@ Gleiche IDs, gleiche Regeln (Ton: du → „you“, kurz, aktiv; Fehler: erst wa
 |---|---|---|---|
 | Z01 | Please check {one entry / two entries / n entries}. | One field: `{reason}` („The title is missing.“). Several missing: „The marked fields are still missing.“ Several invalid: „The marked fields aren't right yet.“ | count, reason |
 | Z02 | {Object} is being {saved / uploaded / sent} … | This takes a moment. Stay on this page for a bit. | object, verb |
-| Z03 | {Action} didn't work. | {State afterwards} Try again. | Action (Saving, Sending, Uploading, Loading, Publishing, Cancelling, Rescheduling, Signing up, Leaving, Suspending, Unsuspending, Submitting, Withdrawing) |
+| Z03 | {Action} didn't work. | {State afterwards} Try again. | Action (Saving, Sending, Uploading, Loading, Publishing, Cancelling, Rescheduling, Signing up, Leaving, Suspending, Unsuspending, Submitting, Withdrawing, Deleting) |
 | Z03a | Loading didn't work. | That's not your fault. Try again. | – |
 | Z03b | Saving didn't work. | {State afterwards} Try again. If it keeps failing, write to us. | – |
 | Z04 | No connection. | {State afterwards} Once you're back online, try again. | state afterwards |
