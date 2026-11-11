@@ -39,10 +39,10 @@ Section „Flow 1 Block 1“ (2965:6020). ORG-01 und ORG-02 sind seit 09.11. in 
 | ORG-98 | 2966:6588 | Neuer Code gesendet | wie `ORG-97` | neue `MAIL-01`; Wartezeit für den nächsten Code 60 Sekunden (Arbeitswert, 11.11.) |
 | ORG-99 | 2966:7038 | Link abgelaufen | Neuen Code senden → `ORG-96` | Link aus `MAIL-01`; kein „Zurück“ (Einstieg aus der Mail); E-Mail-Feld nur vorbefüllt, wenn der Server die Adresse zum Link kennt, sonst leer (11.11.) |
 | ORG-100 | 2966:7314 | Angemeldet, noch kein Profil | Profil anlegen → `ORG-52` | |
-| ORG-101 | 2966:7498 | Einladung vor der Anmeldung | Code senden → `ORG-96`, danach `ORG-02` → `ORG-102` | Einladungsmail ist nicht freigegeben, der Founder schickt den Link selbst |
-| ORG-102 | 2965:6806 | Einladung: Entwurf übernehmen | Profil prüfen und ergänzen → `ORG-04` (Veranstalter) oder `ORG-07` (Venue); Das ist nicht mein Projekt → `ORG-102a` | Profil wird dem Login zugeordnet (`FDB-07`) |
-| ORG-102a (neu 09.11.) | 3096:48599 (Mobil 3096:48635) | Nicht dein Projekt: bestätigen (Seite, kein Dialog) | Ja, das ist nicht mein Projekt → `ORG-102b`; Fehler → `ORG-102c`; Zurück zur Einladung → `ORG-102` | Rückmeldung an DISKOE; Protokolleintrag; DISKOE löscht den Entwurf (Vorschlag) |
-| ORG-102b (neu 09.11.) | 3096:48669 (Mobil 3096:48705) | Rückmeldung gesendet | Eigenes Profil anlegen → `ORG-52`; Abmelden | Zugang bleibt bestehen, Profil wird nicht verknüpft |
+| ORG-101 | 2966:7498 | Einladung vor der Anmeldung | Code senden → `ORG-96`, danach `ORG-02` → `ORG-102` | Einladungsmail ist nicht freigegeben, der Founder schickt den Link selbst; E-Mail-Feld leer mit Platzhalter (die Einladung kennt die Adresse nicht, keine Adresse im Link; 11.11.) |
+| ORG-102 | 2965:6806 | Einladung: Entwurf übernehmen | Profil prüfen und ergänzen → `ORG-04` (Veranstalter) oder `ORG-07` (Venue); Das ist nicht mein Projekt → `ORG-102a` | Profil wird dem Login zugeordnet (`FDB-07`); „Quelle der Angaben“ kommt aus den Daten (kein Beispielvermerk, 11.11.) |
+| ORG-102a (neu 09.11.) | 3096:48599 (Mobil 3096:48635) | Nicht dein Projekt: bestätigen (Seite, kein Dialog) | Ja, das ist nicht mein Projekt → `ORG-102b`; Fehler → `ORG-102c`; Zurück zur Einladung → `ORG-102` | Rückmeldung an DISKOE; Protokolleintrag; DISKOE löscht den Entwurf (Vorschlag); Ton „wir“ statt „DISKOE“ (11.11.) |
+| ORG-102b (neu 09.11.) | 3096:48669 (Mobil 3096:48705) | Rückmeldung gesendet | Eigenes Profil anlegen → `ORG-52` | Zugang bleibt bestehen, Profil wird nicht verknüpft; „Abmelden“ nur in der Kopfzeile, kein zweiter Button (11.11.) |
 | ORG-102c (neu 09.11.) | 3096:48739 (Mobil 3096:48775) | Senden fehlgeschlagen | Noch einmal versuchen → `ORG-102b`; Zurück zur Einladung | |
 | ORG-103a | 2966:7696 | Startseite: Profil in Arbeit | Angaben ergänzen → `ORG-04` | |
 | ORG-103b | 2966:7908 | Profil fertig, erstes Event fehlt | Erstes Event anlegen → `EVT-00a`; Profil ansehen → `ORG-06` | |
