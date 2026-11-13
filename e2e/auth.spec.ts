@@ -199,6 +199,9 @@ test.describe("sign-in and organizer assignment", () => {
       page.getByRole("button", { name: /anlegen|erstellen/i }),
     ).toHaveCount(0);
     await expect(
+      page.getByRole("link", { name: "hello@diskoe.world" }),
+    ).toHaveAttribute("href", "mailto:hello@diskoe.world");
+    await expect(
       page.getByRole("link", { name: /anlegen|erstellen/i }),
     ).toHaveCount(0);
 

@@ -6,6 +6,7 @@ import type { ProfileHomeData } from "@/components/home/profile-card";
 import { AuthShell } from "@/components/layout/auth-shell";
 import { LinkButton } from "@/components/ui/button";
 import { requireAccess } from "@/lib/auth/server";
+import { CONTACT_EMAIL } from "@/lib/contact";
 import type { FirstEventState } from "@/lib/domain/home-state";
 import { loadOwnerEvents } from "@/lib/event/load";
 import { loadPublicationView } from "@/lib/event/publication";
@@ -41,9 +42,17 @@ export default async function OrganizerHome() {
             {t(lang, "Z22.noProfile.title")}
           </h1>
         </div>
-        <p className="text-muted-foreground text-base leading-6">
-          {t(lang, "Z22.noProfile.lead")}
-        </p>
+        <div className="flex flex-col gap-3">
+          <p className="text-muted-foreground text-base leading-6">
+            {t(lang, "Z22.noProfile.lead")}
+          </p>
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            className="focus-visible:outline-ring w-fit text-base leading-6 font-medium underline focus-visible:outline-2 focus-visible:outline-offset-2"
+          >
+            {CONTACT_EMAIL}
+          </a>
+        </div>
       </>
     );
 

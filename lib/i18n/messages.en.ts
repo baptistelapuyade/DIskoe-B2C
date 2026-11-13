@@ -53,7 +53,7 @@ export const en: Record<MessageId, string> = {
   "Z22.noProfile.eyebrow": "Signed in",
   "Z22.noProfile.title": "Your account has no profile yet",
   "Z22.noProfile.lead":
-    "You're signed in, but your account doesn't belong to a profile yet. Get in touch with DISKOE and we'll assign one to you.",
+    "You're signed in, but your account doesn't belong to a profile yet. Write to us and we'll assign one to you.",
   "Z22.home.title": "Your profile",
   "Z22.home.titleMany": "Your profiles",
   "Z22.home.lead":

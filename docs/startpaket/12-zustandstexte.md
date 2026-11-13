@@ -178,7 +178,7 @@ Deutsch aus den Figma-Frames, Englisch Vorschlag. Abweichungen vom Frame stehen 
 |---|---|---|---|
 | Z22.noProfile.eyebrow | Angemeldet | Signed in | ORG-100 |
 | Z22.noProfile.title | Dein Konto hat noch kein Profil | Your account has no profile yet | ORG-100 |
-| Z22.noProfile.lead | Du bist angemeldet, aber dein Konto gehört noch zu keinem Profil. Melde dich bei DISKOE, dann ordnen wir es dir zu. | You're signed in, but your account doesn't belong to a profile yet. Get in touch with DISKOE and we'll assign one to you. | ORG-100, **Abweichung vom Frame**: Der Frame verweist auf die Einladung und „Profil anlegen“ (`ORG-52`); beides kommt mit Welle 2. Bis dahin legt der Founder Profile an. Vorschlag, braucht Freigabe |
+| Z22.noProfile.lead | Du bist angemeldet, aber dein Konto gehört noch zu keinem Profil. Schreib uns, dann ordnen wir es dir zu. | You're signed in, but your account doesn't belong to a profile yet. Write to us and we'll assign one to you. | ORG-100, **Abweichung vom Frame**: Der Frame verweist auf die Einladung und „Profil anlegen“ (`ORG-52`); beides kommt mit Welle 2. Bis dahin legt der Founder Profile an. Vorschlag, braucht Freigabe. Darunter steht die Adresse `hello@diskoe.world` als Mail-Link (Founder 13.11., `lib/contact.ts`) |
 | Z22.home.title | Dein Profil | Your profile | ORG-103a bis g, ein Profil |
 | Z22.home.titleMany | Deine Profile | Your profiles | mehrere Profile (nicht in Figma, bisheriger Text) |
 | Z22.home.lead | Hier siehst du, was als Nächstes zu tun ist und was danach passiert. | Here you can see what to do next and what happens after that. | ORG-103a bis g |

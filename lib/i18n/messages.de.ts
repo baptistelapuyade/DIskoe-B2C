@@ -54,7 +54,7 @@ export const de = {
   "Z22.noProfile.eyebrow": "Angemeldet",
   "Z22.noProfile.title": "Dein Konto hat noch kein Profil",
   "Z22.noProfile.lead":
-    "Du bist angemeldet, aber dein Konto gehört noch zu keinem Profil. Melde dich bei DISKOE, dann ordnen wir es dir zu.",
+    "Du bist angemeldet, aber dein Konto gehört noch zu keinem Profil. Schreib uns, dann ordnen wir es dir zu.",
   "Z22.home.title": "Dein Profil",
   "Z22.home.titleMany": "Deine Profile",
   "Z22.home.lead":
