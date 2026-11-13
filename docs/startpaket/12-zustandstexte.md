@@ -216,7 +216,7 @@ Deutsch aus den Figma-Frames, Englisch Vorschlag. Abweichungen vom Frame stehen 
 | Z22.e.action | Angabe korrigieren | Correct the detail | ORG-103e |
 | Z22.f.message | Dein Profil und dein erstes Event sind live. | Your profile and your first event are live. | ORG-103f |
 | Z22.f.profileOnly | Dein Profil ist live. | Your profile is live. | ORG-103f, wenn noch kein Event veröffentlicht ist (kein Frame) |
-| Z22.f.hint | Teile den Link, damit Leute sehen, was bei dir los ist. Änderungen bleiben privat, bis du sie selbst veröffentlichst. | Share the link so people can see what's on. Changes stay private until you publish them yourself. | ORG-103f; Frame sagt „dein Programm“, hier „was bei dir los ist“ (Vorschlag, Frame nachziehen) |
+| Z22.f.hint | Teile den Link, damit Leute dein Programm sehen. Änderungen bleiben privat, bis du sie selbst veröffentlichst. | Share the link so people can see your programme. Changes stay private until you publish them yourself. | ORG-103f, Wortlaut des Frames (Founder 13.11.) |
 | Z22.f.share | Profil teilen | Share profile | ORG-103f, Hauptaktion (kopiert den Link) |
 | Z22.f.newEvent | Weiteres Event anlegen | Create another event | ORG-103f |
 | Z22.g.message | Du hast Änderungen, die noch nicht öffentlich sind. | You have changes that aren't public yet. | ORG-103g |
@@ -233,6 +233,8 @@ Deutsch aus den Figma-Frames, Englisch Vorschlag. Abweichungen vom Frame stehen 
 | Z22.events.untitled | Event ohne Titel | Untitled event | vorläufig, wie bisher |
 | Z22.events.published | Veröffentlicht | Published | vorläufig, wie bisher |
 | Z22.events.draft | Entwurf – privat | Draft – private | vorläufig, wie bisher |
+| Z22.events.inReview | In Prüfung | In review | vorläufig; Event, dessen Profil gerade geprüft wird, nur ansehen (Flow-Karte 103d) |
+| Z22.events.question | Rückfrage von DISKOE | Question from DISKOE | vorläufig; wie oben, bei Rückfrage |
 | Z22.events.new | Event anlegen | Create event | vorläufig, wie bisher |
 | Z22.share.copied | Link kopiert. | Link copied. | Profil teilen, Erfolg (Z11) |
 | Z22.share.failed | Das Kopieren hat nicht geklappt. Versuche es noch einmal. | Copying didn't work. Try again. | Profil teilen, Fehler (Z03) |

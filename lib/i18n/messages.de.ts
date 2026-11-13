@@ -102,7 +102,7 @@ export const de = {
   "Z22.f.message": "Dein Profil und dein erstes Event sind live.",
   "Z22.f.profileOnly": "Dein Profil ist live.",
   "Z22.f.hint":
-    "Teile den Link, damit Leute sehen, was bei dir los ist. Änderungen bleiben privat, bis du sie selbst veröffentlichst.",
+    "Teile den Link, damit Leute dein Programm sehen. Änderungen bleiben privat, bis du sie selbst veröffentlichst.",
   "Z22.f.share": "Profil teilen",
   "Z22.f.newEvent": "Weiteres Event anlegen",
   "Z22.g.message": "Du hast Änderungen, die noch nicht öffentlich sind.",
@@ -123,6 +123,8 @@ export const de = {
   "Z22.events.untitled": "Event ohne Titel",
   "Z22.events.published": "Veröffentlicht",
   "Z22.events.draft": "Entwurf – privat",
+  "Z22.events.inReview": "In Prüfung",
+  "Z22.events.question": "Rückfrage von DISKOE",
   "Z22.events.new": "Event anlegen",
   "Z22.share.copied": "Link kopiert.",
   "Z22.share.failed":

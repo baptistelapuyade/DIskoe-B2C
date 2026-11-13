@@ -100,7 +100,7 @@ export const en: Record<MessageId, string> = {
   "Z22.f.message": "Your profile and your first event are live.",
   "Z22.f.profileOnly": "Your profile is live.",
   "Z22.f.hint":
-    "Share the link so people can see what's on. Changes stay private until you publish them yourself.",
+    "Share the link so people can see your programme. Changes stay private until you publish them yourself.",
   "Z22.f.share": "Share profile",
   "Z22.f.newEvent": "Create another event",
   "Z22.g.message": "You have changes that aren't public yet.",
@@ -119,6 +119,8 @@ export const en: Record<MessageId, string> = {
   "Z22.events.untitled": "Untitled event",
   "Z22.events.published": "Published",
   "Z22.events.draft": "Draft – private",
+  "Z22.events.inReview": "In review",
+  "Z22.events.question": "Question from DISKOE",
   "Z22.events.new": "Create event",
   "Z22.share.copied": "Link copied.",
   "Z22.share.failed": "Copying didn't work. Try again.",

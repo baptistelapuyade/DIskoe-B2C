@@ -92,6 +92,19 @@ export default async function OrganizerHome() {
     }),
   );
 
+  // Events whose profile is being reviewed are view-only until the review
+  // ends (flow map, ORG-103d). Until the event list (EVL-01) exists, the
+  // interim list below applies this rule.
+  const reviewByProfile = new Map(
+    data.map((item) => [
+      item.view.profile.id,
+      !item.view.live &&
+      (item.view.status === "in_review" || item.view.status === "question")
+        ? item.view.status
+        : null,
+    ]),
+  );
+
   const liveIds = data
     .filter((item) => item.view.live)
     .map((item) => item.view.profile.id);
@@ -144,24 +157,37 @@ export default async function OrganizerHome() {
           </h2>
           {allEvents.length > 0 ? (
             <ul className="flex flex-col gap-2">
-              {allEvents.map((event) => (
-                <li key={event.id}>
-                  <Link
-                    href={`/organizer/events/${event.id}/${
-                      event.published ? "manage" : "edit"
-                    }`}
-                    className="underline"
-                  >
-                    {event.title ?? t(lang, "Z22.events.untitled")}
-                  </Link>{" "}
-                  <span className="text-muted-foreground text-sm">
-                    ·{" "}
-                    {event.published
-                      ? t(lang, "Z22.events.published")
-                      : t(lang, "Z22.events.draft")}
-                  </span>
-                </li>
-              ))}
+              {allEvents.map((event) => {
+                const review = event.published
+                  ? null
+                  : (reviewByProfile.get(event.organizerId) ?? null);
+                const target = event.published
+                  ? "manage"
+                  : review
+                    ? "review"
+                    : "edit";
+                const state = event.published
+                  ? t(lang, "Z22.events.published")
+                  : review === "question"
+                    ? t(lang, "Z22.events.question")
+                    : review
+                      ? t(lang, "Z22.events.inReview")
+                      : t(lang, "Z22.events.draft");
+
+                return (
+                  <li key={event.id}>
+                    <Link
+                      href={`/organizer/events/${event.id}/${target}`}
+                      className="underline"
+                    >
+                      {event.title ?? t(lang, "Z22.events.untitled")}
+                    </Link>{" "}
+                    <span className="text-muted-foreground text-sm">
+                      · {state}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p className="text-muted-foreground">
