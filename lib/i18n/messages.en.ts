@@ -24,6 +24,7 @@ export const en: Record<MessageId, string> = {
   "Z21.email.placeholder": "name@collective.example",
   "Z21.email.hint": "We'll send the code to this address.",
   "Z21.email.send": "Send code",
+  "Z21.email.retry": "Try again",
   "Z21.email.sending": "Sending code …",
   "Z21.email.invalid": "That isn't a complete email address. Check it.",
   "Z21.send.failed.title": "Sending didn't work.",

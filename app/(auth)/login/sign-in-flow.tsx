@@ -215,7 +215,9 @@ function Flow({
   const expired = linkExpired && request.status === "idle";
   const sendLabel = expired
     ? t(lang, "Z21.code.resend")
-    : t(lang, "Z21.email.send");
+    : failed
+      ? t(lang, "Z21.email.retry")
+      : t(lang, "Z21.email.send");
 
   return (
     <>

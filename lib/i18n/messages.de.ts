@@ -23,6 +23,7 @@ export const de = {
   "Z21.email.placeholder": "name@kollektiv.example",
   "Z21.email.hint": "Wir schicken den Code an diese Adresse.",
   "Z21.email.send": "Code senden",
+  "Z21.email.retry": "Noch einmal versuchen",
   "Z21.email.sending": "Code wird gesendet …",
   "Z21.email.invalid": "Das ist keine vollständige E-Mail-Adresse. Prüfe sie.",
   "Z21.send.failed.title": "Das Senden hat nicht geklappt.",

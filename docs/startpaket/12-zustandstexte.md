@@ -148,6 +148,7 @@ Deutsch aus den Figma-Frames, Englisch Vorschlag. Die Beispieladresse im Platzha
 | Z21.email.placeholder | name@kollektiv.example | name@collective.example | Platzhalter im Feld |
 | Z21.email.hint | Wir schicken den Code an diese Adresse. | We'll send the code to this address. | Hilfetext (ORG-01, 01b, 99 ohne) |
 | Z21.email.send | Code senden | Send code | Button |
+| Z21.email.retry | Noch einmal versuchen | Try again | Button in ORG-01b (Senden fehlgeschlagen), Button-Regel Z03; Founder 13.11.: Variante B statt „Code senden“ des Frames, Frame nachziehen |
 | Z21.email.sending | Code wird gesendet … | Sending code … | Button während des Sendens (ORG-96, Z02), deaktiviert |
 | Z21.email.invalid | Das ist keine vollständige E-Mail-Adresse. Prüfe sie. | That isn't a complete email address. Check it. | ORG-95, Fehlertext am Feld (Z01 Ein Feld) |
 | Z21.send.failed.title | Das Senden hat nicht geklappt. | Sending didn't work. | ORG-01b, Z03 mit Aktion „Senden“ |
