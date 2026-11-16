@@ -154,10 +154,23 @@ test.describe("sign-in and organizer assignment", () => {
     await page.getByRole("button", { name: "Code senden" }).click();
     await expect(page.getByLabel("Code aus der E-Mail")).toBeVisible();
 
+    const codeField = page.getByLabel("Code aus der E-Mail");
+    const submit = page.getByRole("button", { name: "Anmelden", exact: true });
+
     for (let attempt = 0; attempt < 5; attempt += 1) {
-      await page.getByLabel("Code aus der E-Mail").fill("000000");
-      await page.getByRole("button", { name: "Anmelden", exact: true }).click();
+      // Every check must finish before the next code is typed: the form
+      // resets when the check ends and the error text of the previous try is
+      // still on screen, so the text alone does not say the check is done.
+      const checked = page.waitForResponse(
+        (response) =>
+          response.request().method() === "POST" &&
+          new URL(response.url()).pathname === "/login",
+      );
+      await codeField.fill("000000");
+      await submit.click();
+      await checked;
       if (attempt < 4) {
+        await expect(submit).toBeEnabled();
         await expect(
           page.getByText("Der Code stimmt nicht oder ist abgelaufen."),
         ).toBeVisible();
