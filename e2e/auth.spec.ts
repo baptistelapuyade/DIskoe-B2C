@@ -329,7 +329,7 @@ test.describe("sign-in and organizer assignment", () => {
     await expect(page.getByRole("button", { name: "Abmelden" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Impressum" })).toBeVisible();
 
-    await page.getByRole("button", { name: "EN" }).click();
+    await page.getByRole("button", { name: "EN", exact: true }).click();
     await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Imprint" })).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
@@ -337,12 +337,11 @@ test.describe("sign-in and organizer assignment", () => {
     // The choice is kept for the next visit.
     await page.reload();
     await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "EN" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    await expect(
+      page.getByRole("button", { name: "EN", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
 
-    await page.getByRole("button", { name: "DE" }).click();
+    await page.getByRole("button", { name: "DE", exact: true }).click();
     await expect(page.getByRole("button", { name: "Abmelden" })).toBeVisible();
 
     await context.close();
