@@ -73,6 +73,7 @@ export async function sendProfileMail(
 
   let messageId: string | null = null;
   let success = false;
+  let failureCode: string | null = null;
 
   try {
     const transport = nodemailer.createTransport({
@@ -103,11 +104,8 @@ export async function sendProfileMail(
   } catch (error) {
     // Only the error code. The message of a transport error can contain the
     // address or server details.
-    const code =
-      error && typeof error === "object" && "code" in error
-        ? String((error as { code: unknown }).code).slice(0, 40)
-        : "unknown";
-    console.error(`Profile mail failed (${input.kind}, ${code})`);
+    failureCode = safeFailureCode(error);
+    console.error(`Profile mail failed (${input.kind}, ${failureCode})`);
   }
 
   // If recording the result fails, the log row stays "pending" and can be
@@ -118,6 +116,7 @@ export async function sendProfileMail(
     p_kind: input.kind,
     p_success: success,
     p_provider_message_id: messageId ?? undefined,
+    p_failure_code: failureCode ?? undefined,
   });
 
   if (finishError) {
@@ -125,6 +124,18 @@ export async function sendProfileMail(
   }
 
   return success ? "sent" : "failed";
+}
+
+// The short error code of the mail library (EAUTH, ETIMEDOUT, ...). The
+// database accepts only letters, digits, "_" and "-" (40 at most), so
+// anything else becomes "unknown". The message text of the error is never used:
+// it can contain the address or server details.
+export function safeFailureCode(error: unknown): string {
+  const raw =
+    error && typeof error === "object" && "code" in error
+      ? String((error as { code: unknown }).code)
+      : "";
+  return /^[A-Za-z0-9_-]{1,40}$/.test(raw) ? raw : "unknown";
 }
 
 // One sentence for the founder after an attempt.

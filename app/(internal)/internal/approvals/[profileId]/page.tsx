@@ -17,7 +17,11 @@ import {
   priceText,
   whenText,
 } from "@/lib/event/summary";
-import { loadFounderProfileView, mailText } from "@/lib/profile/founder";
+import {
+  loadFounderProfileView,
+  mailFailureHint,
+  mailText,
+} from "@/lib/profile/founder";
 import { createClient } from "@/lib/supabase/server";
 
 import { approveFirst, requestChanges, resendMail, retryImage } from "../actions";
@@ -201,6 +205,12 @@ export default async function ApprovalDetailPage({
               ? `${mailText(view.mail)}.`
               : "Noch keine Mail gesendet."}
           </p>
+          {view.mail?.status === "failed" &&
+          mailFailureHint(view.mail.failureCode) ? (
+            <p className="text-muted-foreground text-sm">
+              {mailFailureHint(view.mail.failureCode)}
+            </p>
+          ) : null}
           <ResendMailForm
             action={resendMail}
             profileId={profileId}

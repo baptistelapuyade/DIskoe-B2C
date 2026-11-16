@@ -383,6 +383,7 @@ export type Database = {
         Row: {
           attempts: number
           claimed_at: string
+          failure_code: string | null
           finished_at: string | null
           id: number
           kind: string
@@ -394,6 +395,7 @@ export type Database = {
         Insert: {
           attempts?: number
           claimed_at?: string
+          failure_code?: string | null
           finished_at?: string | null
           id?: never
           kind: string
@@ -405,6 +407,7 @@ export type Database = {
         Update: {
           attempts?: number
           claimed_at?: string
+          failure_code?: string | null
           finished_at?: string | null
           id?: never
           kind?: string
@@ -830,6 +833,7 @@ export type Database = {
       }
       finish_profile_mail: {
         Args: {
+          p_failure_code?: string
           p_kind: string
           p_profile_id: string
           p_provider_message_id?: string
