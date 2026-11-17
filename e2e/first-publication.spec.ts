@@ -10,6 +10,7 @@ import {
   waitForMail,
 } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
+import { germanContext } from "./support/language";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers Slice 5: the
 // first event is submitted together with the profile, the founder decides on
@@ -181,7 +182,7 @@ test.describe("first publication: profile and first event together", () => {
   test.beforeAll(async ({ browser }) => {
     test.setTimeout(300_000);
 
-    const context = await browser.newContext({ baseURL: BASE_URL });
+    const context = await germanContext(browser, { baseURL: BASE_URL });
     const page = await context.newPage();
     await clearMailbox(emails.founder);
     await page.goto("/login");
@@ -246,7 +247,7 @@ test.describe("first publication: profile and first event together", () => {
   });
 
   test("the founder sees profile, event and both images and asks a question", async ({ browser }) => {
-    const context = await browser.newContext({ baseURL: BASE_URL, storageState: founderState });
+    const context = await germanContext(browser, { baseURL: BASE_URL, storageState: founderState });
     const page = await context.newPage();
 
     await page.goto(`/internal/approvals/${profileId}`);
@@ -325,7 +326,7 @@ test.describe("first publication: profile and first event together", () => {
     });
     expect(again.error).toBeNull();
 
-    const context = await browser.newContext({ baseURL: BASE_URL, storageState: founderState });
+    const context = await germanContext(browser, { baseURL: BASE_URL, storageState: founderState });
     const page = await context.newPage();
     await clearMailbox(emails.owner);
 

@@ -117,6 +117,25 @@ Der Katalog deckt bisher nur Hinweisboxen ab. **Zweisprachig (Deutsch und Englis
 - **Größenordnung (Messung 10.11.):** in den aktuellen Entwurfs-Sections auf Seite 20 und 40 (seit dem Aufräumen vom 10.11. auch auf 30, 50, 60) stehen 13.750 Textebenen mit 1.959 verschiedenen Texten. Darin stecken viele Beispieldaten (Eventnamen, Orte, Uhrzeiten); die echten Oberflächentexte sind weniger, ihre Zahl ermittelt die Bestandsaufnahme beim Aufräumen.
 - **Vorgehen:** Texte werden je Welle in den Katalog aufgenommen (IDs ab Z20, nach Bereich gruppiert), jeweils mit Deutsch und Englisch, bevor die Welle gebaut wird. Die Figma-Frames führen Deutsch; die englische Fassung steht nur im Katalog. Mails stehen im Abschnitt „Mails MAIL-01 bis MAIL-14“ am Ende (Deutsch und Englisch, Vorschlag 11.11.2026).
 
+## Plattform-Rahmen (Z20 ff., Welle 1 Block 1, Stand 11.11.2026)
+**Status:** Deutsch aus den Figma-Frames (Section „Flow 1 Block 1“, Ready for dev), Englisch ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; im Code stehen sie in `lib/i18n/messages.de.ts` und `messages.en.ts` mit derselben ID (Punkte als Schlüsselpfad). Ein Test stellt sicher, dass beide Dateien dieselben IDs führen. Weitere Gruppen (Z21 Anmelden, Z22 Startseite) folgen mit dem jeweiligen Slice.
+
+| ID | Deutsch | English | Platzhalter / Ort |
+|---|---|---|---|
+| Z20.weg.title | Dein Weg | Your path | Weg Panel, Überschrift |
+| Z20.weg.step1 | Anmelden | Sign in | Weg Panel, Schritt 1 |
+| Z20.weg.step2 | Profil und erstes Event anlegen | Create your profile and first event | Weg Panel, Schritt 2 |
+| Z20.weg.step3 | Einreichen und freigeben lassen | Submit and get approved | Weg Panel, Schritt 3 |
+| Z20.weg.mobile | Schritt {n} von 3 · {name} | Step {n} of 3 · {name} | Weg Panel mobil |
+| Z20.progress.mobile | Schritt {n} von {total} · {name} | Step {n} of {total} · {name} | Fortschrittsleiste mobil |
+| Z20.lang.label | Sprache | Language | Beschriftung für Screenreader (Umschalter, „EN“ und „DE“ stehen unverändert) |
+| Z20.nav.signOut | Abmelden | Sign out | App Header |
+| Z20.legal.nav | Rechtliches | Legal | Beschriftung der Fußzeile für Screenreader |
+| Z20.legal.imprint | Impressum | Imprint | Fußzeile |
+| Z20.legal.privacy | Datenschutz | Privacy policy | Fußzeile (englisch wie in den Mails, `MF-ORG`) |
+| Z20.nav.review | Prüfung | Review | App Header, nur für den Founder; die Zahl der offenen Prüfungen steht in Klammern dahinter |
+| Z20.back | Zurück | Back | Anmeldeschritte |
+
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.
 

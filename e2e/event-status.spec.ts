@@ -5,6 +5,7 @@ import type { Database } from "../lib/db/types";
 
 import { clearMailbox, waitForCode } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
+import { germanContext } from "./support/language";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the rest of
 // Slice 5: a live event is cancelled, postponed without a date and then given a
@@ -199,7 +200,7 @@ test.describe("cancel and reschedule a live event", () => {
   let blocked: Ids;
 
   async function signIn(browser: Browser, email: string) {
-    const context = await browser.newContext({ baseURL: BASE_URL });
+    const context = await germanContext(browser, { baseURL: BASE_URL });
     const page = await context.newPage();
     await clearMailbox(email);
     await page.goto("/login");
@@ -323,7 +324,7 @@ test.describe("cancel and reschedule a live event", () => {
       `select published_revision_id from public.events where id = '${cancel.eventId}'`,
     );
 
-    const context = await browser.newContext({ baseURL: BASE_URL, storageState: ownerState });
+    const context = await germanContext(browser, { baseURL: BASE_URL, storageState: ownerState });
     const page = await context.newPage();
 
     await page.goto(`/organizer/events/${cancel.eventId}/manage`);
@@ -356,7 +357,7 @@ test.describe("cancel and reschedule a live event", () => {
   });
 
   test("postponing without a date, then giving a replacement date", async ({ browser }) => {
-    const context = await browser.newContext({ baseURL: BASE_URL, storageState: ownerState });
+    const context = await germanContext(browser, { baseURL: BASE_URL, storageState: ownerState });
     const page = await context.newPage();
 
     await page.goto(`/organizer/events/${move.eventId}/reschedule`);
@@ -397,7 +398,7 @@ test.describe("cancel and reschedule a live event", () => {
 
   test("a replacement date publishes no private changes and the draft takes the date", async ({ browser }) => {
     await privateChange(blocked, "Noch nicht veröffentlichte Beschreibung.");
-    const context = await browser.newContext({ baseURL: BASE_URL, storageState: ownerState });
+    const context = await germanContext(browser, { baseURL: BASE_URL, storageState: ownerState });
     const page = await context.newPage();
 
     await page.goto(`/organizer/events/${blocked.eventId}/reschedule`);
@@ -425,7 +426,7 @@ test.describe("cancel and reschedule a live event", () => {
   });
 
   test("someone else does not reach the pages", async ({ browser }) => {
-    const context = await browser.newContext({ baseURL: BASE_URL, storageState: founderState });
+    const context = await germanContext(browser, { baseURL: BASE_URL, storageState: founderState });
     const page = await context.newPage();
 
     for (const path of ["cancel", "reschedule"]) {
