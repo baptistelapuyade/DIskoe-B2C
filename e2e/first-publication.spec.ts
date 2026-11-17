@@ -188,7 +188,7 @@ test.describe("first publication: profile and first event together", () => {
     await page.goto("/login");
     await page.getByLabel("E-Mail-Adresse").fill(emails.founder);
     await page.getByRole("button", { name: "Code senden" }).click();
-    await page.getByLabel("Code", { exact: true }).fill(await waitForCode(emails.founder));
+    await page.getByLabel("Code aus der E-Mail").fill(await waitForCode(emails.founder));
     await page.getByRole("button", { name: "Anmelden", exact: true }).click();
     await page.waitForURL("**/organizer");
     founderState = await context.storageState();

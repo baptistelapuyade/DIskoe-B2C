@@ -118,7 +118,7 @@ Der Katalog deckt bisher nur Hinweisboxen ab. **Zweisprachig (Deutsch und Englis
 - **Vorgehen:** Texte werden je Welle in den Katalog aufgenommen (IDs ab Z20, nach Bereich gruppiert), jeweils mit Deutsch und Englisch, bevor die Welle gebaut wird. Die Figma-Frames führen Deutsch; die englische Fassung steht nur im Katalog. Mails stehen im Abschnitt „Mails MAIL-01 bis MAIL-14“ am Ende (Deutsch und Englisch, Vorschlag 11.11.2026).
 
 ## Plattform-Rahmen (Z20 ff., Welle 1 Block 1, Stand 11.11.2026)
-**Status:** Deutsch aus den Figma-Frames (Section „Flow 1 Block 1“, Ready for dev), Englisch ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; im Code stehen sie in `lib/i18n/messages.de.ts` und `messages.en.ts` mit derselben ID (Punkte als Schlüsselpfad). Ein Test stellt sicher, dass beide Dateien dieselben IDs führen. Weitere Gruppen (Z21 Anmelden, Z22 Startseite) folgen mit dem jeweiligen Slice.
+**Status:** Deutsch aus den Figma-Frames (Section „Flow 1 Block 1“, Ready for dev), Englisch ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; im Code stehen sie in `lib/i18n/messages.de.ts` und `messages.en.ts` mit derselben ID (Punkte als Schlüsselpfad). Ein Test stellt sicher, dass beide Dateien dieselben IDs führen. Z21 (Anmelden) steht darunter, Z22 (Startseite) folgt mit Slice 3.
 
 | ID | Deutsch | English | Platzhalter / Ort |
 |---|---|---|---|
@@ -135,6 +135,41 @@ Der Katalog deckt bisher nur Hinweisboxen ab. **Zweisprachig (Deutsch und Englis
 | Z20.legal.privacy | Datenschutz | Privacy policy | Fußzeile (englisch wie in den Mails, `MF-ORG`) |
 | Z20.nav.review | Prüfung | Review | App Header, nur für den Founder; die Zahl der offenen Prüfungen steht in Klammern dahinter |
 | Z20.back | Zurück | Back | Anmeldeschritte |
+
+### Anmelden (Z21, ORG-01 bis ORG-99)
+Deutsch aus den Figma-Frames, Englisch Vorschlag. Die Beispieladresse im Platzhalter ist in beiden Sprachen erfunden.
+
+| ID | Deutsch | English | Ort |
+|---|---|---|---|
+| Z21.email.eyebrow | Anmelden | Sign in | ORG-01, 95, 96, 01b, Eyebrow; auch Seitentitel |
+| Z21.email.title | Dein Kulturauftritt beginnt hier | Your cultural presence starts here | ORG-01 Überschrift |
+| Z21.email.lead | Melde dich mit einem Code per E-Mail an. Danach legst du dein Profil an oder übernimmst das Profil, das DISKOE für dich vorbereitet hat. Ein Passwort brauchst du nicht. | Sign in with a code by email. After that you create your profile or take over the profile DISKOE has prepared for you. You don't need a password. | ORG-01 |
+| Z21.email.label | E-Mail-Adresse | Email address | Feldbeschriftung |
+| Z21.email.placeholder | name@kollektiv.example | name@collective.example | Platzhalter im Feld |
+| Z21.email.hint | Wir schicken den Code an diese Adresse. | We'll send the code to this address. | Hilfetext (ORG-01, 01b, 99 ohne) |
+| Z21.email.send | Code senden | Send code | Button |
+| Z21.email.retry | Noch einmal versuchen | Try again | Button in ORG-01b (Senden fehlgeschlagen), Button-Regel Z03; Founder 13.11.: Variante B statt „Code senden“ des Frames, Frame nachziehen |
+| Z21.email.sending | Code wird gesendet … | Sending code … | Button während des Sendens (ORG-96, Z02), deaktiviert |
+| Z21.email.invalid | Das ist keine vollständige E-Mail-Adresse. Prüfe sie. | That isn't a complete email address. Check it. | ORG-95, Fehlertext am Feld (Z01 Ein Feld) |
+| Z21.send.failed.title | Das Senden hat nicht geklappt. | Sending didn't work. | ORG-01b, Z03 mit Aktion „Senden“ |
+| Z21.send.failed.line | Deine Adresse ist noch eingetragen. Versuche es noch einmal. | Your address is still entered. Try again. | ORG-01b, Z03 mit Stand danach |
+| Z21.code.eyebrow | Code eingeben | Enter code | ORG-02, 02b, 97 |
+| Z21.code.title | Schau in dein Postfach | Check your inbox | ORG-02, 02b, 97, 98 |
+| Z21.code.lead | Wir haben dir einen Code an {email} geschickt. Gib ihn hier ein. Es kann einen Moment dauern, bis er ankommt. Er gilt 10 Minuten und nur einmal. Schau auch im Spam-Ordner nach. | We've sent a code to {email}. Enter it here. It can take a moment to arrive. It works for 10 minutes and only once. Check your spam folder too. | ORG-02, 02b, 97; E-Mail-Adresse als Platzhalter |
+| Z21.code.label | Code aus der E-Mail | Code from the email | Feldbeschriftung |
+| Z21.code.placeholder | 6-stelliger Code | 6-digit code | Platzhalter im Feld |
+| Z21.code.submit | Anmelden | Sign in | Button |
+| Z21.code.resend | Neuen Code senden | Send a new code | Button, in der Wartezeit von 60 Sekunden deaktiviert; auch ORG-99 |
+| Z21.code.otherEmail | Andere E-Mail-Adresse verwenden | Use a different email address | Button, zurück zu ORG-01 |
+| Z21.code.wrong | Der Code stimmt nicht oder ist abgelaufen. Prüfe die Zahl oder fordere einen neuen Code an. | The code is wrong or has expired. Check the number or request a new code. | ORG-97, Fehlertext am Feld |
+| Z21.code.locked.title | Zu viele falsche Codes. | Too many wrong codes. | ORG-02b, Warnung |
+| Z21.code.locked.line | Bitte warte zehn Minuten oder fordere einen neuen Code an. | Please wait ten minutes or request a new code. | ORG-02b, Warnung |
+| Z21.resent.pill | Neuer Code gesendet | New code sent | ORG-98, Status über der Überschrift |
+| Z21.resent.lead | Wir haben dir einen neuen Code an {email} geschickt. Der vorherige Code gilt nicht mehr. | We've sent a new code to {email}. The previous code is no longer valid. | ORG-98 |
+| Z21.resent.hint | Einen weiteren Code kannst du in einer Minute anfordern. | You can request another code in one minute. | ORG-98, Hilfetext unter dem Feld |
+| Z21.link.eyebrow | Link abgelaufen | Link expired | ORG-99 |
+| Z21.link.title | Dieser Link gilt nicht mehr | This link is no longer valid | ORG-99 |
+| Z21.link.lead | Der Link in deiner E-Mail ist abgelaufen oder wurde schon benutzt. Fordere einen neuen Code an, dann kommst du weiter. | The link in your email has expired or was already used. Request a new code and you can continue. | ORG-99 |
 
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.

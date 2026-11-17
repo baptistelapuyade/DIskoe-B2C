@@ -1599,6 +1599,8 @@ $q$, 0, 'client roles have no sequence privileges');
 -- functions for authenticated, nothing for anon or PUBLIC.
 create table tests.expected_exec (nspname text, proname text);
 insert into tests.expected_exec values
+  ('public', 'auth_code_status'), ('public', 'auth_code_fail'),
+  ('public', 'auth_code_clear'),
   ('app_private', 'is_founder'), ('app_private', 'owns_profile'),
   ('app_private', 'owns_event'),
   ('app_private', 'is_publishable_media_path'),
@@ -1631,7 +1633,17 @@ select tests.expect_count($q$
    where n.nspname in ('public', 'app_private')
      and (has_function_privilege('anon', p.oid, 'EXECUTE')
           or has_function_privilege('tests_nobody', p.oid, 'EXECUTE'))
-$q$, 0, 'anon and PUBLIC execute no function');
+     -- The sign-in code counter runs before there is a session (ORG-02b).
+     and p.proname not in ('auth_code_status', 'auth_code_fail', 'auth_code_clear')
+$q$, 0, 'anon and PUBLIC execute no function except the sign-in counter');
+select tests.expect_count($q$
+  select p.proname
+    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+   where n.nspname = 'public'
+     and p.proname in ('auth_code_status', 'auth_code_fail', 'auth_code_clear')
+     and has_function_privilege('anon', p.oid, 'EXECUTE')
+     and not has_function_privilege('tests_nobody', p.oid, 'EXECUTE')
+$q$, 3, 'only anon and authenticated execute the sign-in counter functions');
 
 -- 8e. Every SECURITY DEFINER function pins its search_path.
 select tests.expect_count($q$
@@ -1735,7 +1747,11 @@ insert into tests.expected_objects values
   ('function', 'public', 'claim_profile_mail'),
   ('function', 'public', 'finish_profile_mail'),
   ('function', 'public', 'submit_first_publication'),
-  ('function', 'public', 'approve_first_publication');
+  ('function', 'public', 'approve_first_publication'),
+  ('table', 'public', 'auth_code_attempts'),
+  ('function', 'public', 'auth_code_status'),
+  ('function', 'public', 'auth_code_fail'),
+  ('function', 'public', 'auth_code_clear');
 
 select tests.expect_count($q$
   select case c.relkind when 'r' then 'table' when 'v' then 'view'
@@ -1762,6 +1778,67 @@ select tests.expect_count($q$
      from pg_proc p join pg_namespace n on n.oid = p.pronamespace
     where n.nspname in ('public', 'app_private'))
 $q$, 0, 'every inventoried object exists');
+
+-- ===========================================================================
+-- 9. Sign-in code attempts (ORG-02b)
+-- ===========================================================================
+select tests.as_anon();
+select tests.expect_error($q$ select count(*) from public.auth_code_attempts $q$,
+  '42501', 'anon cannot read the attempt table');
+select tests.expect_error($q$ delete from public.auth_code_attempts $q$,
+  '42501', 'anon cannot change the attempt table');
+select tests.as_user(:'uid_a');
+select tests.expect_error($q$ select count(*) from public.auth_code_attempts $q$,
+  '42501', 'authenticated cannot read the attempt table');
+select tests.as_anon();
+select tests.expect_error($q$ select public.auth_code_fail('not-a-hash') $q$,
+  '22023', 'a key that is not an HMAC hex string is rejected');
+select tests.expect_true($q$ select public.auth_code_status(repeat('a', 64)) is null $q$,
+  'a fresh key is not locked');
+select tests.expect_true($q$
+  select public.auth_code_fail(repeat('a', 64)) is null
+     and public.auth_code_fail(repeat('a', 64)) is null
+     and public.auth_code_fail(repeat('a', 64)) is null
+     and public.auth_code_fail(repeat('a', 64)) is null
+$q$, 'four wrong codes do not lock');
+select tests.expect_true($q$ select public.auth_code_status(repeat('a', 64)) is null $q$,
+  'still not locked after four wrong codes');
+select tests.expect_true($q$
+  select public.auth_code_fail(repeat('a', 64)) > now() + interval '9 minutes'
+     and public.auth_code_fail(repeat('a', 64)) < now() + interval '11 minutes'
+$q$, 'the fifth wrong code locks for about ten minutes');
+select tests.expect_true($q$
+  select public.auth_code_status(repeat('a', 64)) > now()
+$q$, 'the status reports the lock');
+select tests.expect_true($q$ select public.auth_code_status(repeat('b', 64)) is null $q$,
+  'another key is not affected');
+select tests.expect_ok($q$ select public.auth_code_clear(repeat('a', 64)) $q$,
+  'a new code clears the lock');
+select tests.expect_true($q$ select public.auth_code_status(repeat('a', 64)) is null $q$,
+  'the key is free after clearing');
+select tests.as_superuser();
+-- An expired lock starts a new count instead of locking again at once.
+insert into public.auth_code_attempts (key_hash, failures, locked_until, updated_at)
+values (repeat('c', 64), 5, now() - interval '1 minute', now());
+select tests.as_anon();
+select tests.expect_true($q$ select public.auth_code_status(repeat('c', 64)) is null $q$,
+  'an expired lock is not reported');
+select tests.expect_true($q$ select public.auth_code_fail(repeat('c', 64)) is null $q$,
+  'after an expired lock the next wrong code starts at one');
+select tests.as_superuser();
+select tests.expect_true($q$
+  select failures = 1 and locked_until is null
+    from public.auth_code_attempts where key_hash = repeat('c', 64)
+$q$, 'the count restarted at one');
+-- Old rows are pruned.
+insert into public.auth_code_attempts (key_hash, failures, updated_at)
+values (repeat('d', 64), 2, now() - interval '2 days');
+select tests.as_anon();
+select public.auth_code_fail(repeat('e', 64));
+select tests.as_superuser();
+select tests.expect_count($q$
+  select 1 from public.auth_code_attempts where key_hash = repeat('d', 64)
+$q$, 0, 'rows older than a day are removed');
 
 -- ===========================================================================
 -- Summary

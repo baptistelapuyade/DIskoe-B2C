@@ -1,14 +1,35 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
   <body style="font-family: Arial, sans-serif; color: #343432; background: #ffffff; margin: 0; padding: 24px;">
-    <!-- TODO(spec): wording is a proposal until the sign-in mail is specified. -->
-    <h1 style="font-size: 20px; margin: 0 0 16px;">Dein Anmeldecode für DISKOE</h1>
-    <p style="margin: 0 0 8px;">Gib diesen Code im Anmeldefenster ein:</p>
+    <!--
+      MAIL-01 (docs/startpaket/12-zustandstexte.md). The provider fills one
+      template for every language, so the mail carries English first and German
+      below. A mail in the language of the sign-in page needs the mail to be sent
+      by the app itself (open point, see docs/STATUS.md).
+    -->
+    <h1 style="font-size: 20px; margin: 0 0 16px;">Your DISKOE sign-in code</h1>
+    <p style="margin: 0 0 8px;">Hello,</p>
+    <p style="margin: 0 0 8px;">here is your code to sign in:</p>
     <p style="font-size: 28px; letter-spacing: 4px; font-weight: bold; margin: 0 0 24px;">{{ .Token }}</p>
-    <p style="margin: 0 0 8px;">Oder öffne diesen Link in demselben Browser:</p>
-    <p style="margin: 0 0 24px;"><a href="{{ .ConfirmationURL }}">Jetzt anmelden</a></p>
-    <p style="color: #676762; font-size: 14px; margin: 0;">
-      Der Code ist eine Stunde gültig. Wenn du dich nicht anmelden wolltest, kannst du diese E-Mail ignorieren.
+    <p style="margin: 0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display: inline-block; background: #343432; color: #fcfcfa; text-decoration: none; padding: 12px 24px; border-radius: 8px;">Sign in directly</a></p>
+    <p style="color: #676762; font-size: 14px; margin: 0 0 32px;">
+      The code works once and for 10 minutes. Didn't request it? You can ignore this email. Nothing happens.
+    </p>
+
+    <hr style="border: 0; border-top: 1px solid #dfdfd9; margin: 0 0 32px;" />
+
+    <h1 style="font-size: 20px; margin: 0 0 16px;" lang="de">Dein Anmeldecode für DISKOE</h1>
+    <p style="margin: 0 0 8px;" lang="de">Hallo,</p>
+    <p style="margin: 0 0 8px;" lang="de">hier ist dein Code zum Anmelden:</p>
+    <p style="font-size: 28px; letter-spacing: 4px; font-weight: bold; margin: 0 0 24px;">{{ .Token }}</p>
+    <p style="margin: 0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display: inline-block; background: #343432; color: #fcfcfa; text-decoration: none; padding: 12px 24px; border-radius: 8px;" lang="de">Direkt anmelden</a></p>
+    <p style="color: #676762; font-size: 14px; margin: 0 0 32px;" lang="de">
+      Der Code gilt 10 Minuten und nur einmal. Du hast ihn nicht angefordert? Dann kannst du diese Mail ignorieren. Es passiert nichts.
+    </p>
+
+    <p style="color: #676762; font-size: 12px; margin: 0;">
+      DISKOE · <a href="{{ .SiteURL }}/impressum" style="color: #676762;">Imprint / Impressum</a> · <a href="{{ .SiteURL }}/datenschutz" style="color: #676762;">Privacy policy / Datenschutz</a><br />
+      This is a system email about your account, not advertising. / Das ist eine Systemmail zu deinem Konto, keine Werbung.
     </p>
   </body>
 </html>

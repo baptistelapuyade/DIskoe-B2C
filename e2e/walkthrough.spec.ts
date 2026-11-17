@@ -46,7 +46,7 @@ async function signInWithCode(page: Page, email: string) {
   await page.getByRole("button", { name: "Code senden" }).click();
 
   const code = await waitForCode(email);
-  await page.getByLabel("Code", { exact: true }).fill(code);
+  await page.getByLabel("Code aus der E-Mail").fill(code);
   await page.getByRole("button", { name: "Anmelden", exact: true }).click();
   await page.waitForURL("**/organizer", SLOW);
 }

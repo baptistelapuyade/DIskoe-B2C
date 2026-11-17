@@ -26,7 +26,7 @@ export function Footer({
           <Link
             key={href}
             href={href}
-            className="text-muted-foreground focus-visible:outline-ring flex min-h-11 items-center text-sm leading-5 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="text-muted-foreground focus-visible:outline-ring flex min-h-11 items-center text-sm leading-5 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             {t(lang, id)}
           </Link>

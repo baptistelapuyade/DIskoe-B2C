@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
+import { AuthShell } from "@/components/layout/auth-shell";
 import { safeNextPath } from "@/lib/auth/guards";
 import { getAccess } from "@/lib/auth/server";
+import { t } from "@/lib/i18n";
+import { getLang } from "@/lib/i18n/server";
 
-import { LegalFooter } from "@/components/public/parts";
+import { SignInFlow } from "./sign-in-flow";
 
-import { LoginForm } from "./login-form";
-
-export const metadata: Metadata = {
-  title: "Anmelden – DISKOE",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getLang();
+  return {
+    title: `${t(lang, "Z21.email.eyebrow")} – DISKOE`,
+    robots: { index: false, follow: false },
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -28,24 +32,19 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const next = safeNextPath(first(params.next));
+  const lang = await getLang();
 
   if ((await getAccess()).kind !== "anonymous") {
     redirect(next);
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-16">
-      <p className="text-muted-foreground mb-4 text-sm font-medium tracking-[0.16em] uppercase">
-        DISKOE
-      </p>
-      <h1 className="text-3xl font-bold tracking-tight">Anmelden</h1>
-      <p className="text-muted-foreground mt-3">
-        Wir senden dir einen Code per E-Mail. Ein Passwort brauchst du nicht.
-      </p>
-      <LoginForm next={next} linkError={first(params.error) === "link"} />
-      <div className="mt-12">
-        <LegalFooter />
-      </div>
-    </main>
+    <AuthShell lang={lang} step={1}>
+      <SignInFlow
+        lang={lang}
+        next={next}
+        linkExpired={first(params.error) === "link"}
+      />
+    </AuthShell>
   );
 }
