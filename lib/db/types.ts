@@ -2,7 +2,9 @@
 //
 // Source: Supabase dev project (eu-central-1, Postgres 17) after all
 // migrations up to 20261027160000_review_flow.sql, generated on 2026-10-28
-// with the Supabase MCP `generate_typescript_types`.
+// with the Supabase MCP `generate_typescript_types`. The columns and function of
+// 20261117120000_profile_links_and_slug.sql (instagram_handle, extra_links,
+// change_profile_slug) and 20261117130000 (public_profiles.profile_image_crop) were added by hand and match the migration.
 // Regenerate after every schema change (see docs/STATUS.md).
 //
 // Caution: these types describe table columns, not column privileges. Clients
@@ -453,7 +455,9 @@ export type Database = {
           confirmed_by: string | null
           created_at: string
           created_by: string
+          extra_links: Json
           id: string
+          instagram_handle: string | null
           name: string | null
           official_url: string | null
           profile_id: string
@@ -467,7 +471,9 @@ export type Database = {
           confirmed_by?: string | null
           created_at?: string
           created_by: string
+          extra_links?: Json
           id?: string
+          instagram_handle?: string | null
           name?: string | null
           official_url?: string | null
           profile_id: string
@@ -481,7 +487,9 @@ export type Database = {
           confirmed_by?: string | null
           created_at?: string
           created_by?: string
+          extra_links?: Json
           id?: string
+          instagram_handle?: string | null
           name?: string | null
           official_url?: string | null
           profile_id?: string
@@ -776,9 +784,12 @@ export type Database = {
       }
       public_profiles: {
         Row: {
+          extra_links: Json | null
           id: string | null
+          instagram_handle: string | null
           name: string | null
           official_url: string | null
+          profile_image_crop: Json | null
           profile_image_path: string | null
           public_contact: string | null
           published_at: string | null
@@ -804,6 +815,10 @@ export type Database = {
       approve_first_event: {
         Args: { p_event_id: string; p_expected_draft_revision_id: string }
         Returns: undefined
+      }
+      change_profile_slug: {
+        Args: { p_profile_id: string; p_slug: string }
+        Returns: string
       }
       approve_first_profile: {
         Args: { p_expected_draft_revision_id: string; p_profile_id: string }
