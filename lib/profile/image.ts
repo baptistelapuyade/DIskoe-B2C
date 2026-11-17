@@ -7,6 +7,7 @@ type Client = SupabaseClient<Database>;
 export type ProfileImage = {
   useId: string;
   altText: string | null;
+  fileName: string | null;
   confirmed: boolean;
   publicObjectPath: string | null;
   privateObjectPath: string | null;
@@ -32,7 +33,7 @@ export async function loadImage(
 
   const { data: asset } = await supabase
     .from("media_assets")
-    .select("private_object_path")
+    .select("private_object_path, original_filename")
     .eq("id", use.asset_id)
     .maybeSingle();
 
@@ -47,6 +48,7 @@ export async function loadImage(
   return {
     useId: use.id,
     altText: use.alt_text,
+    fileName: asset?.original_filename ?? null,
     confirmed: use.confirmed_at !== null && use.public_object_path !== null,
     publicObjectPath: use.public_object_path,
     privateObjectPath: asset?.private_object_path ?? null,

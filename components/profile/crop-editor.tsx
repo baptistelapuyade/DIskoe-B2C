@@ -50,7 +50,12 @@ export function CropEditor({
   const [stage, setStage] = useState(0);
   const [natural, setNatural] = useState<{ w: number; h: number } | null>(null);
   const [frame, setFrame] = useState<Frame | null>(null);
-  const drag = useRef<{ x: number; y: number; left: number; top: number } | null>(null);
+  const drag = useRef<{
+    x: number;
+    y: number;
+    left: number;
+    top: number;
+  } | null>(null);
 
   useEffect(() => {
     const node = stageRef.current;
@@ -73,7 +78,11 @@ export function CropEditor({
       setFrame(
         initial
           ? clampFrame(
-              { left: initial.x * nw, top: initial.y * nh, side: initial.w * nw },
+              {
+                left: initial.x * nw,
+                top: initial.y * nh,
+                side: initial.w * nw,
+              },
               nw,
               nh,
             )
@@ -84,7 +93,8 @@ export function CropEditor({
   );
 
   const onLoad = useCallback(
-    (event: React.SyntheticEvent<HTMLImageElement>) => initFromImage(event.currentTarget),
+    (event: React.SyntheticEvent<HTMLImageElement>) =>
+      initFromImage(event.currentTarget),
     [initFromImage],
   );
 
@@ -98,12 +108,13 @@ export function CropEditor({
     }
   }, [initFromImage, natural]);
 
-  const scale = natural && stage ? Math.min(stage / natural.w, stage / natural.h) : 0;
-  const offX = natural ? (stage - natural.w * scale) / 2 : 0;
-  const offY = natural ? (stage - natural.h * scale) / 2 : 0;
+  const scale = natural && stage ? stage / natural.w : 0;
+  const offX = 0;
+  const offY = 0;
   const short = natural ? Math.min(natural.w, natural.h) : 0;
   const minSide = Math.min(short, MIN_SIDE_PX);
-  const zoom = frame && short > minSide ? (short - frame.side) / (short - minSide) : 0;
+  const zoom =
+    frame && short > minSide ? (short - frame.side) / (short - minSide) : 0;
 
   function setZoom(next: number) {
     if (!natural || !frame) return;
@@ -114,13 +125,23 @@ export function CropEditor({
     const centreY = frame.top + frame.side / 2;
 
     setFrame(
-      clampFrame({ side, left: centreX - side / 2, top: centreY - side / 2 }, natural.w, natural.h),
+      clampFrame(
+        { side, left: centreX - side / 2, top: centreY - side / 2 },
+        natural.w,
+        natural.h,
+      ),
     );
   }
 
   function move(dx: number, dy: number) {
     if (!natural || !frame) return;
-    setFrame(clampFrame({ ...frame, left: frame.left + dx, top: frame.top + dy }, natural.w, natural.h));
+    setFrame(
+      clampFrame(
+        { ...frame, left: frame.left + dx, top: frame.top + dy },
+        natural.w,
+        natural.h,
+      ),
+    );
   }
 
   function apply() {
@@ -145,7 +166,20 @@ export function CropEditor({
       <div className="flex flex-col gap-4">
         <div
           ref={stageRef}
-          className="bg-foreground/90 relative aspect-square w-full max-w-[360px] touch-none overflow-hidden rounded-lg select-none"
+          // The stage takes the shape of the picture (longest side 360 px), so the
+          // picture fills it without bars.
+          className={`bg-foreground/90 relative w-full max-w-[360px] touch-none overflow-hidden rounded-lg select-none ${natural ? "" : "aspect-square"}`}
+          style={
+            natural
+              ? {
+                  aspectRatio: `${natural.w} / ${natural.h}`,
+                  width:
+                    natural.h > natural.w
+                      ? `min(100%, ${(360 * natural.w) / natural.h}px)`
+                      : undefined,
+                }
+              : undefined
+          }
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -157,7 +191,12 @@ export function CropEditor({
             className="absolute max-w-none"
             style={
               natural
-                ? { left: offX, top: offY, width: natural.w * scale, height: natural.h * scale }
+                ? {
+                    left: offX,
+                    top: offY,
+                    width: natural.w * scale,
+                    height: natural.h * scale,
+                  }
                 : { opacity: 0 }
             }
           />
@@ -175,7 +214,12 @@ export function CropEditor({
               }}
               onPointerDown={(event) => {
                 event.currentTarget.setPointerCapture(event.pointerId);
-                drag.current = { x: event.clientX, y: event.clientY, left: frame.left, top: frame.top };
+                drag.current = {
+                  x: event.clientX,
+                  y: event.clientY,
+                  left: frame.left,
+                  top: frame.top,
+                };
               }}
               onPointerMove={(event) => {
                 const start = drag.current;
@@ -217,16 +261,26 @@ export function CropEditor({
                 }
               }}
             >
-              <span aria-hidden="true" className="pointer-events-none absolute inset-0 grid grid-cols-3 grid-rows-3">
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 grid grid-cols-3 grid-rows-3"
+              >
                 {Array.from({ length: 9 }, (_, i) => (
                   <span key={i} className="border border-white/40" />
                 ))}
               </span>
-              {["-top-1.5 -left-1.5", "-top-1.5 -right-1.5", "-bottom-1.5 -left-1.5", "-bottom-1.5 -right-1.5"].map(
-                (place) => (
-                  <span key={place} aria-hidden="true" className={`pointer-events-none absolute size-3 bg-white ${place}`} />
-                ),
-              )}
+              {[
+                "top-0 left-0",
+                "top-0 right-0",
+                "bottom-0 left-0",
+                "bottom-0 right-0",
+              ].map((place) => (
+                <span
+                  key={place}
+                  aria-hidden="true"
+                  className={`pointer-events-none absolute size-3 bg-white ${place}`}
+                />
+              ))}
             </div>
           ) : null}
         </div>
@@ -249,7 +303,9 @@ export function CropEditor({
             aria-label={t(lang, "Z23.crop.area")}
             onChange={(event) => setZoom(Number(event.target.value) / 100)}
             className="crop-range h-11 min-w-0 flex-1"
-            style={{ "--fill": `${Math.round(zoom * 100)}%` } as React.CSSProperties}
+            style={
+              { "--fill": `${Math.round(zoom * 100)}%` } as React.CSSProperties
+            }
           />
           <Button
             variant="secondary"
@@ -262,11 +318,18 @@ export function CropEditor({
           </Button>
         </div>
 
-        <p className="text-muted-foreground max-w-[360px] text-sm leading-5">{t(lang, "Z23.crop.hint")}</p>
+        <p className="text-muted-foreground max-w-[360px] text-sm leading-5">
+          {t(lang, "Z23.crop.hint")}
+        </p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Button variant="primaryLg" onClick={apply} disabled={busy || !frame} aria-busy={busy}>
+        <Button
+          variant="primaryLg"
+          onClick={apply}
+          disabled={busy || !frame}
+          aria-busy={busy}
+        >
           {failed ? t(lang, "Z23.crop.retry") : t(lang, "Z23.crop.apply")}
         </Button>
         <Button variant="ghostLg" onClick={onOther} disabled={busy}>

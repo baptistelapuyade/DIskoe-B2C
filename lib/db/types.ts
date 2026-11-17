@@ -280,6 +280,7 @@ export type Database = {
           created_at: string
           id: string
           mime_type: string
+          original_filename: string | null
           private_object_path: string
           uploader_id: string
         }
@@ -287,6 +288,7 @@ export type Database = {
           created_at?: string
           id?: string
           mime_type: string
+          original_filename?: string | null
           private_object_path: string
           uploader_id: string
         }
@@ -294,6 +296,7 @@ export type Database = {
           created_at?: string
           id?: string
           mime_type?: string
+          original_filename?: string | null
           private_object_path?: string
           uploader_id?: string
         }

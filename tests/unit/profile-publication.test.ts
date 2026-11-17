@@ -13,6 +13,7 @@ import {
   parseGapDetail,
   parseProfileInput,
   inspectProfileImage,
+  safeFileName,
   parseCrop,
   parseQuestion,
   readImageSize,
@@ -516,5 +517,20 @@ describe("parseCrop", () => {
 
   it.each(bad)("rejects %j (%s)", (value) => {
     expect(parseCrop(value, image)).toBeNull();
+  });
+});
+
+describe("safeFileName", () => {
+  it("keeps the last path segment and drops control characters", () => {
+    expect(safeFileName("profilbild.jpg")).toBe("profilbild.jpg");
+    expect(safeFileName("C:\\Users\\me\\logo.png")).toBe("logo.png");
+    expect(safeFileName("../../etc/logo.png")).toBe("logo.png");
+    expect(safeFileName("a\u0000b\nc.png")).toBe("abc.png");
+  });
+
+  it("caps the length and returns null for an empty name", () => {
+    expect(safeFileName("x".repeat(300))).toHaveLength(120);
+    expect(safeFileName("   ")).toBeNull();
+    expect(safeFileName("folder/")).toBeNull();
   });
 });

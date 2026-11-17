@@ -355,6 +355,10 @@ select tests.expect_error(format($q$insert into public.media_assets (uploader_id
   '42501', 'asset path must sit under the uploader prefix');
 select tests.expect_error(format($q$insert into public.media_assets (uploader_id, private_object_path, mime_type) values (%L, %L, 'image/gif')$q$, :'uid_a', :'uid_a' || '/x.gif'),
   '23514', 'only jpeg, png and webp assets are accepted');
+select tests.expect_error(format($q$insert into public.media_assets (uploader_id, private_object_path, mime_type, original_filename) values (%L, %L, 'image/png', '')$q$, :'uid_a', :'uid_a' || '/n1.png'),
+  '23514', 'an empty original file name is refused');
+select tests.expect_error(format($q$insert into public.media_assets (uploader_id, private_object_path, mime_type, original_filename) values (%L, %L, 'image/png', repeat('a', 121))$q$, :'uid_a', :'uid_a' || '/n2.png'),
+  '23514', 'an original file name over 120 characters is refused');
 select tests.expect_true(format('select tests.confirm_with_alt_is_null(%L, null)', :'pa'),
   'a profile image can be confirmed without a description');
 select tests.expect_true(format('select tests.confirm_with_alt_is_null(%L, %L)', :'pa', '   '),
@@ -1517,8 +1521,8 @@ insert into tests.expected_col_grants values
   ('authenticated', 'event_revisions', 'INSERT', array['event_id','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id','created_by']),
   ('authenticated', 'event_revisions', 'UPDATE', array['title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id']),
   ('anon',          'event_revisions', 'SELECT', array['id','title','description','primary_format','start_at','timezone','end_state','end_at','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','currency','access_routes','atmosphere_tags','atmosphere_description','event_image_use_id','confirmed_at']),
-  ('authenticated', 'media_assets', 'SELECT', array['id','uploader_id','private_object_path','mime_type','created_at']),
-  ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type']),
+  ('authenticated', 'media_assets', 'SELECT', array['id','uploader_id','private_object_path','mime_type','created_at','original_filename']),
+  ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type','original_filename']),
   ('authenticated', 'media_assets', 'UPDATE', array['mime_type']),
   ('authenticated', 'review_requests', 'SELECT', array['id','profile_id','revision_id','message','created_at','event_revision_id']),
   ('authenticated', 'profile_mails', 'SELECT', array['id','profile_id','revision_id','kind','status','attempts','claimed_at','finished_at','failure_code']),

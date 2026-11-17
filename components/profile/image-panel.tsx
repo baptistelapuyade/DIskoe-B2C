@@ -21,7 +21,12 @@ import { ACCEPT, useImageUpload } from "./use-image-upload";
 // crop; "Change crop" leads to ORG-05e.
 type AltAction = (previous: AltState, formData: FormData) => Promise<AltState>;
 
-export type CurrentImage = { url: string; crop: Crop | null; altText: string | null };
+export type CurrentImage = {
+  url: string;
+  crop: Crop | null;
+  altText: string | null;
+  fileName: string | null;
+};
 
 const IDLE: AltState = { status: "idle" };
 
@@ -66,10 +71,16 @@ export function ImagePanel({
     <div className="border-border flex flex-col gap-3 rounded-md border p-4">
       {image ? (
         <div className="w-[200px] max-w-full">
-          <CroppedSquare url={image.url} crop={image.crop} className="rounded" />
+          <CroppedSquare
+            url={image.url}
+            crop={image.crop}
+            className="rounded"
+          />
         </div>
       ) : null}
-      <p className="text-sm leading-5 font-medium">{t(lang, "Z23.image.label")}</p>
+      <p className="text-sm leading-5 font-medium break-all">
+        {image?.fileName ?? t(lang, "Z23.image.label")}
+      </p>
       <p className="text-muted-foreground text-xs leading-4">
         {image ? t(lang, "Z23.upload.another") : t(lang, "Z23.upload.hint")}
       </p>
@@ -112,7 +123,9 @@ export function ImagePanel({
       <div className="flex flex-col gap-6">
         {notices}
         {block}
-        <p className="text-muted-foreground text-base leading-6">{t(lang, "Z23.image.missingHint")}</p>
+        <p className="text-muted-foreground text-base leading-6">
+          {t(lang, "Z23.image.missingHint")}
+        </p>
         <div className="flex flex-col gap-3 sm:flex-row">
           {upload.busy ? (
             <Button variant="primaryLg" disabled>
@@ -158,7 +171,12 @@ export function ImagePanel({
         )}
       </Field>
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Button type="submit" variant="primaryLg" disabled={upload.busy || saving} aria-busy={saving}>
+        <Button
+          type="submit"
+          variant="primaryLg"
+          disabled={upload.busy || saving}
+          aria-busy={saving}
+        >
           {t(lang, "Z23.image.next")}
         </Button>
         <LinkButton href={backHref} variant="ghostLg">

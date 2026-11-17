@@ -621,3 +621,13 @@ export function readCrop(raw: unknown): Crop | null {
     ? ({ x, y, w, h } as Crop)
     : null;
 }
+
+// The original file name of an upload, for the uploader's own display only.
+// Only the last path segment is kept; control characters are removed and the
+// length is capped. An empty result means "no name".
+export function safeFileName(name: string): string | null {
+  const last = name.split(/[\\/]/).pop() ?? "";
+  const cleaned = last.replace(/[\u0000-\u001f\u007f]/g, "").trim();
+
+  return cleaned ? cleaned.slice(0, 120) : null;
+}

@@ -51,7 +51,7 @@ export default async function ProfileImagePage({
         profileId={profileId}
         image={
           view.image?.signedUrl
-            ? { url: view.image.signedUrl, crop, altText: view.image.altText }
+            ? { url: view.image.signedUrl, crop, altText: view.image.altText, fileName: view.image.fileName }
             : null
         }
         cropHref={`${base}/image/crop`}

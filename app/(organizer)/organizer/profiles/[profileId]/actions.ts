@@ -14,6 +14,7 @@ import {
   parseProfileInput,
   parseSlug,
   readImageSize,
+  safeFileName,
   type Crop,
   type FieldErrorCode,
   type FieldErrors,
@@ -329,6 +330,7 @@ export async function uploadProfileImage(
       uploader_id: userId,
       private_object_path: path,
       mime_type: inspected.type,
+      original_filename: safeFileName(file.name),
     })
     .select("id")
     .single();
