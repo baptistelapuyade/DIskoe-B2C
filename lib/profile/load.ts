@@ -96,6 +96,8 @@ export async function loadOwnerProfileView(
       name: revision?.name ?? "",
       shortIntro: revision?.shortIntro ?? "",
       officialUrl: revision?.officialUrl ?? "",
+      instagram: revision?.instagramHandle ?? "",
+      extraLinks: revision?.extraLinks ?? [],
       publicContact: revision?.publicContact ?? "",
     },
     image?.confirmed === true,

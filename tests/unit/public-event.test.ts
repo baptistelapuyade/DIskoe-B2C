@@ -20,6 +20,9 @@ const profileRow: PublicProfileRow = {
   public_contact: null,
   profile_image_path: "profiles/p1/a.png",
   published_at: "2026-10-20T10:00:00Z",
+  instagram_handle: null,
+  extra_links: [],
+  profile_image_crop: null,
 };
 
 const eventRow: PublicEventRow = {

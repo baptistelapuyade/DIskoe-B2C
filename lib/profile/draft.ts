@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { Database, TablesInsert } from "@/lib/db/types";
+import type { Database, Json, TablesInsert } from "@/lib/db/types";
 
 type Client = SupabaseClient<Database>;
 
@@ -18,12 +18,34 @@ export type RevisionFields = {
   shortIntro: string | null;
   officialUrl: string | null;
   publicContact: string | null;
+  instagramHandle: string | null;
+  // Complete addresses, at most five.
+  extraLinks: string[];
   profileImageUseId: string | null;
   confirmedAt: string | null;
 };
 
 const REVISION_COLUMNS =
-  "id, name, short_intro, official_url, public_contact, profile_image_use_id, confirmed_at";
+  "id, name, short_intro, official_url, public_contact, instagram_handle, extra_links, profile_image_use_id, confirmed_at";
+
+// The database stores {"url": ...} objects; the application works with the
+// plain addresses.
+export function extraLinkUrls(json: Json): string[] {
+  if (!Array.isArray(json)) return [];
+
+  return json.flatMap((item) =>
+    typeof item === "object" &&
+    item !== null &&
+    !Array.isArray(item) &&
+    typeof item.url === "string"
+      ? [item.url]
+      : [],
+  );
+}
+
+export function toExtraLinksJson(urls: readonly string[]): Json {
+  return urls.map((url) => ({ url }));
+}
 
 export function toRevisionFields(row: {
   id: string;
@@ -31,6 +53,8 @@ export function toRevisionFields(row: {
   short_intro: string | null;
   official_url: string | null;
   public_contact: string | null;
+  instagram_handle: string | null;
+  extra_links: Json;
   profile_image_use_id: string | null;
   confirmed_at: string | null;
 }): RevisionFields {
@@ -40,6 +64,8 @@ export function toRevisionFields(row: {
     shortIntro: row.short_intro,
     officialUrl: row.official_url,
     publicContact: row.public_contact,
+    instagramHandle: row.instagram_handle,
+    extraLinks: extraLinkUrls(row.extra_links),
     profileImageUseId: row.profile_image_use_id,
     confirmedAt: row.confirmed_at,
   };
@@ -212,6 +238,8 @@ export async function ensureEditableDraft(
     short_intro: current?.shortIntro ?? null,
     official_url: current?.officialUrl ?? null,
     public_contact: current?.publicContact ?? null,
+    instagram_handle: current?.instagramHandle ?? null,
+    extra_links: toExtraLinksJson(current?.extraLinks ?? []),
     profile_image_use_id: current?.profileImageUseId ?? null,
   };
 
