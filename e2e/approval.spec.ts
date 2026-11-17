@@ -482,8 +482,8 @@ test.describe("first approval, publication and public image", () => {
 
     const { context, page } = await pageFor(browser, "ownerA");
     await page.goto("/organizer");
-    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible(SLOW);
-    await expect(page.getByText("Änderungen bleiben privat, bis du sie selbst bestätigst.")).toBeVisible();
+    await expect(page.getByText("Dein Profil ist live.")).toBeVisible(SLOW);
+    await expect(page.getByText("Änderungen bleiben privat, bis du sie selbst veröffentlichst.")).toBeVisible();
 
     await page.goto(`/organizer/profiles/${profileA}/edit`);
     await expect(page.getByText("DISKOE hat dieses Profil freigegeben.", { exact: false })).toHaveCount(0);

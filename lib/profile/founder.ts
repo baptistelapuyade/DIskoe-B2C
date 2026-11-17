@@ -25,6 +25,9 @@ export type MailState = {
   kind: MailKind;
   status: "pending" | "sent" | "failed";
   attempts: number;
+  // Short error code of the last failed attempt (EAUTH, ...). No address, no
+  // provider text.
+  failureCode: string | null;
 };
 
 // open: waiting for the founder. question: waiting for the organizer.
@@ -45,6 +48,7 @@ function toMailState(row: {
   kind: string;
   status: string;
   attempts: number;
+  failure_code: string | null;
 }): MailState | null {
   if (
     (row.kind !== "profile_live" && row.kind !== "profile_question") ||
@@ -55,15 +59,42 @@ function toMailState(row: {
     return null;
   }
 
-  return { kind: row.kind, status: row.status, attempts: row.attempts };
+  return {
+    kind: row.kind,
+    status: row.status,
+    attempts: row.attempts,
+    failureCode: row.failure_code,
+  };
 }
 
 // "Accepted by the provider" is not "delivered"; the text says so.
 export function mailText(mail: MailState | null): string {
   if (!mail) return "";
   if (mail.status === "sent") return "Mail vom Anbieter angenommen";
-  if (mail.status === "failed") return "Mail fehlgeschlagen";
+  if (mail.status === "failed") {
+    return mail.failureCode
+      ? `Mail fehlgeschlagen (${mail.failureCode})`
+      : "Mail fehlgeschlagen";
+  }
   return "Mail wird gesendet";
+}
+
+// What a founder can do about a known code. Shown on the review page next to
+// the code. Names of settings only, never values.
+export function mailFailureHint(code: string | null): string | null {
+  switch (code) {
+    case "EAUTH":
+      return "Der Mailserver lehnt den Zugang ab. Prüfe MAIL_SMTP_USER und MAIL_SMTP_PASSWORD (SMTP-Zugang aus der SES-Region des Servers, nicht der IAM-Schlüssel).";
+    case "EENVELOPE":
+      return "Absender oder Empfänger wurden abgelehnt. Prüfe MAIL_FROM und ob SES in dieser Region Produktionszugang hat.";
+    case "ETIMEDOUT":
+    case "ECONNECTION":
+    case "ESOCKET":
+    case "EDNS":
+      return "Der Mailserver ist nicht erreichbar. Prüfe MAIL_SMTP_HOST und MAIL_SMTP_PORT.";
+    default:
+      return null;
+  }
 }
 
 export async function loadMailState(
@@ -74,7 +105,7 @@ export async function loadMailState(
 ): Promise<MailState | null> {
   const { data, error } = await supabase
     .from("profile_mails")
-    .select("kind, status, attempts")
+    .select("kind, status, attempts, failure_code")
     .eq("profile_id", profileId)
     .eq("revision_id", revisionId)
     .eq("kind", kind)
@@ -122,7 +153,7 @@ export async function loadQueue(supabase: Client): Promise<QueueItem[]> {
 
   const { data: mails, error: mailsError } = await supabase
     .from("profile_mails")
-    .select("profile_id, revision_id, kind, status, attempts")
+    .select("profile_id, revision_id, kind, status, attempts, failure_code")
     .in("profile_id", ids);
 
   if (mailsError) {

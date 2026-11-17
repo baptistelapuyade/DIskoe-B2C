@@ -118,7 +118,7 @@ Der Katalog deckt bisher nur Hinweisboxen ab. **Zweisprachig (Deutsch und Englis
 - **Vorgehen:** Texte werden je Welle in den Katalog aufgenommen (IDs ab Z20, nach Bereich gruppiert), jeweils mit Deutsch und Englisch, bevor die Welle gebaut wird. Die Figma-Frames führen Deutsch; die englische Fassung steht nur im Katalog. Mails stehen im Abschnitt „Mails MAIL-01 bis MAIL-14“ am Ende (Deutsch und Englisch, Vorschlag 11.11.2026).
 
 ## Plattform-Rahmen (Z20 ff., Welle 1 Block 1, Stand 11.11.2026)
-**Status:** Deutsch aus den Figma-Frames (Section „Flow 1 Block 1“, Ready for dev), Englisch ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; im Code stehen sie in `lib/i18n/messages.de.ts` und `messages.en.ts` mit derselben ID (Punkte als Schlüsselpfad). Ein Test stellt sicher, dass beide Dateien dieselben IDs führen. Z21 (Anmelden) steht darunter, Z22 (Startseite) folgt mit Slice 3.
+**Status:** Deutsch aus den Figma-Frames (Section „Flow 1 Block 1“, Ready for dev), Englisch ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; im Code stehen sie in `lib/i18n/messages.de.ts` und `messages.en.ts` mit derselben ID (Punkte als Schlüsselpfad). Ein Test stellt sicher, dass beide Dateien dieselben IDs führen. Z21 (Anmelden) und Z22 (Startseite) stehen darunter.
 
 | ID | Deutsch | English | Platzhalter / Ort |
 |---|---|---|---|
@@ -170,6 +170,74 @@ Deutsch aus den Figma-Frames, Englisch Vorschlag. Die Beispieladresse im Platzha
 | Z21.link.eyebrow | Link abgelaufen | Link expired | ORG-99 |
 | Z21.link.title | Dieser Link gilt nicht mehr | This link is no longer valid | ORG-99 |
 | Z21.link.lead | Der Link in deiner E-Mail ist abgelaufen oder wurde schon benutzt. Fordere einen neuen Code an, dann kommst du weiter. | The link in your email has expired or was already used. Request a new code and you can continue. | ORG-99 |
+
+### Startseite des Organizers (Z22, ORG-100 und ORG-103a bis g)
+Deutsch aus den Figma-Frames, Englisch Vorschlag. Abweichungen vom Frame stehen in der Spalte „Ort“.
+
+| ID | Deutsch | English | Ort |
+|---|---|---|---|
+| Z22.noProfile.eyebrow | Angemeldet | Signed in | ORG-100 |
+| Z22.noProfile.title | Dein Konto hat noch kein Profil | Your account has no profile yet | ORG-100 |
+| Z22.noProfile.lead | Du bist angemeldet, aber dein Konto gehört noch zu keinem Profil. Schreib uns, dann ordnen wir es dir zu. | You're signed in, but your account doesn't belong to a profile yet. Write to us and we'll assign one to you. | ORG-100, **Abweichung vom Frame**: Der Frame verweist auf die Einladung und „Profil anlegen“ (`ORG-52`); beides kommt mit Welle 2. Bis dahin legt der Founder Profile an. Vorschlag, braucht Freigabe. Darunter steht die Adresse `hello@diskoe.world` als Mail-Link (Founder 13.11., `lib/contact.ts`) |
+| Z22.home.title | Dein Profil | Your profile | ORG-103a bis g, ein Profil |
+| Z22.home.titleMany | Deine Profile | Your profiles | mehrere Profile (nicht in Figma, bisheriger Text) |
+| Z22.home.lead | Hier siehst du, was als Nächstes zu tun ist und was danach passiert. | Here you can see what to do next and what happens after that. | ORG-103a bis g |
+| Z22.pill.draft | Entwurf · privat | Draft · private | ORG-103a bis c |
+| Z22.pill.review | In Prüfung · noch nicht öffentlich | In review · not public yet | ORG-103d |
+| Z22.pill.question | Rückfrage · noch nicht öffentlich | Question · not public yet | ORG-103e |
+| Z22.pill.live | Live | Live | ORG-103f, g |
+| Z22.pill.changes | Änderungen noch nicht öffentlich | Changes not public yet | ORG-103g |
+| Z22.progress.label | Fortschritt | Progress | Beschriftung für Screenreader |
+| Z22.step.profile | Profil | Profile | Fortschritt, Schritt 1 |
+| Z22.step.event | Erstes Event | First event | Fortschritt, Schritt 2 |
+| Z22.step.submit | Einreichen | Submit | Fortschritt, Schritt 3 |
+| Z22.step.review | Prüfung | Review | Fortschritt, Schritt 4 |
+| Z22.step.live | Live | Live | Fortschritt, Schritt 5 |
+| Z22.gap.name | Name | name | Lücke im Profil (ORG-103a, Liste) |
+| Z22.gap.shortIntro | Kurzvorstellung | short introduction | Lücke im Profil |
+| Z22.gap.linkOrContact | offizieller Link oder öffentlicher Kontakt | official link or public contact | Lücke im Profil |
+| Z22.gap.profileImage | Profilbild | profile picture | Lücke im Profil |
+| Z22.gap.revisionMissing | erster Entwurf | first draft | Lücke im Profil |
+| Z22.a.message | Dir fehlen noch Angaben: {gaps}. | You're still missing details: {gaps}. | ORG-103a |
+| Z22.a.hint | Danach legst du dein erstes Event an. Beides gehst du gemeinsam zur Prüfung. Bis dahin sieht nur du das Profil. | After that you create your first event. You send both to review together. Until then only you can see the profile. | ORG-103a |
+| Z22.a.action | Angaben ergänzen | Add details | ORG-103a, auch Profil live mit unvollständiger neuer Fassung |
+| Z22.b.message | Dein Profil ist fertig. Als Nächstes legst du dein erstes Event an. | Your profile is done. Next you create your first event. | ORG-103b |
+| Z22.b.hint | Profil und Event gehen gemeinsam in die Prüfung. Bis dahin sieht nur du sie. | Profile and event go to review together. Until then only you can see them. | ORG-103b |
+| Z22.b.action | Erstes Event anlegen | Create first event | ORG-103b |
+| Z22.b.view | Profil ansehen | View profile | ORG-103b, 103f, 103g |
+| Z22.c.message | Profil und erstes Event sind vollständig. Schau dir die Vorschau an und reiche beides ein. | Your profile and first event are complete. Look at the preview and submit both. | ORG-103c |
+| Z22.c.hint | DISKOE prüft beides zusammen. Mit der Freigabe werden Profil und Event öffentlich. | DISKOE reviews both together. Once approved, profile and event become public. | ORG-103c |
+| Z22.c.action | Vorschau ansehen und einreichen | View preview and submit | ORG-103c |
+| Z22.d.message | Danke! Wir prüfen Profil und Event gemeinsam, so schnell wir können. Du musst nichts tun. | Thank you! We're reviewing your profile and event together as fast as we can. You don't need to do anything. | ORG-103d |
+| Z22.d.hint | Wir schreiben dir per E-Mail, sobald beides freigegeben ist oder wir eine Frage haben. | We'll email you as soon as both are approved or we have a question. | ORG-103d |
+| Z22.d.action | Eingereichtes ansehen | View what you submitted | ORG-103d, Ghost-Button |
+| Z22.e.fallback | DISKOE hat eine Frage zu deinem Stand. | DISKOE has a question about your submission. | ORG-103e, wenn der Text der Rückfrage fehlt (Rückfall, kein Frame) |
+| Z22.e.hint | Das ist keine Absage. Korrigiere die Angabe und reiche Profil und Event danach erneut ein. Bis dahin bleibt alles privat. | This isn't a rejection. Correct the detail and submit profile and event again afterwards. Until then everything stays private. | ORG-103e |
+| Z22.e.action | Angabe korrigieren | Correct the detail | ORG-103e |
+| Z22.f.message | Dein Profil und dein erstes Event sind live. | Your profile and your first event are live. | ORG-103f |
+| Z22.f.profileOnly | Dein Profil ist live. | Your profile is live. | ORG-103f, wenn noch kein Event veröffentlicht ist (kein Frame) |
+| Z22.f.hint | Teile den Link, damit Leute dein Programm sehen. Änderungen bleiben privat, bis du sie selbst veröffentlichst. | Share the link so people can see your programme. Changes stay private until you publish them yourself. | ORG-103f, Wortlaut des Frames (Founder 13.11.) |
+| Z22.f.share | Profil teilen | Share profile | ORG-103f, Hauptaktion (kopiert den Link) |
+| Z22.f.newEvent | Weiteres Event anlegen | Create another event | ORG-103f |
+| Z22.g.message | Du hast Änderungen, die noch nicht öffentlich sind. | You have changes that aren't public yet. | ORG-103g |
+| Z22.g.incomplete | Dein Profil ist live. Deine neue Fassung ist noch nicht vollständig. | Your profile is live. Your new version isn't complete yet. | Profil live, neue Fassung unvollständig (kein Frame, Text aus dem bisherigen Stand) |
+| Z22.g.hint | Bis du sie veröffentlichst, bleibt der bisherige öffentliche Stand sichtbar. | Until you publish them, the previous public version stays visible. | ORG-103g |
+| Z22.g.action | Vorschau ansehen und veröffentlichen | View preview and publish | ORG-103g |
+| Z22.area.title | Dein Bereich | Your area | ORG-103c bis g |
+| Z22.area.events.title | Events | Events | Zeile in Dein Bereich |
+| Z22.area.events.text | Deine Events ansehen, verwalten oder ein neues anlegen. | View and manage your events or create a new one. | Zeile in Dein Bereich |
+| Z22.area.edit.title | Profil bearbeiten | Edit profile | Zeile in Dein Bereich, nur live |
+| Z22.area.edit.text | Änderungen bleiben privat, bis du sie veröffentlichst. | Changes stay private until you publish them. | Zeile in Dein Bereich, nur live |
+| Z22.events.heading | Deine Events | Your events | vorläufig auf der Startseite, bis die Eventliste (`EVL-01`, F6) gebaut ist |
+| Z22.events.empty | Du hast noch kein Event angelegt. | You haven't created an event yet. | vorläufig, wie bisher |
+| Z22.events.untitled | Event ohne Titel | Untitled event | vorläufig, wie bisher |
+| Z22.events.published | Veröffentlicht | Published | vorläufig, wie bisher |
+| Z22.events.draft | Entwurf – privat | Draft – private | vorläufig, wie bisher |
+| Z22.events.inReview | In Prüfung | In review | vorläufig; Event, dessen Profil gerade geprüft wird, nur ansehen (Flow-Karte 103d) |
+| Z22.events.question | Rückfrage von DISKOE | Question from DISKOE | vorläufig; wie oben, bei Rückfrage |
+| Z22.events.new | Event anlegen | Create event | vorläufig, wie bisher |
+| Z22.share.copied | Link kopiert. | Link copied. | Profil teilen, Erfolg (Z11) |
+| Z22.share.failed | Das Kopieren hat nicht geklappt. Versuche es noch einmal. | Copying didn't work. Try again. | Profil teilen, Fehler (Z03) |
 
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.

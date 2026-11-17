@@ -1219,15 +1219,19 @@ select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) 
   'the first claim returns the owner address');
 select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) is null$q$, :'pb', :'rb1', 'profile_question'),
   'a second claim while one is running returns nothing');
-select public.finish_profile_mail(:'pb', :'rb1', 'profile_question', false);
-select tests.expect_true(format($q$select status = 'failed' and attempts = 1 and finished_at is not null from public.profile_mails where revision_id = %L$q$, :'rb1'),
-  'a failed attempt is recorded');
+select public.finish_profile_mail(:'pb', :'rb1', 'profile_question', false, null, 'EAUTH');
+select tests.expect_true(format($q$select status = 'failed' and attempts = 1 and finished_at is not null and failure_code = 'EAUTH' from public.profile_mails where revision_id = %L$q$, :'rb1'),
+  'a failed attempt is recorded with its error code');
+select tests.as_user(:'uid_b');
+select tests.expect_count(format('select failure_code from public.profile_mails where revision_id = %L', :'rb1'), 0,
+  'an owner does not see the failure code');
+select tests.as_user(:'uid_f');
 select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) = 'owner-b@example.test'$q$, :'pb', :'rb1', 'profile_question'),
   'a failed mail can be claimed again');
 select public.finish_profile_mail(:'pb', :'rb1', 'profile_question', true, 'provider-id-1');
 select tests.as_superuser();
-select tests.expect_true(format($q$select status = 'sent' and attempts = 2 and provider_message_id = 'provider-id-1' from public.profile_mails where revision_id = %L$q$, :'rb1'),
-  'a sent mail is recorded with the provider id');
+select tests.expect_true(format($q$select status = 'sent' and attempts = 2 and provider_message_id = 'provider-id-1' and failure_code is null from public.profile_mails where revision_id = %L$q$, :'rb1'),
+  'a sent mail is recorded with the provider id and without the old error code');
 select tests.as_user(:'uid_f');
 select tests.expect_true(format($q$select public.claim_profile_mail(%L, %L, %L) is null$q$, :'pb', :'rb1', 'profile_question'),
   'a sent mail is never claimed again');
@@ -1517,7 +1521,7 @@ insert into tests.expected_col_grants values
   ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type']),
   ('authenticated', 'media_assets', 'UPDATE', array['mime_type']),
   ('authenticated', 'review_requests', 'SELECT', array['id','profile_id','revision_id','message','created_at','event_revision_id']),
-  ('authenticated', 'profile_mails', 'SELECT', array['id','profile_id','revision_id','kind','status','attempts','claimed_at','finished_at']),
+  ('authenticated', 'profile_mails', 'SELECT', array['id','profile_id','revision_id','kind','status','attempts','claimed_at','finished_at','failure_code']),
   ('authenticated', 'media_uses', 'SELECT', array['id','asset_id','profile_id','event_id','role','public_object_path','alt_text','crop','confirmed_at']),
   ('authenticated', 'media_uses', 'INSERT', array['asset_id','profile_id','event_id','role','alt_text','crop']),
   ('authenticated', 'media_uses', 'UPDATE', array['alt_text','crop','confirmed_at','confirmed_by']),

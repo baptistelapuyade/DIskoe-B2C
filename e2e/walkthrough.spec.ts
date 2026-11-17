@@ -98,9 +98,9 @@ test("the whole profile flow, from the first entry to the live profile", async (
 
     // 1. The organizer fills the profile and hands it in.
     await signInWithCode(page, emails.owner);
-    await expect(page.getByText("Dir fehlen noch Angaben.")).toBeVisible(SLOW);
+    await expect(page.getByText("Dir fehlen noch Angaben:")).toBeVisible(SLOW);
     await beat(page);
-    await page.getByRole("link", { name: "Angaben vervollständigen" }).click();
+    await page.getByRole("link", { name: "Angaben ergänzen" }).click();
     await page.getByLabel("Kurzvorstellung").fill("Nächte in Berlin.");
     await page.getByLabel("Offizieller Link").fill("walkthrough.example");
     await page.getByRole("button", { name: "Speichern" }).click();
@@ -226,9 +226,7 @@ test("the whole profile flow, from the first entry to the live profile", async (
 
     // 5. The organizer sees a live profile.
     await signInWithCode(page, emails.owner);
-    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible(
-      SLOW,
-    );
+    await expect(page.getByText("Dein Profil ist live.")).toBeVisible(SLOW);
     await beat(page, 2000);
   } finally {
     // The video is only written when the page is closed. Save it under a fixed

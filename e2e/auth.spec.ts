@@ -206,11 +206,14 @@ test.describe("sign-in and organizer assignment", () => {
 
     await page.goto("/organizer");
     await expect(
-      page.getByRole("heading", { name: "Noch kein Organizer-Profil zugeordnet" }),
+      page.getByRole("heading", { name: "Dein Konto hat noch kein Profil" }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /anlegen|erstellen/i }),
     ).toHaveCount(0);
+    await expect(
+      page.getByRole("link", { name: "hello@diskoe.world" }),
+    ).toHaveAttribute("href", "mailto:hello@diskoe.world");
     await expect(
       page.getByRole("link", { name: /anlegen|erstellen/i }),
     ).toHaveCount(0);
@@ -226,7 +229,7 @@ test.describe("sign-in and organizer assignment", () => {
 
     await page.goto("/organizer");
     await expect(
-      page.getByRole("heading", { name: "Noch kein Organizer-Profil zugeordnet" }),
+      page.getByRole("heading", { name: "Dein Konto hat noch kein Profil" }),
     ).toBeVisible();
 
     await context.close();
@@ -237,7 +240,7 @@ test.describe("sign-in and organizer assignment", () => {
     const page = await context.newPage();
 
     await page.goto("/organizer");
-    await expect(page.getByRole("heading", { name: "Deine Profile" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Dein Profil", exact: true })).toBeVisible();
     await expect(page.getByText("Alpha Events")).toBeVisible();
     await expect(page.getByText("Beta Events")).toHaveCount(0);
 

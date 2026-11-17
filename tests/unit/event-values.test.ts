@@ -195,3 +195,37 @@ describe("rowToValues and rowToFormValues", () => {
     expect(values.access.state).toBe("unanswered");
   });
 });
+
+describe("saving one section keeps the others", () => {
+  const saved: EventRevisionRow = {
+    ...base,
+    title_state: "provided",
+    title: "Test Event",
+    price_state: "provided",
+    price_model: "fixed",
+    price_amount_minor: 1200,
+    access_state: "provided",
+    access_routes: [{ kind: "door" }],
+    event_image_use_id: "00000000-0000-4000-8000-0000000000aa",
+  };
+
+  it("writes price and access back unchanged after a form round trip", () => {
+    // What a section save does: saved row to form values, overlay of the
+    // section's own fields (here: title only), parse, write.
+    const form = { ...rowToFormValues(saved), title: "Neuer Titel" };
+    const row = valuesToRow(
+      parsed({ ...form, endUnknown: form.endUnknown ? "on" : null }),
+    );
+
+    expect(row).toMatchObject({
+      title: "Neuer Titel",
+      price_state: "provided",
+      price_model: "fixed",
+      price_amount_minor: 1200,
+      access_state: "provided",
+      access_routes: [{ kind: "door" }],
+    });
+    // The image link is not part of a section save at all.
+    expect(row).not.toHaveProperty("event_image_use_id");
+  });
+});
