@@ -124,4 +124,121 @@ export const en: Record<MessageId, string> = {
   "Z22.events.new": "Create event",
   "Z22.share.copied": "Link copied.",
   "Z22.share.failed": "Copying didn't work. Try again.",
+  "Z23.details.eyebrow": "Details · Part 1 of 3",
+  "Z23.details.title": "Tell us about your project",
+  "Z23.details.lead":
+    "These details appear on your profile page. It stays private until DISKOE has approved it.",
+  "Z23.details.name.label": "Name of your project",
+  "Z23.details.name.placeholder": "Series, collective or label",
+  "Z23.details.name.hint": "This is the heading of your page.",
+  "Z23.details.name.tooLong": "The name can be {max} characters long at most.",
+  "Z23.details.intro.label": "Short introduction",
+  "Z23.details.intro.placeholder": "What do you put on?",
+  "Z23.details.intro.hint": "One or two sentences: What do you put on?",
+  "Z23.details.intro.tooLong":
+    "The short introduction can be {max} characters long at most.",
+  "Z23.details.slug.label": "Profile address",
+  "Z23.details.slug.hint":
+    "Lowercase letters, numbers and hyphens. This becomes the link to your page. After approval it can't be changed any more.",
+  "Z23.details.slug.hintValid": "Your page is available at /{slug}.",
+  "Z23.details.slug.taken":
+    "This address is already taken. Choose another one.",
+  "Z23.details.slug.format":
+    "Only lowercase letters, numbers and hyphens, at least 3 characters. For example nebenraum-berlin.",
+  "Z23.details.slug.reserved": "This address is reserved. Choose another one.",
+  "Z23.details.slug.fixed":
+    "Your profile address is fixed: /{slug}. It can't be changed any more.",
+  "Z23.details.where.title": "Where can people find you?",
+  "Z23.details.where.hint":
+    "At least one link or a contact. You can add up to five links.",
+  "Z23.details.website.label": "Website",
+  "Z23.details.website.placeholder": "https://",
+  "Z23.details.instagram.label": "Instagram",
+  "Z23.details.instagram.placeholder": "@yourname",
+  "Z23.details.instagram.invalid":
+    "That isn't a valid Instagram name. Write something like @nebenraum.",
+  "Z23.details.link.invalid":
+    "That isn't a valid link. Write something like https://nebenraum.example.",
+  "Z23.details.more.label": "Further link {n}",
+  "Z23.details.more.add": "Add another link",
+  "Z23.details.more.remove": "Remove link {n}",
+  "Z23.details.more.max": "You can't add more than five further links.",
+  "Z23.details.contact.label": "Public contact (optional)",
+  "Z23.details.contact.placeholder": "name@example.com",
+  "Z23.details.contact.hint": "This email address is public on your page.",
+  "Z23.details.contact.tooLong":
+    "The contact can be {max} characters long at most.",
+  "Z23.details.next": "Continue to profile picture",
+  "Z23.details.later": "Continue later",
+  "Z23.check.title.one": "Please check one detail.",
+  "Z23.check.title.two": "Please check two details.",
+  "Z23.check.title.many": "Please check {n} details.",
+  "Z23.check.line.one": "The marked field doesn't fit yet.",
+  "Z23.check.line.many": "The marked fields don't fit yet.",
+  "Z23.save.failed.title": "Saving didn't work.",
+  "Z23.save.failed.line": "What you entered is still in the form. Try again.",
+  "Z23.save.failed.keep": "Your picture is still there. Try again.",
+  "Z23.image.eyebrow": "Profile picture · Part 2 of 3",
+  "Z23.image.title": "Your profile picture",
+  "Z23.image.lead":
+    "A square picture, for example your logo. It appears at the top of your profile page.",
+  "Z23.image.label": "Profile picture",
+  "Z23.upload.hint": "JPG, PNG or WebP, up to 5 MB",
+  "Z23.upload.choose": "Choose file",
+  "Z23.upload.none": "No file chosen",
+  "Z23.upload.another": "You can choose a different picture.",
+  "Z23.upload.crop": "Change crop",
+  "Z23.image.missingHint":
+    "You can keep working without a picture. To submit, your profile needs a profile picture.",
+  "Z23.image.alt.label": "Picture description (optional)",
+  "Z23.image.alt.placeholder": "What can be seen in the picture?",
+  "Z23.image.alt.hint":
+    "Describe in one sentence what can be seen, for example: Four people in front of a brick wall. This helps people who can't see the picture.",
+  "Z23.image.alt.tooLong":
+    "The picture description can be {max} characters long at most.",
+  "Z23.image.next": "Continue to preview",
+  "Z23.image.back": "Back to details",
+  "Z23.upload.busy.title": "Your picture is being uploaded …",
+  "Z23.upload.busy.line":
+    "This takes a moment. Stay on this page for a moment.",
+  "Z23.upload.tooBig.title": "The file is too large.",
+  "Z23.upload.tooBig.line":
+    "JPG, PNG or WebP up to {limit} are allowed. Yours is {size}.",
+  "Z23.upload.tooSmall.title": "The picture is too small.",
+  "Z23.upload.tooSmall.line":
+    "It needs at least {min} × {min} pixels. Yours has {w} × {h} pixels.",
+  "Z23.upload.format.title": "This format doesn't work.",
+  "Z23.upload.format.line": "JPG, PNG or WebP up to 5 MB are allowed.",
+  "Z23.upload.failed.title": "Uploading didn't work.",
+  "Z23.upload.failed.line":
+    "Your previous picture stays, if you had one. Try again.",
+  "Z23.crop.title": "Choose the crop",
+  "Z23.crop.lead":
+    "Your profile picture becomes square. Move the frame to the part you want to show.",
+  "Z23.crop.area": "Picture crop",
+  "Z23.crop.zoomOut": "Zoom out",
+  "Z23.crop.zoomIn": "Zoom in",
+  "Z23.crop.hint": "Drag the crop or use the arrow keys. Zoom with + and −.",
+  "Z23.crop.apply": "Use this crop",
+  "Z23.crop.other": "Choose a different picture",
+  "Z23.crop.retry": "Try again",
+  "Z23.preview.eyebrow": "Preview · Part 3 of 3",
+  "Z23.preview.title": "This is what your profile page looks like",
+  "Z23.preview.lead":
+    "Only you can see this. The page becomes public only once you submit it and DISKOE has approved it. With a first event or without.",
+  "Z23.preview.notice.title": "This is only the top of your page.",
+  "Z23.preview.notice.line":
+    "You're seeing the default design. You can adjust colours and type once your profile is set up. The details you add later fill the whole page.",
+  "Z23.preview.next": "Continue to your first event",
+  "Z23.preview.submit": "Submit profile without an event",
+  "Z23.preview.gaps": "You're still missing details: {gaps}.",
+  "Z23.preview.badge": "Organizer",
+  "Z23.preview.saved": "Saved",
+  "Z23.preview.share": "Share profile",
+  "Z23.preview.follow": "Follow",
+  "Z23.preview.programme": "View programme",
+  "Z23.preview.followNote":
+    "We bundle new events in one email. Every email has an unsubscribe link.",
+  "Z23.preview.static":
+    "This is only a preview. The buttons only work on the public page.",
 };
