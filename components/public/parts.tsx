@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 
 import { atmosphereTagClass, FORMAT_TAG_CLASS } from "@/lib/public/tags";
 import type { PrimaryFormat } from "@/lib/domain/event-publication";
+import type { Crop } from "@/lib/domain/profile-publication";
+import { CroppedSquare } from "@/components/ui/cropped-image";
 
 // Shared pieces of the public pages. Colours come from the design tokens only.
 
@@ -95,20 +97,18 @@ export function AtmosphereTag({ tag }: { tag: string }) {
   );
 }
 
-export function ProfileImage({ url, size }: { url: string | null; size: number }) {
+export function ProfileImage({
+  url,
+  size,
+  crop = null,
+}: {
+  url: string | null;
+  size: number;
+  crop?: Crop | null;
+}) {
   if (!url) return null;
 
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={url}
-      alt=""
-      width={size}
-      height={size}
-      className="rounded-[10px] object-cover"
-      style={{ width: size, height: size }}
-    />
-  );
+  return <CroppedSquare url={url} crop={crop} size={size} className="rounded-[10px]" />;
 }
 
 export function formatPublishedDate(iso: string | null): string | null {

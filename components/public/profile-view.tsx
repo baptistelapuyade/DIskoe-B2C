@@ -34,6 +34,18 @@ function EventRow({ event, highlight }: { event: PublicEvent; highlight: boolean
   );
 }
 
+function ExternalLink({ url, label }: { url: string; label?: string }) {
+  return (
+    <a
+      href={url}
+      rel="noopener noreferrer nofollow"
+      className="text-base leading-6 underline underline-offset-4"
+    >
+      {label ?? url.replace(/^https?:\/\//, "").replace(/\/$/, "")} ↗
+    </a>
+  );
+}
+
 export function ProfileView({
   profile,
   events,
@@ -41,6 +53,12 @@ export function ProfileView({
   profile: PublicProfile;
   events: PublicEvent[];
 }) {
+  const hasLinks = Boolean(
+    profile.officialUrl ||
+      profile.instagram ||
+      profile.extraLinks.length > 0 ||
+      profile.publicContact,
+  );
   const shown = events.slice(0, VISIBLE);
   const more = events.slice(VISIBLE);
 
@@ -51,7 +69,7 @@ export function ProfileView({
       <Band tone="surface" label="Veranstalter">
         <div className="flex max-w-[704px] flex-col gap-5">
           <Eyebrow>Veranstalter</Eyebrow>
-          <ProfileImage url={profile.imageUrl} size={96} />
+          <ProfileImage url={profile.imageUrl} size={96} crop={profile.imageCrop} />
           <h1 className="text-[40px] leading-[44px] font-bold tracking-[-0.8px]">
             {profile.name}
           </h1>
@@ -92,21 +110,25 @@ export function ProfileView({
         </div>
       </Band>
 
-      {profile.officialUrl || profile.publicContact ? (
+      {hasLinks ? (
         <Band tone="ink" label="Links und Kontakt">
           <div className="flex max-w-[704px] flex-col gap-4">
             <h2 className="text-[32px] leading-[38px] font-bold tracking-[-0.8px]">
               Links und Kontakt
             </h2>
-            {profile.officialUrl ? (
+            {profile.officialUrl ? <ExternalLink url={profile.officialUrl} /> : null}
+            {profile.instagram ? (
               <a
-                href={profile.officialUrl}
+                href={`https://www.instagram.com/${profile.instagram}/`}
                 rel="noopener noreferrer nofollow"
                 className="text-base leading-6 underline underline-offset-4"
               >
-                {profile.officialUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")} ↗
+                Instagram @{profile.instagram} ↗
               </a>
             ) : null}
+            {profile.extraLinks.map((link) => (
+              <ExternalLink key={link.url} url={link.url} label={link.label} />
+            ))}
             {profile.publicContact ? (
               <p className="text-base leading-6">{profile.publicContact}</p>
             ) : null}
