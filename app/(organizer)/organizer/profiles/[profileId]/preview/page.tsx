@@ -1,11 +1,28 @@
 import Link from "next/link";
-import { PublishForm, RetryImageForm, SubmitForm } from "@/components/profile/forms";
+
+import { ProfileHeadPreview } from "@/components/profile/head-preview";
+import { StepShell } from "@/components/profile/step-shell";
+import { LinkButton } from "@/components/ui/button";
+import { Notice } from "@/components/ui/notice";
+import { readCrop, type GapCode } from "@/lib/domain/profile-publication";
+import { t, type MessageId } from "@/lib/i18n";
+import { getLang } from "@/lib/i18n/server";
+import { createClient } from "@/lib/supabase/server";
+import { PublishForm, RetryImageForm } from "@/components/profile/forms";
 import { GapList, ProfileNav, stateLabel } from "@/components/profile/status";
 import { loadOwnerProfileView } from "@/lib/profile/load";
 
-import { publishProfile, retryImagePublish, submitForReview } from "../actions";
+import { publishProfile, retryImagePublish } from "../actions";
 
 export const dynamic = "force-dynamic";
+
+const GAP_IDS: Record<GapCode, MessageId> = {
+  name: "Z22.gap.name",
+  short_intro: "Z22.gap.shortIntro",
+  link_or_contact: "Z22.gap.linkOrContact",
+  profile_image: "Z22.gap.profileImage",
+  revision_missing: "Z22.gap.revisionMissing",
+};
 
 export default async function PreviewProfilePage({
   params,
@@ -18,7 +35,71 @@ export default async function PreviewProfilePage({
     `/organizer/profiles/${profileId}/preview`,
   );
   const { revision, image } = view;
-  const canSubmit = view.status === "ready";
+
+  // Before the first submission the preview is step 3 of the profile (Figma
+  // ORG-06). Later states (in review, question, changes to a live profile)
+  // keep the older screen until their own slices are built.
+  if (view.status === "incomplete" || view.status === "ready") {
+    const lang = await getLang();
+    const base = `/organizer/profiles/${profileId}`;
+    const supabase = await createClient();
+    const { data: use } = image
+      ? await supabase.from("media_uses").select("crop").eq("id", image.useId).maybeSingle()
+      : { data: null };
+    const firstGap = view.gaps[0];
+
+    return (
+      <StepShell
+        lang={lang}
+        backHref={`${base}/image`}
+        eyebrow={t(lang, "Z23.preview.eyebrow")}
+        title={t(lang, "Z23.preview.title")}
+        lead={t(lang, "Z23.preview.lead")}
+        wide
+      >
+        <div className="max-w-[1032px]">
+          <Notice tone="info" title={t(lang, "Z23.preview.notice.title")}>
+            {t(lang, "Z23.preview.notice.line")}
+          </Notice>
+        </div>
+        <ProfileHeadPreview
+          lang={lang}
+          name={revision?.name ?? ""}
+          shortIntro={revision?.shortIntro ?? ""}
+          imageUrl={image?.signedUrl ?? null}
+          crop={readCrop(use?.crop)}
+        />
+        {view.gaps.length > 0 ? (
+          <div className="flex flex-col gap-6">
+            <Notice
+              tone="warning"
+              title={t(lang, "Z23.preview.gaps", {
+                gaps: view.gaps.map((gap) => t(lang, GAP_IDS[gap])).join(", "),
+              })}
+            />
+            <div>
+              <LinkButton
+                href={firstGap === "profile_image" ? `${base}/image` : `${base}/edit`}
+                variant="primaryLg"
+              >
+                {t(lang, "Z22.a.action")}
+              </LinkButton>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <LinkButton href="/organizer/events/new" variant="primaryLg">
+              {t(lang, "Z23.preview.next")}
+            </LinkButton>
+            <LinkButton href={`${base}/submit`} variant="ghostLg">
+              {t(lang, "Z23.preview.submit")}
+            </LinkButton>
+          </div>
+        )}
+      </StepShell>
+    );
+  }
+
   const canPublish = view.status === "update_ready";
   const imageMissingPublicly =
     view.profile.publishedRevisionId !== null &&
@@ -63,36 +144,7 @@ export default async function PreviewProfilePage({
         </ul>
       </article>
 
-      {canSubmit ? (
-        <section aria-labelledby="submit-heading" className="space-y-4">
-          <h2 id="submit-heading" className="text-xl font-semibold">
-            Zur Prüfung einreichen
-          </h2>
-          <p className="text-muted-foreground">
-            DISKOE prüft genau diesen Stand. Wenn du danach etwas änderst,
-            beginnt die Prüfung mit dem neuen Stand von vorn.
-          </p>
-          <div className="bg-muted space-y-2 rounded-lg p-4">
-            <h3 className="font-medium">So geht es weiter</h3>
-            <ol className="list-decimal space-y-1 pl-5">
-              <li>
-                DISKOE prüft dein Profil. Wir melden uns so schnell wie
-                möglich und versuchen, jedes Profil noch am selben Tag zu
-                prüfen.
-              </li>
-              <li>
-                Du bekommst eine E-Mail: entweder die Freigabe oder eine
-                konkrete Frage.
-              </li>
-              <li>
-                Mit der Freigabe ist dein Profil sofort öffentlich. Du musst
-                nichts weiter bestätigen.
-              </li>
-            </ol>
-          </div>
-          <SubmitForm action={submitForReview.bind(null, profileId)} />
-        </section>
-      ) : canPublish ? (
+      {canPublish ? (
         <section aria-labelledby="publish-heading" className="space-y-4">
           <h2 id="publish-heading" className="text-xl font-semibold">
             Änderungen veröffentlichen

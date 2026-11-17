@@ -1,0 +1,69 @@
+import type { ReactNode } from "react";
+
+import { LinkButton } from "@/components/ui/button";
+import { ProgressSteps } from "@/components/layout/progress-steps";
+import { t, type Lang } from "@/lib/i18n";
+
+// Frame of the profile steps (Figma ORG-03a to ORG-06, desktop and mobile):
+// "Back", the five-step progress bar (the profile is step 1), then a head with
+// eyebrow, title and lead, then the content. A 560 px column, left-aligned on
+// the axis of the logo (framework V1). The app header and footer come from the
+// organizer layout.
+export function StepShell({
+  lang,
+  backHref,
+  eyebrow,
+  title,
+  lead,
+  wide = false,
+  children,
+}: {
+  lang: Lang;
+  backHref: string;
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  // The preview needs the full container width.
+  wide?: boolean;
+  children: ReactNode;
+}) {
+  const labels = [
+    t(lang, "Z22.step.profile"),
+    t(lang, "Z22.step.event"),
+    t(lang, "Z22.step.submit"),
+    t(lang, "Z22.step.review"),
+    t(lang, "Z22.step.live"),
+  ];
+
+  return (
+    <main className="flex w-full flex-col gap-6 px-6 pt-2 pb-12 md:px-12 md:pt-6">
+      <div className={`flex w-full flex-col gap-8 ${wide ? "max-w-[1032px]" : "max-w-[560px]"}`}>
+        <div className="flex">
+          <LinkButton href={backHref} variant="ghostLg">
+            {t(lang, "Z20.back")}
+          </LinkButton>
+        </div>
+        <div className="max-w-[560px]">
+          <ProgressSteps
+            lang={lang}
+            labels={labels}
+            current={0}
+            label={t(lang, "Z22.progress.label")}
+          />
+        </div>
+        <div className="flex max-w-[560px] flex-col gap-3">
+          <p className="text-brand-iris text-[13px] leading-4 font-medium tracking-[0.08em] uppercase">
+            {eyebrow}
+          </p>
+          <h1 className="text-foreground text-[32px] leading-[38px] font-bold md:text-[40px] md:leading-[44px]">
+            {title}
+          </h1>
+          {lead ? (
+            <p className="text-muted-foreground text-base leading-6">{lead}</p>
+          ) : null}
+        </div>
+        {children}
+      </div>
+    </main>
+  );
+}
