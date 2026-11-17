@@ -59,7 +59,7 @@ Die Gruppen folgen dem Weg des ersten Organizers. Alpha: **Ja** heißt in der Al
 | Absagen, Verschieben mit und ohne neuen Termin, Datum ändern | PUBLISH-05, Slice 5 | Ja | teilweise: Absagen und Verschieben gebaut | NACH-C, GELTEND | Änderung von Ort und von Texten an einem live Event (NACH-B) ist laut Slice 5 nicht gebaut |
 | Öffentliche Eventseite `/e/[slug]` mit Statuszuständen, JSON-LD, Sitemap | PUBLIC-02, PUBLIC-03, Slice 6 | Ja | gebaut, optisch noch nicht wie Figma | PUB-01, GELTEND | Screen-für-Screen-Abgleich mit dem Founder |
 | Öffentliche Profilseite `/[slug]` mit kommenden Events und Leerzustand | PUBLIC-01, Slice 6 | Ja | gebaut | PUB-06, GELTEND | `PUB-06b` ist noch im alten Stil |
-| Teilen per Systemdialog oder Link kopieren | SHARE-01 | Ja | gebaut | PUB-01 m–o, GELTEND | QR-Download und Textvarianten sind laut Notion Plus |
+| Teilen per Systemdialog oder Link kopieren | SHARE-01 | Ja | gebaut | PUB-01 m–o, GELTEND (Vorschlag 10.11.: ersetzt durch `PUB-01q`/`r`, Zustände statt Dialog, Abnahme offen) | QR-Download und Textvarianten sind laut Notion Plus |
 | Impressum und Datenschutzerklärung | Founder 05.11. | Ja, vor dem ersten Organizer | Platzhalterseiten | nicht belegt | Claude entwirft die Texte aus den echten Datenflüssen |
 
 ### 4. Publikum aufbauen
@@ -67,11 +67,12 @@ Die Gruppen folgen dem Weg des ersten Organizers. Alpha: **Ja** heißt in der Al
 | Funktion | Quelle | Alpha | Code-Stand | Figma | Offen oder Voraussetzung |
 |---|---|---|---|---|---|
 | Follow: Besucher folgt einem Organizer per E-Mail, mit Bestätigungslink, Verwaltung und Abmeldung in jeder Mail | FOLLOW-01, Q32 | Ja, bestätigt 05.11. | nicht gebaut | PUB-17, GELTEND (Platzierung), Profilköpfe mit Follow | Freigabe für Mails an Besucher, Einwilligungstext, Missbrauchsbegrenzung |
-| Automatische Hinweise: neue Events gebündelt, Änderung von Datum, Beginn und Ort, Absage | FOLLOW-02, Q33 | Ja, bestätigt 05.11. | nicht gebaut | Texte der Statusspalten im Design noch zu füllen | Versand 10:00 Uhr Europe/Berlin, 15-Minuten-Fenster, Entdopplung, Zustellprotokoll |
+| Automatische Hinweise: neue Events gebündelt, Änderung von Datum, Beginn und Ort, Absage | FOLLOW-02, Q33 | Ja, bestätigt 05.11. | nicht gebaut | Texte der Statusspalten im Design noch zu füllen | Versand 10:00 Uhr Europe/Berlin, 15-Minuten-Fenster, Entdopplung, Zustellprotokoll. Hinweis auf neue Events in `AGENTS.md` ausdrücklich freigegeben am 09.11., für Free und Plus gleich |
 | Änderungsabo für ein einzelnes Event | FOLLOW-03, Delta v0.4 §5 | Ja, bestätigt 05.11. | nicht gebaut | PUB-18, ENTWURF | Wirkt wie Follow nur für ein Event. Geringer Hebel, deshalb spät bauen |
 | Merken (privat, lokal, nach Login geräteübergreifend) | VISIT-01 | Ja, bestätigt 05.11. | nur deaktivierter Platzhalter auf der Eventseite | PUB-18, ENTWURF | Lokale Merkungen und Login-Sync |
 | Kalenderexport (Datei für ein Event) | VISIT-02 | Ja, bestätigt 05.11. | nicht gebaut | PUB-18, ENTWURF | Ohne Mail, ohne Einwilligung, deshalb billig |
 | Free-Grundzählungen: Aufrufe, Ticketlink-Klicks, bestätigte Abos | DIST-01 | Ja | nicht gebaut | nicht belegt | Datenschutzarme Messung, keine Unique-Personen |
+| Eigene Nachrichten von Organizern an Follower (Plus-Funktion) | Strategie v0.2, STATUS 09.11. | **Nein, nicht Alpha, nicht freigegeben** | nicht gebaut | in den Alpha-Screens für Gäste weggelassen (Founder, 10.11., 12:09); bleibt Plus-Vorhaben | Eigene Freigabe des Founders, frühestens zum Plus-Start (`AGENTS.md`, 09.11.). Beim Zeichnen von Follow und Abo-Verwaltung bleibt Platz für ein späteres Häkchen „Eventnachrichten“. Kein ausgegrautes Häkchen (UX-16) |
 | Mail-Grundlagen: Double-Opt-in, Abmeldelink, Versandprotokoll, Bounce- und Beschwerdebehandlung | Q32, `AGENTS.md` | Ja, Teil von Follow | nicht gebaut | – | DMARC, Zustellkennzahlen aus SES |
 
 ### 5. Netzwerk
@@ -104,7 +105,7 @@ Die Datenbank kennt heute nur das Profil „Veranstalter“. Alles in dieser Gru
 | Funktion | Quelle | Alpha | Code-Stand | Figma | Offen oder Voraussetzung |
 |---|---|---|---|---|---|
 | Plus-Reservierungstest: Preis- und Funktionsseite, Auswahl der drei wichtigsten Funktionen, Bestätigung, Rückzug, Liste für den Founder | Featurematrix 22.10., Beschluss 22.10. | Ja, bestätigt 05.11. | nicht gebaut | D16–D18, ENTWURF | Keine Zahlung. Schwelle und Frist sind Vorschläge. Einwilligungstext ist rechtlich nicht geprüft. Löschung 3 Monate nach der Entscheidung |
-| Plus-Funktionen: Vorlagen, eigene Nachrichten, Befragung, Assistent mit 50 Läufen, QR-Download, Plus-Analytics | Delta v0.4 | Nein, erst nach der Auswertung des Tests | – | – | Notion schätzt 60–100 Stunden, ungeprüft |
+| Plus-Funktionen: Vorlagen, eigene Nachrichten, Befragung, Assistent mit 50 Läufen, QR-Download, Plus-Analytics | Delta v0.4 | Nein, erst nach der Auswertung des Tests | – | – | Notion schätzt 60–100 Stunden, ungeprüft. „Eigene Nachrichten“ an Follower sind die Plus-Funktion für direkten Kontakt; nicht freigegeben, Entwurf siehe `docs/STATUS.md` 09.11., 17:55 |
 | Testzugang, Checkout, Billing | PREMIUM-01, `AGENTS.md` | Nein | – | – | Manuelle Rechnung genügt laut Delta v0.4 |
 
 ### 8. Betrieb und Recht
@@ -132,7 +133,7 @@ Sieben Stellen widersprechen sich. Die Entscheidungen vom 05.11. lösen die erst
 | Live-KI auf Nutzerdaten ist „nicht autorisiert“, die Featurematrix nennt KI-Erfassung aber Free in der Alpha. | `AGENTS.md`, Featurematrix 22.10. | Aufgelöst am 05.11.: Entwicklungsfreigabe für Flyerbilder im Google-Guthaben, siehe `AGENTS.md`. |
 | Notion hat einen Stufenplan (Alpha 1, Alpha 2), der noch nicht entschieden ist. Heute kommt alles in die Alpha. | Aufwandsschätzung 22.10. | Aufgelöst am 05.11.: Die Reihenfolge nach dem Weg des Organizers ersetzt den Stufenplan. Die Notion-Aufwandsseite ist noch nachzuziehen (offen). |
 | Die Reihenfolge der Folgeschichten im Repo (Gestaltung, KI, Follow, Netzwerk, Plus, Besucher) passt nicht zum Organizer-Weg. | `02-durchstich.md` | Aufgelöst am 05.11.: Wellenfolge siehe nächster Abschnitt; `02-durchstich.md` verweist darauf. |
-| Figma-Sektionen heißen „nicht im Durchstich“. Das klingt nach „nicht in der Alpha“, meint aber nur „noch nicht gebaut“. | `03-screens-figma.md` | Sektionsnamen nach der Matrix umbenennen (Alpha, Welle, Status). |
+| Figma-Sektionen heißen „nicht im Durchstich“. Das klingt nach „nicht in der Alpha“, meint aber nur „noch nicht gebaut“. | `03-screens-figma.md` | Sektionsnamen nach der Matrix umbenennen (Alpha, Welle, Status). **Umgesetzt am 10.11.2026:** Die Sections tragen `W1` bis `W6` statt „nicht im Durchstich“ (Tabelle in `03-screens-figma.md`, „Aufräumen am 10.11.2026“). |
 | Künstlerseiten: „öffentlich erst nach Rechtsprüfung“ in der Featurematrix, „vorsichtiger Weg ohne Kanzlei“ im späteren Beschluss vom 22.10. | Featurematrix §2, Featurematrix §9 | Der spätere Beschluss gilt: erreichbar, noindex, Entfernen-Link, Bestätigung durch den Organizer. Prüfung bei Budget. |
 | `SLICE-2-SUMMARY.md` nennt SES „nicht beantragt“. Das Runbook nennt den Produktionszugang seit 28.10. als erteilt. Notion-Seite „Umsetzungsstand“ vom 28.10. ist ebenfalls überholt. | Slice-Zusammenfassung, Runbook, Notion | Runbook gilt. Die beiden alten Stellen mit „überholt durch“ kennzeichnen. |
 
@@ -150,7 +151,7 @@ Wir bauen so, wie der erste echte Organizer die Alpha durchläuft (beschlossen 0
 | 5. Netzwerk | Verknüpfte Felder, Venue-Profil mit Bestätigung und Ortsbindung, Einladungen, Artist-Seiten, Briefing-Link | Ein Event mit Venue und Line-up läuft vom Einladungslink bis zur Bestätigung | 82–141 h |
 | 6. Profil-Editor | Module mit Empfehlungen, dann Gestaltung, dann Eventgestaltung | Ein Profil wird gestaltet, veröffentlicht und auf neue Events angewendet | 48–86 h |
 
-**Beschlossen (Founder, 05.11.):** Die Wellen werden in dieser Reihenfolge umgesetzt. Die Alpha wird trotzdem erst nach Welle 6 geöffnet, weil das Coding meist schneller geht als geplant. Vor der Öffnung müssen Produktionsumgebung, Rechtstexte, Impressumsdaten und Zustellbarkeit stehen; das Produktions-Deployment braucht eine eigene Freigabe. Die Notion-Schätzung nennt selbst, dass sie nach dem ersten Durchstich neu geprüft werden soll. Die Neuschätzung ist fällig und kommt vor Welle 3.
+**Beschlossen (Founder, 05.11.):** Die Wellen werden in dieser Reihenfolge umgesetzt. Die Alpha wird trotzdem erst nach Welle 6 geöffnet, weil das Coding meist schneller geht als geplant. Vor der Öffnung müssen Produktionsumgebung, Rechtstexte, Impressumsdaten und Zustellbarkeit stehen; das Produktions-Deployment braucht eine eigene Freigabe. Die Notion-Schätzung nennt selbst, dass sie nach dem ersten Durchstich neu geprüft werden soll. Die Neuschätzung ist fällig und kommt vor Welle 3. **Entfällt (Founder, 11.11.2026):** Es gibt keine Neuschätzung der Stunden.
 
 ## Entscheidungen und offene Punkte
 

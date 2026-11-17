@@ -146,6 +146,7 @@ Verbindlich, weil aus Verträgen und Beschlüssen abgeleitet. Die Kennung (UX-nn
 - **Zahlen und Zeit:** deutsches Format, 24-Stunden-Uhr, „Uhr“ nach der Zeit, Datum mit Wochentag in Listen.
 - **Mails:** Betreff nennt den Zweck; erster Satz sagt, was du tun sollst; Absender und Grund des Empfangs stehen drin.
 - **Nutzen nennen** (PP-03): Wo eine Verknüpfung, ein Teilen-Schritt oder eine Einwilligung gefragt wird, steht ein Satz zum Nutzen vor dem Button.
+- **Zustandstexte nur aus dem Katalog** (Founder, 10.11.2026): Hinweisboxen und Zustandstexte (Speichern, Fehler, Hochladen, Bestätigung, Mail-Übergabe, Verwerfen) kommen aus `12-zustandstexte.md` (IDs Z01 ff.). Im Frame steht die ID im Ebenennamen, im Code gibt es ein Textverzeichnis mit denselben IDs. Änderungen zuerst im Katalog. Ein eigener Wortlaut braucht einen neuen Katalogeintrag mit Begründung. Für Besucher:innen der öffentlichen Seiten im Plural gilt „Gäste“, auch in Mails (Founder, 10.11.2026).
 
 ### 5.2 Maße und Raster
 **Ist-Stand** aus den Figma-Variablen der Stilübersicht (DS-0 `2454:392`) und der Komponenten DS-A (`2952:1841`), gelesen am 05.11.2026, und aus `app/globals.css` sowie `components/ui/`. Kein Abgleich Pixel für Pixel.
@@ -176,9 +177,10 @@ Konkretisiert die drei Founder-Regeln. Zahlen sind Startwerte und werden im Revi
 - **Schrift:** Die vorhandenen Textstile (§5.2) reichen für Plattform-Screens. Ein Screen nutzt höchstens drei Größenstufen neben Eyebrow und Caption. Neue Stile nur über UX-25.
 
 **Von Claude vorgeschlagen, vom Founder bestätigt (05.11., 15:22), gelten als Arbeitsregeln:**
-- **V1 Lesebreite:** Fließtext höchstens 75 Zeichen oder rund 680 px breit, auch auf breiten Bildschirmen. Formulare höchstens 560 px, Mehrspaltiges nur bei Vergleich oder Übersicht.
+- **V1 Lesebreite, zwei Breiten (Founder, 06.11.2026, 18:42; ersetzt die Regel „Formulare höchstens 560 px“ vom 05.11. und die Vollbreite vom 18:34):** Auf dem Desktop gibt es zwei Breiten. **Schmal, 560 px und linksbündig an der Achse von Logo, „Zurück“ und Fußzeile (nicht mittig; Founder 09.11.2026):** Formulare (auch Schrittfolgen mit Fortschrittsanzeige), Hinweis- und Ergebnis-Screens (Alert plus Aktionen). Einzeilige Felder stehen dort paarweise in zwei Spalten, wenn sie zusammengehören (Datum/Beginn, Straße/Hausnummer), sonst einzeln. **Voll, Containerbreite von der Kopfzeile bis „Abmelden“:** Listen mit Suche und Filter, Übersichten, Zusammenfassungen und Prüflisten, mehrere gleichwertige Karten nebeneinander. Zusammenfassungen zeigen in voller Breite die Beschriftung links (260 px) und den Wert rechts, in schmaler Spalte die Beschriftung über dem Wert. Ein Screen mit Formularfeldern ist immer schmal, auch wenn er eine Zusammenfassung enthält. Im Founder-Bereich haben Hinweise, Karten und Felder in Formularen dieselbe Breite (560 px). Fließtext höchstens 75 Zeichen breit. Mobil immer volle Breite.
 - **V2 Rhythmus statt Einheitsabstand:** Zusammengehörendes näher (8–12 px), Abschnitte weiter (32–48 px), nicht überall 24 px. Gruppierung durch Nähe vor Linien und Kästen.
 - **V3 Titelgröße je Viewport:** Mobil Titel kleiner als Desktop (z. B. 24 statt 32), Fließtext bleibt 16 px; die Hierarchie bleibt über die Größenunterschiede erhalten, nicht über absolute Werte.
+- **V5 Schriftstufen auf Plattform-Seiten (Founder, 06.11.2026):** Seitentitel Desktop Display S (40 Bold), mobil Heading L (32 Bold); Kartentitel und Zwischenüberschriften Heading M (24 Medium); Beschriftungen in Zusammenfassungszeilen Title S (16 Medium); Seitenwechsel („Zurück“, „Seite 1 von n“, „Weiter“) und Zähler 16; Listentitel Title S. Statusanzeigen auf der Seitenfläche nutzen die Variante Outline statt Secondary (graue Fläche auf grauem Grund ist nicht lesbar).
 - **V4 Bild vor Text:** Wo der Organizer ein Flyer- oder Profilbild hat, ist es der Blickfang des Screens (PP-10, UX-22), nicht ein Kasten mit Text.
 - **V5 Persönliche Texte an Schlüsselmomenten:** Leerzustände, Erfolg und Fehler dürfen im Ton der Szene sprechen (§5.1), kurz, ohne Floskel.
 - **V6 Container schneiden nichts ab:** Rahmen, Schatten und Fokusringe werden in Figma und Code nie von einem Container abgeschnitten (kein Zuschneiden an Karten, Zeilen, Feldern). Prüfung im Zoom (200 %). *(Anlass: Fund im Review vom 05.11., abgeschnittene Ränder an Buttons und Feldern.)*
@@ -206,6 +208,7 @@ Wird für jeden Screen ausgefüllt (Antwort **Ja**, **Nein** mit Begründung ode
 - [ ] C2 Pflichtlücken sind konkret benannt, mit Sprung zum Feld (UX-05).
 - [ ] C3 KI-Inhalte sind als Vorschlag markiert; Original sichtbar (UX-04).
 - [ ] C4 Zeit und Geld folgen UX-06/07.
+- [ ] C5 Zustandstexte stammen aus `12-zustandstexte.md`; die Text-ID steht im Ebenennamen.
 
 **D. Zugänglichkeit und Mobil**
 - [ ] D1 Kontraste erfüllt, Information nicht nur über Farbe (§3.5).
@@ -252,6 +255,7 @@ Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 6. **Lernschleife:** Jeder Fund aus einem Review oder Test (z. B. die Editor-UX-Punkte aus dem Abnahme-Durchlauf) wird, wenn er allgemein ist, zur Regel (neue UX-Nummer) und nicht nur am Screen behoben. Änderungen am Framework laufen per PR mit Founder-Okay und Datum.
 7. **Startprompts** (`07-start-prompt.md`) und `README.md` nennen das Dokument; `docs/STATUS.md` hält den Stand.
 8. **CI-Prüfung (bestätigt 05.11., gebaut):** Der Workflow `.github/workflows/ux-check.yml` (Skript `scripts/check-ux-section.sh`) lässt einen PR scheitern, der `app/` oder `components/` ändert, aber die Abschnitte „Figma gegen Umsetzung“ und „UX-Check“ nicht enthält oder deren Platzhalter („ja / nein“) nicht ausgefüllt hat. Die Prüfung ist nur ein Mindeststandard und ersetzt nicht das Review. Damit sie PRs blockiert, muss der Founder sie in GitHub unter Branch-Schutz für `main` als erforderlichen Status eintragen.
+9. **Ablauf je Flow (Founder, 05.11.2026, 14:55):** Wir arbeiten Flow für Flow. (1) Inventar: welche Screens und Zustände gibt es in Figma (Desktop und Mobil) und im Code, welche fehlen (`docs/reviews/FLOW-n-inventar.md`). (2) Fehlende Screens werden in Figma erstellt, nach diesem Framework. (3) Erst wenn alle Screens eines Flows da sind, geht der Founder sie gemeinsam mit Claude Screen für Screen durch (Checkliste §6, Protokoll je Screen in `docs/reviews/`). (4) Danach wird gebaut oder angepasst. Ein Screen wird nicht einzeln durchgereicht, solange der Flow Lücken hat.
 
 ## 8. Entscheidungen und offene Punkte
 **Entschieden am 05.11.2026 (Founder):**
@@ -269,10 +273,10 @@ Das Framework wirkt nur, wenn es nicht vom guten Willen abhängt. Deshalb:
 
 **Offen:**
 1. ~~Editor-UX-Punkte 1–8~~ **Erledigt durch Verfahren (Founder, 05.11., 14:50):** Die Liste aus dem Test vom 04.11. ist nicht mehr auffindbar. Der Eventeditor (ORG-B) wird in Welle 1 Screen für Screen mit diesem Framework durchgearbeitet; Funde werden dabei sofort in Repo-Doku festgehalten (je Screen ein Review-Protokoll in `docs/reviews/`) und, wenn sie allgemein sind, als neue UX-Regel aufgenommen.
-2. **Maße (§5.2):** Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen.
-3. ~~Tippziele~~ **Entschieden (Founder, 05.11., 16:25):** Buttons 44 px auf allen Viewports. Offen bleibt das Eingabefeld (36 px in Figma und Code): ebenfalls 44 px?
-4. **Barrierefreiheitsstärkungsgesetz:** Prüfung, ob es gilt, vor dem Alpha-Start.
-5. **Branch-Schutz:** Die CI-Prüfung (§7.8) in GitHub als erforderlichen Status für `main` eintragen (Founder).
+2. **Maße (§5.2):** Radien 6 und 10 prüfen; Profil-Radius `eckig/leicht/rund` im Review von ORG-E festlegen (Welle 6; Founder 11.11.: die Gestaltung bleibt im Alpha-Umfang, alle Wellen werden vor der Alpha entwickelt).
+3. ~~Tippziele~~ **Entschieden (Founder, 05.11., 16:25):** Buttons 44 px auf allen Viewports. **Eingabefeld: ebenfalls 44 px (Founder, 11.11.2026)**; Komponenten `DISKOE / Input`, `Select`, `Textarea` (Seite 10) und `components/ui` im Code werden angepasst (Code mit Welle 1).
+4. **Barrierefreiheitsstärkungsgesetz:** Prüfung, ob es gilt, vor dem Alpha-Start. Founder 11.11.: „ja bitte“, Claude recherchiert. **Befund 11.11. (keine Rechtsberatung):** Das Gesetz erfasst Dienstleistungen im elektronischen Geschäftsverkehr, also digitale Dienste, die auf Anfrage eines Verbrauchers erbracht werden, um einen Verbrauchervertrag abzuschließen (§ 1 Abs. 3, § 2 Nr. 26 BFSG). Kleinstunternehmen (weniger als 10 Beschäftigte und höchstens 2 Mio. € Jahresumsatz oder Bilanzsumme, § 2 Nr. 17) sind bei Dienstleistungen ausgenommen (§ 3 Abs. 3). Die Alpha hat weder Ticketing noch Billing noch Verträge mit Verbrauchern, die Organizer sind gewerblich oder selbständig tätig. Einschätzung: Pflicht in der Alpha unwahrscheinlich, vor Billing/Plus und vor einer Skalierung erneut und mit juristischer Prüfung klären. Die Anforderungen dieses Frameworks (Kontrast, Fokus, Tastatur, Labels, 44 px) bleiben unabhängig davon Ziel.
+5. **Branch-Schutz:** Die CI-Prüfung (§7.8) in GitHub als erforderlichen Status für `main` eintragen. **Geprüft 11.11.:** Nicht möglich, solange das Repo privat ist und kein GitHub Pro besteht (API: HTTP 403 „Upgrade to GitHub Pro or make this repository public“). Bis dahin merged der Founder nur bei grüner CI. Pro wäre ein kostenpflichtiger Dienst und braucht seine Entscheidung.
 
 ## 9. Quellen
 - Nielsen Norman Group: 10 Usability Heuristics; Formularrichtlinien.
