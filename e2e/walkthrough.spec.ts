@@ -8,6 +8,11 @@ import {
 } from "./support/inbucket";
 import { makeFounder, provisionAs, userIdByEmail } from "./support/seed";
 import { germanContext } from "./support/language";
+import {
+  chooseProfileImage,
+  PROFILE_PNG,
+  saveDetails,
+} from "./support/profile-flow";
 
 // One browser window, one video. The whole profile flow is played through the
 // user interface, with a real sign-out and sign-in at every change of role, so
@@ -33,11 +38,6 @@ const QUESTION_TEXT = "Funktioniert der Link zu eurer Seite?";
 const QUESTION_MAIL = /Eine Frage zu deinem Profil/;
 const LIVE_MAIL = /ist jetzt live/;
 
-// A valid 1x1 PNG.
-const PNG = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
-  "base64",
-);
 
 async function signInWithCode(page: Page, email: string) {
   await clearMailbox(email);
@@ -62,6 +62,9 @@ async function beat(page: Page, ms = 1200) {
 }
 
 async function submitForReview(page: Page) {
+  // From the preview, the way to submit without an event.
+  await page.getByRole("link", { name: "Profil ohne Event einreichen" }).click();
+  await page.waitForURL("**/submit", SLOW);
   await page.getByLabel(/Angaben geprüft und bin berechtigt/).check();
   await page.getByLabel(/öffentlich wird/).check();
   await beat(page, 600);
@@ -101,35 +104,27 @@ test("the whole profile flow, from the first entry to the live profile", async (
     await expect(page.getByText("Dir fehlen noch Angaben:")).toBeVisible(SLOW);
     await beat(page);
     await page.getByRole("link", { name: "Angaben ergänzen" }).click();
-    await page.getByLabel("Kurzvorstellung").fill("Nächte in Berlin.");
-    await page.getByLabel("Offizieller Link").fill("walkthrough.example");
-    await page.getByRole("button", { name: "Speichern" }).click();
-    await expect(
-      page.getByText("Gespeichert. Der Entwurf bleibt privat."),
-    ).toBeVisible(SLOW);
+    await saveDetails(page, {
+      intro: "Nächte in Berlin.",
+      website: "walkthrough.example",
+    });
+    await page.waitForURL("**/image", SLOW);
     await beat(page);
 
-    await page.getByLabel(/Profilbild/).setInputFiles({
+    await chooseProfileImage(page, {
       name: "buehne.png",
       mimeType: "image/png",
-      buffer: PNG,
+      buffer: PROFILE_PNG,
     });
     await page
-      .getByLabel("Bildbeschreibung · freiwillig")
+      .getByLabel("Bildbeschreibung (freiwillig)")
       .fill("Bühne bei Nacht");
-    await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
-    await page.getByRole("button", { name: "Bild hochladen" }).click();
-    await expect(
-      page.getByText(
-        "Das Bild ist gespeichert und bleibt bis zur Freigabe privat.",
-      ),
-    ).toBeVisible(SLOW);
     await beat(page);
-
-    await page.getByRole("link", { name: "Vorschau" }).click();
-    await expect(page.getByRole("img", { name: "Bühne bei Nacht" })).toBeVisible(
-      SLOW,
-    );
+    await page.getByRole("button", { name: "Weiter zur Vorschau" }).click();
+    await page.waitForURL("**/preview", SLOW);
+    await expect(
+      page.getByRole("img", { name: "Bühne bei Nacht" }),
+    ).toBeVisible(SLOW);
     await beat(page);
     await submitForReview(page);
 
@@ -183,14 +178,13 @@ test("the whole profile flow, from the first entry to the live profile", async (
     await beat(page);
     await page.getByRole("link", { name: "Angabe korrigieren" }).click();
     await page
-      .getByLabel("Offizieller Link")
+      .getByLabel("Website", { exact: true })
       .fill("https://www.walkthrough.example/");
-    await page.getByRole("button", { name: "Speichern" }).click();
-    await expect(
-      page.getByText("Gespeichert. Der Entwurf bleibt privat."),
-    ).toBeVisible(SLOW);
+    await page.getByRole("button", { name: "Weiter zum Profilbild" }).click();
+    await page.waitForURL("**/image", SLOW);
     await beat(page);
-    await page.getByRole("link", { name: "Vorschau" }).click();
+    await page.getByRole("button", { name: "Weiter zur Vorschau" }).click();
+    await page.waitForURL("**/preview", SLOW);
     await expect(page.getByRole("img", { name: "Bühne bei Nacht" })).toBeVisible(
       SLOW,
     );
