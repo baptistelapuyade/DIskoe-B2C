@@ -58,9 +58,25 @@ export default async function PreviewProfilePage({
         wide
       >
         <div className="max-w-[1032px]">
-          <Notice tone="info" title={t(lang, "Z23.preview.notice.title")}>
-            {t(lang, "Z23.preview.notice.line")}
-          </Notice>
+          {/* The large hint of ORG-06: blue brand surface, larger title. */}
+          <div role="status" className="bg-brand-blue text-foreground flex items-start gap-3 rounded-xl p-4">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 16 16"
+              className="mt-1 size-4 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            >
+              <circle cx="8" cy="8" r="6.5" />
+              <path d="M8 7.25v3.5M8 5.25h.01" />
+            </svg>
+            <div className="flex min-w-0 flex-col gap-1">
+              <p className="text-[22px] leading-7 font-medium md:text-xl md:leading-6">{t(lang, "Z23.preview.notice.title")}</p>
+              <p className="text-base leading-6 md:text-sm md:leading-5">{t(lang, "Z23.preview.notice.line")}</p>
+            </div>
+          </div>
         </div>
         <ProfileHeadPreview
           lang={lang}

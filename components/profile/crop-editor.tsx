@@ -46,6 +46,7 @@ export function CropEditor({
   onOther: () => void;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const [stage, setStage] = useState(0);
   const [natural, setNatural] = useState<{ w: number; h: number } | null>(null);
   const [frame, setFrame] = useState<Frame | null>(null);
@@ -62,10 +63,10 @@ export function CropEditor({
     return () => observer.disconnect();
   }, []);
 
-  const onLoad = useCallback(
-    (event: React.SyntheticEvent<HTMLImageElement>) => {
-      const nw = event.currentTarget.naturalWidth;
-      const nh = event.currentTarget.naturalHeight;
+  const initFromImage = useCallback(
+    (image: HTMLImageElement) => {
+      const nw = image.naturalWidth;
+      const nh = image.naturalHeight;
       const short = Math.min(nw, nh);
 
       setNatural({ w: nw, h: nh });
@@ -81,6 +82,21 @@ export function CropEditor({
     },
     [initial],
   );
+
+  const onLoad = useCallback(
+    (event: React.SyntheticEvent<HTMLImageElement>) => initFromImage(event.currentTarget),
+    [initFromImage],
+  );
+
+  // A cached picture can be complete before React attaches onLoad, so the load
+  // event never reaches the handler and the editor would stay empty.
+  useEffect(() => {
+    const image = imageRef.current;
+
+    if (!natural && image?.complete && image.naturalWidth > 0) {
+      initFromImage(image);
+    }
+  }, [initFromImage, natural]);
 
   const scale = natural && stage ? Math.min(stage / natural.w, stage / natural.h) : 0;
   const offX = natural ? (stage - natural.w * scale) / 2 : 0;
@@ -133,6 +149,7 @@ export function CropEditor({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
+            ref={imageRef}
             src={url}
             alt=""
             draggable={false}
@@ -205,6 +222,11 @@ export function CropEditor({
                   <span key={i} className="border border-white/40" />
                 ))}
               </span>
+              {["-top-1.5 -left-1.5", "-top-1.5 -right-1.5", "-bottom-1.5 -left-1.5", "-bottom-1.5 -right-1.5"].map(
+                (place) => (
+                  <span key={place} aria-hidden="true" className={`pointer-events-none absolute size-3 bg-white ${place}`} />
+                ),
+              )}
             </div>
           ) : null}
         </div>
@@ -212,6 +234,7 @@ export function CropEditor({
         <div className="flex w-full max-w-[360px] items-center gap-3">
           <Button
             variant="secondary"
+            className="shadow-sm"
             aria-label={t(lang, "Z23.crop.zoomOut")}
             style={{ width: 44, paddingLeft: 0, paddingRight: 0 }}
             onClick={() => setZoom(zoom - ZOOM_STEP)}
@@ -225,10 +248,12 @@ export function CropEditor({
             value={Math.round(zoom * 100)}
             aria-label={t(lang, "Z23.crop.area")}
             onChange={(event) => setZoom(Number(event.target.value) / 100)}
-            className="accent-brand-iris h-11 min-w-0 flex-1"
+            className="crop-range h-11 min-w-0 flex-1"
+            style={{ "--fill": `${Math.round(zoom * 100)}%` } as React.CSSProperties}
           />
           <Button
             variant="secondary"
+            className="shadow-sm"
             aria-label={t(lang, "Z23.crop.zoomIn")}
             style={{ width: 44, paddingLeft: 0, paddingRight: 0 }}
             onClick={() => setZoom(zoom + ZOOM_STEP)}
@@ -237,7 +262,7 @@ export function CropEditor({
           </Button>
         </div>
 
-        <p className="text-muted-foreground text-sm leading-5">{t(lang, "Z23.crop.hint")}</p>
+        <p className="text-muted-foreground max-w-[360px] text-sm leading-5">{t(lang, "Z23.crop.hint")}</p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">

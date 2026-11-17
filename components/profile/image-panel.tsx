@@ -63,7 +63,7 @@ export function ImagePanel({
   );
 
   const block = (
-    <div className="border-border bg-background flex flex-col gap-3 rounded-lg border p-4">
+    <div className="border-border flex flex-col gap-3 rounded-md border p-4">
       {image ? (
         <div className="w-[200px] max-w-full">
           <CroppedSquare url={image.url} crop={image.crop} className="rounded" />
@@ -150,10 +150,10 @@ export function ImagePanel({
           <textarea
             {...props}
             name="altText"
-            rows={3}
+            rows={2}
             defaultValue={image.altText ?? ""}
             placeholder={t(lang, "Z23.image.alt.placeholder")}
-            className={controlClassLg}
+            className={`${controlClassLg} min-h-[76px]! py-2!`}
           />
         )}
       </Field>

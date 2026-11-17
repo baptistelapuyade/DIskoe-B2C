@@ -129,7 +129,7 @@ export function DetailsForm({
   const canAddRow = rows.length < LIMITS.extraLinks;
 
   return (
-    <form action={formAction} className="flex flex-col gap-8" noValidate>
+    <form action={formAction} className="flex flex-col gap-10" noValidate>
       {showSummary ? (
         <Notice
           tone="error"
@@ -172,11 +172,11 @@ export function DetailsForm({
             <textarea
               {...props}
               name="shortIntro"
-              rows={3}
+              rows={2}
               value={values.shortIntro}
               onChange={(event) => setValue("shortIntro", event.target.value)}
               placeholder={msg("Z23.details.intro.placeholder")}
-              className={controlClassLg}
+              className={`${controlClassLg} min-h-[76px]! py-2!`}
             />
           )}
         </Field>
@@ -223,12 +223,12 @@ export function DetailsForm({
         )}
       </div>
 
-      <section aria-labelledby="where-title" className="flex flex-col gap-6">
+      <section aria-labelledby="where-title" className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <h2 id="where-title" className="text-2xl leading-[30px] font-medium">
             {msg("Z23.details.where.title")}
           </h2>
-          <p className="text-muted-foreground text-base leading-6">{msg("Z23.details.where.hint")}</p>
+          <p className="text-muted-foreground text-sm leading-5">{msg("Z23.details.where.hint")}</p>
         </div>
 
         <Field id="officialUrl" label={msg("Z23.details.website.label")} error={websiteError} large>

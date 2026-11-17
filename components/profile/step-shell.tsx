@@ -36,33 +36,42 @@ export function StepShell({
   ];
 
   return (
-    <main className="flex w-full flex-col gap-6 px-6 pt-2 pb-12 md:px-12 md:pt-6">
-      <div className={`flex w-full flex-col gap-8 ${wide ? "max-w-[1032px]" : "max-w-[560px]"}`}>
+    <main
+      data-surface="accent"
+      className="flex w-full flex-col gap-6 px-6 pt-2 pb-12 md:px-12 md:pt-6"
+    >
+      <div
+        className={`flex w-full flex-col gap-6 md:gap-8 ${wide ? "max-w-[1032px]" : "max-w-[560px]"}`}
+      >
         <div className="flex">
           <LinkButton href={backHref} variant="ghostLg">
             {t(lang, "Z20.back")}
           </LinkButton>
         </div>
-        <div className="max-w-[560px]">
-          <ProgressSteps
-            lang={lang}
-            labels={labels}
-            current={0}
-            label={t(lang, "Z22.progress.label")}
-          />
+        <div className="flex flex-col gap-10">
+          <div className="max-w-[560px]">
+            <ProgressSteps
+              lang={lang}
+              labels={labels}
+              current={0}
+              label={t(lang, "Z22.progress.label")}
+            />
+          </div>
+          <div className="flex max-w-[560px] flex-col gap-3">
+            <p className="text-brand-iris text-[13px] leading-4 font-medium tracking-[0.78px] uppercase">
+              {eyebrow}
+            </p>
+            <h1 className="text-foreground text-[32px] leading-[38px] font-bold md:text-[40px] md:leading-[44px] md:tracking-[-0.8px]">
+              {title}
+            </h1>
+            {lead ? (
+              <p className="text-muted-foreground text-base leading-6">
+                {lead}
+              </p>
+            ) : null}
+          </div>
+          {children}
         </div>
-        <div className="flex max-w-[560px] flex-col gap-3">
-          <p className="text-brand-iris text-[13px] leading-4 font-medium tracking-[0.08em] uppercase">
-            {eyebrow}
-          </p>
-          <h1 className="text-foreground text-[32px] leading-[38px] font-bold md:text-[40px] md:leading-[44px]">
-            {title}
-          </h1>
-          {lead ? (
-            <p className="text-muted-foreground text-base leading-6">{lead}</p>
-          ) : null}
-        </div>
-        {children}
       </div>
     </main>
   );
