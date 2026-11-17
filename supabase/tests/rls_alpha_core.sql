@@ -1521,7 +1521,7 @@ insert into tests.expected_col_grants values
   ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type']),
   ('authenticated', 'media_assets', 'UPDATE', array['mime_type']),
   ('authenticated', 'review_requests', 'SELECT', array['id','profile_id','revision_id','message','created_at','event_revision_id']),
-  ('authenticated', 'profile_mails', 'SELECT', array['id','profile_id','revision_id','kind','status','attempts','claimed_at','finished_at']),
+  ('authenticated', 'profile_mails', 'SELECT', array['id','profile_id','revision_id','kind','status','attempts','claimed_at','finished_at','failure_code']),
   ('authenticated', 'media_uses', 'SELECT', array['id','asset_id','profile_id','event_id','role','public_object_path','alt_text','crop','confirmed_at']),
   ('authenticated', 'media_uses', 'INSERT', array['asset_id','profile_id','event_id','role','alt_text','crop']),
   ('authenticated', 'media_uses', 'UPDATE', array['alt_text','crop','confirmed_at','confirmed_by']),
