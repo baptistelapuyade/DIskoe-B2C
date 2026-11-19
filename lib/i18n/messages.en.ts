@@ -200,7 +200,7 @@ export const en: Record<MessageId, string> = {
   "Z23.image.back": "Back to details",
   "Z23.upload.busy.title": "Your picture is being uploaded …",
   "Z23.upload.busy.line":
-    "This takes a moment. Stay on this page for a moment.",
+    "This takes a moment. Please stay on this page.",
   "Z23.upload.tooBig.title": "The file is too large.",
   "Z23.upload.tooBig.line":
     "JPG, PNG or WebP up to {limit} are allowed. Yours is {size}.",
@@ -225,7 +225,7 @@ export const en: Record<MessageId, string> = {
   "Z23.preview.eyebrow": "Preview · Part 3 of 3",
   "Z23.preview.title": "This is what your profile page looks like",
   "Z23.preview.lead":
-    "Only you can see this. The page becomes public only once you submit it and DISKOE has approved it. With a first event or without.",
+    "Only you can see this. The page becomes public only once you submit it and DISKOE has approved it. You can submit it with or without a first event.",
   "Z23.preview.notice.title": "This is only the top of your page.",
   "Z23.preview.notice.line":
     "You're seeing the default design. You can adjust colours and type once your profile is set up. The details you add later fill the whole page.",
@@ -314,7 +314,7 @@ export const en: Record<MessageId, string> = {
   "Z24.later": "Continue later",
   "Z24.retry": "Try again",
   "Z24.saving.title": "We're saving your draft …",
-  "Z24.saving.line": "This takes a moment. Stay on this page for a moment.",
+  "Z24.saving.line": "This takes a moment. Please stay on this page.",
   "Z24.saving.button": "Saving …",
   "Z24.failed.title": "Saving didn't work.",
   "Z24.failed.line":
@@ -356,7 +356,7 @@ export const en: Record<MessageId, string> = {
   "Z25.access.title": "How do guests get in?",
   "Z25.access.hint": "Choose every way that really exists.",
   "Z25.access.walkIn": "No registration",
-  "Z25.access.door": "Box office",
+  "Z25.access.door": "At the door",
   "Z25.access.onlineTicket": "Online ticket",
   "Z25.access.onlineRegistration": "Online registration",
   "Z25.access.invalid": "Choose only the ways offered.",
@@ -499,7 +499,7 @@ export const en: Record<MessageId, string> = {
   "Z26.visit.mode.unknown": "Not known yet",
   "Z26.visit.window.title": "When can people drop in?",
   "Z26.visit.window.hint":
-    "The start of the visiting window is needed. We don't show an open end as an invented end time.",
+    "The start of the visiting window is needed. If there is no end, we don't make one up.",
   "Z26.visit.from.label": "Visiting window from",
   "Z26.visit.to.label": "Visiting window until (optional)",
   "Z26.visit.to.placeholder": "Still open",
@@ -526,7 +526,7 @@ export const en: Record<MessageId, string> = {
     "e.g. Dub techno · Experimental electronic",
   "Z26.music.genres.label": "Broad music directions",
   "Z26.music.genres.hint":
-    "Up to three broad directions. A clear musical concept can already be in the description.",
+    "Up to three broad directions. A clear musical concept can go in the description instead.",
   "Z26.music.genres.none": "Choose",
   "Z26.music.genres.count": "{n} selected",
   "Z26.genre.electronic": "Electronic",

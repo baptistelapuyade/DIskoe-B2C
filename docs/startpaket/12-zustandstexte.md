@@ -305,7 +305,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z23.image.next | Weiter zur Vorschau | Continue to preview | Hauptaktion |
 | Z23.image.back | Zurück zu den Angaben | Back to details | zweite Aktion |
 | Z23.upload.busy.title | Dein Bild wird hochgeladen … | Your picture is being uploaded … | ORG-05b, Z02 |
-| Z23.upload.busy.line | Das dauert einen Moment. Bleib kurz auf dieser Seite. | This takes a moment. Stay on this page for a moment. | ORG-05b, Z02 |
+| Z23.upload.busy.line | Das dauert einen Moment. Bleib kurz auf dieser Seite. | This takes a moment. Please stay on this page. | ORG-05b, Z02 |
 | Z23.upload.tooBig.title | Die Datei ist zu groß. | The file is too large. | ORG-05d, Z05 |
 | Z23.upload.tooBig.line | Erlaubt sind JPG, PNG oder WebP bis {limit}. Deine hat {size}. | JPG, PNG or WebP up to {limit} are allowed. Yours is {size}. | ORG-05d, Z05 |
 | Z23.upload.tooSmall.title | Das Bild ist zu klein. | The picture is too small. | ORG-05f, Z06 |
@@ -325,7 +325,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z23.crop.retry | Noch einmal versuchen | Try again | ORG-05g, Hauptaktion (Button-Regel Z03) |
 | Z23.preview.eyebrow | Vorschau · Teil 3 von 3 | Preview · Part 3 of 3 | ORG-06 |
 | Z23.preview.title | So sieht deine Profilseite aus | This is what your profile page looks like | ORG-06 |
-| Z23.preview.lead | Das siehst nur du. Öffentlich wird die Seite erst, wenn du sie einreichst und DISKOE sie freigegeben hat. Mit erstem Event oder ohne. | Only you can see this. The page becomes public only once you submit it and DISKOE has approved it. With a first event or without. | ORG-06 |
+| Z23.preview.lead | Das siehst nur du. Öffentlich wird die Seite erst, wenn du sie einreichst und DISKOE sie freigegeben hat. Mit erstem Event oder ohne. | Only you can see this. The page becomes public only once you submit it and DISKOE has approved it. You can submit it with or without a first event. | ORG-06 |
 | Z23.preview.notice.title | Das ist erst der Kopf deiner Seite. | This is only the top of your page. | ORG-06, Hinweis |
 | Z23.preview.notice.line | Du siehst die Standardgestaltung. Farben und Schrift passt du an, sobald dein Profil angelegt ist. Die weiteren Angaben, die du später machst, füllen dann die ganze Seite. | You're seeing the default design. You can adjust colours and type once your profile is set up. The details you add later fill the whole page. | ORG-06, Hinweis |
 | Z23.preview.next | Weiter zum ersten Event | Continue to your first event | ORG-06, Hauptaktion |
@@ -409,7 +409,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z24.later | Später weitermachen | Continue later | zweite Aktion aller Schritte; speichert zuerst, dann EVT-08 |
 | Z24.retry | Noch einmal versuchen | Try again | Hauptaktion nach einem Fehler, Z03 |
 | Z24.saving.title | Wir speichern deinen Entwurf … | We're saving your draft … | EVT-09a, Z02 |
-| Z24.saving.line | Das dauert einen Moment. Bleib kurz auf dieser Seite. | This takes a moment. Stay on this page for a moment. | EVT-09a (im Katalog bisher: „Bitte lade die Seite nicht neu.“, der Frame gilt) |
+| Z24.saving.line | Das dauert einen Moment. Bleib kurz auf dieser Seite. | This takes a moment. Please stay on this page. | EVT-09a (im Katalog bisher: „Bitte lade die Seite nicht neu.“, der Frame gilt) |
 | Z24.saving.button | Speichere … | Saving … | EVT-09a, Button während des Speicherns, gesperrt |
 | Z24.failed.title | Das Speichern hat nicht geklappt. | Saving didn't work. | EVT-09, Z03 |
 | Z24.failed.line | Deine Eingaben sind noch da. Versuche es noch einmal. Klappt es weiter nicht, schreib uns. | What you entered is still here. Try again. If it still doesn't work, write to us. | EVT-09, Sonderfall Z03b |
@@ -450,7 +450,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z25.access.title | Wie kommen Gäste rein? | How do guests get in? | Zwischenüberschrift EVT-04 |
 | Z25.access.hint | Wähle alle Wege, die es wirklich gibt. | Choose every way that really exists. | unter der Zwischenüberschrift |
 | Z25.access.walkIn | Ohne Anmeldung | No registration | Zugangsweg |
-| Z25.access.door | Abendkasse | Box office | Zugangsweg |
+| Z25.access.door | Abendkasse | At the door | Zugangsweg |
 | Z25.access.onlineTicket | Online-Ticket | Online ticket | Zugangsweg |
 | Z25.access.onlineRegistration | Online-Anmeldung | Online registration | Zugangsweg |
 | Z25.access.invalid | Wähle nur die angebotenen Wege. | Choose only the ways offered. | Fehlertext (kein Frame) |
@@ -582,7 +582,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z26.visit.mode.both | Beides | Both | EVT-07m-c |
 | Z26.visit.mode.unknown | Noch nicht bekannt | Not known yet | Besuchsmodus (kein Frame; Antwortzustand „unbekannt“) |
 | Z26.visit.window.title | Wann kann man flexibel vorbeikommen? | When can people drop in? | EVT-07m-c |
-| Z26.visit.window.hint | Der Beginn des Besuchsfensters ist nötig. Ein offenes Ende geben wir nicht als erfundene Endzeit aus. | The start of the visiting window is needed. We don't show an open end as an invented end time. | EVT-07m-c |
+| Z26.visit.window.hint | Der Beginn des Besuchsfensters ist nötig. Ein offenes Ende geben wir nicht als erfundene Endzeit aus. | The start of the visiting window is needed. If there is no end, we don't make one up. | EVT-07m-c |
 | Z26.visit.from.label | Besuchsfenster ab | Visiting window from | EVT-07m-c |
 | Z26.visit.to.label | Besuchsfenster bis (freiwillig) | Visiting window until (optional) | EVT-07m-c |
 | Z26.visit.to.placeholder | Noch offen | Still open | EVT-07m-c |
@@ -607,7 +607,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z26.music.precision.label | Musikalische Präzisierung | Musical detail | EVT-07m-h |
 | Z26.music.precision.placeholder | z. B. Dub Techno · Experimentelle Elektronik | e.g. Dub techno · Experimental electronic | EVT-07m-h (Beispiel aus dem Frame als Platzhalter) |
 | Z26.music.genres.label | Breite Musikrichtungen | Broad music directions | EVT-07m-h |
-| Z26.music.genres.hint | Bis zu drei breite Richtungen. Ein verständliches musikalisches Konzept kann bereits in der Beschreibung stehen. | Up to three broad directions. A clear musical concept can already be in the description. | EVT-07m-h |
+| Z26.music.genres.hint | Bis zu drei breite Richtungen. Ein verständliches musikalisches Konzept kann bereits in der Beschreibung stehen. | Up to three broad directions. A clear musical concept can go in the description instead. | EVT-07m-h |
 | Z26.music.genres.none | Auswählen | Choose | Musikrichtungen ohne Wahl (kein Frame) |
 | Z26.music.genres.count | {n} ausgewählt | {n} selected | EVT-07m-i |
 | Z26.genre.electronic | Elektronisch | Electronic | Musikrichtung, EVT-07m-i |
