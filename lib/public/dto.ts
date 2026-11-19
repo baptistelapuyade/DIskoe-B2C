@@ -13,6 +13,7 @@ import {
   type PrimaryFormat,
 } from "../domain/event-publication";
 import { priceLabel, type PriceView } from "../domain/money";
+import { linkLabel, readCrop, type Crop } from "../domain/profile-publication";
 import { archiveInstant, describeEventTime, formatLocalDate } from "../domain/time";
 
 type Views = Database["public"]["Views"];
@@ -40,7 +41,12 @@ export type PublicProfile = {
   shortIntro: string | null;
   officialUrl: string | null;
   publicContact: string | null;
+  // The Instagram handle without "@" and further links (domain as label).
+  instagram: string | null;
+  extraLinks: { url: string; label: string }[];
   imageUrl: string | null;
+  // The square the owner picked; null shows the image centred (cover).
+  imageCrop: Crop | null;
 };
 
 export type PublicAccess = { kind: AccessKind; label: string; url: string | null };
@@ -104,8 +110,28 @@ export function toPublicProfile(
     shortIntro: row.short_intro || null,
     officialUrl: safeUrl(row.official_url),
     publicContact: row.public_contact || null,
+    instagram: row.instagram_handle || null,
+    extraLinks: extraLinksFrom(row.extra_links),
     imageUrl: publicImageUrl(mediaBase, row.profile_image_path),
+    imageCrop: readCrop(row.profile_image_crop),
   };
+}
+
+function extraLinksFrom(json: Json | null): { url: string; label: string }[] {
+  if (!Array.isArray(json)) return [];
+
+  const links: { url: string; label: string }[] = [];
+
+  for (const item of json) {
+    const url =
+      typeof item === "object" && item !== null && !Array.isArray(item)
+        ? safeUrl(typeof item.url === "string" ? item.url : null)
+        : null;
+
+    if (url) links.push({ url, label: linkLabel(url) });
+  }
+
+  return links;
 }
 
 export function safeUrl(value: string | null | undefined): string | null {

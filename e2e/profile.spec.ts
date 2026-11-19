@@ -11,6 +11,7 @@ import type { Database } from "../lib/db/types";
 import { clearMailbox, waitForCode } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
 import { germanContext } from "./support/language";
+import { chooseProfileImage, saveDetails, solidPng } from "./support/profile-flow";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the owner's
 // private profile editor, the private preview and the hand-in for review.
@@ -30,11 +31,6 @@ const emails = {
 const slugA = `alpha-${run}`;
 const slugB = `beta-${run}`;
 
-// A valid 1x1 PNG.
-const PNG = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
-  "base64",
-);
 
 async function signInWithCode(page: Page, email: string) {
   await clearMailbox(email);
@@ -60,6 +56,7 @@ test.describe("profile editor, preview and hand-in", () => {
   let profileA = "";
 
   const editUrl = () => `/organizer/profiles/${profileA}/edit`;
+  const imageUrl = () => `/organizer/profiles/${profileA}/image`;
   const previewUrl = () => `/organizer/profiles/${profileA}/preview`;
 
   test.beforeAll(async ({ browser }) => {
@@ -103,26 +100,22 @@ test.describe("profile editor, preview and hand-in", () => {
 
     await expect(page.getByRole("heading", { name: "Dein Profil", exact: true })).toBeVisible();
     await expect(page.getByText("Dir fehlen noch Angaben:")).toBeVisible();
-    await expect(page.getByText(/Profilbild/).first()).toBeVisible();
     await page.getByRole("link", { name: "Angaben ergänzen" }).click();
-    await expect(page.getByRole("heading", { name: "Profil bearbeiten" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Erzähl uns von deinem Projekt" }),
+    ).toBeVisible();
 
     await context.close();
   });
 
-  test("the editor shows what is missing and the fixed address", async ({
+  test("step 1 shows the name and the profile address, which can still be changed", async ({
     browser,
   }) => {
     const { context, page } = await pageFor(browser, "ownerA");
 
     await page.goto(editUrl());
-    await expect(page.getByRole("heading", { name: "Profil bearbeiten" })).toBeVisible();
-    await expect(page.getByLabel("Name", { exact: true })).toHaveValue("Alpha Events");
-    await expect(page.getByText("Die Kurzvorstellung fehlt.")).toBeVisible();
-    await expect(page.getByText("Ein bestätigtes Profilbild fehlt.")).toBeVisible();
-    await expect(page.getByText(`/${slugA}`)).toBeVisible();
-    // The address is not an input: only the founder sets it.
-    await expect(page.getByLabel(/adresse|slug/i)).toHaveCount(0);
+    await expect(page.getByLabel("Name deines Projekts")).toHaveValue("Alpha Events");
+    await expect(page.getByLabel("Profiladresse")).toHaveValue(slugA);
 
     await context.close();
   });
@@ -133,15 +126,52 @@ test.describe("profile editor, preview and hand-in", () => {
     const { context, page } = await pageFor(browser, "ownerA");
 
     await page.goto(editUrl());
-    await page.getByLabel("Offizieller Link").fill("javascript:alert(1)");
-    await page.getByRole("button", { name: "Speichern" }).click();
-    await expect(page.getByText("Bitte gib einen gültigen Link ein", { exact: false })).toBeVisible();
+    await page.getByLabel("Website", { exact: true }).fill("javascript:alert(1)");
+    await page.getByLabel("Instagram", { exact: true }).fill("not a handle!");
+    await page.getByRole("button", { name: "Weiter zum Profilbild" }).click();
+    await expect(page.getByText("Bitte prüfe zwei Angaben.")).toBeVisible();
+    await expect(page.getByText("Das ist kein gültiger Link.", { exact: false })).toBeVisible();
+    await expect(page.getByText("Das ist kein gültiger Instagram-Name.", { exact: false })).toBeVisible();
 
     expect(
       sql(
-        `select count(*) from public.profile_revisions where profile_id = '${profileA}' and official_url is not null`,
+        `select count(*) from public.profile_revisions where profile_id = '${profileA}' and (official_url is not null or instagram_handle is not null)`,
       ),
     ).toBe("0");
+
+    await context.close();
+  });
+
+  test("the profile address is checked and can be changed before the first approval", async ({
+    browser,
+  }) => {
+    const { context, page } = await pageFor(browser, "ownerA");
+
+    // Taken by another profile.
+    await page.goto(editUrl());
+    await page.getByLabel("Profiladresse").fill(slugB);
+    await page.getByLabel("Website", { exact: true }).fill("alpha.example");
+    await page.getByRole("button", { name: "Weiter zum Profilbild" }).click();
+    await expect(page.getByText("Diese Adresse ist schon vergeben.")).toBeVisible();
+    expect(sql(`select slug from public.profiles where id = '${profileA}'`)).toBe(slugA);
+
+    // Wrong format.
+    await page.getByLabel("Profiladresse").fill("A B");
+    await page.getByRole("button", { name: "Weiter zum Profilbild" }).click();
+    await expect(page.getByText("Nur Kleinbuchstaben, Zahlen und Bindestriche", { exact: false })).toBeVisible();
+
+    // A free address is applied.
+    await page.getByLabel("Profiladresse").fill(`${slugA}-neu`);
+    await page.getByRole("button", { name: "Weiter zum Profilbild" }).click();
+    await page.waitForURL("**/image");
+    expect(sql(`select slug from public.profiles where id = '${profileA}'`)).toBe(`${slugA}-neu`);
+
+    // Back to the original address for the later tests.
+    await page.goto(editUrl());
+    await page.getByLabel("Profiladresse").fill(slugA);
+    await page.getByRole("button", { name: "Später weitermachen" }).click();
+    await page.waitForURL("**/organizer");
+    expect(sql(`select slug from public.profiles where id = '${profileA}'`)).toBe(slugA);
 
     await context.close();
   });
@@ -152,14 +182,25 @@ test.describe("profile editor, preview and hand-in", () => {
     const { context, page } = await pageFor(browser, "ownerA");
 
     await page.goto(editUrl());
-    await page.getByLabel("Kurzvorstellung").fill("Nights in Berlin.");
-    await page.getByLabel("Offizieller Link").fill("alpha.example");
-    await page.getByRole("button", { name: "Speichern" }).click();
-    await expect(page.getByText("Gespeichert. Der Entwurf bleibt privat.")).toBeVisible();
+    await saveDetails(
+      page,
+      {
+        intro: "Nights in Berlin.",
+        website: "alpha.example",
+        instagram: "https://instagram.com/alpha.events/",
+      },
+      "later",
+    );
+    await page.waitForURL("**/organizer");
 
-    await page.reload();
+    await page.goto(editUrl());
     await expect(page.getByLabel("Kurzvorstellung")).toHaveValue("Nights in Berlin.");
-    await expect(page.getByLabel("Offizieller Link")).toHaveValue("https://alpha.example/");
+    await expect(page.getByLabel("Website", { exact: true })).toHaveValue("https://alpha.example/");
+    // A pasted Instagram link is stored as the handle.
+    await expect(page.getByLabel("Instagram", { exact: true })).toHaveValue("@alpha.events");
+    expect(
+      sql(`select instagram_handle from public.profile_revisions where profile_id = '${profileA}'`),
+    ).toBe("alpha.events");
 
     // Still only one revision: an editable draft is updated in place.
     expect(
@@ -184,69 +225,82 @@ test.describe("profile editor, preview and hand-in", () => {
     const response = await page.goto(previewUrl());
     expect(response?.headers()["cache-control"]).toContain("no-store");
     await expect(page.getByRole("heading", { name: "Alpha Events" })).toBeVisible();
-    await expect(page.getByText("Ein bestätigtes Profilbild fehlt.")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Zur Prüfung einreichen" })).toHaveCount(0);
+    await expect(page.getByText("Dir fehlen noch Angaben:")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Weiter zum ersten Event" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Profil ohne Event einreichen" })).toHaveCount(0);
 
     await context.close();
   });
 
-  test("images need the right type, a description and the confirmation", async ({
+  test("wrong files are refused before anything is uploaded", async ({
     browser,
   }) => {
     const { context, page } = await pageFor(browser, "ownerA");
-    await page.goto(editUrl());
+    await page.goto(imageUrl());
 
     // Text pretending to be an image.
-    await page.getByLabel(/Profilbild/).setInputFiles({
+    await chooseProfileImage(page, {
       name: "fake.png",
       mimeType: "image/png",
       buffer: Buffer.from("this is not an image"),
     });
-    await page.getByLabel("Bildbeschreibung · freiwillig").fill("Bühne");
-    await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
-    await page.getByRole("button", { name: "Bild hochladen" }).click();
-    await expect(page.getByText("Bitte lade ein Bild als JPEG, PNG oder WebP hoch.")).toBeVisible();
+    await expect(page.getByText("Dieses Format geht nicht.")).toBeVisible();
 
-    // A real image without the rights confirmation. The description is optional.
-    await page.reload();
-    await page.getByLabel(/Profilbild/).setInputFiles({
-      name: "stage.png",
+    // Too small (1 x 1 pixel).
+    await chooseProfileImage(page, {
+      name: "tiny.png",
       mimeType: "image/png",
-      buffer: PNG,
+      buffer: solidPng(1, 1),
     });
-    await page.getByRole("button", { name: "Bild hochladen" }).click();
-    await expect(page.getByText("Bitte beschreibe das Bild kurz")).toHaveCount(0);
-    await expect(page.getByText("Bitte bestätige, dass du das Bild verwenden")).toBeVisible();
+    await expect(page.getByText("Das Bild ist zu klein.")).toBeVisible();
+
+    // Wrong type.
+    await chooseProfileImage(page, {
+      name: "notes.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from("hello"),
+    });
+    await expect(page.getByText("Dieses Format geht nicht.")).toBeVisible();
 
     expect(
-      sql(
-        `select count(*) from public.media_uses where profile_id = '${profileA}'`,
-      ),
+      sql(`select count(*) from public.media_uses where profile_id = '${profileA}'`),
     ).toBe("0");
 
     await context.close();
   });
 
-  test("a confirmed image completes the draft and stays private", async ({
+  test("a chosen image is uploaded at once, can be cropped and completes the draft", async ({
     browser,
   }) => {
     const { context, page } = await pageFor(browser, "ownerA");
-    await page.goto(editUrl());
+    await page.goto(imageUrl());
 
-    await page.getByLabel(/Profilbild/).setInputFiles({
-      name: "stage.png",
-      mimeType: "image/png",
-      buffer: PNG,
-    });
-    await page.getByLabel("Bildbeschreibung · freiwillig").fill("Bühne bei Nacht");
-    await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
-    await page.getByRole("button", { name: "Bild hochladen" }).click();
-    await expect(page.getByText("Das Bild ist gespeichert und bleibt bis zur Freigabe privat.")).toBeVisible();
+    await chooseProfileImage(page);
+    await expect(page.getByRole("button", { name: "Weiter zur Vorschau" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Ausschnitt ändern" })).toBeVisible();
+    expect(
+      sql(`select count(*) from public.media_uses where profile_id = '${profileA}' and confirmed_at is not null`),
+    ).toBe("1");
 
-    await page.goto(previewUrl());
+    // The crop: the centred default is replaced by a stored crop.
+    await page.getByRole("link", { name: "Ausschnitt ändern" }).click();
+    await page.waitForURL("**/image/crop");
+    await page.getByRole("button", { name: "Vergrößern" }).click();
+    await page.getByRole("button", { name: "Ausschnitt übernehmen" }).click();
+    await page.waitForURL("**/image");
+    expect(
+      sql(`select count(*) from public.media_uses where profile_id = '${profileA}' and crop is not null`),
+    ).not.toBe("0");
+
+    // The optional description is saved with "Weiter zur Vorschau".
+    await page.getByLabel("Bildbeschreibung (freiwillig)").fill("Bühne bei Nacht");
+    await page.getByRole("button", { name: "Weiter zur Vorschau" }).click();
+    await page.waitForURL("**/preview");
+
     await expect(page.getByRole("img", { name: "Bühne bei Nacht" })).toBeVisible();
-    await expect(page.getByText("Das fehlt noch:")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Zur Prüfung einreichen" })).toBeVisible();
+    await expect(page.getByText("Dir fehlen noch Angaben:")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Weiter zum ersten Event" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Profil ohne Event einreichen" })).toBeVisible();
 
     // The reserved public path exists, but no file is in the public bucket.
     expect(
@@ -266,6 +320,8 @@ test.describe("profile editor, preview and hand-in", () => {
   }) => {
     const { context, page } = await pageFor(browser, "ownerA");
     await page.goto(previewUrl());
+    await page.getByRole("link", { name: "Profil ohne Event einreichen" }).click();
+    await page.waitForURL("**/submit");
 
     await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
     await expect(page.getByText("Bitte bestätige beide Angaben")).toBeVisible();
@@ -284,7 +340,7 @@ test.describe("profile editor, preview and hand-in", () => {
       ),
     ).toBe("1");
 
-    await page.reload();
+    await page.goto(previewUrl());
     await expect(page.getByText(/In Prüfung/).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Zur Prüfung einreichen" })).toHaveCount(0);
 
@@ -306,9 +362,8 @@ test.describe("profile editor, preview and hand-in", () => {
     const { context, page } = await pageFor(browser, "ownerA");
 
     await page.goto(editUrl());
-    await page.getByLabel("Kurzvorstellung").fill("Nights in Berlin, every Friday.");
-    await page.getByRole("button", { name: "Speichern" }).click();
-    await expect(page.getByText("Gespeichert. Der Entwurf bleibt privat.")).toBeVisible();
+    await saveDetails(page, { intro: "Nights in Berlin, every Friday." }, "later");
+    await page.waitForURL("**/organizer");
 
     const draft = sql(`select draft_revision_id from public.profiles where id = '${profileA}'`);
     expect(draft).not.toBe(submittedRevision);
@@ -325,7 +380,7 @@ test.describe("profile editor, preview and hand-in", () => {
     ).toBe("t");
 
     await page.goto(previewUrl());
-    await expect(page.getByRole("button", { name: "Zur Prüfung einreichen" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Profil ohne Event einreichen" })).toBeVisible();
 
     await context.close();
   });

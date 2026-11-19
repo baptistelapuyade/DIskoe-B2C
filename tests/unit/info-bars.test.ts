@@ -12,7 +12,10 @@ function organizer(publicContact: string | null): PublicProfile {
     shortIntro: null,
     officialUrl: null,
     publicContact,
+    instagram: null,
+    extraLinks: [],
     imageUrl: null,
+    imageCrop: null,
   };
 }
 

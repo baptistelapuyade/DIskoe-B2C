@@ -5,11 +5,18 @@ import {
   checkImage,
   describeGaps,
   localGapCodes,
+  linkLabel,
+  normalizeInstagram,
   normalizeUrl,
+  parseSlug,
   parseAltText,
   parseGapDetail,
   parseProfileInput,
+  inspectProfileImage,
+  safeFileName,
+  parseCrop,
   parseQuestion,
+  readImageSize,
   progressStage,
   QUESTION_MAX_LENGTH,
   reviewStatus,
@@ -20,6 +27,8 @@ const complete = {
   name: "Alpha Events",
   shortIntro: "Nights in Berlin.",
   officialUrl: "https://alpha.example",
+  instagram: "",
+  extraLinks: [] as string[],
   publicContact: "",
 };
 
@@ -67,6 +76,8 @@ describe("parseProfileInput", () => {
         name: "Alpha",
         shortIntro: "",
         officialUrl: "https://alpha.example/",
+        instagram: "",
+        extraLinks: [],
         publicContact: "",
       },
     });
@@ -94,9 +105,90 @@ describe("parseProfileInput", () => {
     const result = parseProfileInput({ name: 42, shortIntro: null });
     expect(result).toEqual({
       ok: true,
-      value: { name: "", shortIntro: "", officialUrl: "", publicContact: "" },
+      value: {
+        name: "",
+        shortIntro: "",
+        officialUrl: "",
+        instagram: "",
+        extraLinks: [],
+        publicContact: "",
+      },
     });
   });
+
+  it("returns error codes, not texts", () => {
+    const result = parseProfileInput({
+      name: "x".repeat(LIMITS.name + 1),
+      officialUrl: "nope nope",
+      instagram: "not valid!",
+      extraLinks: ["https://ok.example", "nope nope"],
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors).toEqual({
+        name: "tooLong",
+        officialUrl: "invalidLink",
+        instagram: "invalidInstagram",
+        extraLinks: [null, "invalidLink"],
+      });
+    }
+  });
+
+  it("keeps up to five further links, drops empty rows and normalises", () => {
+    const result = parseProfileInput({
+      extraLinks: ["", "a.example", "  ", "https://b.example/x", "c.example", "d.example", "e.example", "f.example", "g.example"],
+    });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.extraLinks).toEqual([
+        "https://a.example/",
+        "https://b.example/x",
+        "https://c.example/",
+        "https://d.example/",
+        "https://e.example/",
+      ]);
+    }
+  });
+});
+
+describe("normalizeInstagram", () => {
+  it.each([
+    ["@nebenraum", "nebenraum"],
+    ["nebenraum", "nebenraum"],
+    ["  @neben.raum_1 ", "neben.raum_1"],
+    ["https://www.instagram.com/nebenraum/", "nebenraum"],
+    ["instagram.com/nebenraum?hl=de", "nebenraum"],
+    ["", ""],
+  ])("turns %j into %j", (input, expected) => {
+    expect(normalizeInstagram(input)).toBe(expected);
+  });
+
+  it.each(["@", "neben raum", "@@x", "a".repeat(31), "https://example.org/nebenraum", "x!"])(
+    "rejects %j",
+    (input) => {
+      expect(normalizeInstagram(input)).toBeNull();
+    },
+  );
+});
+
+describe("linkLabel", () => {
+  it("shows the domain without www", () => {
+    expect(linkLabel("https://www.example.org/a/b")).toBe("example.org");
+    expect(linkLabel("http://soundcloud.com/x")).toBe("soundcloud.com");
+  });
+});
+
+describe("parseSlug", () => {
+  it("lowercases and trims", () => {
+    expect(parseSlug("  Nebenraum-Kollektiv ")).toEqual({ ok: true, value: "nebenraum-kollektiv" });
+  });
+
+  it.each(["ab", "-abc", "abc-", "Nebenraum Berlin!", "ü-test", "a".repeat(41), ""])(
+    "rejects %j",
+    (value) => {
+      expect(parseSlug(value)).toEqual({ ok: false });
+    },
+  );
 });
 
 describe("localGapCodes", () => {
@@ -294,5 +386,151 @@ describe("image checks", () => {
       ok: true,
       value: "Bühne bei Nacht",
     });
+  });
+});
+
+describe("link gap with Instagram and further links", () => {
+  const base = { ...complete, officialUrl: "", publicContact: "" };
+
+  it("is closed by an Instagram handle alone", () => {
+    expect(localGapCodes({ ...base, instagram: "nebenraum" }, true)).toEqual([]);
+  });
+
+  it("is closed by one further link alone", () => {
+    expect(localGapCodes({ ...base, extraLinks: ["https://a.example/"] }, true)).toEqual([]);
+  });
+
+  it("stays open without any link or contact", () => {
+    expect(localGapCodes(base, true)).toEqual(["link_or_contact"]);
+  });
+});
+
+// A minimal valid file header for each type, enough for the size reader.
+function png(width: number, height: number): Uint8Array {
+  const bytes = new Uint8Array(33);
+  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const view = new DataView(bytes.buffer);
+  view.setUint32(8, 13);
+  bytes.set([0x49, 0x48, 0x44, 0x52], 12); // IHDR
+  view.setUint32(16, width);
+  view.setUint32(20, height);
+  return bytes;
+}
+
+function jpeg(width: number, height: number): Uint8Array {
+  // SOI, APP0 (length 16), SOF0.
+  const bytes = new Uint8Array(2 + 18 + 19);
+  bytes.set([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10]);
+  const view = new DataView(bytes.buffer);
+  const sof = 2 + 18;
+  bytes.set([0xff, 0xc0], sof);
+  view.setUint16(sof + 2, 17);
+  bytes[sof + 4] = 8;
+  view.setUint16(sof + 5, height);
+  view.setUint16(sof + 7, width);
+  return bytes;
+}
+
+function webpLossless(width: number, height: number): Uint8Array {
+  const bytes = new Uint8Array(40);
+  bytes.set([0x52, 0x49, 0x46, 0x46], 0); // RIFF
+  bytes.set([0x57, 0x45, 0x42, 0x50], 8); // WEBP
+  bytes.set([0x56, 0x50, 0x38, 0x4c], 12); // VP8L
+  bytes[20] = 0x2f;
+  const view = new DataView(bytes.buffer);
+  view.setUint32(21, (width - 1) | ((height - 1) << 14), true);
+  return bytes;
+}
+
+function webpExtended(width: number, height: number): Uint8Array {
+  const bytes = new Uint8Array(40);
+  bytes.set([0x52, 0x49, 0x46, 0x46], 0);
+  bytes.set([0x57, 0x45, 0x42, 0x50], 8);
+  bytes.set([0x56, 0x50, 0x38, 0x58], 12); // VP8X
+  const w = width - 1;
+  const h = height - 1;
+  bytes.set([w & 0xff, (w >> 8) & 0xff, (w >> 16) & 0xff], 24);
+  bytes.set([h & 0xff, (h >> 8) & 0xff, (h >> 16) & 0xff], 27);
+  return bytes;
+}
+
+describe("readImageSize and inspectProfileImage", () => {
+  it("reads PNG, JPEG and WebP sizes", () => {
+    expect(readImageSize(png(800, 600), "image/png")).toEqual({ width: 800, height: 600 });
+    expect(readImageSize(jpeg(1200, 900), "image/jpeg")).toEqual({ width: 1200, height: 900 });
+    expect(readImageSize(webpLossless(640, 480), "image/webp")).toEqual({ width: 640, height: 480 });
+    expect(readImageSize(webpExtended(2000, 1000), "image/webp")).toEqual({ width: 2000, height: 1000 });
+  });
+
+  it("accepts an image of at least 400 x 400", () => {
+    expect(inspectProfileImage(png(400, 400))).toEqual({
+      ok: true,
+      type: "image/png",
+      width: 400,
+      height: 400,
+    });
+  });
+
+  it("names the size of a picture that is too small", () => {
+    expect(inspectProfileImage(jpeg(320, 240))).toEqual({
+      ok: false,
+      code: "tooSmall",
+      width: 320,
+      height: 240,
+    });
+    expect(inspectProfileImage(png(399, 2000))).toMatchObject({ ok: false, code: "tooSmall" });
+  });
+
+  it("refuses an empty file, a wrong format and a file over the limit", () => {
+    expect(inspectProfileImage(new Uint8Array())).toEqual({ ok: false, code: "empty" });
+    expect(inspectProfileImage(new TextEncoder().encode("<svg xmlns='x'/>"))).toEqual({
+      ok: false,
+      code: "format",
+    });
+    const big = new Uint8Array(LIMITS.imageBytes + 1);
+    big.set(png(800, 800));
+    expect(inspectProfileImage(big)).toEqual({ ok: false, code: "tooBig", bytes: big.length });
+  });
+
+  it("does not trust a header it cannot read", () => {
+    const broken = new Uint8Array(12);
+    broken.set([0xff, 0xd8, 0xff]);
+    expect(inspectProfileImage(broken)).toEqual({ ok: false, code: "format" });
+  });
+});
+
+describe("parseCrop", () => {
+  const image = { width: 1000, height: 500 };
+
+  it("accepts a square inside the image", () => {
+    expect(parseCrop({ x: 0.25, y: 0, w: 0.5, h: 1 }, image)).toEqual({ x: 0.25, y: 0, w: 0.5, h: 1 });
+  });
+
+  const bad: [unknown, string][] = [
+    [{ x: 0.25, y: 0, w: 0.5, h: 0.5 }, "not square in pixels"],
+    [{ x: 0.6, y: 0, w: 0.5, h: 1 }, "leaves the image"],
+    [{ x: 0, y: 0, w: 0, h: 0 }, "empty"],
+    [{ x: 0, y: 0, w: 0.5 }, "missing field"],
+    [{ x: "0", y: 0, w: 0.5, h: 1 }, "wrong type"],
+    [null, "null"],
+  ];
+
+  it.each(bad)("rejects %j (%s)", (value) => {
+    expect(parseCrop(value, image)).toBeNull();
+  });
+});
+
+describe("safeFileName", () => {
+  it("keeps the last path segment and drops control characters", () => {
+    expect(safeFileName("profilbild.jpg")).toBe("profilbild.jpg");
+    expect(safeFileName("C:\\Users\\me\\logo.png")).toBe("logo.png");
+    expect(safeFileName("../../etc/logo.png")).toBe("logo.png");
+    expect(safeFileName("a\u0000b\nc.png")).toBe("abc.png");
+  });
+
+  it("caps the length and returns null for an empty name", () => {
+    expect(safeFileName("x".repeat(300))).toHaveLength(120);
+    expect(safeFileName("   ")).toBeNull();
+    expect(safeFileName("folder/")).toBeNull();
   });
 });

@@ -10,6 +10,8 @@ export const LIMITS = {
   shortIntro: 280,
   officialUrl: 300,
   publicContact: 200,
+  extraLinks: 5,
+  imageMinSide: 400,
   altText: 200,
   imageBytes: 5 * 1024 * 1024,
 } as const;
@@ -18,10 +20,26 @@ export type ProfileFields = {
   name: string;
   shortIntro: string;
   officialUrl: string;
+  // The handle without "@", or "".
+  instagram: string;
+  // Up to LIMITS.extraLinks complete https/http addresses.
+  extraLinks: string[];
   publicContact: string;
 };
 
-export type FieldErrors = Partial<Record<keyof ProfileFields, string>>;
+// Errors are codes, not texts: the screen turns them into catalog texts in
+// the language of the page.
+export type FieldErrorCode = "tooLong" | "invalidLink" | "invalidInstagram";
+
+export type FieldErrors = {
+  name?: FieldErrorCode;
+  shortIntro?: FieldErrorCode;
+  officialUrl?: FieldErrorCode;
+  instagram?: FieldErrorCode;
+  publicContact?: FieldErrorCode;
+  // One entry per submitted further link (same index), null where it is fine.
+  extraLinks?: (FieldErrorCode | null)[];
+};
 
 export type ParsedProfileInput =
   | { ok: true; value: ProfileFields }
@@ -65,48 +83,128 @@ export function normalizeUrl(raw: string): string | null {
   }
 }
 
+// "@name", "name" and a pasted profile link (instagram.com/name/) all give the
+// plain handle. "" means empty, null means not a handle.
+export function normalizeInstagram(raw: string): string | null {
+  let value = raw.trim();
+
+  if (value === "") {
+    return "";
+  }
+
+  const pasted = value.match(
+    /^(?:https?:\/\/)?(?:www\.)?instagram\.com\/([^/?#\s]+)\/?(?:[?#].*)?$/i,
+  );
+
+  if (pasted) {
+    value = pasted[1];
+  }
+
+  value = value.replace(/^@/, "");
+
+  return /^[A-Za-z0-9._]{1,30}$/.test(value) ? value : null;
+}
+
+// Display name of a further link: the domain without "www.".
+export function linkLabel(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./i, "");
+  } catch {
+    return url;
+  }
+}
+
 // Drafts may be incomplete: empty fields are allowed here and reported as
 // gaps. Only values that are present and invalid are errors.
 export function parseProfileInput(input: {
   name?: unknown;
   shortIntro?: unknown;
   officialUrl?: unknown;
+  instagram?: unknown;
+  extraLinks?: unknown;
   publicContact?: unknown;
 }): ParsedProfileInput {
   const value: ProfileFields = {
     name: text(input.name),
     shortIntro: text(input.shortIntro),
     officialUrl: text(input.officialUrl),
+    instagram: text(input.instagram),
+    extraLinks: [],
     publicContact: text(input.publicContact),
   };
   const errors: FieldErrors = {};
 
   if (value.name.length > LIMITS.name) {
-    errors.name = `Der Name darf höchstens ${LIMITS.name} Zeichen lang sein.`;
+    errors.name = "tooLong";
   }
 
   if (value.shortIntro.length > LIMITS.shortIntro) {
-    errors.shortIntro = `Die Kurzvorstellung darf höchstens ${LIMITS.shortIntro} Zeichen lang sein.`;
+    errors.shortIntro = "tooLong";
   }
 
   if (value.publicContact.length > LIMITS.publicContact) {
-    errors.publicContact = `Der Kontakt darf höchstens ${LIMITS.publicContact} Zeichen lang sein.`;
+    errors.publicContact = "tooLong";
   }
 
   if (value.officialUrl !== "") {
     const normalized = normalizeUrl(value.officialUrl);
 
     if (normalized === null || normalized.length > LIMITS.officialUrl) {
-      errors.officialUrl =
-        "Bitte gib einen gültigen Link ein, zum Beispiel https://example.org.";
+      errors.officialUrl = "invalidLink";
     } else {
       value.officialUrl = normalized;
     }
   }
 
+  if (value.instagram !== "") {
+    const handle = normalizeInstagram(value.instagram);
+
+    if (handle === null) {
+      errors.instagram = "invalidInstagram";
+    } else {
+      value.instagram = handle;
+    }
+  }
+
+  // Empty rows are dropped. Rows beyond the limit are ignored here; the form
+  // does not offer more than the limit and the database refuses them.
+  const rows = (Array.isArray(input.extraLinks) ? input.extraLinks : [])
+    .map(text)
+    .filter((row) => row !== "")
+    .slice(0, LIMITS.extraLinks);
+  const linkErrors: (FieldErrorCode | null)[] = [];
+
+  for (const row of rows) {
+    const normalized = normalizeUrl(row);
+
+    if (normalized === null || normalized === "" || normalized.length > LIMITS.officialUrl) {
+      linkErrors.push("invalidLink");
+      value.extraLinks.push(row);
+    } else {
+      linkErrors.push(null);
+      value.extraLinks.push(normalized);
+    }
+  }
+
+  if (linkErrors.some((code) => code !== null)) {
+    errors.extraLinks = linkErrors;
+  }
+
   return Object.keys(errors).length === 0
     ? { ok: true, value }
     : { ok: false, errors, value };
+}
+
+export type SlugCheck = { ok: true; value: string } | { ok: false };
+
+// Same format as the database constraint on profiles.slug. Reserved names and
+// uniqueness are decided by the database (change_profile_slug).
+export function parseSlug(raw: unknown): SlugCheck {
+  const value = text(raw).toLowerCase();
+
+  return /^[a-z0-9](?:[a-z0-9-]{1,38})[a-z0-9]$/.test(value)
+    ? { ok: true, value }
+    : { ok: false };
 }
 
 export type GapCode =
@@ -126,7 +224,7 @@ const GAP_TEXT: Record<GapCode, { field: string; message: string }> = {
   },
   link_or_contact: {
     field: "officialUrl",
-    message: "Ein offizieller Link oder ein öffentlicher Kontakt fehlt.",
+    message: "Ein Link oder ein öffentlicher Kontakt fehlt.",
   },
   profile_image: {
     field: "image",
@@ -148,14 +246,20 @@ export function describeGaps(codes: readonly string[]): Gap[] {
 
 // Same minimum as app_private.profile_gaps in the database.
 export function localGapCodes(
-  fields: ProfileFields,
+  fields: Pick<ProfileFields, "name" | "shortIntro" | "officialUrl" | "publicContact"> &
+    Partial<Pick<ProfileFields, "instagram" | "extraLinks">>,
   hasConfirmedImage: boolean,
 ): GapCode[] {
   const gaps: GapCode[] = [];
 
   if (fields.name.trim() === "") gaps.push("name");
   if (fields.shortIntro.trim() === "") gaps.push("short_intro");
-  if (fields.officialUrl.trim() === "" && fields.publicContact.trim() === "") {
+  if (
+    fields.officialUrl.trim() === "" &&
+    (fields.instagram ?? "").trim() === "" &&
+    (fields.extraLinks ?? []).length === 0 &&
+    fields.publicContact.trim() === ""
+  ) {
     gaps.push("link_or_contact");
   }
   if (!hasConfirmedImage) gaps.push("profile_image");
@@ -345,4 +449,185 @@ export function parseAltText(
   }
 
   return { ok: true, value };
+}
+
+
+// ---------------------------------------------------------------------------
+// Image inspection for the profile image: type, pixel size and the limits of
+// Z05 to Z07. The size is read from the file header; nothing is decoded.
+// ---------------------------------------------------------------------------
+export function readImageSize(
+  bytes: Uint8Array,
+  type: ImageType,
+): { width: number; height: number } | null {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const ascii = (start: number, length: number) =>
+    String.fromCharCode(...bytes.slice(start, start + length));
+
+  if (type === "image/png") {
+    if (bytes.length < 24 || ascii(12, 4) !== "IHDR") return null;
+    return { width: view.getUint32(16), height: view.getUint32(20) };
+  }
+
+  if (type === "image/jpeg") {
+    let offset = 2;
+
+    while (offset + 9 < bytes.length) {
+      if (bytes[offset] !== 0xff) {
+        offset += 1;
+        continue;
+      }
+
+      const marker = bytes[offset + 1];
+
+      if (marker === 0xff) {
+        offset += 1;
+        continue;
+      }
+
+      // Markers without a length: standalone and restart markers.
+      if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd8)) {
+        offset += 2;
+        continue;
+      }
+
+      const length = view.getUint16(offset + 2);
+      const isFrame =
+        marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker);
+
+      if (isFrame) {
+        return {
+          height: view.getUint16(offset + 5),
+          width: view.getUint16(offset + 7),
+        };
+      }
+
+      offset += 2 + length;
+    }
+
+    return null;
+  }
+
+  // WebP: lossy (VP8 ), lossless (VP8L) or extended (VP8X).
+  if (bytes.length < 30) return null;
+  const chunk = ascii(12, 4);
+
+  if (chunk === "VP8 ") {
+    return {
+      width: view.getUint16(26, true) & 0x3fff,
+      height: view.getUint16(28, true) & 0x3fff,
+    };
+  }
+
+  if (chunk === "VP8L") {
+    const bits = view.getUint32(21, true);
+    return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+  }
+
+  if (chunk === "VP8X") {
+    const w = bytes[24] | (bytes[25] << 8) | (bytes[26] << 16);
+    const h = bytes[27] | (bytes[28] << 8) | (bytes[29] << 16);
+    return { width: w + 1, height: h + 1 };
+  }
+
+  return null;
+}
+
+export type ImageInspection =
+  | { ok: true; type: ImageType; width: number; height: number }
+  | { ok: false; code: "empty" }
+  | { ok: false; code: "format" }
+  | { ok: false; code: "tooBig"; bytes: number }
+  | { ok: false; code: "tooSmall"; width: number; height: number };
+
+export function inspectProfileImage(bytes: Uint8Array): ImageInspection {
+  if (bytes.length === 0) return { ok: false, code: "empty" };
+
+  const type = sniffImageType(bytes);
+
+  if (!type) return { ok: false, code: "format" };
+
+  if (bytes.length > LIMITS.imageBytes) {
+    return { ok: false, code: "tooBig", bytes: bytes.length };
+  }
+
+  const size = readImageSize(bytes, type);
+
+  // A file whose size cannot be read is not a usable image.
+  if (!size || size.width < 1 || size.height < 1) {
+    return { ok: false, code: "format" };
+  }
+
+  if (
+    size.width < LIMITS.imageMinSide ||
+    size.height < LIMITS.imageMinSide
+  ) {
+    return { ok: false, code: "tooSmall", ...size };
+  }
+
+  return { ok: true, type, ...size };
+}
+
+// The visible square of an image as fractions of its width and height:
+// x and y are the left and top edge, w and h the size. Stored in
+// media_uses.crop; see migration 20261117130000.
+export type Crop = { x: number; y: number; w: number; h: number };
+
+export function parseCrop(
+  raw: unknown,
+  image: { width: number; height: number },
+): Crop | null {
+  if (typeof raw !== "object" || raw === null) return null;
+
+  const { x, y, w, h } = raw as Record<string, unknown>;
+
+  if (![x, y, w, h].every((n) => typeof n === "number" && Number.isFinite(n))) {
+    return null;
+  }
+
+  const crop = { x, y, w, h } as Crop;
+  const eps = 1e-6;
+
+  if (
+    crop.w <= 0 ||
+    crop.h <= 0 ||
+    crop.x < -eps ||
+    crop.y < -eps ||
+    crop.x + crop.w > 1 + eps ||
+    crop.y + crop.h > 1 + eps
+  ) {
+    return null;
+  }
+
+  // Square in pixels, within one pixel.
+  if (Math.abs(crop.w * image.width - crop.h * image.height) > 1) return null;
+
+  return {
+    x: Math.max(0, crop.x),
+    y: Math.max(0, crop.y),
+    w: crop.w,
+    h: crop.h,
+  };
+}
+
+export function readCrop(raw: unknown): Crop | null {
+  if (typeof raw !== "object" || raw === null) return null;
+
+  const { x, y, w, h } = raw as Record<string, unknown>;
+
+  return [x, y, w, h].every((n) => typeof n === "number" && Number.isFinite(n)) &&
+    (w as number) > 0 &&
+    (h as number) > 0
+    ? ({ x, y, w, h } as Crop)
+    : null;
+}
+
+// The original file name of an upload, for the uploader's own display only.
+// Only the last path segment is kept; control characters are removed and the
+// length is capped. An empty result means "no name".
+export function safeFileName(name: string): string | null {
+  const last = name.split(/[\\/]/).pop() ?? "";
+  const cleaned = last.replace(/[\u0000-\u001f\u007f]/g, "").trim();
+
+  return cleaned ? cleaned.slice(0, 120) : null;
 }

@@ -129,6 +129,128 @@ export const de = {
   "Z22.share.copied": "Link kopiert.",
   "Z22.share.failed":
     "Das Kopieren hat nicht geklappt. Versuche es noch einmal.",
+  "Z23.details.eyebrow": "Angaben · Teil 1 von 3",
+  "Z23.details.title": "Erzähl uns von deinem Projekt",
+  "Z23.details.lead":
+    "Diese Angaben erscheinen auf deiner Profilseite. Sie bleibt privat, bis DISKOE sie freigegeben hat.",
+  "Z23.details.name.label": "Name deines Projekts",
+  "Z23.details.name.placeholder": "Reihe, Kollektiv oder Label",
+  "Z23.details.name.hint": "So steht er als Überschrift auf deiner Seite.",
+  "Z23.details.name.tooLong":
+    "Der Name darf höchstens {max} Zeichen lang sein.",
+  "Z23.details.intro.label": "Kurzvorstellung",
+  "Z23.details.intro.placeholder": "Was veranstaltest du?",
+  "Z23.details.intro.hint": "Ein bis zwei Sätze: Was veranstaltest du?",
+  "Z23.details.intro.tooLong":
+    "Die Kurzvorstellung darf höchstens {max} Zeichen lang sein.",
+  "Z23.details.slug.label": "Profiladresse",
+  "Z23.details.slug.hint":
+    "Kleinbuchstaben, Zahlen und Bindestriche. Daraus wird der Link zu deiner Seite. Nach der Freigabe lässt sie sich nicht mehr ändern.",
+  "Z23.details.slug.hintValid": "Deine Seite ist unter /{slug} erreichbar.",
+  "Z23.details.slug.taken":
+    "Diese Adresse ist schon vergeben. Wähle eine andere.",
+  "Z23.details.slug.format":
+    "Nur Kleinbuchstaben, Zahlen und Bindestriche, mindestens 3 Zeichen. Zum Beispiel nebenraum-berlin.",
+  "Z23.details.slug.reserved":
+    "Diese Adresse ist reserviert. Wähle eine andere.",
+  "Z23.details.slug.fixed":
+    "Deine Profiladresse ist festgelegt: /{slug}. Sie lässt sich nicht mehr ändern.",
+  "Z23.details.where.title": "Wo findet man dich?",
+  "Z23.details.where.hint":
+    "Mindestens ein Link oder ein Kontakt. Du kannst bis zu fünf Links eintragen.",
+  "Z23.details.website.label": "Website",
+  "Z23.details.website.placeholder": "https://",
+  "Z23.details.instagram.label": "Instagram",
+  "Z23.details.instagram.placeholder": "@deinname",
+  "Z23.details.instagram.invalid":
+    "Das ist kein gültiger Instagram-Name. Schreibe zum Beispiel @nebenraum.",
+  "Z23.details.link.invalid":
+    "Das ist kein gültiger Link. Schreibe zum Beispiel https://nebenraum.example.",
+  "Z23.details.more.label": "Weiterer Link {n}",
+  "Z23.details.more.add": "Weiteren Link hinzufügen",
+  "Z23.details.more.remove": "Link {n} entfernen",
+  "Z23.details.more.max": "Mehr als fünf weitere Links gehen nicht.",
+  "Z23.details.contact.label": "Öffentlicher Kontakt (optional)",
+  "Z23.details.contact.placeholder": "name@beispiel.de",
+  "Z23.details.contact.hint":
+    "Diese E-Mail-Adresse steht öffentlich auf deiner Seite.",
+  "Z23.details.contact.tooLong":
+    "Der Kontakt darf höchstens {max} Zeichen lang sein.",
+  "Z23.details.next": "Weiter zum Profilbild",
+  "Z23.details.later": "Später weitermachen",
+  "Z23.check.title.one": "Bitte prüfe eine Angabe.",
+  "Z23.check.title.two": "Bitte prüfe zwei Angaben.",
+  "Z23.check.title.many": "Bitte prüfe {n} Angaben.",
+  "Z23.check.line.one": "Das markierte Feld passt noch nicht.",
+  "Z23.check.line.many": "Die markierten Felder passen noch nicht.",
+  "Z23.save.failed.title": "Das Speichern hat nicht geklappt.",
+  "Z23.save.failed.line":
+    "Deine Eingaben stehen noch im Formular. Versuche es noch einmal.",
+  "Z23.save.failed.keep": "Dein Bild ist noch da. Versuche es noch einmal.",
+  "Z23.image.eyebrow": "Profilbild · Teil 2 von 3",
+  "Z23.image.title": "Dein Profilbild",
+  "Z23.image.lead":
+    "Ein quadratisches Bild, zum Beispiel dein Logo. Es erscheint oben auf deiner Profilseite.",
+  "Z23.image.label": "Profilbild",
+  "Z23.upload.hint": "JPG, PNG oder WebP, bis 5 MB",
+  "Z23.upload.choose": "Datei wählen",
+  "Z23.upload.none": "Keine Datei ausgewählt",
+  "Z23.upload.another": "Du kannst ein anderes Bild wählen.",
+  "Z23.upload.crop": "Ausschnitt ändern",
+  "Z23.image.missingHint":
+    "Ohne Bild kannst du weiterarbeiten. Zum Einreichen braucht dein Profil ein Profilbild.",
+  "Z23.image.alt.label": "Bildbeschreibung (freiwillig)",
+  "Z23.image.alt.placeholder": "Was ist auf dem Bild zu sehen?",
+  "Z23.image.alt.hint":
+    "Beschreibe in einem Satz, was zu sehen ist, zum Beispiel: Vier Personen vor einer Backsteinwand. Das hilft Menschen, die das Bild nicht sehen können.",
+  "Z23.image.alt.tooLong":
+    "Die Bildbeschreibung darf höchstens {max} Zeichen lang sein.",
+  "Z23.image.next": "Weiter zur Vorschau",
+  "Z23.image.back": "Zurück zu den Angaben",
+  "Z23.upload.busy.title": "Dein Bild wird hochgeladen …",
+  "Z23.upload.busy.line":
+    "Das dauert einen Moment. Bleib kurz auf dieser Seite.",
+  "Z23.upload.tooBig.title": "Die Datei ist zu groß.",
+  "Z23.upload.tooBig.line":
+    "Erlaubt sind JPG, PNG oder WebP bis {limit}. Deine hat {size}.",
+  "Z23.upload.tooSmall.title": "Das Bild ist zu klein.",
+  "Z23.upload.tooSmall.line":
+    "Es braucht mindestens {min} × {min} Pixel. Deins hat {w} × {h} Pixel.",
+  "Z23.upload.format.title": "Dieses Format geht nicht.",
+  "Z23.upload.format.line": "Erlaubt sind JPG, PNG oder WebP bis 5 MB.",
+  "Z23.upload.failed.title": "Das Hochladen hat nicht geklappt.",
+  "Z23.upload.failed.line":
+    "Dein bisheriges Bild bleibt, falls du eins hattest. Versuche es noch einmal.",
+  "Z23.crop.title": "Wähle den Ausschnitt",
+  "Z23.crop.lead":
+    "Dein Profilbild wird quadratisch. Verschiebe den Rahmen auf die Stelle, die du zeigen willst.",
+  "Z23.crop.area": "Bildausschnitt",
+  "Z23.crop.zoomOut": "Verkleinern",
+  "Z23.crop.zoomIn": "Vergrößern",
+  "Z23.crop.hint":
+    "Ziehe den Ausschnitt oder nutze die Pfeiltasten. Zoom mit + und −.",
+  "Z23.crop.apply": "Ausschnitt übernehmen",
+  "Z23.crop.other": "Anderes Bild wählen",
+  "Z23.crop.retry": "Noch einmal versuchen",
+  "Z23.preview.eyebrow": "Vorschau · Teil 3 von 3",
+  "Z23.preview.title": "So sieht deine Profilseite aus",
+  "Z23.preview.lead":
+    "Das siehst nur du. Öffentlich wird die Seite erst, wenn du sie einreichst und DISKOE sie freigegeben hat. Mit erstem Event oder ohne.",
+  "Z23.preview.notice.title": "Das ist erst der Kopf deiner Seite.",
+  "Z23.preview.notice.line":
+    "Du siehst die Standardgestaltung. Farben und Schrift passt du an, sobald dein Profil angelegt ist. Die weiteren Angaben, die du später machst, füllen dann die ganze Seite.",
+  "Z23.preview.next": "Weiter zum ersten Event",
+  "Z23.preview.submit": "Profil ohne Event einreichen",
+  "Z23.preview.gaps": "Dir fehlen noch Angaben: {gaps}.",
+  "Z23.preview.badge": "Veranstalter",
+  "Z23.preview.saved": "Gemerkt",
+  "Z23.preview.share": "Profil teilen",
+  "Z23.preview.follow": "Folgen",
+  "Z23.preview.programme": "Programm ansehen",
+  "Z23.preview.followNote":
+    "Wir bündeln neue Events in einer Mail. In jeder Mail steht ein Link zum Abmelden.",
+  "Z23.preview.static":
+    "Das ist nur eine Vorschau. Die Schaltflächen funktionieren erst auf der öffentlichen Seite.",
 } as const;
 
 export type MessageId = keyof typeof de;

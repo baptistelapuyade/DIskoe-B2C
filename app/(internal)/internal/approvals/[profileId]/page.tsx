@@ -121,6 +121,12 @@ export default async function ApprovalDetailPage({
         </p>
         <ul className="text-sm">
           {revision?.officialUrl ? <li>Link: {revision.officialUrl}</li> : null}
+          {revision?.instagramHandle ? (
+            <li>Instagram: @{revision.instagramHandle}</li>
+          ) : null}
+          {(revision?.extraLinks ?? []).map((url) => (
+            <li key={url}>Weiterer Link: {url}</li>
+          ))}
           {revision?.publicContact ? (
             <li>Kontakt: {revision.publicContact}</li>
           ) : null}

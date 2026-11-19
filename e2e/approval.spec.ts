@@ -17,6 +17,7 @@ import {
 } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
 import { germanContext } from "./support/language";
+import { saveDetails } from "./support/profile-flow";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the
 // founder's decision (approval that publishes at once, or a question), the copy
@@ -487,9 +488,8 @@ test.describe("first approval, publication and public image", () => {
 
     await page.goto(`/organizer/profiles/${profileA}/edit`);
     await expect(page.getByText("DISKOE hat dieses Profil freigegeben.", { exact: false })).toHaveCount(0);
-    await page.getByLabel("Kurzvorstellung").fill("A new text that is not public yet.");
-    await page.getByRole("button", { name: "Speichern" }).click();
-    await expect(page.getByText("Gespeichert. Der Entwurf bleibt privat.")).toBeVisible(SLOW);
+    await saveDetails(page, { intro: "A new text that is not public yet." }, "later");
+    await page.waitForURL("**/organizer", SLOW);
 
     const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },

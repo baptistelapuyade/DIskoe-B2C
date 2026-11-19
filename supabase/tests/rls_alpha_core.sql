@@ -355,6 +355,10 @@ select tests.expect_error(format($q$insert into public.media_assets (uploader_id
   '42501', 'asset path must sit under the uploader prefix');
 select tests.expect_error(format($q$insert into public.media_assets (uploader_id, private_object_path, mime_type) values (%L, %L, 'image/gif')$q$, :'uid_a', :'uid_a' || '/x.gif'),
   '23514', 'only jpeg, png and webp assets are accepted');
+select tests.expect_error(format($q$insert into public.media_assets (uploader_id, private_object_path, mime_type, original_filename) values (%L, %L, 'image/png', '')$q$, :'uid_a', :'uid_a' || '/n1.png'),
+  '23514', 'an empty original file name is refused');
+select tests.expect_error(format($q$insert into public.media_assets (uploader_id, private_object_path, mime_type, original_filename) values (%L, %L, 'image/png', repeat('a', 121))$q$, :'uid_a', :'uid_a' || '/n2.png'),
+  '23514', 'an original file name over 120 characters is refused');
 select tests.expect_true(format('select tests.confirm_with_alt_is_null(%L, null)', :'pa'),
   'a profile image can be confirmed without a description');
 select tests.expect_true(format('select tests.confirm_with_alt_is_null(%L, %L)', :'pa', '   '),
@@ -1505,10 +1509,10 @@ insert into tests.expected_col_grants values
   ('authenticated', 'profiles', 'SELECT', array['id','kind','slug','draft_revision_id','published_revision_id','first_approved_revision_id','approved_at','publication_state','created_at','updated_at']),
   ('authenticated', 'profiles', 'UPDATE', array['draft_revision_id']),
   ('anon',          'profiles', 'SELECT', array['id','slug','published_revision_id','first_approved_revision_id','publication_state']),
-  ('authenticated', 'profile_revisions', 'SELECT', array['id','profile_id','revision_no','name','short_intro','official_url','public_contact','profile_image_use_id','confirmed_at','created_at']),
-  ('authenticated', 'profile_revisions', 'INSERT', array['profile_id','name','short_intro','official_url','public_contact','profile_image_use_id','created_by']),
-  ('authenticated', 'profile_revisions', 'UPDATE', array['name','short_intro','official_url','public_contact','profile_image_use_id']),
-  ('anon',          'profile_revisions', 'SELECT', array['id','name','short_intro','official_url','public_contact','profile_image_use_id','confirmed_at']),
+  ('authenticated', 'profile_revisions', 'SELECT', array['id','profile_id','revision_no','name','short_intro','official_url','public_contact','profile_image_use_id','confirmed_at','created_at','instagram_handle','extra_links']),
+  ('authenticated', 'profile_revisions', 'INSERT', array['profile_id','name','short_intro','official_url','public_contact','profile_image_use_id','created_by','instagram_handle','extra_links']),
+  ('authenticated', 'profile_revisions', 'UPDATE', array['name','short_intro','official_url','public_contact','profile_image_use_id','instagram_handle','extra_links']),
+  ('anon',          'profile_revisions', 'SELECT', array['id','name','short_intro','official_url','public_contact','profile_image_use_id','confirmed_at','instagram_handle','extra_links']),
   ('authenticated', 'events', 'SELECT', array['id','organizer_id','slug','draft_revision_id','published_revision_id','first_approved_revision_id','approved_at','publication_state','public_status','state_version','cancelled_at','created_at','updated_at']),
   ('authenticated', 'events', 'INSERT', array['organizer_id','slug']),
   ('authenticated', 'events', 'UPDATE', array['draft_revision_id']),
@@ -1517,15 +1521,15 @@ insert into tests.expected_col_grants values
   ('authenticated', 'event_revisions', 'INSERT', array['event_id','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id','created_by']),
   ('authenticated', 'event_revisions', 'UPDATE', array['title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id']),
   ('anon',          'event_revisions', 'SELECT', array['id','title','description','primary_format','start_at','timezone','end_state','end_at','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','currency','access_routes','atmosphere_tags','atmosphere_description','event_image_use_id','confirmed_at']),
-  ('authenticated', 'media_assets', 'SELECT', array['id','uploader_id','private_object_path','mime_type','created_at']),
-  ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type']),
+  ('authenticated', 'media_assets', 'SELECT', array['id','uploader_id','private_object_path','mime_type','created_at','original_filename']),
+  ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type','original_filename']),
   ('authenticated', 'media_assets', 'UPDATE', array['mime_type']),
   ('authenticated', 'review_requests', 'SELECT', array['id','profile_id','revision_id','message','created_at','event_revision_id']),
   ('authenticated', 'profile_mails', 'SELECT', array['id','profile_id','revision_id','kind','status','attempts','claimed_at','finished_at','failure_code']),
   ('authenticated', 'media_uses', 'SELECT', array['id','asset_id','profile_id','event_id','role','public_object_path','alt_text','crop','confirmed_at']),
   ('authenticated', 'media_uses', 'INSERT', array['asset_id','profile_id','event_id','role','alt_text','crop']),
   ('authenticated', 'media_uses', 'UPDATE', array['alt_text','crop','confirmed_at','confirmed_by']),
-  ('anon',          'media_uses', 'SELECT', array['id','public_object_path','confirmed_at']),
+  ('anon',          'media_uses', 'SELECT', array['id','public_object_path','confirmed_at','crop']),
   ('authenticated', 'publication_audit', 'SELECT', array['id','entity_type','entity_id','revision_id','action','created_at']);
 
 select tests.expect_count($q$
@@ -1616,7 +1620,8 @@ insert into tests.expected_exec values
   ('public', 'submit_profile_for_review'),
   ('public', 'request_profile_changes'), ('public', 'claim_profile_mail'),
   ('public', 'finish_profile_mail'),
-  ('public', 'submit_first_publication'), ('public', 'approve_first_publication');
+  ('public', 'submit_first_publication'), ('public', 'approve_first_publication'),
+  ('public', 'change_profile_slug'), ('app_private', 'profile_links_valid');
 select tests.expect_count($q$
   select n.nspname, p.proname
     from pg_proc p join pg_namespace n on n.oid = p.pronamespace
@@ -1752,6 +1757,8 @@ insert into tests.expected_objects values
   ('function', 'public', 'finish_profile_mail'),
   ('function', 'public', 'submit_first_publication'),
   ('function', 'public', 'approve_first_publication'),
+  ('function', 'public', 'change_profile_slug'),
+  ('function', 'app_private', 'profile_links_valid'),
   ('table', 'public', 'auth_code_attempts'),
   ('function', 'public', 'auth_code_status'),
   ('function', 'public', 'auth_code_fail'),
@@ -1843,6 +1850,82 @@ select tests.as_superuser();
 select tests.expect_count($q$
   select 1 from public.auth_code_attempts where key_hash = repeat('d', 64)
 $q$, 0, 'rows older than a day are removed');
+
+-- ===========================================================================
+-- Profile links and the profile address (migration 20261117120000)
+-- ===========================================================================
+select tests.as_user(:'uid_f');
+select public.provision_profile_owner(:'uid_v', 'links-test', 'Links Test') as pv \gset
+select tests.as_superuser();
+select draft_revision_id as rv from public.profiles where id = :'pv' \gset
+
+-- Links: one handle, up to five further links, nothing else.
+select tests.as_user(:'uid_v');
+select tests.expect_affected(format($q$update public.profile_revisions set instagram_handle = 'links.test_1', extra_links = '[{"url":"https://a.example"},{"url":"http://b.example/x"}]'::jsonb where id = %L$q$, :'rv'),
+  1, 'owner can save an instagram handle and further links');
+select tests.expect_error(format($q$update public.profile_revisions set instagram_handle = '@links' where id = %L$q$, :'rv'),
+  '23514', 'an instagram handle with @ is rejected');
+select tests.expect_error(format($q$update public.profile_revisions set instagram_handle = 'has space' where id = %L$q$, :'rv'),
+  '23514', 'an instagram handle with a space is rejected');
+select tests.expect_error(format($q$update public.profile_revisions set extra_links = '[{"url":"https://1.example"},{"url":"https://2.example"},{"url":"https://3.example"},{"url":"https://4.example"},{"url":"https://5.example"},{"url":"https://6.example"}]'::jsonb where id = %L$q$, :'rv'),
+  '23514', 'more than five further links are rejected');
+select tests.expect_error(format($q$update public.profile_revisions set extra_links = '[{"url":"javascript:alert(1)"}]'::jsonb where id = %L$q$, :'rv'),
+  '23514', 'a further link must be http or https');
+select tests.expect_error(format($q$update public.profile_revisions set extra_links = '[{"url":"https://a.example","label":"x"}]'::jsonb where id = %L$q$, :'rv'),
+  '23514', 'a further link has the url key only');
+select tests.expect_error(format($q$update public.profile_revisions set extra_links = '{"url":"https://a.example"}'::jsonb where id = %L$q$, :'rv'),
+  '23514', 'further links must be an array');
+select tests.expect_error(format($q$update public.profile_revisions set extra_links = 'null'::jsonb where id = %L$q$, :'rv'),
+  '23514', 'further links cannot be a json null');
+
+-- A handle alone or a further link alone closes the link gap.
+select tests.as_superuser();
+select tests.expect_true(format($q$select not ('link_or_contact' = any(app_private.profile_gaps(%L)))$q$, :'rv'),
+  'a handle and further links satisfy the link rule');
+update public.profile_revisions set instagram_handle = null, extra_links = '[]'::jsonb where id = :'rv';
+select tests.expect_true(format($q$select 'link_or_contact' = any(app_private.profile_gaps(%L))$q$, :'rv'),
+  'no link and no contact leaves the link gap');
+update public.profile_revisions set extra_links = '[{"url":"https://only.example"}]'::jsonb where id = :'rv';
+select tests.expect_true(format($q$select not ('link_or_contact' = any(app_private.profile_gaps(%L)))$q$, :'rv'),
+  'one further link alone satisfies the link rule');
+
+-- Anon sees the new columns only through the published view; the base table
+-- grants are checked in the column grant list above.
+
+-- Address: owner changes it until the first approval.
+select tests.as_user(:'uid_v');
+select tests.expect_true(format($q$select public.change_profile_slug(%L, '  Links-Neu ') = 'links-neu'$q$, :'pv'),
+  'owner can change the address, input is normalized');
+select tests.expect_true(format($q$select slug = 'links-neu' from public.profiles where id = %L$q$, :'pv'),
+  'the new address is stored');
+select tests.expect_true(format($q$select public.change_profile_slug(%L, 'links-neu') = 'links-neu'$q$, :'pv'),
+  'saving the same address again is fine');
+select tests.expect_error(format($q$select public.change_profile_slug(%L, 'Nebenraum!')$q$, :'pv'),
+  'DK006', 'a wrong format is DK006');
+select tests.expect_error(format($q$select public.change_profile_slug(%L, 'ab')$q$, :'pv'),
+  'DK006', 'a too short address is DK006');
+select tests.expect_error(format($q$select public.change_profile_slug(%L, 'login')$q$, :'pv'),
+  'DK007', 'a reserved address is DK007');
+select tests.expect_error(format($q$select public.change_profile_slug(%L, 'owner-a')$q$, :'pv'),
+  'DK008', 'a taken address is DK008');
+select tests.as_user(:'uid_b');
+select tests.expect_error(format($q$select public.change_profile_slug(%L, 'stolen-name')$q$, :'pv'),
+  'DK003', 'another organizer cannot change the address');
+select tests.as_anon();
+select tests.expect_error(format($q$select public.change_profile_slug(%L, 'anon-name')$q$, :'pv'),
+  '42501', 'anon cannot execute change_profile_slug');
+
+-- After the first approval the address is fixed.
+select tests.as_superuser();
+update public.profiles
+   set first_approved_revision_id = :'rv', approved_by = :'uid_f', approved_at = now()
+ where id = :'pv';
+select tests.as_user(:'uid_v');
+select tests.expect_error(format($q$select public.change_profile_slug(%L, 'links-late')$q$, :'pv'),
+  'DK003', 'the address is fixed after the first approval');
+select tests.as_superuser();
+select tests.expect_true(format($q$select slug = 'links-neu' from public.profiles where id = %L$q$, :'pv'),
+  'the fixed address did not change');
 
 -- ===========================================================================
 -- Summary

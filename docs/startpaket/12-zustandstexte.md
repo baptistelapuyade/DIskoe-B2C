@@ -239,6 +239,106 @@ Deutsch aus den Figma-Frames, Englisch Vorschlag. Abweichungen vom Frame stehen 
 | Z22.share.copied | Link kopiert. | Link copied. | Profil teilen, Erfolg (Z11) |
 | Z22.share.failed | Das Kopieren hat nicht geklappt. Versuche es noch einmal. | Copying didn't work. Try again. | Profil teilen, Fehler (Z03) |
 
+### Profil, Angaben, Bild und Vorschau (Z23, Welle 1 Block 2a, Stand 17.11.2026)
+Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready for dev), Englisch ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Texte ohne Frame sind mit „kein Frame“ markiert. Fehlertexte nennen die Beispieladresse nicht mehr (Founder, 17.11.2026).
+
+| ID | Deutsch | English | Ort |
+|---|---|---|---|
+| Z23.details.eyebrow | Angaben · Teil 1 von 3 | Details · Part 1 of 3 | ORG-03a bis 04, Eyebrow |
+| Z23.details.title | Erzähl uns von deinem Projekt | Tell us about your project | ORG-03a bis 04 |
+| Z23.details.lead | Diese Angaben erscheinen auf deiner Profilseite. Sie bleibt privat, bis DISKOE sie freigegeben hat. | These details appear on your profile page. It stays private until DISKOE has approved it. | ORG-03a bis 04 |
+| Z23.details.name.label | Name deines Projekts | Name of your project | Feldbeschriftung |
+| Z23.details.name.placeholder | Reihe, Kollektiv oder Label | Series, collective or label | Platzhalter |
+| Z23.details.name.hint | So steht er als Überschrift auf deiner Seite. | This is the heading of your page. | Hilfetext |
+| Z23.details.name.tooLong | Der Name darf höchstens {max} Zeichen lang sein. | The name can be {max} characters long at most. | Fehlertext am Feld (bisheriger Text, kein Frame) |
+| Z23.details.intro.label | Kurzvorstellung | Short introduction | Feldbeschriftung |
+| Z23.details.intro.placeholder | Was veranstaltest du? | What do you put on? | Platzhalter |
+| Z23.details.intro.hint | Ein bis zwei Sätze: Was veranstaltest du? | One or two sentences: What do you put on? | Hilfetext |
+| Z23.details.intro.tooLong | Die Kurzvorstellung darf höchstens {max} Zeichen lang sein. | The short introduction can be {max} characters long at most. | Fehlertext am Feld (bisheriger Text, kein Frame) |
+| Z23.details.slug.label | Profiladresse | Profile address | Feldbeschriftung |
+| Z23.details.slug.hint | Kleinbuchstaben, Zahlen und Bindestriche. Daraus wird der Link zu deiner Seite. Nach der Freigabe lässt sie sich nicht mehr ändern. | Lowercase letters, numbers and hyphens. This becomes the link to your page. After approval it can't be changed any more. | ORG-03a, bis die Adresse gültig ist |
+| Z23.details.slug.hintValid | Deine Seite ist unter /{slug} erreichbar. | Your page is available at /{slug}. | ORG-04, sobald die Adresse gültig ist (steht schon beim Tippen) |
+| Z23.details.slug.taken | Diese Adresse ist schon vergeben. Wähle eine andere. | This address is already taken. Choose another one. | ORG-03b; im Frame ohne Beispieladresse (Founder 17.11.) |
+| Z23.details.slug.format | Nur Kleinbuchstaben, Zahlen und Bindestriche, mindestens 3 Zeichen. Zum Beispiel nebenraum-berlin. | Only lowercase letters, numbers and hyphens, at least 3 characters. For example nebenraum-berlin. | ORG-03c; das Beispiel zeigt das Format, keine freie Adresse |
+| Z23.details.slug.reserved | Diese Adresse ist reserviert. Wähle eine andere. | This address is reserved. Choose another one. | ORG-03d; im Frame ohne Beispieladresse (Founder 17.11.) |
+| Z23.details.slug.fixed | Deine Profiladresse ist festgelegt: /{slug}. Sie lässt sich nicht mehr ändern. | Your profile address is fixed: /{slug}. It can't be changed any more. | nach der ersten Freigabe, Feld nur lesbar (kein Frame) |
+| Z23.details.where.title | Wo findet man dich? | Where can people find you? | Zwischenüberschrift |
+| Z23.details.where.hint | Mindestens ein Link oder ein Kontakt. Du kannst bis zu fünf Links eintragen. | At least one link or a contact. You can add up to five links. | unter der Zwischenüberschrift |
+| Z23.details.website.label | Website | Website | Feldbeschriftung |
+| Z23.details.website.placeholder | https:// | https:// | Platzhalter |
+| Z23.details.instagram.label | Instagram | Instagram | Feldbeschriftung |
+| Z23.details.instagram.placeholder | @deinname | @yourname | Platzhalter |
+| Z23.details.instagram.invalid | Das ist kein gültiger Instagram-Name. Schreibe zum Beispiel @nebenraum. | That isn't a valid Instagram name. Write something like @nebenraum. | Fehlertext am Feld (kein Frame) |
+| Z23.details.link.invalid | Das ist kein gültiger Link. Schreibe zum Beispiel https://nebenraum.example. | That isn't a valid link. Write something like https://nebenraum.example. | ORG-03b, Website und weitere Links |
+| Z23.details.more.label | Weiterer Link {n} | Further link {n} | Feldbeschriftung der zusätzlichen Zeile (kein Frame) |
+| Z23.details.more.add | Weiteren Link hinzufügen | Add another link | Button, Ghost; verschwindet bei fünf weiteren Links |
+| Z23.details.more.remove | Link {n} entfernen | Remove link {n} | Button an der zusätzlichen Zeile (kein Frame) |
+| Z23.details.more.max | Mehr als fünf weitere Links gehen nicht. | You can't add more than five further links. | statt des Buttons bei fünf weiteren Links (kein Frame) |
+| Z23.details.contact.label | Öffentlicher Kontakt (optional) | Public contact (optional) | Feldbeschriftung |
+| Z23.details.contact.placeholder | name@beispiel.de | name@example.com | Platzhalter |
+| Z23.details.contact.hint | Diese E-Mail-Adresse steht öffentlich auf deiner Seite. | This email address is public on your page. | Hilfetext |
+| Z23.details.contact.tooLong | Der Kontakt darf höchstens {max} Zeichen lang sein. | The contact can be {max} characters long at most. | Fehlertext am Feld (bisheriger Text, kein Frame) |
+| Z23.details.next | Weiter zum Profilbild | Continue to profile picture | Hauptaktion; speichert zuerst |
+| Z23.details.later | Später weitermachen | Continue later | zweite Aktion; speichert zuerst, dann zur Startseite |
+| Z23.check.title.one | Bitte prüfe eine Angabe. | Please check one detail. | Z01, ORG-03c, 03d |
+| Z23.check.title.two | Bitte prüfe zwei Angaben. | Please check two details. | Z01, ORG-03b |
+| Z23.check.title.many | Bitte prüfe {n} Angaben. | Please check {n} details. | Z01 ab drei Angaben |
+| Z23.check.line.one | Das markierte Feld passt noch nicht. | The marked field doesn't fit yet. | Z01 |
+| Z23.check.line.many | Die markierten Felder passen noch nicht. | The marked fields don't fit yet. | Z01 |
+| Z23.save.failed.title | Das Speichern hat nicht geklappt. | Saving didn't work. | Z03, Angaben und Profilbild |
+| Z23.save.failed.line | Deine Eingaben stehen noch im Formular. Versuche es noch einmal. | What you entered is still in the form. Try again. | Z03 mit Stand danach |
+| Z23.save.failed.keep | Dein Bild ist noch da. Versuche es noch einmal. | Your picture is still there. Try again. | ORG-05g, Z03 mit Stand danach |
+| Z23.image.eyebrow | Profilbild · Teil 2 von 3 | Profile picture · Part 2 of 3 | ORG-05a bis 05d, 05f |
+| Z23.image.title | Dein Profilbild | Your profile picture | ORG-05a bis 05d, 05f |
+| Z23.image.lead | Ein quadratisches Bild, zum Beispiel dein Logo. Es erscheint oben auf deiner Profilseite. | A square picture, for example your logo. It appears at the top of your profile page. | ORG-05a bis 05d, 05f |
+| Z23.image.label | Profilbild | Profile picture | Titel des Bausteins „Bild hochladen“ |
+| Z23.upload.hint | JPG, PNG oder WebP, bis 5 MB | JPG, PNG or WebP, up to 5 MB | Hilfetext im Baustein, ohne Bild |
+| Z23.upload.choose | Datei wählen | Choose file | Button im Baustein (Ghost); Founder 17.11.: statt des Browser-Buttons „Datei auswählen, keine Datei ausgewählt“ |
+| Z23.upload.none | Keine Datei ausgewählt | No file chosen | Text neben dem Button, ohne Bild |
+| Z23.upload.another | Du kannst ein anderes Bild wählen. | You can choose a different picture. | Hilfetext im Baustein, mit Bild |
+| Z23.upload.crop | Ausschnitt ändern | Change crop | zweiter Button, nur beim Profilbild mit Bild |
+| Z23.image.missingHint | Ohne Bild kannst du weiterarbeiten. Zum Einreichen braucht dein Profil ein Profilbild. | You can keep working without a picture. To submit, your profile needs a profile picture. | ORG-05a, 05b, 05d, 05f |
+| Z23.image.alt.label | Bildbeschreibung (freiwillig) | Picture description (optional) | ORG-05c, Feldbeschriftung |
+| Z23.image.alt.placeholder | Was ist auf dem Bild zu sehen? | What can be seen in the picture? | Platzhalter |
+| Z23.image.alt.hint | Beschreibe in einem Satz, was zu sehen ist, zum Beispiel: Vier Personen vor einer Backsteinwand. Das hilft Menschen, die das Bild nicht sehen können. | Describe in one sentence what can be seen, for example: Four people in front of a brick wall. This helps people who can't see the picture. | ORG-05c, Hilfetext |
+| Z23.image.alt.tooLong | Die Bildbeschreibung darf höchstens {max} Zeichen lang sein. | The picture description can be {max} characters long at most. | Fehlertext am Feld (bisheriger Text, kein Frame) |
+| Z23.image.next | Weiter zur Vorschau | Continue to preview | Hauptaktion |
+| Z23.image.back | Zurück zu den Angaben | Back to details | zweite Aktion |
+| Z23.upload.busy.title | Dein Bild wird hochgeladen … | Your picture is being uploaded … | ORG-05b, Z02 |
+| Z23.upload.busy.line | Das dauert einen Moment. Bleib kurz auf dieser Seite. | This takes a moment. Stay on this page for a moment. | ORG-05b, Z02 |
+| Z23.upload.tooBig.title | Die Datei ist zu groß. | The file is too large. | ORG-05d, Z05 |
+| Z23.upload.tooBig.line | Erlaubt sind JPG, PNG oder WebP bis {limit}. Deine hat {size}. | JPG, PNG or WebP up to {limit} are allowed. Yours is {size}. | ORG-05d, Z05 |
+| Z23.upload.tooSmall.title | Das Bild ist zu klein. | The picture is too small. | ORG-05f, Z06 |
+| Z23.upload.tooSmall.line | Es braucht mindestens {min} × {min} Pixel. Deins hat {w} × {h} Pixel. | It needs at least {min} × {min} pixels. Yours has {w} × {h} pixels. | ORG-05f, Z06 |
+| Z23.upload.format.title | Dieses Format geht nicht. | This format doesn't work. | Z07 |
+| Z23.upload.format.line | Erlaubt sind JPG, PNG oder WebP bis 5 MB. | JPG, PNG or WebP up to 5 MB are allowed. | Z07 |
+| Z23.upload.failed.title | Das Hochladen hat nicht geklappt. | Uploading didn't work. | Z03 (kein Frame) |
+| Z23.upload.failed.line | Dein bisheriges Bild bleibt, falls du eins hattest. Versuche es noch einmal. | Your previous picture stays, if you had one. Try again. | Z03 mit Stand danach (kein Frame) |
+| Z23.crop.title | Wähle den Ausschnitt | Choose the crop | ORG-05e, 05g |
+| Z23.crop.lead | Dein Profilbild wird quadratisch. Verschiebe den Rahmen auf die Stelle, die du zeigen willst. | Your profile picture becomes square. Move the frame to the part you want to show. | ORG-05e, 05g; Founder 17.11.: „wird“ statt „ist“ |
+| Z23.crop.area | Bildausschnitt | Picture crop | Beschriftung des Rahmens für Screenreader |
+| Z23.crop.zoomOut | Verkleinern | Zoom out | Beschriftung für Screenreader, Button „−“ |
+| Z23.crop.zoomIn | Vergrößern | Zoom in | Beschriftung für Screenreader, Button „+“ |
+| Z23.crop.hint | Ziehe den Ausschnitt oder nutze die Pfeiltasten. Zoom mit + und −. | Drag the crop or use the arrow keys. Zoom with + and −. | ORG-05e, 05g |
+| Z23.crop.apply | Ausschnitt übernehmen | Use this crop | ORG-05e, Hauptaktion |
+| Z23.crop.other | Anderes Bild wählen | Choose a different picture | ORG-05e, 05g, zweite Aktion |
+| Z23.crop.retry | Noch einmal versuchen | Try again | ORG-05g, Hauptaktion (Button-Regel Z03) |
+| Z23.preview.eyebrow | Vorschau · Teil 3 von 3 | Preview · Part 3 of 3 | ORG-06 |
+| Z23.preview.title | So sieht deine Profilseite aus | This is what your profile page looks like | ORG-06 |
+| Z23.preview.lead | Das siehst nur du. Öffentlich wird die Seite erst, wenn du sie einreichst und DISKOE sie freigegeben hat. Mit erstem Event oder ohne. | Only you can see this. The page becomes public only once you submit it and DISKOE has approved it. With a first event or without. | ORG-06 |
+| Z23.preview.notice.title | Das ist erst der Kopf deiner Seite. | This is only the top of your page. | ORG-06, Hinweis |
+| Z23.preview.notice.line | Du siehst die Standardgestaltung. Farben und Schrift passt du an, sobald dein Profil angelegt ist. Die weiteren Angaben, die du später machst, füllen dann die ganze Seite. | You're seeing the default design. You can adjust colours and type once your profile is set up. The details you add later fill the whole page. | ORG-06, Hinweis |
+| Z23.preview.next | Weiter zum ersten Event | Continue to your first event | ORG-06, Hauptaktion |
+| Z23.preview.submit | Profil ohne Event einreichen | Submit profile without an event | ORG-06, zweite Aktion |
+| Z23.preview.gaps | Dir fehlen noch Angaben: {gaps}. | You're still missing details: {gaps}. | ORG-06 bei Lücken (kein Frame, Wortlaut wie Z22.a.message) |
+| Z23.preview.badge | Veranstalter | Organizer | Kennzeichen am Profilkopf der Vorschau |
+| Z23.preview.saved | Gemerkt | Saved | Anzeige am Profilkopf der Vorschau, nicht bedienbar |
+| Z23.preview.share | Profil teilen | Share profile | Anzeige am Profilkopf der Vorschau, nicht bedienbar |
+| Z23.preview.follow | Folgen | Follow | Anzeige am Profilkopf der Vorschau, nicht bedienbar |
+| Z23.preview.programme | Programm ansehen | View programme | Anzeige am Profilkopf der Vorschau, nicht bedienbar |
+| Z23.preview.followNote | Wir bündeln neue Events in einer Mail. In jeder Mail steht ein Link zum Abmelden. | We bundle new events in one email. Every email has an unsubscribe link. | Mikrotext am Profilkopf der Vorschau (Wortlaut des Frames) |
+| Z23.preview.static | Das ist nur eine Vorschau. Die Schaltflächen funktionieren erst auf der öffentlichen Seite. | This is only a preview. The buttons only work on the public page. | Hinweis für Screenreader am Profilkopf der Vorschau |
+
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.
 
