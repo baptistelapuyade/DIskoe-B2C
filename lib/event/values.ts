@@ -52,12 +52,13 @@ export type EventRevisionRow = Pick<
   | "atmosphere_state"
   | "atmosphere_tags"
   | "atmosphere_description"
+  | "modules"
   | "event_image_use_id"
   | "confirmed_at"
 >;
 
 export const EVENT_REVISION_COLUMNS =
-  "id, title_state, title, description_state, description, format_state, primary_format, start_state, start_at, end_state, end_at, place_state, place_name, address_line, postal_code, city, price_state, price_model, price_amount_minor, price_max_amount_minor, price_fee_model, currency, access_state, access_routes, atmosphere_state, atmosphere_tags, atmosphere_description, event_image_use_id, confirmed_at";
+  "id, title_state, title, description_state, description, format_state, primary_format, start_state, start_at, end_state, end_at, place_state, place_name, address_line, postal_code, city, price_state, price_model, price_amount_minor, price_max_amount_minor, price_fee_model, currency, access_state, access_routes, atmosphere_state, atmosphere_tags, atmosphere_description, modules, event_image_use_id, confirmed_at";
 
 // What the form shows: text and lists only.
 export type EventFormValues = {
@@ -357,6 +358,7 @@ export function rowToCopy(
 ): Omit<TablesUpdate<"event_revisions">, "id" | "event_id"> {
   return {
     ...valuesToRow(rowToValues(row)),
+    modules: row.modules,
     event_image_use_id: row.event_image_use_id,
   };
 }

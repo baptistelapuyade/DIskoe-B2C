@@ -6,6 +6,7 @@ import {
   eventGapCodes,
   type EventGap,
 } from "@/lib/domain/event-publication";
+import { parseStored, type StoredModules } from "@/lib/domain/event-modules";
 import { createClient } from "@/lib/supabase/server";
 import { loadImage, type ProfileImage } from "@/lib/profile/image";
 
@@ -29,6 +30,8 @@ export type OwnerEventView = {
   profileName: string;
   event: EventState;
   form: EventFormValues;
+  // The blocks of "Mehr zum Abend"; null while the step was never saved.
+  modules: StoredModules | null;
   image: ProfileImage | null;
   gaps: EventGap[];
 };
@@ -90,6 +93,7 @@ export async function loadOwnerEventView(
     profileName,
     event,
     form: revision ? rowToFormValues(revision) : EMPTY_FORM_VALUES,
+    modules: revision ? parseStored(revision.modules) : null,
     image,
     gaps,
   };

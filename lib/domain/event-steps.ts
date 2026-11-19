@@ -426,7 +426,7 @@ export function noticeKind(errors: StepErrors): NoticeKind {
 }
 
 // The step that follows. After the atmosphere comes the optional step 7
-// (EVT-07, a later slice); until then the old overview is shown.
+// "Mehr zum Abend" (EVT-07, route /edit/more, its own screen).
 export function nextStepPath(step: EventStep): EventStep | "more" {
   if (step === "basics") return "time";
   if (step === "time") return "place";
