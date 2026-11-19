@@ -6,7 +6,7 @@
 
 const PREFIX = "diskoe:event-step:";
 
-export type Retained = Record<string, string | boolean>;
+export type Retained = Record<string, string | boolean | string[]>;
 
 function key(scope: string): string {
   return `${PREFIX}${scope}`;

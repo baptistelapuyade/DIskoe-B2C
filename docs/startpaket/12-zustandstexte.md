@@ -430,6 +430,101 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z24.saved.toDraft | Zum Entwurf | To the draft | EVT-08, Hauptaktion: zum ersten Schritt, der noch nicht vollständig ist |
 | Z24.saved.toHome | Zur Startseite | To the start page | EVT-08 |
 
+### Event anlegen: Preis, Eventbild, Atmosphäre (Z25, Welle 1 Block 2b, Slice 6, Stand 20.11.2026)
+**Status:** Der deutsche Wortlaut ist aus den Frames `EVT-04a` bis `04n`, `EVT-05a` bis `05f` und `EVT-06a`/`06b` übernommen; Texte ohne Frame sind als „kein Frame“ markiert. Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Der Upload-Block des Eventbilds und die Bildbeschreibung verwenden die Texte `Z23.upload.*` und `Z23.image.alt.*` (gleicher Wortlaut wie beim Profilbild); Hinweistitel kommen aus `Z23.check.title.*`.
+
+| ID | Deutsch | English | Verwendung |
+|---|---|---|---|
+| Z25.step.price.eyebrow | Preis und Zugang · Teil 4 von 7 | Price and access · Part 4 of 7 | EVT-04a bis n, Eyebrow |
+| Z25.step.image.eyebrow | Eventbild · Teil 5 von 7 | Event image · Part 5 of 7 | EVT-05a bis f, Eyebrow |
+| Z25.step.atmosphere.eyebrow | Atmosphäre · Teil 6 von 7 | Atmosphere · Part 6 of 7 | EVT-06a/b, Eyebrow |
+| Z25.price.title | Preis und Zugang | Price and access | EVT-04a bis n |
+| Z25.price.lead | Ein leeres Feld heißt nicht „kostenlos“. Wenn du den Preis noch nicht kennst, sag es ausdrücklich. | An empty field doesn't mean “free”. If you don't know the price yet, say so explicitly. | EVT-04a bis n |
+| Z25.image.title | Zeig dein Event | Show your event | EVT-05a bis f |
+| Z25.image.lead | Das Bild steht oben auf der Eventseite. Ein Flyer im Hochformat passt gut. | The image sits at the top of the event page. A portrait flyer works well. | EVT-05a bis f |
+| Z25.atmosphere.title | Wie fühlt sich der Abend an? | How does the evening feel? | EVT-06a/b |
+| Z25.atmosphere.lead | Wähle bis zu drei Begriffe oder beschreibe die Atmosphäre in eigenen Worten. Das hilft Gästen einzuschätzen, was sie erwartet. | Choose up to three terms or describe the atmosphere in your own words. It helps guests know what to expect. | EVT-06a/b |
+| Z25.price.next | Weiter zum Eventbild | Continue to the event image | Hauptaktion EVT-04; speichert zuerst |
+| Z25.image.next | Weiter zur Atmosphäre | Continue to atmosphere | Hauptaktion EVT-05; speichert die Bildbeschreibung zuerst |
+| Z25.atmosphere.next | Weiter zu den freiwilligen Angaben | Continue to the optional details | Hauptaktion EVT-06; speichert zuerst |
+| Z25.access.title | Wie kommen Gäste rein? | How do guests get in? | Zwischenüberschrift EVT-04 |
+| Z25.access.hint | Wähle alle Wege, die es wirklich gibt. | Choose every way that really exists. | unter der Zwischenüberschrift |
+| Z25.access.walkIn | Ohne Anmeldung | No registration | Zugangsweg |
+| Z25.access.door | Abendkasse | Box office | Zugangsweg |
+| Z25.access.onlineTicket | Online-Ticket | Online ticket | Zugangsweg |
+| Z25.access.onlineRegistration | Online-Anmeldung | Online registration | Zugangsweg |
+| Z25.access.invalid | Wähle nur die angebotenen Wege. | Choose only the ways offered. | Fehlertext (kein Frame) |
+| Z25.price.section | Preis | Price | Zwischenüberschrift EVT-04 |
+| Z25.price.form.label | Preisform | Price type | Feldbeschriftung |
+| Z25.price.form.placeholder | Preisform wählen | Choose a price type | Platzhalter (kein Frame) |
+| Z25.price.form.fixed | Festpreis | Fixed price | Preisform, EVT-04a |
+| Z25.price.form.range | Preisspanne | Price range | Preisform, EVT-04b |
+| Z25.price.form.fromPrice | Ab Preis | From price | Preisform, EVT-04g |
+| Z25.price.form.free | Kostenlos | Free | Preisform, EVT-04f; wird ausdrücklich gewählt, leer ist nicht kostenlos |
+| Z25.price.form.donation | Auf Spendenbasis | Donation-based | Preisform, EVT-04h |
+| Z25.price.form.minDonation | Mindestspende | Minimum donation | Preisform, EVT-04i |
+| Z25.price.form.unknown | Noch nicht bekannt | Not known yet | Preisform, EVT-04c; ausdrücklich unbekannt, nie „kostenlos“ |
+| Z25.price.form.invalid | Wähle eine der angebotenen Preisformen. | Choose one of the price types offered. | Fehlertext (kein Frame) |
+| Z25.price.free.hint | Der Eintritt ist frei. Die Eventseite zeigt das ausdrücklich so an. | Entry is free. The event page says so explicitly. | Hilfetext EVT-04f |
+| Z25.price.donation.hint | Gäste zahlen, was sie möchten. Die Eventseite zeigt „Eintritt gegen Spende“. | Guests pay what they like. The event page shows “Entry by donation”. | Hilfetext EVT-04h |
+| Z25.price.unknown.title | Dein Preis wird als „noch offen“ angezeigt. | Your price is shown as “still open”. | Hinweis EVT-04c, Titel |
+| Z25.price.unknown.line | Das ist nicht „kostenlos“. Du kannst den Preis später ergänzen. | That is not “free”. You can add the price later. | Hinweis EVT-04c, Zeile |
+| Z25.price.amount.fixed | Preis in Euro | Price in euros | Feldbeschriftung EVT-04a |
+| Z25.price.amount.fromPrice | Ab Preis in Euro | From price in euros | Feldbeschriftung EVT-04g |
+| Z25.price.amount.minDonation | Mindestspende in Euro | Minimum donation in euros | Feldbeschriftung EVT-04i |
+| Z25.price.amount.rangeFrom | Von (Euro) | From (euros) | Feldbeschriftung EVT-04b |
+| Z25.price.amount.rangeTo | Bis (Euro) | To (euros) | Feldbeschriftung EVT-04b |
+| Z25.price.amount.appliesTo | Gilt für {ways}. | Applies to {ways}. | Hilfetext EVT-04a; {ways} sind die gewählten Wege mit Preis (Abendkasse, Online-Ticket) |
+| Z25.price.amount.lowest | Der niedrigste Preis. Gilt für {ways}. | The lowest price. Applies to {ways}. | Hilfetext EVT-04g |
+| Z25.price.amount.minDonationHint | Gäste zahlen mindestens diesen Betrag. | Guests pay at least this amount. | Hilfetext EVT-04i |
+| Z25.price.ways.all | das ganze Event | the whole event | {ways}, wenn weder Abendkasse noch Online-Ticket gewählt ist (kein Frame) |
+| Z25.price.ways.and | {a} und {b} | {a} and {b} | {ways} mit zwei Wegen |
+| Z25.price.amount.missing | Gib einen Betrag an, zum Beispiel 12,00. | Enter an amount, for example 12.00. | Fehlertext (kein Frame) |
+| Z25.price.amount.invalid | Gib den Preis als Zahl an, zum Beispiel 12,00. | Enter the price as a number, for example 12.00. | Fehlertext EVT-04d |
+| Z25.price.amount.tooHigh | Der Betrag ist zu hoch. | The amount is too high. | Fehlertext (kein Frame) |
+| Z25.price.amount.zero | Der Betrag muss größer als 0 sein. Für freien Eintritt wähle „Kostenlos“. | The amount must be more than 0. For free entry, choose “Free”. | Fehlertext (kein Frame) |
+| Z25.price.amount.rangeOrder | Das Ende der Spanne muss höher sein als der Anfang. | The end of the range must be higher than the start. | Fehlertext (kein Frame) |
+| Z25.fees.label | Pflichtgebühren | Mandatory fees | Feldbeschriftung EVT-04l |
+| Z25.fees.placeholder | Pflichtgebühren wählen | Choose | Platzhalter (kein Frame) |
+| Z25.fees.included | Im Preis enthalten | Included in the price | Auswahl EVT-04l |
+| Z25.fees.unknown | Noch nicht bekannt | Not known yet | Auswahl EVT-04m |
+| Z25.fees.included.hint | Die Eventseite zeigt „inkl. Gebühren“. | The event page shows “incl. fees”. | Hilfetext EVT-04l |
+| Z25.fees.unknown.hint | Die Eventseite sagt dazu nichts. Unbekannt heißt nicht „keine Gebühren“. | The event page says nothing about it. Unknown does not mean “no fees”. | Hilfetext EVT-04m |
+| Z25.fees.invalid | Wähle eine der angebotenen Angaben. | Choose one of the options offered. | Fehlertext (kein Frame) |
+| Z25.availability.label | Online-Ticket: Verfügbarkeit | Online ticket: availability | Feldbeschriftung EVT-04k |
+| Z25.availability.placeholder | Verfügbarkeit wählen | Choose availability | Platzhalter (kein Frame) |
+| Z25.availability.available | Verfügbar | Available | Auswahl (kein Frame) |
+| Z25.availability.soldOut | Ausverkauft | Sold out | Auswahl EVT-04k |
+| Z25.availability.soldOut.hint | Die Eventseite zeigt „Online-Ticket ausverkauft“. Die anderen Wege bleiben sichtbar. | The event page shows “Online ticket sold out”. The other ways stay visible. | Hilfetext EVT-04k (Frame nennt die Abendkasse; hier für jeden gewählten Weg gefasst) |
+| Z25.availability.invalid | Wähle eine der angebotenen Angaben. | Choose one of the options offered. | Fehlertext (kein Frame) |
+| Z25.link.ticket.label | Link zum Ticketverkauf | Link to ticket sales | Feldbeschriftung EVT-04a |
+| Z25.link.ticket.hint | Nur für das Online-Ticket. | For the online ticket only. | Hilfetext EVT-04a |
+| Z25.link.registration.label | Link zur Anmeldung | Link to registration | Feldbeschriftung EVT-04j |
+| Z25.link.registration.hint | Nur für die Online-Anmeldung. | For the online registration only. | Hilfetext EVT-04j |
+| Z25.link.noScheme | Das ist kein gültiger Link. Er muss mit https:// beginnen. | That isn't a valid link. It must start with https://. | Fehlertext EVT-04n |
+| Z25.link.invalid | Das ist kein gültiger Link. Schreibe zum Beispiel https://tickets.example. | That isn't a valid link. Write for example https://tickets.example. | Fehlertext EVT-04d |
+| Z25.link.tooLong | Der Link ist zu lang. Höchstens {max} Zeichen. | The link is too long. {max} characters at most. | Fehlertext (kein Frame) |
+| Z25.image.label | Eventbild hinzufügen | Add event image | Beschriftung des Upload-Blocks EVT-05a |
+| Z25.image.missingHint | Ohne Bild kannst du weiterarbeiten. Zum Einreichen braucht dein Event ein Bild. | You can carry on without an image. To submit, your event needs one. | Hinweis EVT-05a, 05c bis 05f |
+| Z25.atmosphere.group | Atmosphärebegriffe | Atmosphere terms | Beschriftung der Begriffe für Screenreader (kein Frame) |
+| Z25.atmosphere.count | {n} von {max} gewählt. | {n} of {max} selected. | Zähler EVT-06a/b |
+| Z25.atmosphere.needed | Eine Angabe zur Atmosphäre braucht dein Event zum Einreichen. | Your event needs an atmosphere entry to be submitted. | Hinweis EVT-06a, solange nichts gewählt ist |
+| Z25.atmosphere.text.label | Eigene Beschreibung (freiwillig) | Your own description (optional) | Feldbeschriftung EVT-06 |
+| Z25.atmosphere.text.placeholder | z. B. Kleine Tanzfläche, viel Raum zum Zuhören. | e.g. Small dance floor, plenty of room to listen. | Platzhalter EVT-06 |
+| Z25.atmosphere.text.hint | Statt oder zusätzlich zu den Begriffen. Bis zu {max} Zeichen. | Instead of or in addition to the terms. Up to {max} characters. | Hilfetext EVT-06 |
+| Z25.atmosphere.invalid | Wähle nur die angebotenen Begriffe. | Choose only the terms offered. | Fehlertext (kein Frame) |
+| Z25.atmosphere.tooMany | Wähle höchstens {max} Begriffe. | Choose {max} terms at most. | Fehlertext (kein Frame) |
+| Z25.atmo.cozy | Gemütlich | Cozy | Atmosphärebegriff (Wert bleibt deutsch gespeichert) |
+| Z25.atmo.intimate | Intim/persönlich | Intimate/personal | Atmosphärebegriff |
+| Z25.atmo.relaxed | Entspannt | Relaxed | Atmosphärebegriff |
+| Z25.atmo.lively | Lebhaft | Lively | Atmosphärebegriff |
+| Z25.atmo.casual | Ungezwungen | Casual | Atmosphärebegriff |
+| Z25.atmo.experimental | Experimentell | Experimental | Atmosphärebegriff |
+| Z25.atmo.underground | Underground/DIY | Underground/DIY | Atmosphärebegriff |
+| Z25.atmo.alternative | Alternativ/unabhängig | Alternative/independent | Atmosphärebegriff |
+| Z25.atmo.community | Community-geprägt | Community-driven | Atmosphärebegriff |
+| Z25.atmo.immersive | Immersiv | Immersive | Atmosphärebegriff |
+
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.
 

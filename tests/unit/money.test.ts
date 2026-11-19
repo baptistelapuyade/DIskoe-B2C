@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   formatMoney,
+  parseAmount,
   parsePriceInput,
   priceLabel,
 } from "../../lib/domain/money";
@@ -73,5 +74,47 @@ describe("priceLabel (P07)", () => {
     expect(
       priceLabel({ state: "provided", model: "fixed", amountMinor: 1250 }),
     ).toBe("12,50 €");
+  });
+});
+
+describe("parseAmount", () => {
+  it("returns a code, not a German sentence", () => {
+    expect(parseAmount("12,50")).toEqual({ ok: true, amountMinor: 1250 });
+    expect(parseAmount("")).toEqual({ ok: false, code: "missing" });
+    expect(parseAmount(undefined)).toEqual({ ok: false, code: "missing" });
+    expect(parseAmount("zwölf")).toEqual({ ok: false, code: "format" });
+    expect(parseAmount("0,00")).toEqual({ ok: false, code: "zero" });
+    // Seven digits are not an amount a door price can be.
+    expect(parseAmount("1000000")).toEqual({ ok: false, code: "format" });
+  });
+});
+
+describe("priceLabel of the price forms (EVT-04)", () => {
+  it("shows a donation, a minimum donation, a from price and a range", () => {
+    expect(priceLabel({ state: "provided", model: "donation" })).toBe(
+      "Eintritt gegen Spende",
+    );
+    expect(
+      priceLabel({ state: "provided", model: "min_donation", amountMinor: 500 }),
+    ).toBe("Eintritt gegen Spende, ab 5,00 €");
+    expect(
+      priceLabel({ state: "provided", model: "from_price", amountMinor: 1000 }),
+    ).toBe("ab 10,00 €");
+    expect(
+      priceLabel({
+        state: "provided",
+        model: "range",
+        amountMinor: 800,
+        maxAmountMinor: 1500,
+      }),
+    ).toBe("8,00–15,00 €");
+  });
+
+  it("adds 'inkl. Gebühren' only when the fees are stated as included", () => {
+    const fixed = { state: "provided", model: "fixed", amountMinor: 1200 } as const;
+
+    expect(priceLabel({ ...fixed, fees: "included" })).toBe("12,00 € inkl. Gebühren");
+    expect(priceLabel({ ...fixed, fees: "unknown" })).toBe("12,00 €");
+    expect(priceLabel({ ...fixed, fees: null })).toBe("12,00 €");
   });
 });

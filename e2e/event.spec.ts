@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { clearMailbox, waitForCode } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
 import { germanContext } from "./support/language";
+import { PROFILE_PNG } from "./support/profile-flow";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the private
 // event draft (Slice 4) through the Figma screens: Event steps (basics, date and time, place), editor,
@@ -22,12 +23,6 @@ const emails = {
 };
 const TITLE = "Nacht der Klänge";
 
-// A valid 1x1 PNG.
-const PNG = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
-  "base64",
-);
-
 async function signInWithCode(page: Page, email: string) {
   await clearMailbox(email);
   await page.goto("/login");
@@ -38,11 +33,6 @@ async function signInWithCode(page: Page, email: string) {
   await page.getByLabel("Code aus der E-Mail").fill(code);
   await page.getByRole("button", { name: "Anmelden", exact: true }).click();
   await page.waitForURL("**/organizer");
-}
-
-async function save(page: Page, name: string) {
-  await page.getByRole("button", { name, exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("Gespeichert", SLOW);
 }
 
 // The chips are native checkboxes behind a styled pill: they are toggled by
@@ -239,72 +229,102 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await page.getByLabel("Postleitzahl").fill("10115");
   await page.getByLabel("Stadt", { exact: true }).fill("Berlin");
   await page.getByRole("button", { name: "Weiter zu Preis und Zugang" }).click();
-  await page.waitForURL("**/access", SLOW);
+  await page.waitForURL("**/edit/price", SLOW);
   expect(field("place_name")).toBe("Keller");
   expect(field("place_state")).toBe("provided");
   await page.goto(`${base}/edit`);
   await shot(page, "11-editor-gefuellt");
 
-  // 6. Atmosphäre: P04, four terms are an error, nothing is cut off. The
-  // answer stays unanswered until "Auswahl übernehmen".
-  await page.getByRole("link", { name: "Atmosphäre ergänzen" }).click();
+  // 6. Atmosphäre (EVT-06): P04, at most three terms. The fourth is not
+  // offered while three are chosen, so nothing is cut off silently. The answer
+  // stays unanswered until the step is saved.
+  await page.goto(`${base}/edit/atmosphere`);
   await expect(
     page.getByRole("heading", { name: "Wie fühlt sich der Abend an?" }),
   ).toBeVisible(SLOW);
   expect(field("atmosphere_state")).toBe("unanswered");
-  for (const term of ["Gemütlich", "Intim/persönlich", "Entspannt", "Lebhaft"]) {
+  await expect(
+    page.getByText(/Eine Angabe zur Atmosphäre braucht dein Event/),
+  ).toBeVisible();
+  for (const term of ["Gemütlich", "Intim/persönlich", "Entspannt"]) {
     await chip(page, term).click();
   }
-  await page.getByRole("button", { name: "Auswahl übernehmen" }).click();
-  await expect(
-    page.getByRole("alert").filter({ hasText: /höchstens 3/ }),
-  ).toBeVisible(SLOW);
-  await shot(page, "05-atmosphaere-fehler");
-  await chip(page, "Lebhaft").click();
+  await expect(page.getByText("3 von 3 gewählt.")).toBeVisible();
+  await expect(page.getByRole("checkbox", { name: "Lebhaft" })).toBeDisabled();
+  await shot(page, "05-atmosphaere-drei");
   await chip(page, "Entspannt").click();
-  await save(page, "Auswahl übernehmen");
+  await expect(page.getByRole("checkbox", { name: "Lebhaft" })).toBeEnabled();
+  await chip(page, "Lebhaft").click();
+  await page
+    .getByRole("button", { name: "Weiter zu den freiwilligen Angaben" })
+    .click();
+  await page.waitForURL(`**${base}/edit`, SLOW);
   expect(field("atmosphere_state")).toBe("provided");
-  await page.getByRole("link", { name: "Zurück zum Entwurf" }).click();
+  expect(field("atmosphere_tags::text")).toContain("Lebhaft");
 
-  // 7. Preis und Zugang. P08: an online route without a link is a named gap.
-  await page.getByRole("link", { name: "Preis und Zugang bearbeiten" }).click();
+  // 7. Preis und Zugang (EVT-04). P08: an online route without a link is a
+  // named gap. A link must start with https:// (EVT-04n); nothing is added
+  // for the organizer.
+  await page.goto(`${base}/edit/price`);
   await expect(
     page.getByRole("heading", { name: "Preis und Zugang", level: 1 }),
   ).toBeVisible(SLOW);
   await page.getByRole("checkbox", { name: "Online-Ticket" }).check();
-  await save(page, "Angaben übernehmen");
+  await page.getByRole("button", { name: "Weiter zum Eventbild" }).click();
+  await page.waitForURL("**/edit/image", SLOW);
   await page.goto(`${base}/preview`);
   await expect(
     page.getByText("Für den Online-Zugang fehlt ein gültiger Link."),
   ).toBeVisible(SLOW);
   await expect(page.getByText("Der Ort mit Adresse fehlt.")).toHaveCount(0);
-  await page.goto(`${base}/access`);
-  await page.getByLabel("Ticketlink").fill("tickets.example.org/abend");
-  await save(page, "Angaben übernehmen");
+  await page.goto(`${base}/edit/price`);
+  await page.getByLabel("Link zum Ticketverkauf").fill("tickets.example.org/abend");
+  await page.getByRole("button", { name: "Weiter zum Eventbild" }).click();
+  await expect(
+    page.getByText("Das ist kein gültiger Link. Er muss mit https:// beginnen."),
+  ).toBeVisible(SLOW);
+  await shot(page, "05-link-fehler");
+  await page
+    .getByLabel("Link zum Ticketverkauf")
+    .fill("https://tickets.example.org/abend");
+  await page.getByRole("button", { name: "Weiter zum Eventbild" }).click();
+  await page.waitForURL("**/edit/image", SLOW);
   expect(field("access_routes::text")).toContain("https://tickets.example.org/abend");
 
   // 8. P07: the price. Unanswered is a gap; "unknown" is its own state and is
   // never shown as "Frei".
   await page.goto(`${base}/preview`);
   await expect(page.getByText("Der Preis fehlt.")).toBeVisible(SLOW);
-  await page.goto(`${base}/access`);
-  await page.getByLabel("Preisform").selectOption({ label: "Noch nicht bekannt" });
+  await page.goto(`${base}/edit/price`);
+  await page.getByRole("combobox", { name: "Preisform" }).click();
+  await page.getByRole("option", { name: "Noch nicht bekannt" }).click();
   await shot(page, "06-preis-unbekannt");
-  await expect(page.getByText("Preis noch offen").first()).toBeVisible();
-  await save(page, "Angaben übernehmen");
+  await expect(
+    page.getByText("Dein Preis wird als „noch offen“ angezeigt."),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Weiter zum Eventbild" }).click();
+  await page.waitForURL("**/edit/image", SLOW);
   expect(field("price_state")).toBe("unknown");
   expect(field("coalesce(price_model::text, '')")).toBe("unknown");
   expect(field("coalesce(price_amount_minor::text, '')")).toBe("");
 
-  await page.getByLabel("Preisform").selectOption({ label: "Festpreis" });
-  await page.getByLabel("Preis in EUR").fill("12,50");
-  await save(page, "Angaben übernehmen");
+  await page.goto(`${base}/edit/price`);
+  await page.getByRole("combobox", { name: "Preisform" }).click();
+  await page.getByRole("option", { name: "Festpreis" }).click();
+  // A price type with an amount needs one: empty is an error, not "free".
+  await page.getByRole("button", { name: "Weiter zum Eventbild" }).click();
+  await expect(
+    page.getByText("Gib einen Betrag an, zum Beispiel 12,00."),
+  ).toBeVisible(SLOW);
+  await page.getByLabel("Preis in Euro").fill("12,50");
+  await page.getByRole("button", { name: "Weiter zum Eventbild" }).click();
+  await page.waitForURL("**/edit/image", SLOW);
   await expect
     .poll(() => field("coalesce(price_amount_minor::text, '')"), SLOW)
     .toBe("1250");
   expect(field("price_state")).toBe("provided");
-  await page.reload();
-  await expect(page.getByLabel("Preis in EUR")).toHaveValue("12,50", SLOW);
+  await page.goto(`${base}/edit/price`);
+  await expect(page.getByLabel("Preis in Euro")).toHaveValue("12,50", SLOW);
   await shot(page, "07-preis-fest");
 
   // 9. Only the image is missing now (P05: it gates publishing, not the draft).
@@ -316,34 +336,39 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(page.getByText(/Pflichtlücke/)).toHaveCount(0);
   await shot(page, "08-check-bild-fehlt");
 
-  // 10. The image: alt text and rights are mandatory. The form is reset after
-  // every attempt, so the file is chosen again each time.
+  // 10. The image (EVT-05): chosen and uploaded at once, the description is
+  // optional. The rights are confirmed at submission (EIN-01), not here.
   await page.getByRole("link", { name: "Eventbild ergänzen" }).click();
   await expect(
-    page.getByRole("heading", { name: "Wie soll euer Event erscheinen?" }),
+    page.getByRole("heading", { name: "Zeig dein Event" }),
   ).toBeVisible(SLOW);
-  await shot(page, "09-eventbild");
-  const png = { name: "buehne.png", mimeType: "image/png", buffer: PNG };
-  await page.getByLabel(/^Eventbild \(JPEG/).setInputFiles(png);
-  await page.getByRole("button", { name: "Bild hochladen" }).click();
-  await expect(page.getByText(/Bitte bestätige, dass du das Bild/)).toBeVisible(SLOW);
-  await expect(page.getByText("Bitte beschreibe das Bild kurz")).toHaveCount(0);
-  await page.getByLabel(/^Eventbild \(JPEG/).setInputFiles(png);
-  await page.getByLabel("Bildbeschreibung · freiwillig").fill("Bühne bei Nacht");
-  await page.getByLabel(/Ich habe die Rechte an diesem Bild/).check();
-  await page.getByRole("button", { name: "Bild hochladen" }).click();
   await expect(
-    page.getByRole("img", { name: "Bühne bei Nacht" }),
-  ).toBeVisible(SLOW);
+    page.getByText("Ohne Bild kannst du weiterarbeiten."),
+  ).toBeVisible();
+  await shot(page, "09-eventbild");
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "buehne.png",
+    mimeType: "image/png",
+    buffer: PROFILE_PNG,
+  });
+  await expect(page.getByText("buehne.png")).toBeVisible(SLOW);
+  await page.getByLabel("Bildbeschreibung (freiwillig)").fill("Bühne bei Nacht");
+  await page.getByRole("button", { name: "Weiter zur Atmosphäre" }).click();
+  await page.waitForURL("**/edit/atmosphere", SLOW);
   expect(
     sql(
       `select public_object_path from public.media_uses where event_id = '${eventId}' and role = 'event_image'`,
     ),
   ).toMatch(new RegExp(`^events/${eventId}/[0-9a-f-]+\\.png$`));
+  expect(
+    sql(
+      `select alt_text from public.media_uses where event_id = '${eventId}' and role = 'event_image'`,
+    ),
+  ).toBe("Bühne bei Nacht");
 
   // 11. The event is complete, but the profile is still a shell, so the joint
   // submission is not available yet.
-  await page.getByRole("link", { name: "Zur Eventvorschau" }).click();
+  await page.goto(`${base}/preview`);
   await expect(
     page.getByRole("heading", { name: "Pflichtangaben vollständig" }),
   ).toBeVisible(SLOW);
@@ -362,7 +387,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     ["edit/time", "m1-datum"],
     ["edit/place", "m1-ort"],
     ["saved", "m1-gesichert"],
-    ["atmosphere", "m2-atmosphaere"],
+    ["edit/price", "m2-preis"],
+    ["edit/image", "m2-eventbild"],
+    ["edit/atmosphere", "m2-atmosphaere"],
     ["preview", "m3-check"],
   ]) {
     await page.goto(`${base}/${path}`);
@@ -380,7 +407,18 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   ).toBe("private");
 
   // 13. Another organizer cannot reach the draft or any of its pages.
-  for (const path of ["edit", "edit/time", "saved", "access", "atmosphere", "preview", "image"]) {
+  for (const path of [
+    "edit",
+    "edit/time",
+    "edit/price",
+    "edit/image",
+    "edit/atmosphere",
+    "saved",
+    "access",
+    "atmosphere",
+    "preview",
+    "image",
+  ]) {
     const response = await otherPage.goto(`${base}/${path}`);
     expect(response?.status()).toBe(404);
   }

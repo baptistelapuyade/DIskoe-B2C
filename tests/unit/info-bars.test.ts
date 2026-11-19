@@ -20,8 +20,8 @@ function organizer(publicContact: string | null): PublicProfile {
 }
 
 const access = [
-  { kind: "online_ticket" as const, label: "Online-Ticket", url: null },
-  { kind: "door" as const, label: "Abendkasse", url: null },
+  { kind: "online_ticket" as const, label: "Online-Ticket", url: null, soldOut: false },
+  { kind: "door" as const, label: "Abendkasse", url: null, soldOut: false },
 ];
 
 describe("Gut zu wissen bars", () => {

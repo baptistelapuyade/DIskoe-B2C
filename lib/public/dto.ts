@@ -49,7 +49,12 @@ export type PublicProfile = {
   imageCrop: Crop | null;
 };
 
-export type PublicAccess = { kind: AccessKind; label: string; url: string | null };
+export type PublicAccess = {
+  kind: AccessKind;
+  label: string;
+  url: string | null;
+  soldOut: boolean;
+};
 
 export type PublicEvent = {
   id: string;
@@ -77,7 +82,8 @@ export type PublicEvent = {
   // Shown text: "12,00 €", "Frei", "Preis noch offen" or null (not asked).
   priceText: string | null;
   // Machine readable price for JSON-LD. Only for a provided price.
-  offer: { amount: string; currency: string } | null;
+  // highAmount is set for a price range (amount is then the lower end).
+  offer: { amount: string; highAmount?: string; currency: string } | null;
   access: PublicAccess[];
   // Link to buy or register. Never set for a cancelled event.
   ticketUrl: string | null;
@@ -161,10 +167,15 @@ function accessFrom(json: Json | null): PublicAccess[] {
     ) {
       const kind = item.kind as AccessKind;
 
+      // Only an online ticket can be sold out. Other routes stay as they are
+      // (P09: the other ways in remain visible).
+      const soldOut = kind === "online_ticket" && item.availability === "sold_out";
+
       routes.push({
         kind,
-        label: ACCESS_LABEL[kind],
+        label: soldOut ? `${ACCESS_LABEL[kind]} ausverkauft` : ACCESS_LABEL[kind],
         url: typeof item.url === "string" ? safeUrl(item.url) : null,
+        soldOut,
       });
     }
   }
@@ -172,16 +183,46 @@ function accessFrom(json: Json | null): PublicAccess[] {
   return routes;
 }
 
+function feesOf(row: PublicEventRow): "included" | "unknown" | null {
+  return row.price_fee_model === "included" || row.price_fee_model === "unknown"
+    ? row.price_fee_model
+    : null;
+}
+
 function priceView(row: PublicEventRow): PriceView {
   if (row.price_state === "provided") {
-    if (row.price_model === "free") return { state: "provided", model: "free" };
+    const low = row.price_amount_minor;
+    const high = row.price_max_amount_minor;
+    const currency = row.currency ?? undefined;
+    const fees = feesOf(row);
 
-    if (row.price_model === "fixed" && row.price_amount_minor !== null) {
+    if (row.price_model === "free" || row.price_model === "donation") {
+      return { state: "provided", model: row.price_model };
+    }
+
+    if (
+      (row.price_model === "fixed" ||
+        row.price_model === "from_price" ||
+        row.price_model === "min_donation") &&
+      low !== null
+    ) {
       return {
         state: "provided",
-        model: "fixed",
-        amountMinor: row.price_amount_minor,
-        currency: row.currency ?? undefined,
+        model: row.price_model,
+        amountMinor: low,
+        currency,
+        fees,
+      };
+    }
+
+    if (row.price_model === "range" && low !== null && high !== null) {
+      return {
+        state: "provided",
+        model: "range",
+        amountMinor: low,
+        maxAmountMinor: high,
+        currency,
+        fees,
       };
     }
 
@@ -194,15 +235,35 @@ function priceView(row: PublicEventRow): PriceView {
   return { state: "unanswered" };
 }
 
+// Structured data only for a price that is exactly one number or a range: a
+// fixed price, a range (lowPrice/highPrice) and an explicit free entry. A
+// from-price, a donation and an unknown price give no offer (never a price 0
+// for them).
 function offerFrom(view: PriceView): PublicEvent["offer"] {
   if (view.state !== "provided") return null;
 
   if (view.model === "free") return { amount: "0", currency: "EUR" };
 
-  const whole = Math.floor(view.amountMinor / 100);
-  const cents = (view.amountMinor % 100).toString().padStart(2, "0");
+  if (view.model === "fixed") {
+    return { amount: decimal(view.amountMinor), currency: view.currency ?? "EUR" };
+  }
 
-  return { amount: `${whole}.${cents}`, currency: view.currency ?? "EUR" };
+  if (view.model === "range") {
+    return {
+      amount: decimal(view.amountMinor),
+      highAmount: decimal(view.maxAmountMinor),
+      currency: view.currency ?? "EUR",
+    };
+  }
+
+  return null;
+}
+
+function decimal(amountMinor: number): string {
+  const whole = Math.floor(amountMinor / 100);
+  const cents = (amountMinor % 100).toString().padStart(2, "0");
+
+  return `${whole}.${cents}`;
 }
 
 const STATUSES: readonly string[] = [
@@ -256,7 +317,8 @@ export function toPublicEvent(
   const addressLines = [row.address_line, town].filter(
     (line): line is string => Boolean(line),
   );
-  const ticket = access.find((route) => route.url !== null);
+  // A sold-out ticket link is not offered as the way in.
+  const ticket = access.find((route) => route.url !== null && !route.soldOut);
 
   return {
     id: row.id,

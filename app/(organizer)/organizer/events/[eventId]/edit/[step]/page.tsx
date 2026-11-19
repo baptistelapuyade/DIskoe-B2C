@@ -7,8 +7,17 @@ import { loadOwnerEventView } from "@/lib/event/load";
 
 export const dynamic = "force-dynamic";
 
-// The first three steps of the first event (Figma EVT-01 to EVT-03, EVT-09 to
-// EVT-09c): basics, date and time, place.
+// The six steps of the first event (Figma EVT-01 to EVT-06, EVT-09 to
+// EVT-09c): basics, date and time, place, price and access, event image,
+// atmosphere.
+const BACK: Record<Exclude<EventStep, "basics">, EventStep> = {
+  time: "basics",
+  place: "time",
+  price: "place",
+  image: "price",
+  atmosphere: "image",
+};
+
 export default async function EditEventStepPage({
   params,
 }: {
@@ -33,9 +42,12 @@ export default async function EditEventStepPage({
       eventId={eventId}
       profileId={view.event.organizerId}
       backHref={
-        current === "basics"
-          ? "/organizer"
-          : `${base}/edit/${current === "time" ? "basics" : "time"}`
+        current === "basics" ? "/organizer" : `${base}/edit/${BACK[current]}`
+      }
+      image={
+        view.image
+          ? { url: view.image.signedUrl, fileName: view.image.fileName }
+          : null
       }
       initial={{
         title: form.title,
@@ -50,6 +62,17 @@ export default async function EditEventStepPage({
         addressLine: form.addressLine,
         postalCode: form.postalCode,
         city: form.city,
+        priceModel: form.priceModel,
+        priceAmount: form.priceAmount,
+        priceAmountMax: form.priceAmountMax,
+        priceFees: form.priceFees,
+        accessKinds: form.accessKinds,
+        onlineTicketUrl: form.onlineTicketUrl,
+        onlineRegistrationUrl: form.onlineRegistrationUrl,
+        onlineTicketAvailability: form.onlineTicketAvailability,
+        altText: view.image?.altText ?? "",
+        atmosphereTags: form.atmosphereTags,
+        atmosphereDescription: form.atmosphereDescription,
       }}
     />
   );

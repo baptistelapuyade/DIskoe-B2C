@@ -72,6 +72,8 @@ export type Database = {
           place_state: Database["public"]["Enums"]["answer_state"]
           postal_code: string | null
           price_amount_minor: number | null
+          price_max_amount_minor: number | null
+          price_fee_model: Database["public"]["Enums"]["price_fee_model"] | null
           price_model: Database["public"]["Enums"]["price_model"] | null
           price_state: Database["public"]["Enums"]["answer_state"]
           primary_format: Database["public"]["Enums"]["primary_format"] | null
@@ -108,6 +110,8 @@ export type Database = {
           place_state?: Database["public"]["Enums"]["answer_state"]
           postal_code?: string | null
           price_amount_minor?: number | null
+          price_max_amount_minor?: number | null
+          price_fee_model?: Database["public"]["Enums"]["price_fee_model"] | null
           price_model?: Database["public"]["Enums"]["price_model"] | null
           price_state?: Database["public"]["Enums"]["answer_state"]
           primary_format?: Database["public"]["Enums"]["primary_format"] | null
@@ -144,6 +148,8 @@ export type Database = {
           place_state?: Database["public"]["Enums"]["answer_state"]
           postal_code?: string | null
           price_amount_minor?: number | null
+          price_max_amount_minor?: number | null
+          price_fee_model?: Database["public"]["Enums"]["price_fee_model"] | null
           price_model?: Database["public"]["Enums"]["price_model"] | null
           price_state?: Database["public"]["Enums"]["answer_state"]
           primary_format?: Database["public"]["Enums"]["primary_format"] | null
@@ -751,6 +757,8 @@ export type Database = {
           place_name: string | null
           postal_code: string | null
           price_amount_minor: number | null
+          price_max_amount_minor: number | null
+          price_fee_model: Database["public"]["Enums"]["price_fee_model"] | null
           price_model: Database["public"]["Enums"]["price_model"] | null
           price_state: Database["public"]["Enums"]["answer_state"] | null
           primary_format: Database["public"]["Enums"]["primary_format"] | null
@@ -962,7 +970,15 @@ export type Database = {
         | "postponed_undated"
         | "cancelled"
       media_role: "profile_image" | "event_image"
-      price_model: "free" | "fixed" | "unknown"
+      price_fee_model: "included" | "unknown"
+      price_model:
+        | "free"
+        | "fixed"
+        | "unknown"
+        | "range"
+        | "from_price"
+        | "donation"
+        | "min_donation"
       primary_format:
         | "concert"
         | "dj_set"
@@ -1115,7 +1131,16 @@ export const Constants = {
         "cancelled",
       ],
       media_role: ["profile_image", "event_image"],
-      price_model: ["free", "fixed", "unknown"],
+      price_fee_model: ["included", "unknown"],
+      price_model: [
+        "free",
+        "fixed",
+        "unknown",
+        "range",
+        "from_price",
+        "donation",
+        "min_donation",
+      ],
       primary_format: [
         "concert",
         "dj_set",

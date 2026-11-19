@@ -40,12 +40,21 @@ export default async function EditEventPage({
       form.placeName.trim() !== "" &&
       form.addressLine.trim() !== "" &&
       form.city.trim() !== "",
+    price: form.priceModel !== "",
+    access: form.accessKinds.length > 0,
+    image: view.image !== null,
+    atmosphere:
+      form.atmosphereTags.length > 0 || form.atmosphereDescription.trim() !== "",
   };
 
-  // The first three steps have their own screens. Until all three are
-  // complete, "edit" leads to the first one that is not.
-  if (!(progress.title && progress.format && progress.start && progress.place)) {
-    redirect(`${base}/edit/${firstOpenStep(progress)}`);
+  // The first three steps have their own screens and are needed before
+  // anything else. Until all three are complete, "edit" leads to the first
+  // one that is not. The later steps can be skipped, so they never pull the
+  // organizer back here (the overview below links to them).
+  const open = firstOpenStep(progress);
+
+  if (open === "basics" || open === "time" || open === "place") {
+    redirect(`${base}/edit/${open}`);
   }
 
   const lang = await getLang();
@@ -80,7 +89,7 @@ export default async function EditEventPage({
                 {priceAccess ?? "Preis und Zugang sind noch nicht angegeben."}
               </p>
               <LinkButton
-                href={`${base}/access`}
+                href={`${base}/edit/price`}
                 variant="secondary"
                 className="w-full"
               >
@@ -99,7 +108,7 @@ export default async function EditEventPage({
 
             <div className="flex flex-wrap gap-4">
               <LinkButton href="/organizer">Zur Eventübersicht</LinkButton>
-              <LinkButton href={`${base}/atmosphere`} variant="primary">
+              <LinkButton href={`${base}/edit/atmosphere`} variant="primary">
                 {atmosphere ? "Atmosphäre bearbeiten" : "Atmosphäre ergänzen"}
               </LinkButton>
               <LinkButton href={`${base}/preview`}>Zur Vorschau</LinkButton>
@@ -128,7 +137,7 @@ export default async function EditEventPage({
                 bleibt das Event ein privater Entwurf.
               </MutedText>
               <div>
-                <LinkButton href={`${base}/image`}>
+                <LinkButton href={`${base}/edit/image`}>
                   Eventbild &amp; Gestaltung
                 </LinkButton>
               </div>

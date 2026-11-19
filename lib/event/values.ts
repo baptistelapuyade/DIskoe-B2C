@@ -44,6 +44,8 @@ export type EventRevisionRow = Pick<
   | "price_state"
   | "price_model"
   | "price_amount_minor"
+  | "price_max_amount_minor"
+  | "price_fee_model"
   | "currency"
   | "access_state"
   | "access_routes"
@@ -55,7 +57,7 @@ export type EventRevisionRow = Pick<
 >;
 
 export const EVENT_REVISION_COLUMNS =
-  "id, title_state, title, description_state, description, format_state, primary_format, start_state, start_at, end_state, end_at, place_state, place_name, address_line, postal_code, city, price_state, price_model, price_amount_minor, currency, access_state, access_routes, atmosphere_state, atmosphere_tags, atmosphere_description, event_image_use_id, confirmed_at";
+  "id, title_state, title, description_state, description, format_state, primary_format, start_state, start_at, end_state, end_at, place_state, place_name, address_line, postal_code, city, price_state, price_model, price_amount_minor, price_max_amount_minor, price_fee_model, currency, access_state, access_routes, atmosphere_state, atmosphere_tags, atmosphere_description, event_image_use_id, confirmed_at";
 
 // What the form shows: text and lists only.
 export type EventFormValues = {
@@ -73,9 +75,12 @@ export type EventFormValues = {
   city: string;
   priceModel: string;
   priceAmount: string;
+  priceAmountMax: string;
+  priceFees: string;
   accessKinds: string[];
   onlineTicketUrl: string;
   onlineRegistrationUrl: string;
+  onlineTicketAvailability: string;
   atmosphereTags: string[];
   atmosphereDescription: string;
 };
@@ -95,9 +100,12 @@ export const EMPTY_FORM_VALUES: EventFormValues = {
   city: "",
   priceModel: "",
   priceAmount: "",
+  priceAmountMax: "",
+  priceFees: "",
   accessKinds: [],
   onlineTicketUrl: "",
   onlineRegistrationUrl: "",
+  onlineTicketAvailability: "",
   atmosphereTags: [],
   atmosphereDescription: "",
 };
@@ -120,6 +128,9 @@ function routesFromJson(json: Json): AccessRoute[] {
       routes.push({
         kind: item.kind as AccessKind,
         url: typeof item.url === "string" && item.url !== "" ? item.url : null,
+        ...(item.availability === "available" || item.availability === "sold_out"
+          ? { availability: item.availability }
+          : {}),
       });
     }
   }
@@ -140,6 +151,29 @@ function answerOf<T>(
   return noValue<T>(state);
 }
 
+// A provided price needs the amounts its form needs; otherwise it is not an
+// answer (the database refuses such a row, this keeps old rows from lying).
+function providedPrice(row: EventRevisionRow): Answer<PriceValue> {
+  const low = row.price_amount_minor;
+  const high = row.price_max_amount_minor;
+
+  switch (row.price_model) {
+    case "free":
+    case "donation":
+      return provided({ model: row.price_model });
+    case "fixed":
+    case "from_price":
+    case "min_donation":
+      return low ? provided({ model: row.price_model, amountMinor: low }) : unanswered();
+    case "range":
+      return low && high && high > low
+        ? provided({ model: "range", amountMinor: low, maxAmountMinor: high })
+        : unanswered();
+    default:
+      return unanswered();
+  }
+}
+
 export function rowToValues(row: EventRevisionRow): EventDraftValues {
   const format =
     row.primary_format &&
@@ -150,13 +184,7 @@ export function rowToValues(row: EventRevisionRow): EventDraftValues {
   let price: Answer<PriceValue>;
 
   if (row.price_state === "provided") {
-    if (row.price_model === "free") {
-      price = provided({ model: "free" });
-    } else if (row.price_model === "fixed" && row.price_amount_minor) {
-      price = provided({ model: "fixed", amountMinor: row.price_amount_minor });
-    } else {
-      price = unanswered();
-    }
+    price = providedPrice(row);
   } else {
     price = noValue(row.price_state);
   }
@@ -190,6 +218,11 @@ export function rowToValues(row: EventRevisionRow): EventDraftValues {
           }
         : null,
     price,
+    priceFees:
+      row.price_state === "provided" &&
+      (row.price_fee_model === "included" || row.price_fee_model === "unknown")
+        ? row.price_fee_model
+        : null,
     access: answerOf(
       row.access_state,
       routesFromJson(row.access_routes).length > 0
@@ -241,12 +274,19 @@ export function rowToFormValues(row: EventRevisionRow): EventFormValues {
           ? price.model
           : "",
     priceAmount:
-      price?.model === "fixed" ? formatAmountInput(price.amountMinor) : "",
+      price && "amountMinor" in price
+        ? formatAmountInput(price.amountMinor)
+        : "",
+    priceAmountMax:
+      price?.model === "range" ? formatAmountInput(price.maxAmountMinor) : "",
+    priceFees: values.priceFees ?? "",
     accessKinds: routes.map((route) => route.kind),
     onlineTicketUrl:
       routes.find((route) => route.kind === "online_ticket")?.url ?? "",
     onlineRegistrationUrl:
       routes.find((route) => route.kind === "online_registration")?.url ?? "",
+    onlineTicketAvailability:
+      routes.find((route) => route.kind === "online_ticket")?.availability ?? "",
     atmosphereTags: atmosphere?.tags ?? [],
     atmosphereDescription: atmosphere?.description ?? "",
   };
@@ -290,13 +330,20 @@ export function valuesToRow(
         ? "unknown"
         : null,
     price_amount_minor:
-      isProvided(price) && price.value.model === "fixed"
+      isProvided(price) && "amountMinor" in price.value
         ? price.value.amountMinor
         : null,
+    price_max_amount_minor:
+      isProvided(price) && price.value.model === "range"
+        ? price.value.maxAmountMinor
+        : null,
+    price_fee_model: values.priceFees,
     access_state: values.access.state,
-    access_routes: routes.map((route) =>
-      route.url ? { kind: route.kind, url: route.url } : { kind: route.kind },
-    ) as Json,
+    access_routes: routes.map((route) => ({
+      kind: route.kind,
+      ...(route.url ? { url: route.url } : {}),
+      ...(route.availability ? { availability: route.availability } : {}),
+    })) as Json,
     atmosphere_state: values.atmosphere.state,
     atmosphere_tags: atmosphere?.tags ?? [],
     atmosphere_description: atmosphere?.description ?? null,

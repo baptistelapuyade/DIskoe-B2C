@@ -8,7 +8,10 @@ import {
   priceText,
   whenText,
 } from "../../lib/event/summary";
-import { EMPTY_FORM_VALUES, type EventFormValues } from "../../lib/event/values";
+import {
+  EMPTY_FORM_VALUES,
+  type EventFormValues,
+} from "../../lib/event/values";
 
 const base: EventFormValues = { ...EMPTY_FORM_VALUES };
 
@@ -31,8 +34,36 @@ describe("price text", () => {
     ).toBe("12,50 €");
   });
 
+  it("shows the other price forms of EVT-04", () => {
+    expect(priceText({ ...base, priceModel: "donation" })).toBe(
+      "Eintritt gegen Spende",
+    );
+    expect(
+      priceText({ ...base, priceModel: "from_price", priceAmount: "10" }),
+    ).toBe("ab 10,00 €");
+    expect(
+      priceText({
+        ...base,
+        priceModel: "range",
+        priceAmount: "8",
+        priceAmountMax: "15",
+        priceFees: "included",
+      }),
+    ).toBe("8,00–15,00 € inkl. Gebühren");
+    expect(
+      priceText({
+        ...base,
+        priceModel: "range",
+        priceAmount: "8",
+        priceAmountMax: "",
+      }),
+    ).toBeNull();
+  });
+
   it("shows nothing for a fixed price without a valid amount", () => {
-    expect(priceText({ ...base, priceModel: "fixed", priceAmount: "" })).toBeNull();
+    expect(
+      priceText({ ...base, priceModel: "fixed", priceAmount: "" }),
+    ).toBeNull();
   });
 });
 

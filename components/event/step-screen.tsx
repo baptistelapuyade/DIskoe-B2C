@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { StepShell } from "@/components/profile/step-shell";
+import { UploadNotice } from "@/components/profile/upload-notice";
+import { ACCEPT, useImageUpload } from "@/components/profile/use-image-upload";
 import { Button } from "@/components/ui/button";
+import { AtmosphereChip } from "@/components/ui/chip";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -17,7 +20,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { EVENT_LIMITS, PRIMARY_FORMATS } from "@/lib/domain/event-publication";
+import {
+  ACCESS_KINDS,
+  ATMOSPHERE_TERMS,
+  EVENT_LIMITS,
+  hasAmount,
+  MAX_ATMOSPHERE_TAGS,
+  PRICE_MODELS,
+  PRIMARY_FORMATS,
+  TICKET_AVAILABILITY,
+  type AccessKind,
+} from "@/lib/domain/event-publication";
 import {
   noticeKind,
   validateStep,
@@ -31,13 +44,16 @@ import {
 import { nextDayIso } from "@/lib/event/date-input";
 import { t, type Lang, type MessageId } from "@/lib/i18n";
 
-import { saveEventStep } from "@/app/(organizer)/organizer/events/step-actions";
+import {
+  saveEventStep,
+  uploadEventImageFile,
+} from "@/app/(organizer)/organizer/events/step-actions";
 
 import { DateField } from "./date-field";
 import { clearRetained, loadRetained, saveRetained } from "./retained";
 
-// The first three steps of the first event (Figma EVT-01 to EVT-03, EVT-09 to
-// EVT-09c). One screen component for all three: the step decides the fields.
+// The six steps of the first event (Figma EVT-01 to EVT-06, EVT-09 to
+// EVT-09c). One screen component for all of them: the step decides the fields.
 // The check runs here first (no round trip, works offline) and again on the
 // server, which decides.
 
@@ -51,6 +67,80 @@ const FORMAT_ID: Record<(typeof PRIMARY_FORMATS)[number], MessageId> = {
   opening: "Z24.format.opening",
   exhibition: "Z24.format.exhibition",
   screening: "Z24.format.screening",
+};
+
+const ACCESS_ID: Record<AccessKind, MessageId> = {
+  walk_in: "Z25.access.walkIn",
+  door: "Z25.access.door",
+  online_ticket: "Z25.access.onlineTicket",
+  online_registration: "Z25.access.onlineRegistration",
+};
+
+const PRICE_MODEL_ID: Record<(typeof PRICE_MODELS)[number], MessageId> = {
+  fixed: "Z25.price.form.fixed",
+  range: "Z25.price.form.range",
+  from_price: "Z25.price.form.fromPrice",
+  free: "Z25.price.form.free",
+  donation: "Z25.price.form.donation",
+  min_donation: "Z25.price.form.minDonation",
+  unknown: "Z25.price.form.unknown",
+};
+
+const ATMOSPHERE_ID: Record<(typeof ATMOSPHERE_TERMS)[number], MessageId> = {
+  Gemütlich: "Z25.atmo.cozy",
+  "Intim/persönlich": "Z25.atmo.intimate",
+  Entspannt: "Z25.atmo.relaxed",
+  Lebhaft: "Z25.atmo.lively",
+  Ungezwungen: "Z25.atmo.casual",
+  Experimentell: "Z25.atmo.experimental",
+  "Underground/DIY": "Z25.atmo.underground",
+  "Alternativ/unabhängig": "Z25.atmo.alternative",
+  "Community-geprägt": "Z25.atmo.community",
+  Immersiv: "Z25.atmo.immersive",
+};
+
+// Eyebrow, title, lead and main action of each step. The first three steps
+// are catalogued as Z24, the next three as Z25.
+const STEP_TEXT: Record<
+  EventStep,
+  { eyebrow: MessageId; title: MessageId; lead: MessageId; next: MessageId }
+> = {
+  basics: {
+    eyebrow: "Z24.step.basics.eyebrow",
+    title: "Z24.basics.title",
+    lead: "Z24.basics.lead",
+    next: "Z24.basics.next",
+  },
+  time: {
+    eyebrow: "Z24.step.time.eyebrow",
+    title: "Z24.time.title",
+    lead: "Z24.time.lead",
+    next: "Z24.time.next",
+  },
+  place: {
+    eyebrow: "Z24.step.place.eyebrow",
+    title: "Z24.place.title",
+    lead: "Z24.place.lead",
+    next: "Z24.place.next",
+  },
+  price: {
+    eyebrow: "Z25.step.price.eyebrow",
+    title: "Z25.price.title",
+    lead: "Z25.price.lead",
+    next: "Z25.price.next",
+  },
+  image: {
+    eyebrow: "Z25.step.image.eyebrow",
+    title: "Z25.image.title",
+    lead: "Z25.image.lead",
+    next: "Z25.image.next",
+  },
+  atmosphere: {
+    eyebrow: "Z25.step.atmosphere.eyebrow",
+    title: "Z25.atmosphere.title",
+    lead: "Z25.atmosphere.lead",
+    next: "Z25.atmosphere.next",
+  },
 };
 
 const ERROR_ID: Record<StepCode, MessageId> = {
@@ -73,6 +163,22 @@ const ERROR_ID: Record<StepCode, MessageId> = {
   postalCodeTooLong: "Z24.err.tooLong",
   cityMissing: "Z24.place.city.missing",
   cityTooLong: "Z24.err.tooLong",
+  priceModelInvalid: "Z25.price.form.invalid",
+  amountMissing: "Z25.price.amount.missing",
+  amountInvalid: "Z25.price.amount.invalid",
+  amountTooHigh: "Z25.price.amount.tooHigh",
+  amountZero: "Z25.price.amount.zero",
+  rangeOrder: "Z25.price.amount.rangeOrder",
+  feesInvalid: "Z25.fees.invalid",
+  availabilityInvalid: "Z25.availability.invalid",
+  accessInvalid: "Z25.access.invalid",
+  urlNoScheme: "Z25.link.noScheme",
+  urlInvalid: "Z25.link.invalid",
+  urlTooLong: "Z25.link.tooLong",
+  altTooLong: "Z23.image.alt.tooLong",
+  atmosphereInvalid: "Z25.atmosphere.invalid",
+  atmosphereTooMany: "Z25.atmosphere.tooMany",
+  atmosphereTextTooLong: "Z24.err.tooLong",
 };
 
 const MAX: Partial<Record<StepCode, number>> = {
@@ -82,15 +188,37 @@ const MAX: Partial<Record<StepCode, number>> = {
   streetTooLong: EVENT_LIMITS.addressLine,
   postalCodeTooLong: EVENT_LIMITS.postalCode,
   cityTooLong: EVENT_LIMITS.city,
+  urlTooLong: EVENT_LIMITS.url,
+  altTooLong: EVENT_LIMITS.altText,
+  atmosphereTooMany: MAX_ATMOSPHERE_TAGS,
+  atmosphereTextTooLong: EVENT_LIMITS.atmosphereDescription,
 };
 
 const FIELDS: Record<EventStep, readonly StepField[]> = {
   basics: ["title", "format", "description"],
   time: ["startDate", "startTime", "endDate", "endTime"],
   place: ["placeName", "addressLine", "postalCode", "city"],
+  price: [
+    "accessKinds",
+    "priceModel",
+    "priceAmount",
+    "priceAmountMax",
+    "priceFees",
+    "onlineTicketAvailability",
+    "onlineTicketUrl",
+    "onlineRegistrationUrl",
+  ],
+  image: ["altText"],
+  atmosphere: ["atmosphereTags", "atmosphereDescription"],
 };
 
 type Values = Required<Omit<StepInput, "endUnknown">> & { endUnknown: boolean };
+
+// What the image step shows of the stored picture.
+export type StepImage = {
+  url: string | null;
+  fileName: string | null;
+} | null;
 
 function toValues(initial: StepInput): Values {
   return {
@@ -106,6 +234,17 @@ function toValues(initial: StepInput): Values {
     addressLine: initial.addressLine ?? "",
     postalCode: initial.postalCode ?? "",
     city: initial.city ?? "",
+    priceModel: initial.priceModel ?? "",
+    priceAmount: initial.priceAmount ?? "",
+    priceAmountMax: initial.priceAmountMax ?? "",
+    priceFees: initial.priceFees ?? "",
+    accessKinds: initial.accessKinds ?? [],
+    onlineTicketUrl: initial.onlineTicketUrl ?? "",
+    onlineRegistrationUrl: initial.onlineRegistrationUrl ?? "",
+    onlineTicketAvailability: initial.onlineTicketAvailability ?? "",
+    altText: initial.altText ?? "",
+    atmosphereTags: initial.atmosphereTags ?? [],
+    atmosphereDescription: initial.atmosphereDescription ?? "",
   };
 }
 
@@ -115,6 +254,7 @@ export function EventStepScreen({
   eventId,
   profileId,
   initial,
+  image,
   backHref,
 }: {
   lang: Lang;
@@ -122,6 +262,8 @@ export function EventStepScreen({
   eventId: string | null;
   profileId: string;
   initial: StepInput;
+  // Only the image step uses it.
+  image?: StepImage;
   backHref: string;
 }) {
   const router = useRouter();
@@ -135,6 +277,19 @@ export function EventStepScreen({
   const [view, setView] = useState<"form" | "leave">("form");
   const [leaveHref, setLeaveHref] = useState<string | null>(null);
 
+  // The event image is uploaded as soon as it is chosen (like the profile
+  // picture); the rights are confirmed when the event is submitted (EIN-01).
+  const upload = useImageUpload(
+    (data) =>
+      eventId
+        ? uploadEventImageFile(eventId, data)
+        : Promise.resolve({
+            status: "error" as const,
+            code: "failed" as const,
+          }),
+    () => router.refresh(),
+  );
+
   const msg = (id: MessageId, params?: Record<string, string | number>) =>
     t(lang, id, params);
 
@@ -147,8 +302,11 @@ export function EventStepScreen({
 
       for (const field of FIELDS[step]) {
         const value = kept[field];
-        if (typeof value === "string") {
-          (next as Record<string, string | boolean>)[field] = value;
+        if (
+          typeof value === "string" ||
+          (Array.isArray(value) && value.every((v) => typeof v === "string"))
+        ) {
+          (next as Record<string, string | string[] | boolean>)[field] = value;
         }
       }
 
@@ -231,12 +389,63 @@ export function EventStepScreen({
     });
   }
 
+  // The price step sends only what is visible: an amount of a price type that
+  // has none, or a link of a way that is not chosen, is not stored.
   function input(): StepInput {
-    return { ...values };
+    if (step !== "price") {
+      return { ...values };
+    }
+
+    const ticket = values.accessKinds.includes("online_ticket");
+    const money = hasAmount(values.priceModel);
+
+    return {
+      ...values,
+      priceAmount: money ? values.priceAmount : "",
+      priceAmountMax:
+        values.priceModel === "range" ? values.priceAmountMax : "",
+      priceFees: money && ticket ? values.priceFees : "",
+      onlineTicketAvailability: ticket ? values.onlineTicketAvailability : "",
+      onlineTicketUrl: ticket ? values.onlineTicketUrl : "",
+      onlineRegistrationUrl: values.accessKinds.includes("online_registration")
+        ? values.onlineRegistrationUrl
+        : "",
+    };
+  }
+
+  function toggleAccess(kind: AccessKind, on: boolean) {
+    const chosen = ACCESS_KINDS.filter((item) =>
+      item === kind ? on : values.accessKinds.includes(item),
+    );
+
+    setValue("accessKinds", chosen);
+  }
+
+  function chooseModel(model: string) {
+    setValues((previous) => ({
+      ...previous,
+      priceModel: model,
+      priceFees: hasAmount(model) ? previous.priceFees : "",
+    }));
+    setErrors((previous) => {
+      const next = { ...previous };
+      delete next.priceModel;
+      delete next.priceAmount;
+      delete next.priceAmountMax;
+      return next;
+    });
+  }
+
+  function toggleTerm(term: string, on: boolean) {
+    const chosen = ATMOSPHERE_TERMS.filter((item) =>
+      item === term ? on : values.atmosphereTags.includes(item),
+    );
+
+    setValue("atmosphereTags", chosen);
   }
 
   function keep() {
-    const kept: Record<string, string | boolean> = {};
+    const kept: Record<string, string | boolean | string[]> = {};
 
     for (const field of FIELDS[step]) {
       kept[field] = values[field];
@@ -355,13 +564,24 @@ export function EventStepScreen({
 
   const codes = Object.values(errors);
   const kind = noticeKind(errors);
-  const nextLabel =
-    step === "basics"
-      ? msg("Z24.basics.next")
-      : step === "time"
-        ? msg("Z24.time.next")
-        : msg("Z24.place.next");
+  const nextLabel = msg(STEP_TEXT[step].next);
   const saving = status === "saving";
+  const uploading = upload.busy;
+  const ticket = values.accessKinds.includes("online_ticket");
+  const money = hasAmount(values.priceModel);
+  // The ways that have a price at the door or online; the amount applies to them.
+  const priced = values.accessKinds.filter(
+    (kind) => kind === "door" || kind === "online_ticket",
+  );
+  const ways =
+    priced.length === 0
+      ? msg("Z25.price.ways.all")
+      : priced.length === 1
+        ? msg(ACCESS_ID[priced[0]])
+        : msg("Z25.price.ways.and", {
+            a: msg(ACCESS_ID[priced[0]]),
+            b: msg(ACCESS_ID[priced[1]]),
+          });
   const mainLabel = saving
     ? msg("Z24.saving.button")
     : unsaved
@@ -374,9 +594,9 @@ export function EventStepScreen({
     <StepShell
       lang={lang}
       backHref={backHref}
-      eyebrow={msg(`Z24.step.${step}.eyebrow` as MessageId)}
-      title={msg(`Z24.${step}.title` as MessageId)}
-      lead={msg(`Z24.${step}.lead` as MessageId)}
+      eyebrow={msg(STEP_TEXT[step].eyebrow)}
+      title={msg(STEP_TEXT[step].title)}
+      lead={msg(STEP_TEXT[step].lead)}
       current={1}
     >
       <form
@@ -431,6 +651,16 @@ export function EventStepScreen({
           <Notice tone="info" title={msg("Z24.saving.title")}>
             {msg("Z24.saving.line")}
           </Notice>
+        ) : null}
+
+        {step === "image" && uploading ? (
+          <Notice tone="info" title={msg("Z23.upload.busy.title")}>
+            {msg("Z23.upload.busy.line")}
+          </Notice>
+        ) : null}
+
+        {step === "image" && upload.error ? (
+          <UploadNotice lang={lang} error={upload.error} />
         ) : null}
 
         <div className="flex flex-col gap-6">
@@ -736,13 +966,490 @@ export function EventStepScreen({
               </Field>
             </div>
           ) : null}
+
+          {step === "price" ? (
+            <>
+              <fieldset className="flex flex-col gap-4">
+                <legend className="mb-1 text-2xl leading-[30px] font-medium">
+                  {msg("Z25.access.title")}
+                </legend>
+                <p className="text-muted-foreground text-sm leading-5">
+                  {msg("Z25.access.hint")}
+                </p>
+                <div className="mt-2 flex flex-col">
+                  {ACCESS_KINDS.map((kind) => (
+                    <label
+                      key={kind}
+                      htmlFor={`access-${kind}`}
+                      className="flex min-h-11 items-center gap-3 text-base leading-6"
+                    >
+                      <Checkbox
+                        id={`access-${kind}`}
+                        checked={values.accessKinds.includes(kind)}
+                        disabled={saving}
+                        onCheckedChange={(checked) =>
+                          toggleAccess(kind, checked === true)
+                        }
+                      />
+                      {msg(ACCESS_ID[kind])}
+                    </label>
+                  ))}
+                </div>
+                {errors.accessKinds ? (
+                  <p role="alert" className="text-error text-sm">
+                    {errorText("accessKinds")}
+                  </p>
+                ) : null}
+              </fieldset>
+
+              <section
+                aria-labelledby="price-title"
+                className="flex flex-col gap-4"
+              >
+                <h2
+                  id="price-title"
+                  className="text-2xl leading-[30px] font-medium"
+                >
+                  {msg("Z25.price.section")}
+                </h2>
+
+                <div
+                  className={
+                    money && values.priceModel !== "range"
+                      ? "grid items-start gap-4 sm:grid-cols-2"
+                      : "flex flex-col gap-4"
+                  }
+                >
+                  <Field
+                    id="priceModel"
+                    label={msg("Z25.price.form.label")}
+                    error={errorText("priceModel")}
+                    large
+                  >
+                    {(props) => (
+                      <Select
+                        value={values.priceModel}
+                        disabled={saving}
+                        onValueChange={chooseModel}
+                      >
+                        <SelectTrigger {...props}>
+                          <SelectValue
+                            placeholder={msg("Z25.price.form.placeholder")}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PRICE_MODELS.map((model) => (
+                            <SelectItem key={model} value={model}>
+                              {msg(PRICE_MODEL_ID[model])}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </Field>
+
+                  {money && values.priceModel !== "range" ? (
+                    <Field
+                      id="priceAmount"
+                      label={msg(
+                        values.priceModel === "from_price"
+                          ? "Z25.price.amount.fromPrice"
+                          : values.priceModel === "min_donation"
+                            ? "Z25.price.amount.minDonation"
+                            : "Z25.price.amount.fixed",
+                      )}
+                      hint={
+                        errors.priceAmount
+                          ? undefined
+                          : values.priceModel === "min_donation"
+                            ? msg("Z25.price.amount.minDonationHint")
+                            : values.priceModel === "from_price"
+                              ? msg("Z25.price.amount.lowest", { ways })
+                              : msg("Z25.price.amount.appliesTo", { ways })
+                      }
+                      error={errorText("priceAmount")}
+                      large
+                    >
+                      {(props) => (
+                        <Input
+                          {...props}
+                          type="text"
+                          inputMode="decimal"
+                          autoComplete="off"
+                          value={values.priceAmount}
+                          disabled={saving}
+                          onChange={(event) =>
+                            setValue("priceAmount", event.target.value)
+                          }
+                        />
+                      )}
+                    </Field>
+                  ) : null}
+                </div>
+
+                {values.priceModel === "free" ? (
+                  <p className="text-muted-foreground text-sm leading-5">
+                    {msg("Z25.price.free.hint")}
+                  </p>
+                ) : null}
+
+                {values.priceModel === "donation" ? (
+                  <p className="text-muted-foreground text-sm leading-5">
+                    {msg("Z25.price.donation.hint")}
+                  </p>
+                ) : null}
+
+                {values.priceModel === "unknown" ? (
+                  <Notice tone="info" title={msg("Z25.price.unknown.title")}>
+                    {msg("Z25.price.unknown.line")}
+                  </Notice>
+                ) : null}
+
+                {values.priceModel === "range" ? (
+                  <div className="grid items-start gap-4 sm:grid-cols-2">
+                    <Field
+                      id="priceAmount"
+                      label={msg("Z25.price.amount.rangeFrom")}
+                      error={errorText("priceAmount")}
+                      large
+                    >
+                      {(props) => (
+                        <Input
+                          {...props}
+                          type="text"
+                          inputMode="decimal"
+                          autoComplete="off"
+                          value={values.priceAmount}
+                          disabled={saving}
+                          onChange={(event) =>
+                            setValue("priceAmount", event.target.value)
+                          }
+                        />
+                      )}
+                    </Field>
+                    <Field
+                      id="priceAmountMax"
+                      label={msg("Z25.price.amount.rangeTo")}
+                      error={errorText("priceAmountMax")}
+                      large
+                    >
+                      {(props) => (
+                        <Input
+                          {...props}
+                          type="text"
+                          inputMode="decimal"
+                          autoComplete="off"
+                          value={values.priceAmountMax}
+                          disabled={saving}
+                          onChange={(event) =>
+                            setValue("priceAmountMax", event.target.value)
+                          }
+                        />
+                      )}
+                    </Field>
+                  </div>
+                ) : null}
+
+                {money && ticket ? (
+                  <Field
+                    id="priceFees"
+                    label={msg("Z25.fees.label")}
+                    hint={
+                      errors.priceFees
+                        ? undefined
+                        : values.priceFees === "included"
+                          ? msg("Z25.fees.included.hint")
+                          : values.priceFees === "unknown"
+                            ? msg("Z25.fees.unknown.hint")
+                            : undefined
+                    }
+                    error={errorText("priceFees")}
+                    large
+                  >
+                    {(props) => (
+                      <Select
+                        value={values.priceFees}
+                        disabled={saving}
+                        onValueChange={(value) => setValue("priceFees", value)}
+                      >
+                        <SelectTrigger {...props}>
+                          <SelectValue
+                            placeholder={msg("Z25.fees.placeholder")}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="included">
+                            {msg("Z25.fees.included")}
+                          </SelectItem>
+                          <SelectItem value="unknown">
+                            {msg("Z25.fees.unknown")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </Field>
+                ) : null}
+              </section>
+
+              {ticket ? (
+                <>
+                  <Field
+                    id="onlineTicketAvailability"
+                    label={msg("Z25.availability.label")}
+                    hint={
+                      errors.onlineTicketAvailability ||
+                      values.onlineTicketAvailability !== "sold_out"
+                        ? undefined
+                        : msg("Z25.availability.soldOut.hint")
+                    }
+                    error={errorText("onlineTicketAvailability")}
+                    large
+                  >
+                    {(props) => (
+                      <Select
+                        value={values.onlineTicketAvailability}
+                        disabled={saving}
+                        onValueChange={(value) =>
+                          setValue("onlineTicketAvailability", value)
+                        }
+                      >
+                        <SelectTrigger {...props}>
+                          <SelectValue
+                            placeholder={msg("Z25.availability.placeholder")}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TICKET_AVAILABILITY.map((value) => (
+                            <SelectItem key={value} value={value}>
+                              {msg(
+                                value === "sold_out"
+                                  ? "Z25.availability.soldOut"
+                                  : "Z25.availability.available",
+                              )}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </Field>
+
+                  <Field
+                    id="onlineTicketUrl"
+                    label={msg("Z25.link.ticket.label")}
+                    hint={
+                      errors.onlineTicketUrl
+                        ? undefined
+                        : msg("Z25.link.ticket.hint")
+                    }
+                    error={errorText("onlineTicketUrl")}
+                    large
+                  >
+                    {(props) => (
+                      <Input
+                        {...props}
+                        type="url"
+                        inputMode="url"
+                        autoComplete="off"
+                        value={values.onlineTicketUrl}
+                        disabled={saving}
+                        onChange={(event) =>
+                          setValue("onlineTicketUrl", event.target.value)
+                        }
+                      />
+                    )}
+                  </Field>
+                </>
+              ) : null}
+
+              {values.accessKinds.includes("online_registration") ? (
+                <Field
+                  id="onlineRegistrationUrl"
+                  label={msg("Z25.link.registration.label")}
+                  hint={
+                    errors.onlineRegistrationUrl
+                      ? undefined
+                      : msg("Z25.link.registration.hint")
+                  }
+                  error={errorText("onlineRegistrationUrl")}
+                  large
+                >
+                  {(props) => (
+                    <Input
+                      {...props}
+                      type="url"
+                      inputMode="url"
+                      autoComplete="off"
+                      value={values.onlineRegistrationUrl}
+                      disabled={saving}
+                      onChange={(event) =>
+                        setValue("onlineRegistrationUrl", event.target.value)
+                      }
+                    />
+                  )}
+                </Field>
+              ) : null}
+            </>
+          ) : null}
+
+          {step === "image" ? (
+            <>
+              <div className="border-border flex flex-col gap-3 rounded-md border p-4">
+                {image?.url ? (
+                  <div className="w-[200px] max-w-full overflow-hidden rounded">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={image.url}
+                      alt=""
+                      draggable={false}
+                      className="block h-auto w-full"
+                    />
+                  </div>
+                ) : null}
+                <p className="text-sm leading-5 font-medium break-all">
+                  {image?.fileName ?? msg("Z25.image.label")}
+                </p>
+                <p className="text-muted-foreground text-xs leading-4">
+                  {image ? msg("Z23.upload.another") : msg("Z23.upload.hint")}
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button
+                    variant="ghostLg"
+                    onClick={upload.open}
+                    disabled={uploading || saving}
+                  >
+                    {msg("Z23.upload.choose")}
+                  </Button>
+                  {image ? null : (
+                    <span className="text-muted-foreground text-sm leading-5">
+                      {msg("Z23.upload.none")}
+                    </span>
+                  )}
+                </div>
+                <input
+                  ref={upload.inputRef}
+                  type="file"
+                  accept={ACCEPT}
+                  className="sr-only"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  onChange={(event) => {
+                    void upload.choose(event.target.files?.[0]);
+                    // The same file can be chosen again after an error.
+                    event.target.value = "";
+                  }}
+                />
+              </div>
+
+              {image ? (
+                <Field
+                  id="altText"
+                  label={msg("Z23.image.alt.label")}
+                  hint={errors.altText ? undefined : msg("Z23.image.alt.hint")}
+                  error={errorText("altText")}
+                  large
+                >
+                  {(props) => (
+                    <Textarea
+                      {...props}
+                      rows={2}
+                      value={values.altText}
+                      disabled={saving}
+                      placeholder={msg("Z23.image.alt.placeholder")}
+                      onChange={(event) =>
+                        setValue("altText", event.target.value)
+                      }
+                    />
+                  )}
+                </Field>
+              ) : (
+                <p className="text-muted-foreground text-sm leading-5">
+                  {msg("Z25.image.missingHint")}
+                </p>
+              )}
+            </>
+          ) : null}
+
+          {step === "atmosphere" ? (
+            <>
+              <fieldset className="flex flex-col gap-6">
+                <legend className="sr-only">
+                  {msg("Z25.atmosphere.group")}
+                </legend>
+                <div className="flex flex-wrap gap-2">
+                  {ATMOSPHERE_TERMS.map((term) => {
+                    const checked = values.atmosphereTags.includes(term);
+
+                    return (
+                      <AtmosphereChip
+                        key={term}
+                        value={term}
+                        label={msg(ATMOSPHERE_ID[term])}
+                        checked={checked}
+                        disabled={
+                          saving ||
+                          (!checked &&
+                            values.atmosphereTags.length >= MAX_ATMOSPHERE_TAGS)
+                        }
+                        onChange={(on) => toggleTerm(term, on)}
+                      />
+                    );
+                  })}
+                </div>
+                <p
+                  aria-live="polite"
+                  className="text-muted-foreground text-sm leading-5"
+                >
+                  {msg("Z25.atmosphere.count", {
+                    n: values.atmosphereTags.length,
+                    max: MAX_ATMOSPHERE_TAGS,
+                  })}
+                  {values.atmosphereTags.length === 0 &&
+                  values.atmosphereDescription.trim() === ""
+                    ? ` ${msg("Z25.atmosphere.needed")}`
+                    : ""}
+                </p>
+                {errors.atmosphereTags ? (
+                  <p role="alert" className="text-error text-sm">
+                    {errorText("atmosphereTags")}
+                  </p>
+                ) : null}
+              </fieldset>
+
+              <Field
+                id="atmosphereDescription"
+                label={msg("Z25.atmosphere.text.label")}
+                hint={
+                  errors.atmosphereDescription
+                    ? undefined
+                    : msg("Z25.atmosphere.text.hint", {
+                        max: EVENT_LIMITS.atmosphereDescription,
+                      })
+                }
+                error={errorText("atmosphereDescription")}
+                large
+              >
+                {(props) => (
+                  <Textarea
+                    {...props}
+                    rows={2}
+                    value={values.atmosphereDescription}
+                    disabled={saving}
+                    placeholder={msg("Z25.atmosphere.text.placeholder")}
+                    onChange={(event) =>
+                      setValue("atmosphereDescription", event.target.value)
+                    }
+                  />
+                )}
+              </Field>
+            </>
+          ) : null}
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button
             type="submit"
             variant="primaryLg"
-            disabled={saving}
+            disabled={saving || uploading}
             aria-busy={saving}
           >
             {mainLabel}
