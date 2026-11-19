@@ -36,6 +36,7 @@ const base: EventRevisionRow = {
   atmosphere_state: "unanswered",
   atmosphere_tags: [],
   atmosphere_description: null,
+  modules: null,
   event_image_use_id: null,
   confirmed_at: null,
 };

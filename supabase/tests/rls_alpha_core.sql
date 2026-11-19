@@ -665,6 +665,26 @@ select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'
 select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"unknown","price_model":"unknown","price_fee_model":"unknown"}'),
   '23514', 'an unknown price carries no fee answer');
 
+-- Step 7 "Mehr zum Abend": the blocks live in one jsonb column. NULL = never
+-- saved, an object = the blocks that are there. Only the shape and the size
+-- are checked by the database.
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"modules":null}'),
+  'modules may be NULL (step never saved)');
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"modules":{}}'),
+  'modules may be an empty object (every block removed)');
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"modules":{"entry_age":{"doors_at":"21:30","age_rule":"minimum","min_age":18},"music":{"precision":null,"genres":["jazz"]}}}'),
+  'modules with known blocks are accepted');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"modules":[]}'),
+  '23514', 'modules must be an object, not an array');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"modules":5}'),
+  '23514', 'modules must be an object, not a number');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"modules":{"secret_block":{}}}'),
+  '23514', 'modules refuses an unknown block key');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"modules":{"music":"jazz"}}'),
+  '23514', 'a block of modules must be an object');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', jsonb_build_object('modules', jsonb_build_object('participants', jsonb_build_object('text', repeat('x', 7000))))::text),
+  '23514', 'modules refuses a value over 6000 bytes');
+
 -- Event image confirmation (Slice 4): the description is optional (Slice 5)
 -- and the database reserves events/<event id>/<use id>.<ext>. A path, not a file.
 select tests.expect_true(format('select tests.confirm_event_image_with_alt_is_null(%L, null)', :'e1'),
@@ -820,6 +840,14 @@ select tests.expect_true(format($q$select public_status = 'rescheduled' and publ
 select tests.as_anon();
 select tests.expect_true($q$select start_at = '2027-06-06 19:00:00+02'::timestamptz and public_status = 'rescheduled' from public.public_events where slug = 'second-night'$q$,
   'public view shows the new start');
+
+-- The copy of a revision (rescheduling) carries the blocks of step 7 over.
+select tests.as_user(:'uid_a');
+select tests.ev_insert(:'e2', :'use_e2', '{"modules":{"music":{"precision":"Dub","genres":["jazz"]}}}') as evm \gset
+select tests.as_superuser();
+select app_private.copy_event_revision(:'evm', '2027-07-01 19:00:00+02', null, :'uid_a', null) as evcopy \gset
+select tests.expect_true(format($q$select modules = '{"music":{"precision":"Dub","genres":["jazz"]}}'::jsonb from public.event_revisions where id = %L$q$, :'evcopy'),
+  'copying a revision keeps the blocks of "Mehr zum Abend"');
 
 -- Postponing without a date: status only, a replacement date can follow.
 select tests.as_user(:'uid_b');
@@ -1576,9 +1604,9 @@ insert into tests.expected_col_grants values
   ('authenticated', 'events', 'INSERT', array['organizer_id','slug']),
   ('authenticated', 'events', 'UPDATE', array['draft_revision_id']),
   ('anon',          'events', 'SELECT', array['id','slug','organizer_id','published_revision_id','first_approved_revision_id','publication_state','public_status']),
-  ('authenticated', 'event_revisions', 'SELECT', array['id','event_id','revision_no','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id','confirmed_at','created_at']),
-  ('authenticated', 'event_revisions', 'INSERT', array['event_id','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id','created_by']),
-  ('authenticated', 'event_revisions', 'UPDATE', array['title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id']),
+  ('authenticated', 'event_revisions', 'SELECT', array['id','event_id','revision_no','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id','confirmed_at','created_at']),
+  ('authenticated', 'event_revisions', 'INSERT', array['event_id','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id','created_by']),
+  ('authenticated', 'event_revisions', 'UPDATE', array['title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id']),
   ('anon',          'event_revisions', 'SELECT', array['id','title','description','primary_format','start_at','timezone','end_state','end_at','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_routes','atmosphere_tags','atmosphere_description','event_image_use_id','confirmed_at']),
   ('authenticated', 'media_assets', 'SELECT', array['id','uploader_id','private_object_path','mime_type','created_at','original_filename']),
   ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type','original_filename']),

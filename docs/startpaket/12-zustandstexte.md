@@ -305,7 +305,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z23.image.next | Weiter zur Vorschau | Continue to preview | Hauptaktion |
 | Z23.image.back | Zurück zu den Angaben | Back to details | zweite Aktion |
 | Z23.upload.busy.title | Dein Bild wird hochgeladen … | Your picture is being uploaded … | ORG-05b, Z02 |
-| Z23.upload.busy.line | Das dauert einen Moment. Bleib kurz auf dieser Seite. | This takes a moment. Stay on this page for a moment. | ORG-05b, Z02 |
+| Z23.upload.busy.line | Das dauert einen Moment. Bleib kurz auf dieser Seite. | This takes a moment. Please stay on this page. | ORG-05b, Z02 |
 | Z23.upload.tooBig.title | Die Datei ist zu groß. | The file is too large. | ORG-05d, Z05 |
 | Z23.upload.tooBig.line | Erlaubt sind JPG, PNG oder WebP bis {limit}. Deine hat {size}. | JPG, PNG or WebP up to {limit} are allowed. Yours is {size}. | ORG-05d, Z05 |
 | Z23.upload.tooSmall.title | Das Bild ist zu klein. | The picture is too small. | ORG-05f, Z06 |
@@ -325,7 +325,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z23.crop.retry | Noch einmal versuchen | Try again | ORG-05g, Hauptaktion (Button-Regel Z03) |
 | Z23.preview.eyebrow | Vorschau · Teil 3 von 3 | Preview · Part 3 of 3 | ORG-06 |
 | Z23.preview.title | So sieht deine Profilseite aus | This is what your profile page looks like | ORG-06 |
-| Z23.preview.lead | Das siehst nur du. Öffentlich wird die Seite erst, wenn du sie einreichst und DISKOE sie freigegeben hat. Mit erstem Event oder ohne. | Only you can see this. The page becomes public only once you submit it and DISKOE has approved it. With a first event or without. | ORG-06 |
+| Z23.preview.lead | Das siehst nur du. Öffentlich wird die Seite erst, wenn du sie einreichst und DISKOE sie freigegeben hat. Mit erstem Event oder ohne. | Only you can see this. The page becomes public only once you submit it and DISKOE has approved it. You can submit it with or without a first event. | ORG-06 |
 | Z23.preview.notice.title | Das ist erst der Kopf deiner Seite. | This is only the top of your page. | ORG-06, Hinweis |
 | Z23.preview.notice.line | Du siehst die Standardgestaltung. Farben und Schrift passt du an, sobald dein Profil angelegt ist. Die weiteren Angaben, die du später machst, füllen dann die ganze Seite. | You're seeing the default design. You can adjust colours and type once your profile is set up. The details you add later fill the whole page. | ORG-06, Hinweis |
 | Z23.preview.next | Weiter zum ersten Event | Continue to your first event | ORG-06, Hauptaktion |
@@ -409,7 +409,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z24.later | Später weitermachen | Continue later | zweite Aktion aller Schritte; speichert zuerst, dann EVT-08 |
 | Z24.retry | Noch einmal versuchen | Try again | Hauptaktion nach einem Fehler, Z03 |
 | Z24.saving.title | Wir speichern deinen Entwurf … | We're saving your draft … | EVT-09a, Z02 |
-| Z24.saving.line | Das dauert einen Moment. Bleib kurz auf dieser Seite. | This takes a moment. Stay on this page for a moment. | EVT-09a (im Katalog bisher: „Bitte lade die Seite nicht neu.“, der Frame gilt) |
+| Z24.saving.line | Das dauert einen Moment. Bleib kurz auf dieser Seite. | This takes a moment. Please stay on this page. | EVT-09a (im Katalog bisher: „Bitte lade die Seite nicht neu.“, der Frame gilt) |
 | Z24.saving.button | Speichere … | Saving … | EVT-09a, Button während des Speicherns, gesperrt |
 | Z24.failed.title | Das Speichern hat nicht geklappt. | Saving didn't work. | EVT-09, Z03 |
 | Z24.failed.line | Deine Eingaben sind noch da. Versuche es noch einmal. Klappt es weiter nicht, schreib uns. | What you entered is still here. Try again. If it still doesn't work, write to us. | EVT-09, Sonderfall Z03b |
@@ -450,7 +450,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z25.access.title | Wie kommen Gäste rein? | How do guests get in? | Zwischenüberschrift EVT-04 |
 | Z25.access.hint | Wähle alle Wege, die es wirklich gibt. | Choose every way that really exists. | unter der Zwischenüberschrift |
 | Z25.access.walkIn | Ohne Anmeldung | No registration | Zugangsweg |
-| Z25.access.door | Abendkasse | Box office | Zugangsweg |
+| Z25.access.door | Abendkasse | At the door | Zugangsweg |
 | Z25.access.onlineTicket | Online-Ticket | Online ticket | Zugangsweg |
 | Z25.access.onlineRegistration | Online-Anmeldung | Online registration | Zugangsweg |
 | Z25.access.invalid | Wähle nur die angebotenen Wege. | Choose only the ways offered. | Fehlertext (kein Frame) |
@@ -524,6 +524,122 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z25.atmo.alternative | Alternativ/unabhängig | Alternative/independent | Atmosphärebegriff |
 | Z25.atmo.community | Community-geprägt | Community-driven | Atmosphärebegriff |
 | Z25.atmo.immersive | Immersiv | Immersive | Atmosphärebegriff |
+
+### Event anlegen: Mehr zum Abend (Z26, Welle 1 Block 2b, Slice 7, Stand 20.11.2026)
+**Status:** Der deutsche Wortlaut ist aus den Frames `EVT-07m-a` bis `07m-k` übernommen; Texte ohne Frame sind als „kein Frame“ markiert (Vorschlag von Claude, Entscheidung beim Founder). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gebaut sind sechs der elf Bausteine (Einlass und Alter, Besuchsmodus, Sprache und Untertitel, Musik, Beteiligte, Mitbringen und Teilnahme); die Texte der übrigen fünf kommen mit ihren aufgeklappten Frames. Fehler- und Fehlzustände nutzen `Z23.check.title.*`, `Z24.err.tooLong`, `Z24.failed.*`, `Z24.offline.*`, `Z24.saving.*` und `Z24.leave.*`.
+
+| ID | Deutsch | English | Verwendung |
+|---|---|---|---|
+| Z26.step.more.eyebrow | Mehr zum Abend · Teil 7 von 7 | More about the evening · Part 7 of 7 | EVT-07, 07m-a bis k, Eyebrow |
+| Z26.more.title | Was sollen Gäste noch wissen? | What else should guests know? | EVT-07, 07m-a bis k |
+| Z26.more.lead.club | Für ein Club-Event schlagen wir diese Bausteine vor. Alles ist freiwillig, Leeres bleibt auf der Seite ausgeblendet. Du kannst Bausteine entfernen oder weitere hinzufügen. | For a club event we suggest these blocks. Everything is optional, and anything left empty stays hidden on the page. You can remove blocks or add more. | EVT-07m-a, Format Party/Club |
+| Z26.more.lead.opening | Für eine Vernissage schlagen wir diese Bausteine vor. „Besuchsmodus“ ist Pflicht: Gäste müssen wissen, ob sie pünktlich sein müssen. | For an opening we suggest these blocks. “Visit mode” is required: guests need to know whether they have to be on time. | EVT-07m-c, Format Vernissage |
+| Z26.more.lead.screening | Für einen Filmabend schlagen wir diese Bausteine vor. „Sprache und Untertitel“ ist Pflicht. „Noch nicht bekannt“ ist als Antwort erlaubt. | For a film night we suggest these blocks. “Language and subtitles” is required. “Not known yet” is allowed as an answer. | EVT-07m-d, Format Film |
+| Z26.more.lead.none | Für dieses Format haben wir keine Vorschläge. Du kannst Bausteine hinzufügen oder direkt zur Vorschau gehen. | We have no suggestions for this format. You can add blocks or go straight to the preview. | EVT-07m-e, Format ohne Vorschläge |
+| Z26.more.next | Weiter zur Vorschau | Continue to the preview | EVT-07, Hauptaktion |
+| Z26.more.skip | Überspringen | Skip | EVT-07, zweite Aktion |
+| Z26.more.add | Weiteren Baustein wählen | Add another block | EVT-07m-a, Aktion |
+| Z26.card.edit | Bearbeiten | Edit | Baustein-Karte, zugeklappt mit Angaben |
+| Z26.card.fill | Ausfüllen | Fill in | Baustein-Karte, zugeklappt ohne Angaben |
+| Z26.card.collapse | Zuklappen | Collapse | Baustein-Karte, aufgeklappt |
+| Z26.card.required | Pflicht | Required | Baustein-Karte, Pflichtbaustein |
+| Z26.card.empty | Noch keine Angabe | Nothing yet | Baustein-Karte ohne Angaben |
+| Z26.card.requiredEmpty | Brauchen wir vor der Veröffentlichung. | We need this before publishing. | EVT-07m-d, Pflichtbaustein ohne Angabe |
+| Z26.card.error | Eine Angabe stimmt noch nicht. | One entry doesn't fit yet. | EVT-07m-g, Baustein mit Feldfehler |
+| Z26.card.remove | Baustein entfernen | Remove block | Baustein-Karte, aufgeklappt (nicht bei Pflicht) |
+| Z26.removed.line | „{name}“ wurde entfernt. Die Angaben darin sind weg, sobald du weitergehst. | “{name}” was removed. What you entered there is gone as soon as you continue. | EVT-07m-f |
+| Z26.removed.undo | Rückgängig | Undo | EVT-07m-f |
+| Z26.picker.eyebrow | Mehr zum Abend · Bausteine | More about the evening · Blocks | EVT-07m-b, Eyebrow |
+| Z26.picker.title | Weitere Bausteine | More blocks | EVT-07m-b |
+| Z26.picker.lead | Wähle, was du noch erzählen möchtest. Du kannst Bausteine später jederzeit wieder entfernen. | Choose what else you would like to tell guests. You can remove blocks again at any time. | EVT-07m-b |
+| Z26.picker.add | Hinzufügen | Add | EVT-07m-b |
+| Z26.picker.cancel | Abbrechen | Cancel | EVT-07m-b |
+| Z26.picker.none | Alle Bausteine sind schon auf der Seite. | All blocks are already on the page. | EVT-07m-b, nichts mehr zu wählen (kein Frame) |
+| Z26.block.entryAge | Einlass und Alter | Entry and age | Baustein |
+| Z26.block.visitMode | Besuchsmodus | Visit mode | Baustein |
+| Z26.block.language | Sprache und Untertitel | Language and subtitles | Baustein |
+| Z26.block.music | Musik | Music | Baustein |
+| Z26.block.participants | Beteiligte | People involved | Baustein |
+| Z26.block.bring | Mitbringen und Teilnahme | Bring and take part | Baustein |
+| Z26.block.entryAge.desc | Einlasszeit und Altersregel | Door time and age rule | EVT-07m-b, kein Frame |
+| Z26.block.visitMode.desc | Gemeinsamer Beginn oder flexibel vorbeikommen | Shared start or drop in | EVT-07m-b |
+| Z26.block.language.desc | Sprache des Programms, Untertitel | Language of the programme, subtitles | EVT-07m-b |
+| Z26.block.music.desc | Musikalische Präzisierung, Musikrichtungen | Musical detail, music directions | EVT-07m-b, kein Frame |
+| Z26.block.participants.desc | Künstler:innen, Gäste, Kuration | Artists, guests, curation | EVT-07m-b |
+| Z26.block.bring.desc | Kleidung, Material, Anmeldung, Plätze | Clothing, material, registration, seats | EVT-07m-b |
+| Z26.entry.doors.label | Einlass ab | Doors open | EVT-07m-f |
+| Z26.entry.doors.placeholder | 21:30 | 21:30 | EVT-07m-f |
+| Z26.entry.rule.label | Altersregel | Age rule | EVT-07m-f |
+| Z26.entry.rule.hint | Wenn du es nicht weißt, wähle „Noch unbekannt“. | If you don't know, choose “Not known yet”. | EVT-07m-f |
+| Z26.entry.rule.choose | Bitte wählen | Please choose | Altersregel ohne Wahl (kein Frame) |
+| Z26.entry.rule.minimum | Mindestalter | Minimum age | EVT-07m-f |
+| Z26.entry.rule.allAges | Für alle Altersgruppen | All ages | Altersregel (kein Frame) |
+| Z26.entry.rule.unknown | Noch unbekannt | Not known yet | Altersregel (kein Frame) |
+| Z26.entry.age.label | Mindestalter | Minimum age | EVT-07m-f |
+| Z26.visit.mode.legend | Besuchsmodus | Visit mode | EVT-07m-c |
+| Z26.visit.mode.fixed | Gemeinsamer Beginn | Shared start | EVT-07m-c |
+| Z26.visit.mode.dropIn | Flexibel vorbeikommen | Drop in any time | EVT-07m-c |
+| Z26.visit.mode.both | Beides | Both | EVT-07m-c |
+| Z26.visit.mode.unknown | Noch nicht bekannt | Not known yet | Besuchsmodus (kein Frame; Antwortzustand „unbekannt“) |
+| Z26.visit.window.title | Wann kann man flexibel vorbeikommen? | When can people drop in? | EVT-07m-c |
+| Z26.visit.window.hint | Der Beginn des Besuchsfensters ist nötig. Ein offenes Ende geben wir nicht als erfundene Endzeit aus. | The start of the visiting window is needed. If there is no end, we don't make one up. | EVT-07m-c |
+| Z26.visit.from.label | Besuchsfenster ab | Visiting window from | EVT-07m-c |
+| Z26.visit.to.label | Besuchsfenster bis (freiwillig) | Visiting window until (optional) | EVT-07m-c |
+| Z26.visit.to.placeholder | Noch offen | Still open | EVT-07m-c |
+| Z26.visit.short.title | Kann man auch kurz vorbeischauen? | Can people also stop by briefly? | EVT-07m-c |
+| Z26.visit.short.hint | Freiwillig. Der Zeitbedarf ist eine Orientierung. | Optional. The time needed is a guide. | EVT-07m-c |
+| Z26.visit.short.ok | Ja, ein kurzer Besuch genügt | Yes, a short visit is fine | EVT-07m-c |
+| Z26.visit.short.longer | Eher eine längere Teilnahme | Rather a longer visit | EVT-07m-c |
+| Z26.visit.short.unknown | Noch nicht bekannt | Not known yet | EVT-07m-c |
+| Z26.lang.program.title | In welcher Sprache ist das Programm? | What language is the programme in? | EVT-07m-d |
+| Z26.lang.subtitles.title | Gibt es Untertitel? | Are there subtitles? | EVT-07m-d |
+| Z26.lang.hint.required | Pflichtangabe für dieses Format. | Required for this format. | EVT-07m-d |
+| Z26.lang.hint.optional | Freiwillig. | Optional. | Sprache und Untertitel bei einem Format ohne Pflicht (kein Frame) |
+| Z26.lang.program.de | Deutsch | German | EVT-07m-d |
+| Z26.lang.program.en | Englisch | English | EVT-07m-d |
+| Z26.lang.program.original | Originalfassung mit Untertiteln | Original version with subtitles | EVT-07m-d |
+| Z26.lang.program.unknown | Noch nicht bekannt | Not known yet | EVT-07m-d |
+| Z26.lang.subtitles.yes | Ja | Yes | EVT-07m-d |
+| Z26.lang.subtitles.partial | Teilweise | Partly | EVT-07m-d |
+| Z26.lang.subtitles.no | Nein | No | EVT-07m-d |
+| Z26.lang.subtitles.unknown | Noch nicht bekannt | Not known yet | EVT-07m-d |
+| Z26.lang.subtitleLanguage.label | Sprache der Untertitel | Subtitle language | EVT-07m-d |
+| Z26.music.precision.label | Musikalische Präzisierung | Musical detail | EVT-07m-h |
+| Z26.music.precision.placeholder | z. B. Dub Techno · Experimentelle Elektronik | e.g. Dub techno · Experimental electronic | EVT-07m-h (Beispiel aus dem Frame als Platzhalter) |
+| Z26.music.genres.label | Breite Musikrichtungen | Broad music directions | EVT-07m-h |
+| Z26.music.genres.hint | Bis zu drei breite Richtungen. Ein verständliches musikalisches Konzept kann bereits in der Beschreibung stehen. | Up to three broad directions. A clear musical concept can go in the description instead. | EVT-07m-h |
+| Z26.music.genres.none | Auswählen | Choose | Musikrichtungen ohne Wahl (kein Frame) |
+| Z26.music.genres.count | {n} ausgewählt | {n} selected | EVT-07m-i |
+| Z26.genre.electronic | Elektronisch | Electronic | Musikrichtung, EVT-07m-i |
+| Z26.genre.hiphop | Hip-Hop/Rap | Hip-hop/Rap | Musikrichtung, EVT-07m-i |
+| Z26.genre.jazz | Jazz | Jazz | Musikrichtung, EVT-07m-i |
+| Z26.genre.soul | Soul/Funk/R&B | Soul/Funk/R&B | Musikrichtung, EVT-07m-i |
+| Z26.genre.rock | Rock/Punk | Rock/Punk | Musikrichtung, EVT-07m-i |
+| Z26.genre.pop | Pop | Pop | Musikrichtung, EVT-07m-i |
+| Z26.genre.classical | Klassik/Neue Musik | Classical/New music | Musikrichtung, EVT-07m-i |
+| Z26.genre.folk | Folk/akustisch | Folk/acoustic | Musikrichtung, EVT-07m-i |
+| Z26.genre.experimental | Experimentelle Musik/Klangkunst | Experimental music/Sound art | Musikrichtung, EVT-07m-i |
+| Z26.participants.label | Beteiligte | People involved | EVT-07m-j |
+| Z26.participants.hint | Eine Person pro Zeile: Name — Rolle. | One person per line: name — role. | EVT-07m-j (Beschreibung aus der Flow-Karte) |
+| Z26.bring.label | Weitere Teilnahmebedingungen | Further conditions of taking part | EVT-07m-k |
+| Z26.bring.placeholder | Zum Beispiel: notwendiger Nachweis oder Begleitregel | For example: proof you need to bring, or a rule about being accompanied | EVT-07m-k |
+| Z26.sum.doors | Einlass ab {time} | Doors open {time} | Zusammenfassung Einlass und Alter |
+| Z26.sum.minAge | ab {n} Jahren | ages {n}+ | Zusammenfassung Einlass und Alter |
+| Z26.sum.allAges | für alle Altersgruppen | all ages | Zusammenfassung Einlass und Alter |
+| Z26.sum.ageUnknown | Alter noch unbekannt | age not known yet | Zusammenfassung Einlass und Alter |
+| Z26.sum.window | ab {from} | from {from} | Zusammenfassung Besuchsmodus |
+| Z26.sum.windowTo | {from} bis {to} | {from} to {to} | Zusammenfassung Besuchsmodus |
+| Z26.sum.subtitles | Untertitel: {value} | Subtitles: {value} | Zusammenfassung Sprache und Untertitel |
+| Z26.sum.subtitlesIn | Untertitel: {value} ({language}) | Subtitles: {value} ({language}) | Zusammenfassung Sprache und Untertitel |
+| Z26.err.time | Gib die Uhrzeit so ein: 21:30. | Enter the time like this: 21:30. | EVT-07m-g |
+| Z26.err.ageMissing | Gib das Mindestalter an. | Enter the minimum age. | Einlass und Alter (kein Frame) |
+| Z26.err.ageInvalid | Gib ein Alter von 1 bis 99 an. | Enter an age from 1 to 99. | Einlass und Alter (kein Frame) |
+| Z26.err.windowFromMissing | Gib an, ab wann man vorbeikommen kann. | Say from when people can drop in. | Besuchsmodus (kein Frame) |
+| Z26.err.choice | Wähle eine der angebotenen Antworten. | Choose one of the answers offered. | alle Bausteine (kein Frame) |
+| Z26.err.requiredChoice | Wähle eine Antwort. „Noch nicht bekannt“ zählt auch. | Choose an answer. “Not known yet” counts too. | EVT-07m-d, Feld einer Pflichtangabe (kein Frame) |
+| Z26.err.genresTooMany | Wähle höchstens {max} Richtungen. | Choose at most {max} directions. | EVT-07m-i (kein Frame) |
+| Z26.check.line.required.visitMode | Besuchsmodus fehlt noch. Auch „Noch nicht bekannt“ zählt. | Visit mode is still missing. “Not known yet” counts too. | EVT-07m-d, Hinweis oben |
+| Z26.check.line.required.language | Sprache und Untertitel fehlen noch. Auch „Noch nicht bekannt“ zählt. | Language and subtitles are still missing. “Not known yet” counts too. | EVT-07m-d, Hinweis oben |
 
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.

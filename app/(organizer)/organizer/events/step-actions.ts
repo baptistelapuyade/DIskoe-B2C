@@ -154,9 +154,8 @@ function destination(
 
   const next = nextStepPath(step);
 
-  // After the atmosphere comes the optional step 7 (a later slice): until
-  // then the overview of the draft.
-  return next === "more" ? `${base}/edit` : `${base}/edit/${next}`;
+  // After the atmosphere comes the optional step 7 "Mehr zum Abend".
+  return `${base}/edit/${next}`;
 }
 
 export async function saveEventStep(

@@ -95,7 +95,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await shot(page, "01-grundlagen");
 
   // "Weiter" names what is missing and saves nothing (EVT-01b).
-  await page.getByRole("button", { name: "Weiter zu Datum und Uhrzeit" }).click();
+  await page
+    .getByRole("button", { name: "Weiter zu Datum und Uhrzeit" })
+    .click();
   await expect(page.getByText("Gib deinem Event einen Titel.")).toBeVisible();
   await expect(
     page.getByText("Wähle ein Format. Passt keins, melde dich bei uns."),
@@ -103,14 +105,20 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(page.getByLabel("Titel", { exact: true })).toBeFocused();
   await shot(page, "02-grundlagen-fehler");
   expect(
-    sql(`select count(*) from public.events where organizer_id = '${profileA}'`),
+    sql(
+      `select count(*) from public.events where organizer_id = '${profileA}'`,
+    ),
   ).toBe("0");
 
   await page.getByLabel("Titel", { exact: true }).fill(TITLE);
   await page.getByRole("combobox", { name: "Format" }).click();
   await page.getByRole("option", { name: "Konzert" }).click();
-  await page.getByLabel("Beschreibung", { exact: true }).fill("Live im Keller.");
-  await page.getByRole("button", { name: "Weiter zu Datum und Uhrzeit" }).click();
+  await page
+    .getByLabel("Beschreibung", { exact: true })
+    .fill("Live im Keller.");
+  await page
+    .getByRole("button", { name: "Weiter zu Datum und Uhrzeit" })
+    .click();
   await page.waitForURL("**/organizer/events/*/edit/time", SLOW);
   const eventId = page.url().split("/events/")[1].split("/")[0];
   const base = `/organizer/events/${eventId}`;
@@ -132,7 +140,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(
     page.getByText("Datum und Uhrzeit des Beginns fehlen."),
   ).toBeVisible();
-  await expect(page.getByText("Der Ort mit Adresse und Stadt fehlt.")).toBeVisible();
+  await expect(
+    page.getByText("Der Ort mit Adresse und Stadt fehlt."),
+  ).toBeVisible();
   await expect(page.getByText(/^Eventbild fehlt\. Speichern/)).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Zur Prüfung einreichen" }),
@@ -151,12 +161,12 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(page.getByText("Ende am Folgetag")).toBeVisible();
   await page.getByRole("button", { name: "Weiter zum Ort" }).click();
   await page.waitForURL("**/edit/place", SLOW);
-  expect(field(`to_char(start_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`)).toBe(
-    "2026-10-31T22:00",
-  );
-  expect(field(`to_char(end_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`)).toBe(
-    "2026-11-01T03:00",
-  );
+  expect(
+    field(`to_char(start_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`),
+  ).toBe("2026-10-31T22:00");
+  expect(
+    field(`to_char(end_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`),
+  ).toBe("2026-11-01T03:00");
   await page.goto(`${base}/edit/time`);
   await expect(page.locator("#startDate")).toHaveValue("31.10.2026", SLOW);
   await expect(page.locator("#startTime")).toHaveValue("23:00");
@@ -172,9 +182,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     page.getByText("Diese Uhrzeit gibt es wegen der Zeitumstellung nicht."),
   ).toBeVisible(SLOW);
   await expect(page.locator("#startDate")).toHaveValue("29.03.2026");
-  expect(field(`to_char(start_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`)).toBe(
-    "2026-10-31T22:00",
-  );
+  expect(
+    field(`to_char(start_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`),
+  ).toBe("2026-10-31T22:00");
 
   // The end before the start is named (EVT-02b), the end can be left open.
   await page.locator("#startDate").fill("31.10.2026");
@@ -182,9 +192,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await page.locator("#endDate").fill("31.10.2026");
   await page.locator("#endTime").fill("20:00");
   await page.getByRole("button", { name: "Weiter zum Ort" }).click();
-  await expect(page.getByText("Das Ende liegt vor dem Beginn.").first()).toBeVisible(
-    SLOW,
-  );
+  await expect(
+    page.getByText("Das Ende liegt vor dem Beginn.").first(),
+  ).toBeVisible(SLOW);
   await shot(page, "05-datum-ende-vor-beginn");
   await page.locator("#endDate").fill("01.11.2026");
   await page.locator("#endTime").fill("04:00");
@@ -196,9 +206,13 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   // (EVT-08) and "Zum Entwurf" leads back to this step.
   await shot(page, "06-ort-leer");
   await page.getByLabel("Name des Ortes").fill("Keller");
-  await page.getByRole("button", { name: "Weiter zu Preis und Zugang" }).click();
+  await page
+    .getByRole("button", { name: "Weiter zu Preis und Zugang" })
+    .click();
   await expect(
-    page.getByText("Gib die Straße mit Hausnummer an, damit Gäste dich finden."),
+    page.getByText(
+      "Gib die Straße mit Hausnummer an, damit Gäste dich finden.",
+    ),
   ).toBeVisible();
   await expect(page.getByText("Gib die Stadt an.")).toBeVisible();
   await shot(page, "07-ort-fehler");
@@ -214,7 +228,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   ).toBeVisible();
   await shot(page, "09-nicht-gesichert");
   await context.setOffline(false);
-  await page.getByRole("button", { name: "Zurück und noch einmal versuchen" }).click();
+  await page
+    .getByRole("button", { name: "Zurück und noch einmal versuchen" })
+    .click();
   await page.waitForURL("**/saved", SLOW);
   await expect(
     page.getByRole("heading", { name: "Dein Entwurf ist gesichert" }),
@@ -228,7 +244,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await page.getByLabel("Straße und Hausnummer").fill("Musterstraße 1");
   await page.getByLabel("Postleitzahl").fill("10115");
   await page.getByLabel("Stadt", { exact: true }).fill("Berlin");
-  await page.getByRole("button", { name: "Weiter zu Preis und Zugang" }).click();
+  await page
+    .getByRole("button", { name: "Weiter zu Preis und Zugang" })
+    .click();
   await page.waitForURL("**/edit/price", SLOW);
   expect(field("place_name")).toBe("Keller");
   expect(field("place_state")).toBe("provided");
@@ -258,9 +276,83 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await page
     .getByRole("button", { name: "Weiter zu den freiwilligen Angaben" })
     .click();
-  await page.waitForURL(`**${base}/edit`, SLOW);
+  await page.waitForURL(`**${base}/edit/more`, SLOW);
   expect(field("atmosphere_state")).toBe("provided");
   expect(field("atmosphere_tags::text")).toContain("Lebhaft");
+
+  // 6b. Mehr zum Abend (EVT-07): a concert has no suggested blocks
+  // (EVT-07m-e). Blocks come from the picker (EVT-07m-b), can be removed and
+  // brought back (EVT-07m-f), a wrong field names itself (EVT-07m-g). Nothing
+  // is stored until the step is saved; NULL means "never saved".
+  await expect(
+    page.getByRole("heading", {
+      name: "Was sollen Gäste noch wissen?",
+      level: 1,
+    }),
+  ).toBeVisible(SLOW);
+  await expect(
+    page.getByText("Für dieses Format haben wir keine Vorschläge."),
+  ).toBeVisible();
+  expect(field("modules is null")).toBe("t");
+  await shot(page, "05b-mehr-leer");
+
+  await page.getByRole("button", { name: "Weiteren Baustein wählen" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Weitere Bausteine", level: 1 }),
+  ).toBeVisible();
+  await shot(page, "05c-mehr-bausteine");
+  await page.locator("#pick-music").click();
+  await page.locator("#pick-participants").click();
+  await page.getByRole("button", { name: "Hinzufügen", exact: true }).click();
+
+  await page.getByLabel("Musikalische Präzisierung").fill("Dub Techno");
+  await page.getByLabel("Breite Musikrichtungen").click();
+  await page.locator("#genre-electronic").click();
+  await page.locator("#genre-jazz").click();
+  await page.keyboard.press("Escape");
+  await expect(page.getByText("2 ausgewählt")).toBeVisible();
+  await page
+    .getByLabel("Beteiligte", { exact: true })
+    .fill("Mara — DJ-Set\nKaro — DJ-Set");
+  await shot(page, "05d-mehr-gefuellt");
+
+  // Removing keeps the answer until the step is saved; "Rückgängig" brings the
+  // block back as it was.
+  await page.getByRole("button", { name: "Baustein entfernen" }).last().click();
+  await expect(page.getByText(/„Beteiligte“ wurde entfernt/)).toBeVisible();
+  await shot(page, "05e-mehr-entfernt");
+  await page.getByRole("button", { name: "Rückgängig" }).click();
+  await expect(page.getByText("Mara — DJ-Set, Karo — DJ-Set")).toBeVisible();
+
+  // A wrong time names itself and saves nothing (EVT-07m-g).
+  await page.getByRole("button", { name: "Weiteren Baustein wählen" }).click();
+  await page.locator("#pick-entry_age").click();
+  await page.getByRole("button", { name: "Hinzufügen", exact: true }).click();
+  await page.getByLabel("Einlass ab").fill("halb zehn");
+  await page.getByRole("button", { name: "Weiter zur Vorschau" }).click();
+  await expect(page.getByText("Bitte prüfe eine Angabe.")).toBeVisible();
+  await expect(page.getByText("Gib die Uhrzeit so ein: 21:30.")).toBeVisible();
+  await expect(page.getByLabel("Einlass ab")).toBeFocused();
+  await shot(page, "05f-mehr-fehler");
+  expect(field("modules is null")).toBe("t");
+
+  await page.getByLabel("Einlass ab").fill("21:30");
+  await page.getByRole("combobox", { name: "Altersregel" }).click();
+  await page.getByRole("option", { name: "Mindestalter" }).click();
+  await page.getByLabel("Mindestalter", { exact: true }).fill("18");
+  await page.getByRole("button", { name: "Weiter zur Vorschau" }).click();
+  await page.waitForURL(`**${base}/edit`, SLOW);
+  expect(field("modules->'entry_age'->>'doors_at'")).toBe("21:30");
+  expect(field("modules->'entry_age'->>'min_age'")).toBe("18");
+  expect(field("modules->'music'->>'precision'")).toBe("Dub Techno");
+  expect(field("modules->'music'->'genres'::text")).toContain("jazz");
+  expect(field("modules->'participants'->>'text'")).toContain("Karo — DJ-Set");
+  // Stored blocks are exactly the ones on the page.
+  expect(
+    field(
+      "(select string_agg(k, ',' order by k) from jsonb_object_keys(modules) k)",
+    ),
+  ).toBe("entry_age,music,participants");
 
   // 7. Preis und Zugang (EVT-04). P08: an online route without a link is a
   // named gap. A link must start with https:// (EVT-04n); nothing is added
@@ -278,10 +370,14 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   ).toBeVisible(SLOW);
   await expect(page.getByText("Der Ort mit Adresse fehlt.")).toHaveCount(0);
   await page.goto(`${base}/edit/price`);
-  await page.getByLabel("Link zum Ticketverkauf").fill("tickets.example.org/abend");
+  await page
+    .getByLabel("Link zum Ticketverkauf")
+    .fill("tickets.example.org/abend");
   await page.getByRole("button", { name: "Weiter zum Eventbild" }).click();
   await expect(
-    page.getByText("Das ist kein gültiger Link. Er muss mit https:// beginnen."),
+    page.getByText(
+      "Das ist kein gültiger Link. Er muss mit https:// beginnen.",
+    ),
   ).toBeVisible(SLOW);
   await shot(page, "05-link-fehler");
   await page
@@ -289,7 +385,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     .fill("https://tickets.example.org/abend");
   await page.getByRole("button", { name: "Weiter zum Eventbild" }).click();
   await page.waitForURL("**/edit/image", SLOW);
-  expect(field("access_routes::text")).toContain("https://tickets.example.org/abend");
+  expect(field("access_routes::text")).toContain(
+    "https://tickets.example.org/abend",
+  );
 
   // 8. P07: the price. Unanswered is a gap; "unknown" is its own state and is
   // never shown as "Frei".
@@ -332,7 +430,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await expect(
     page.getByRole("heading", { name: "Prüft euren öffentlichen Auftritt" }),
   ).toBeVisible(SLOW);
-  await expect(page.getByRole("heading", { name: "Eventbild fehlt" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Eventbild fehlt" }),
+  ).toBeVisible();
   await expect(page.getByText(/Pflichtlücke/)).toHaveCount(0);
   await shot(page, "08-check-bild-fehlt");
 
@@ -352,7 +452,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     buffer: PROFILE_PNG,
   });
   await expect(page.getByText("buehne.png")).toBeVisible(SLOW);
-  await page.getByLabel("Bildbeschreibung (freiwillig)").fill("Bühne bei Nacht");
+  await page
+    .getByLabel("Bildbeschreibung (freiwillig)")
+    .fill("Bühne bei Nacht");
   await page.getByRole("button", { name: "Weiter zur Atmosphäre" }).click();
   await page.waitForURL("**/edit/atmosphere", SLOW);
   expect(
@@ -390,6 +492,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     ["edit/price", "m2-preis"],
     ["edit/image", "m2-eventbild"],
     ["edit/atmosphere", "m2-atmosphaere"],
+    ["edit/more", "m2-mehr"],
     ["preview", "m3-check"],
   ]) {
     await page.goto(`${base}/${path}`);
@@ -413,6 +516,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     "edit/price",
     "edit/image",
     "edit/atmosphere",
+    "edit/more",
     "saved",
     "access",
     "atmosphere",

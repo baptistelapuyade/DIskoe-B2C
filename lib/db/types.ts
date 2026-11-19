@@ -73,6 +73,7 @@ export type Database = {
           postal_code: string | null
           price_amount_minor: number | null
           price_max_amount_minor: number | null
+          modules: Json | null
           price_fee_model: Database["public"]["Enums"]["price_fee_model"] | null
           price_model: Database["public"]["Enums"]["price_model"] | null
           price_state: Database["public"]["Enums"]["answer_state"]
@@ -111,6 +112,7 @@ export type Database = {
           postal_code?: string | null
           price_amount_minor?: number | null
           price_max_amount_minor?: number | null
+          modules?: Json | null
           price_fee_model?: Database["public"]["Enums"]["price_fee_model"] | null
           price_model?: Database["public"]["Enums"]["price_model"] | null
           price_state?: Database["public"]["Enums"]["answer_state"]
@@ -149,6 +151,7 @@ export type Database = {
           postal_code?: string | null
           price_amount_minor?: number | null
           price_max_amount_minor?: number | null
+          modules?: Json | null
           price_fee_model?: Database["public"]["Enums"]["price_fee_model"] | null
           price_model?: Database["public"]["Enums"]["price_model"] | null
           price_state?: Database["public"]["Enums"]["answer_state"]
