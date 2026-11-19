@@ -97,6 +97,16 @@ export function DetailsForm({
   // The server answer is about the values that were sent; once a field is
   // edited its server error is dropped.
   const [edited, setEdited] = useState<Set<string>>(new Set());
+  // A new server answer is about what was just sent: everything typed before
+  // it counts as sent, so its errors are shown (also for fields that were
+  // edited before the first save).
+  const [answered, setAnswered] = useState(state);
+
+  if (state !== answered) {
+    setAnswered(state);
+    setEdited(new Set());
+  }
+
   const serverError = <K extends keyof DetailsErrors>(field: K) =>
     edited.has(field) ? undefined : server[field];
 
