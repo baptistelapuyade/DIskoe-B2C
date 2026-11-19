@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Field, controlClassLg } from "@/components/ui/field";
@@ -67,6 +67,32 @@ export function DetailsForm({
   // Format errors found when a field was left; cleared when it is edited.
   const [blurred, setBlurred] = useState<Partial<Record<string, FieldErrorCode | "format">>>({});
 
+  // A format error shown when a field is left can move the submit button
+  // between the press and the release, and the click is then lost. While a
+  // submit button is being pressed, leaving a field shows no error; the server
+  // check that follows says what to fix.
+  const submitPress = useRef(false);
+
+  useEffect(() => {
+    const release = () => {
+      submitPress.current = false;
+    };
+
+    window.addEventListener("pointerup", release);
+    window.addEventListener("pointercancel", release);
+
+    return () => {
+      window.removeEventListener("pointerup", release);
+      window.removeEventListener("pointercancel", release);
+    };
+  }, []);
+
+  function leave(update: (previous: typeof blurred) => typeof blurred) {
+    if (!submitPress.current) {
+      setBlurred(update);
+    }
+  }
+
   const server: DetailsErrors = state.status === "invalid" ? state.errors : {};
   // The server answer is about the values that were sent; once a field is
   // edited its server error is dropped.
@@ -129,7 +155,16 @@ export function DetailsForm({
   const canAddRow = rows.length < LIMITS.extraLinks;
 
   return (
-    <form action={formAction} className="flex flex-col gap-10" noValidate>
+    <form
+      action={formAction}
+      className="flex flex-col gap-10"
+      noValidate
+      onPointerDownCapture={(event) => {
+        submitPress.current =
+          event.target instanceof Element &&
+          event.target.closest('button[type="submit"]') !== null;
+      }}
+    >
       {showSummary ? (
         <Notice
           tone="error"
@@ -211,7 +246,7 @@ export function DetailsForm({
                 value={values.slug}
                 onChange={(event) => setValue("slug", event.target.value)}
                 onBlur={() =>
-                  setBlurred((previous) => ({
+                  leave((previous) => ({
                     ...previous,
                     slug: values.slug.trim() !== "" && !parseSlug(values.slug).ok ? "format" : undefined,
                   }))
@@ -244,7 +279,7 @@ export function DetailsForm({
               value={values.officialUrl}
               onChange={(event) => setValue("officialUrl", event.target.value)}
               onBlur={() =>
-                setBlurred((previous) => ({ ...previous, officialUrl: linkError(values.officialUrl) }))
+                leave((previous) => ({ ...previous, officialUrl: linkError(values.officialUrl) }))
               }
               placeholder={msg("Z23.details.website.placeholder")}
               className={controlClassLg}
@@ -264,7 +299,7 @@ export function DetailsForm({
               value={values.instagram}
               onChange={(event) => setValue("instagram", event.target.value)}
               onBlur={() =>
-                setBlurred((previous) => ({
+                leave((previous) => ({
                   ...previous,
                   instagram: normalizeInstagram(values.instagram) === null ? "invalidInstagram" : undefined,
                 }))
@@ -300,7 +335,7 @@ export function DetailsForm({
                     setBlurred((previous) => ({ ...previous, [`extra-${row.key}`]: undefined }));
                   }}
                   onBlur={() =>
-                    setBlurred((previous) => ({ ...previous, [`extra-${row.key}`]: linkError(row.value) }))
+                    leave((previous) => ({ ...previous, [`extra-${row.key}`]: linkError(row.value) }))
                   }
                   placeholder={msg("Z23.details.website.placeholder")}
                   className={controlClassLg}

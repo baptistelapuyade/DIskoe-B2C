@@ -83,6 +83,7 @@ export default async function PreviewProfilePage({
           name={revision?.name ?? ""}
           shortIntro={revision?.shortIntro ?? ""}
           imageUrl={image?.signedUrl ?? null}
+          imageAlt={image?.altText ?? ""}
           crop={readCrop(use?.crop)}
         />
         {view.gaps.length > 0 ? (

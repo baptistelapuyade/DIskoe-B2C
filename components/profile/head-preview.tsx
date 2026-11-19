@@ -31,12 +31,15 @@ export function ProfileHeadPreview({
   name,
   shortIntro,
   imageUrl,
+  imageAlt = "",
   crop,
 }: {
   lang: Lang;
   name: string;
   shortIntro: string;
   imageUrl: string | null;
+  // The image description the organizer wrote (optional).
+  imageAlt?: string;
   crop: Crop | null;
 }) {
   return (
@@ -103,7 +106,7 @@ export function ProfileHeadPreview({
       <div className="flex flex-col items-center gap-6 text-center">
         {imageUrl ? (
           <div className="w-44 md:w-[258px]">
-            <CroppedSquare url={imageUrl} crop={crop} className="rounded-lg" />
+            <CroppedSquare url={imageUrl} alt={imageAlt} crop={crop} className="rounded-lg" />
           </div>
         ) : null}
         <h2 className="text-foreground text-[32px] leading-[34px] font-bold tracking-[-0.04em] break-words uppercase md:text-[80px] md:leading-[80px]">
