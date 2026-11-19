@@ -46,6 +46,8 @@ const eventRow: PublicEventRow = {
   price_state: "provided",
   price_model: "fixed",
   price_amount_minor: 1200,
+  price_max_amount_minor: null,
+  price_fee_model: null,
   currency: "EUR",
   access_routes: [
     { kind: "online_ticket", url: "https://tickets.example.test/x" },

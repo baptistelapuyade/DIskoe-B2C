@@ -4,9 +4,9 @@ import { useRef, useState, useTransition } from "react";
 
 import { LIMITS } from "@/lib/domain/profile-publication";
 
-import {
-  uploadProfileImage,
-  type UploadErrorCode,
+import type {
+  ImageActionResult,
+  UploadErrorCode,
 } from "@/app/(organizer)/organizer/profiles/[profileId]/actions";
 
 export const ACCEPT = "image/jpeg,image/png,image/webp";
@@ -36,8 +36,12 @@ function readSize(file: File): Promise<{ width: number; height: number } | null>
 }
 
 // Picks a file, checks it here (so a wrong file costs no upload) and sends it.
-// The server checks again. `onDone` runs after a successful upload.
-export function useImageUpload(profileId: string, onDone: () => void) {
+// The server checks again. `onDone` runs after a successful upload. `upload`
+// is the server action of the screen (profile picture or event image).
+export function useImageUpload(
+  upload: (data: FormData) => Promise<ImageActionResult>,
+  onDone: () => void,
+) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<UploadError | null>(null);
   const [busy, startTransition] = useTransition();
@@ -77,7 +81,7 @@ export function useImageUpload(profileId: string, onDone: () => void) {
     data.set("image", file);
 
     startTransition(async () => {
-      const result = await uploadProfileImage(profileId, data);
+      const result = await upload(data);
 
       if (result.status === "ok") {
         onDone();

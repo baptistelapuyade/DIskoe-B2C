@@ -221,7 +221,49 @@ describe("P07: price", () => {
   });
 
   it("rejects an unknown price model", () => {
-    expect(errorsOf({ priceModel: "donation" }).price).toBeDefined();
+    expect(errorsOf({ priceModel: "pay_what_you_want" }).price).toBeDefined();
+  });
+
+  it("stores the price forms of EVT-04 without inventing an amount", () => {
+    expect(parse({ priceModel: "donation" }).price).toEqual({
+      state: "provided",
+      value: { model: "donation" },
+    });
+    expect(parse({ priceModel: "from_price", priceAmount: "10" }).price).toEqual({
+      state: "provided",
+      value: { model: "from_price", amountMinor: 1000 },
+    });
+    expect(parse({ priceModel: "min_donation", priceAmount: "5" }).price).toEqual({
+      state: "provided",
+      value: { model: "min_donation", amountMinor: 500 },
+    });
+  });
+
+  it("stores a range as two amounts in cents, the end above the start", () => {
+    expect(
+      parse({ priceModel: "range", priceAmount: "8", priceAmountMax: "15,50" }).price,
+    ).toEqual({
+      state: "provided",
+      value: { model: "range", amountMinor: 800, maxAmountMinor: 1550 },
+    });
+    expect(
+      errorsOf({ priceModel: "range", priceAmount: "15", priceAmountMax: "15" }).price,
+    ).toBeDefined();
+    expect(
+      errorsOf({ priceModel: "range", priceAmount: "8", priceAmountMax: "" }).price,
+    ).toBeDefined();
+  });
+
+  it("keeps the fee answer only with a price that has an amount", () => {
+    expect(
+      parse({ priceModel: "fixed", priceAmount: "12", priceFees: "included" }).priceFees,
+    ).toBe("included");
+    expect(
+      parse({ priceModel: "fixed", priceAmount: "12", priceFees: "unknown" }).priceFees,
+    ).toBe("unknown");
+    expect(parse({ priceModel: "free", priceFees: "included" }).priceFees).toBeNull();
+    expect(parse({ priceModel: "unknown", priceFees: "included" }).priceFees).toBeNull();
+    expect(parse({ priceModel: "fixed", priceAmount: "12" }).priceFees).toBeNull();
   });
 });
 

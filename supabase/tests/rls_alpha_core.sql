@@ -630,6 +630,41 @@ select tests.expect_true(format($q$select not ('place' = any (app_private.event_
   'a complete place with a city is no gap');
 select tests.as_user(:'uid_a');
 
+-- Price forms (Slice 6): range, from-price, donation, minimum donation, and
+-- the fee answer. Unknown never becomes free, 0 or "no fees".
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"range","price_amount_minor":800,"price_max_amount_minor":1500}'),
+  'a price range holds a lower and a higher amount');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"range","price_amount_minor":1500,"price_max_amount_minor":1500}'),
+  '23514', 'a price range needs a higher upper end');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"range","price_amount_minor":800}'),
+  '23514', 'a price range needs the upper end');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"fixed","price_amount_minor":800,"price_max_amount_minor":1500}'),
+  '23514', 'a fixed price has no upper end');
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"from_price","price_amount_minor":1000}'),
+  'a from-price holds one amount');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"from_price"}'),
+  '23514', 'a from-price needs an amount');
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"min_donation","price_amount_minor":500}'),
+  'a minimum donation holds one amount');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"min_donation","price_amount_minor":0}'),
+  '23514', 'a minimum donation is never 0');
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"donation"}'),
+  'a donation needs no amount');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"donation","price_amount_minor":500}'),
+  '23514', 'a donation holds no amount');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"unknown","price_model":"unknown","price_max_amount_minor":1500}'),
+  '23514', 'an unknown price holds no upper end');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"unanswered","price_model":null,"price_max_amount_minor":1500}'),
+  '23514', 'an unanswered price holds no upper end');
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"fixed","price_amount_minor":1200,"price_fee_model":"included"}'),
+  'a money price can say that fees are included');
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"range","price_amount_minor":800,"price_max_amount_minor":1500,"price_fee_model":"unknown"}'),
+  'a money price can say that fees are unknown');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"provided","price_model":"free","price_fee_model":"included"}'),
+  '23514', 'a free price carries no fee answer');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"price_state":"unknown","price_model":"unknown","price_fee_model":"unknown"}'),
+  '23514', 'an unknown price carries no fee answer');
+
 -- Event image confirmation (Slice 4): the description is optional (Slice 5)
 -- and the database reserves events/<event id>/<use id>.<ext>. A path, not a file.
 select tests.expect_true(format('select tests.confirm_event_image_with_alt_is_null(%L, null)', :'e1'),
@@ -1541,10 +1576,10 @@ insert into tests.expected_col_grants values
   ('authenticated', 'events', 'INSERT', array['organizer_id','slug']),
   ('authenticated', 'events', 'UPDATE', array['draft_revision_id']),
   ('anon',          'events', 'SELECT', array['id','slug','organizer_id','published_revision_id','first_approved_revision_id','publication_state','public_status']),
-  ('authenticated', 'event_revisions', 'SELECT', array['id','event_id','revision_no','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id','confirmed_at','created_at']),
-  ('authenticated', 'event_revisions', 'INSERT', array['event_id','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id','created_by']),
-  ('authenticated', 'event_revisions', 'UPDATE', array['title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id']),
-  ('anon',          'event_revisions', 'SELECT', array['id','title','description','primary_format','start_at','timezone','end_state','end_at','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','currency','access_routes','atmosphere_tags','atmosphere_description','event_image_use_id','confirmed_at']),
+  ('authenticated', 'event_revisions', 'SELECT', array['id','event_id','revision_no','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id','confirmed_at','created_at']),
+  ('authenticated', 'event_revisions', 'INSERT', array['event_id','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id','created_by']),
+  ('authenticated', 'event_revisions', 'UPDATE', array['title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','event_image_use_id']),
+  ('anon',          'event_revisions', 'SELECT', array['id','title','description','primary_format','start_at','timezone','end_state','end_at','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_routes','atmosphere_tags','atmosphere_description','event_image_use_id','confirmed_at']),
   ('authenticated', 'media_assets', 'SELECT', array['id','uploader_id','private_object_path','mime_type','created_at','original_filename']),
   ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type','original_filename']),
   ('authenticated', 'media_assets', 'UPDATE', array['mime_type']),

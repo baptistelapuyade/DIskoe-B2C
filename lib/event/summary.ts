@@ -2,25 +2,48 @@
 // saved form values, never from guesses. An unanswered price is not "Frei".
 
 import { ACCESS_LABEL, type AccessKind } from "../domain/event-publication";
-import { priceLabel } from "../domain/money";
-import { parsePriceInput } from "../domain/money";
+import { parseAmount, priceLabel } from "../domain/money";
 import { formatLocalDate } from "../domain/time";
 import type { EventFormValues } from "./values";
 
 export function priceText(v: EventFormValues): string | null {
-  if (v.priceModel === "free") return priceLabel({ state: "provided", model: "free" });
+  if (v.priceModel === "free")
+    return priceLabel({ state: "provided", model: "free" });
+  if (v.priceModel === "donation") {
+    return priceLabel({ state: "provided", model: "donation" });
+  }
   if (v.priceModel === "unknown") return priceLabel({ state: "unknown" });
 
-  if (v.priceModel === "fixed") {
-    const parsed = parsePriceInput(v.priceAmount);
+  const fees = v.priceFees === "included" ? "included" : null;
+  const low = parseAmount(v.priceAmount);
 
-    return parsed.ok
+  if (!low.ok) return null;
+
+  if (v.priceModel === "range") {
+    const high = parseAmount(v.priceAmountMax);
+
+    return high.ok
       ? priceLabel({
           state: "provided",
-          model: "fixed",
-          amountMinor: parsed.amountMinor,
+          model: "range",
+          amountMinor: low.amountMinor,
+          maxAmountMinor: high.amountMinor,
+          fees,
         })
       : null;
+  }
+
+  if (
+    v.priceModel === "fixed" ||
+    v.priceModel === "from_price" ||
+    v.priceModel === "min_donation"
+  ) {
+    return priceLabel({
+      state: "provided",
+      model: v.priceModel,
+      amountMinor: low.amountMinor,
+      fees,
+    });
   }
 
   return null;
@@ -76,7 +99,9 @@ export function placeText(v: EventFormValues): string | null {
   if (v.placeName === "" && v.addressLine === "") return null;
 
   const town = [v.postalCode, v.city].filter((part) => part !== "").join(" ");
-  const address = [v.addressLine, town].filter((part) => part !== "").join(", ");
+  const address = [v.addressLine, town]
+    .filter((part) => part !== "")
+    .join(", ");
 
   return [v.placeName, address].filter((part) => part !== "").join(" · ");
 }

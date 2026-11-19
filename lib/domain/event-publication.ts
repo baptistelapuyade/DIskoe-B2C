@@ -12,7 +12,7 @@
 
 import { normalizeUrl } from "./profile-publication";
 import { noValue, provided, unanswered, type Answer } from "./answers";
-import { parsePriceInput } from "./money";
+import { parsePriceInput, type PriceFees } from "./money";
 import {
   isEndAfterStart,
   LOCAL_TIME_MESSAGE,
@@ -89,15 +89,52 @@ export const ACCESS_LABEL: Record<AccessKind, string> = {
   online_registration: "Online-Anmeldung",
 };
 
-export type AccessRoute = { kind: AccessKind; url: string | null };
+// Only an online ticket can be sold out (Figma EVT-04k). Not stated is not
+// "available": the page then says nothing about it.
+export type TicketAvailability = "available" | "sold_out";
+
+export const TICKET_AVAILABILITY: readonly TicketAvailability[] = [
+  "available",
+  "sold_out",
+];
+
+export type AccessRoute = {
+  kind: AccessKind;
+  url: string | null;
+  availability?: TicketAvailability;
+};
 
 export function isOnlineAccess(kind: AccessKind): boolean {
   return kind === "online_ticket" || kind === "online_registration";
 }
 
+export const PRICE_MODELS = [
+  "fixed",
+  "range",
+  "from_price",
+  "free",
+  "donation",
+  "min_donation",
+  "unknown",
+] as const;
+
+export type PriceModel = (typeof PRICE_MODELS)[number];
+
 export type PriceValue =
   | { model: "free" }
-  | { model: "fixed"; amountMinor: number };
+  | { model: "donation" }
+  | { model: "fixed" | "from_price" | "min_donation"; amountMinor: number }
+  | { model: "range"; amountMinor: number; maxAmountMinor: number };
+
+// The models that carry an amount (and so can carry the answer to fees).
+export function hasAmount(model: string): boolean {
+  return (
+    model === "fixed" ||
+    model === "range" ||
+    model === "from_price" ||
+    model === "min_donation"
+  );
+}
 
 export type PlaceValue = {
   name: string;
@@ -141,9 +178,15 @@ export type EventFormInput = {
   // "Preis noch nicht bekannt" (P07); an empty choice is not an answer.
   priceModel?: unknown;
   priceAmount?: unknown;
+  // Upper end of a price range.
+  priceAmountMax?: unknown;
+  // "", "included" or "unknown" (Pflichtgebühren).
+  priceFees?: unknown;
   accessKinds?: unknown;
   onlineTicketUrl?: unknown;
   onlineRegistrationUrl?: unknown;
+  // "", "available" or "sold_out".
+  onlineTicketAvailability?: unknown;
   atmosphereTags?: unknown;
   atmosphereDescription?: unknown;
 };
@@ -158,6 +201,8 @@ export type EventDraftValues = {
   // Set only while the place is not answered and something was typed.
   placePartial: PlaceDraft | null;
   price: Answer<PriceValue>;
+  // Only for a price with an amount; null = not answered.
+  priceFees: PriceFees | null;
   access: Answer<AccessRoute[]>;
   atmosphere: Answer<AtmosphereValue>;
 };
@@ -303,11 +348,11 @@ function parsePrice(
     return noValue("unknown");
   }
 
-  if (model === "free") {
-    return provided({ model: "free" });
+  if (model === "free" || model === "donation") {
+    return provided({ model });
   }
 
-  if (model === "fixed") {
+  if (model === "fixed" || model === "from_price" || model === "min_donation") {
     const amount = parsePriceInput(input.priceAmount);
 
     if (!amount.ok) {
@@ -315,11 +360,47 @@ function parsePrice(
       return unanswered();
     }
 
-    return provided({ model: "fixed", amountMinor: amount.amountMinor });
+    return provided({ model, amountMinor: amount.amountMinor });
+  }
+
+  if (model === "range") {
+    const low = parsePriceInput(input.priceAmount);
+    const high = parsePriceInput(input.priceAmountMax);
+
+    if (!low.ok || !high.ok) {
+      errors.price = !low.ok ? low.message : !high.ok ? high.message : "";
+      return unanswered();
+    }
+
+    if (high.amountMinor <= low.amountMinor) {
+      errors.price = "Das Ende der Spanne muss höher sein als der Anfang.";
+      return unanswered();
+    }
+
+    return provided({
+      model: "range",
+      amountMinor: low.amountMinor,
+      maxAmountMinor: high.amountMinor,
+    });
   }
 
   errors.price = "Bitte wähle eine der angebotenen Preisangaben.";
   return unanswered();
+}
+
+// The fee answer belongs to a price with an amount. For every other price it
+// is dropped, so that nothing stale stays behind a changed price form.
+function parsePriceFees(
+  input: EventFormInput,
+  price: Answer<PriceValue>,
+): PriceFees | null {
+  const fees = text(input.priceFees);
+
+  if (price.state !== "provided" || !hasAmount(price.value.model)) {
+    return null;
+  }
+
+  return fees === "included" || fees === "unknown" ? fees : null;
 }
 
 function parseAccess(
@@ -347,6 +428,15 @@ function parseAccess(
       continue;
     }
 
+    const availability =
+      accessKind === "online_ticket"
+        ? text(input.onlineTicketAvailability)
+        : "";
+    const extra: Pick<AccessRoute, "availability"> =
+      availability === "available" || availability === "sold_out"
+        ? { availability }
+        : {};
+
     const raw =
       accessKind === "online_ticket"
         ? text(input.onlineTicketUrl)
@@ -355,7 +445,7 @@ function parseAccess(
     // An empty link is kept as a draft and shows up as a gap (P08). A link
     // that is present but invalid is an error.
     if (raw === "") {
-      routes.push({ kind: accessKind, url: null });
+      routes.push({ kind: accessKind, url: null, ...extra });
       continue;
     }
 
@@ -367,7 +457,7 @@ function parseAccess(
       return unanswered();
     }
 
-    routes.push({ kind: accessKind, url });
+    routes.push({ kind: accessKind, url, ...extra });
   }
 
   return provided(routes);
@@ -463,6 +553,7 @@ export function parseEventInput(input: EventFormInput): ParsedEventInput {
   }
 
   const place = parsePlace(input, errors);
+  const price = parsePrice(input, errors);
   const value: EventDraftValues = {
     title,
     description,
@@ -471,7 +562,8 @@ export function parseEventInput(input: EventFormInput): ParsedEventInput {
     end,
     place: place.place,
     placePartial: place.partial,
-    price: parsePrice(input, errors),
+    price,
+    priceFees: parsePriceFees(input, price),
     access: parseAccess(input, errors),
     atmosphere: parseAtmosphere(input, errors),
   };

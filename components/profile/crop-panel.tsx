@@ -8,6 +8,7 @@ import { type Lang } from "@/lib/i18n";
 
 import {
   saveProfileCrop,
+  uploadProfileImage,
   type CropResult,
 } from "@/app/(organizer)/organizer/profiles/[profileId]/actions";
 
@@ -34,7 +35,7 @@ export function CropPanel({
   const router = useRouter();
   const [failed, setFailed] = useState(false);
   const [saving, startSaving] = useTransition();
-  const upload = useImageUpload(profileId, () => {
+  const upload = useImageUpload((data) => uploadProfileImage(profileId, data), () => {
     router.push(imageHref);
     router.refresh();
   });

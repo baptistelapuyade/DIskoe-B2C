@@ -10,7 +10,10 @@ import { Notice } from "@/components/ui/notice";
 import { LIMITS, type Crop } from "@/lib/domain/profile-publication";
 import { t, type Lang } from "@/lib/i18n";
 
-import type { AltState } from "@/app/(organizer)/organizer/profiles/[profileId]/actions";
+import {
+  uploadProfileImage,
+  type AltState,
+} from "@/app/(organizer)/organizer/profiles/[profileId]/actions";
 
 import { UploadNotice } from "./upload-notice";
 import { ACCEPT, useImageUpload } from "./use-image-upload";
@@ -48,7 +51,10 @@ export function ImagePanel({
   saveAction: AltAction;
 }) {
   const router = useRouter();
-  const upload = useImageUpload(profileId, () => router.refresh());
+  const upload = useImageUpload(
+    (data) => uploadProfileImage(profileId, data),
+    () => router.refresh(),
+  );
   const [alt, formAction, saving] = useActionState(saveAction, IDLE);
 
   const input = (

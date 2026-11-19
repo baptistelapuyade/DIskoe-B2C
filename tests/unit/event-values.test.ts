@@ -28,6 +28,8 @@ const base: EventRevisionRow = {
   price_state: "unanswered",
   price_model: null,
   price_amount_minor: null,
+  price_max_amount_minor: null,
+  price_fee_model: null,
   currency: "EUR",
   access_state: "unanswered",
   access_routes: [],

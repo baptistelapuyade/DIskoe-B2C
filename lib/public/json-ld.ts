@@ -52,12 +52,20 @@ export function eventJsonLd(event: PublicEvent, siteUrl: string): JsonLdEvent {
   }
 
   if (event.offer && event.status !== "cancelled" && !event.past) {
-    data.offers = {
-      "@type": "Offer",
-      price: event.offer.amount,
-      priceCurrency: event.offer.currency,
-      ...(event.ticketUrl ? { url: event.ticketUrl } : {}),
-    };
+    data.offers = event.offer.highAmount
+      ? {
+          "@type": "AggregateOffer",
+          lowPrice: event.offer.amount,
+          highPrice: event.offer.highAmount,
+          priceCurrency: event.offer.currency,
+          ...(event.ticketUrl ? { url: event.ticketUrl } : {}),
+        }
+      : {
+          "@type": "Offer",
+          price: event.offer.amount,
+          priceCurrency: event.offer.currency,
+          ...(event.ticketUrl ? { url: event.ticketUrl } : {}),
+        };
   }
 
   return data;

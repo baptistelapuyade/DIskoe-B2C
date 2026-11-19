@@ -126,7 +126,7 @@ export default async function EventPreviewPage({
                 {openGaps.length > 0 ? "Zurück zum Editor" : "Weiter bearbeiten"}
               </LinkButton>
               {openGaps.length === 0 && imageMissing ? (
-                <LinkButton href={`${base}/image`} variant="primary">
+                <LinkButton href={`${base}/edit/image`} variant="primary">
                   Eventbild ergänzen
                 </LinkButton>
               ) : status === "ready" && mode === "first" && profileReady ? (
