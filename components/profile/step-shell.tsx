@@ -16,6 +16,7 @@ export function StepShell({
   title,
   lead,
   wide = false,
+  current = 0,
   children,
 }: {
   lang: Lang;
@@ -25,6 +26,8 @@ export function StepShell({
   lead?: string;
   // The preview needs the full container width.
   wide?: boolean;
+  // 0-based step of the five-step progress bar: 0 profile, 1 first event.
+  current?: number;
   children: ReactNode;
 }) {
   const labels = [
@@ -53,7 +56,7 @@ export function StepShell({
             <ProgressSteps
               lang={lang}
               labels={labels}
-              current={0}
+              current={current}
               label={t(lang, "Z22.progress.label")}
             />
           </div>
