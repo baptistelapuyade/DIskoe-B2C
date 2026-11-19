@@ -106,6 +106,17 @@ export type PlaceValue = {
   city: string | null;
 };
 
+// What was typed for a place that is not complete yet ("Später weitermachen"
+// in the place step). It is kept in the draft so that nothing typed is lost,
+// but it is not an answer: the place stays a gap until name, street and city
+// are there.
+export type PlaceDraft = {
+  name: string;
+  addressLine: string;
+  postalCode: string;
+  city: string;
+};
+
 export type AtmosphereValue = {
   tags: string[];
   description: string | null;
@@ -144,6 +155,8 @@ export type EventDraftValues = {
   start: Answer<string>;
   end: Answer<string>;
   place: Answer<PlaceValue>;
+  // Set only while the place is not answered and something was typed.
+  placePartial: PlaceDraft | null;
   price: Answer<PriceValue>;
   access: Answer<AccessRoute[]>;
   atmosphere: Answer<AtmosphereValue>;
@@ -235,22 +248,15 @@ function parseWhen(
 function parsePlace(
   input: EventFormInput,
   errors: EventFieldErrors,
-): Answer<PlaceValue> {
+): { place: Answer<PlaceValue>; partial: PlaceDraft | null } {
   const name = text(input.placeName);
   const addressLine = text(input.addressLine);
   const postalCode = text(input.postalCode);
   const city = text(input.city);
+  const none = { place: unanswered<PlaceValue>(), partial: null };
 
   if (name === "" && addressLine === "" && postalCode === "" && city === "") {
-    return unanswered();
-  }
-
-  // The database stores a place only with name and address. A half-filled
-  // place cannot be kept, so it is reported instead of silently dropped.
-  if (name === "" || addressLine === "") {
-    errors.place =
-      "Bitte gib den Namen des Orts und die Adresse an, oder lass alle Ortsangaben leer.";
-    return unanswered();
+    return none;
   }
 
   if (
@@ -260,15 +266,27 @@ function parsePlace(
     city.length > EVENT_LIMITS.city
   ) {
     errors.place = "Eine der Ortsangaben ist zu lang.";
-    return unanswered();
+    return none;
   }
 
-  return provided({
-    name,
-    addressLine,
-    postalCode: postalCode === "" ? null : postalCode,
-    city: city === "" ? null : city,
-  });
+  // A place is an answer only with name, street and city. What is typed
+  // before that is kept as it is, and the place stays a gap.
+  if (name === "" || addressLine === "" || city === "") {
+    return {
+      place: unanswered<PlaceValue>(),
+      partial: { name, addressLine, postalCode, city },
+    };
+  }
+
+  return {
+    place: provided({
+      name,
+      addressLine,
+      postalCode: postalCode === "" ? null : postalCode,
+      city,
+    }),
+    partial: null,
+  };
 }
 
 function parsePrice(
@@ -444,13 +462,15 @@ export function parseEventInput(input: EventFormInput): ParsedEventInput {
     errors.end = "Das Ende muss nach dem Beginn liegen.";
   }
 
+  const place = parsePlace(input, errors);
   const value: EventDraftValues = {
     title,
     description,
     format,
     start,
     end,
-    place: parsePlace(input, errors),
+    place: place.place,
+    placePartial: place.partial,
     price: parsePrice(input, errors),
     access: parseAccess(input, errors),
     atmosphere: parseAtmosphere(input, errors),
@@ -486,7 +506,7 @@ const GAP_TEXT: Record<EventGapCode, { field: string; message: string }> = {
   start: { field: "start", message: "Datum und Uhrzeit des Beginns fehlen." },
   place: {
     field: "place",
-    message: "Der Ort mit Adresse fehlt.",
+    message: "Der Ort mit Adresse und Stadt fehlt.",
   },
   price: {
     field: "price",
@@ -539,7 +559,9 @@ export function eventGapCodes(
   if (values.description.state !== "provided") gaps.push("description");
   if (values.format.state !== "provided") gaps.push("primary_format");
   if (values.start.state !== "provided") gaps.push("start");
-  if (values.place.state !== "provided") gaps.push("place");
+  if (values.place.state !== "provided" || !values.place.value.city) {
+    gaps.push("place");
+  }
   // A deliberately confirmed "unknown" price is a valid answer (P07).
   if (values.price.state !== "provided" && values.price.state !== "unknown") {
     gaps.push("price");

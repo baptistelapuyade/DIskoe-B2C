@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { requireOwner } from "@/lib/auth/server";
 import {
   parseEventInput,
   type EventFieldErrors,
@@ -20,7 +19,6 @@ import { describeEventGaps } from "@/lib/domain/event-publication";
 import { copyPublishedEventImage } from "@/lib/event/publish";
 import { loadProfileState } from "@/lib/profile/draft";
 import {
-  createEventDraft,
   ensureEditableEventDraft,
   loadEventRevision,
 } from "@/lib/event/draft";
@@ -56,16 +54,7 @@ function listOf(formData: FormData, name: string): string[] {
   return formData.getAll(name).filter((v): v is string => typeof v === "string");
 }
 
-export type EventSection = "basics" | "access" | "atmosphere";
-
-// "2026-10-23T22:00" (one date-time control, as in Figma) to date and time.
-function splitLocal(raw: FormDataEntryValue | null): {
-  date: string;
-  time: string;
-} {
-  const [date = "", time = ""] = textOf(raw).split("T");
-  return { date, time: time.slice(0, 5) };
-}
+export type EventSection = "access" | "atmosphere";
 
 // A section page sends only its own fields. They are laid over the saved
 // draft, so that saving one page never clears the answers of another.
@@ -74,27 +63,6 @@ function overlay(
   current: EventFormValues,
   formData: FormData,
 ): EventFormValues {
-  if (section === "basics") {
-    const start = splitLocal(formData.get("start"));
-    const end = splitLocal(formData.get("end"));
-
-    return {
-      ...current,
-      title: textOf(formData.get("title")),
-      description: textOf(formData.get("description")),
-      format: textOf(formData.get("format")),
-      startDate: start.date,
-      startTime: start.time,
-      endDate: end.date,
-      endTime: end.time,
-      endUnknown: formData.get("endUnknown") === "on",
-      placeName: textOf(formData.get("placeName")),
-      addressLine: textOf(formData.get("addressLine")),
-      postalCode: textOf(formData.get("postalCode")),
-      city: textOf(formData.get("city")),
-    };
-  }
-
   if (section === "access") {
     return {
       ...current,
@@ -118,51 +86,6 @@ function inputFromValues(v: EventFormValues): EventFormInput {
     ...v,
     endUnknown: v.endUnknown ? "on" : null,
   };
-}
-
-// Creates a private event draft with a title and sends the owner to the editor.
-export async function createEvent(
-  _previous: EventFormState,
-  formData: FormData,
-): Promise<EventFormState> {
-  const access = await requireOwner("/organizer/events/new");
-  const profileId = textOf(formData.get("profileId"));
-
-  if (!access.profiles.some((profile) => profile.id === profileId)) {
-    return { ok: false, message: GENERIC_ERROR };
-  }
-
-  const parsed = parseEventInput({ title: formData.get("title") });
-
-  if (!parsed.ok) {
-    return { ok: false, errors: parsed.errors };
-  }
-
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const userId = userData.user?.id;
-  let eventId: string | null = null;
-
-  if (userId) {
-    try {
-      eventId = await createEventDraft(
-        supabase,
-        userId,
-        profileId,
-        parsed.value,
-        textOf(formData.get("title")).trim(),
-      );
-    } catch {
-      eventId = null;
-    }
-  }
-
-  if (!eventId) {
-    return { ok: false, message: GENERIC_ERROR };
-  }
-
-  revalidatePath("/organizer");
-  redirect(editPath(eventId));
 }
 
 export async function saveEventSection(

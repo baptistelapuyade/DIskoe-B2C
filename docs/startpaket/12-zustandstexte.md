@@ -339,6 +339,97 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z23.preview.followNote | Wir bündeln neue Events in einer Mail. In jeder Mail steht ein Link zum Abmelden. | We bundle new events in one email. Every email has an unsubscribe link. | Mikrotext am Profilkopf der Vorschau (Wortlaut des Frames) |
 | Z23.preview.static | Das ist nur eine Vorschau. Die Schaltflächen funktionieren erst auf der öffentlichen Seite. | This is only a preview. The buttons only work on the public page. | Hinweis für Screenreader am Profilkopf der Vorschau |
 
+### Event anlegen: Grundlagen, Datum, Ort (Z24, Welle 1 Block 2b, Slice 5, Stand 19.11.2026)
+**Status:** Der deutsche Wortlaut ist aus den Frames `EVT-01` bis `EVT-03`, `EVT-08` und `EVT-09` bis `09c` übernommen; Texte ohne Frame sind als „kein Frame“ markiert. Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Die Titel des Hinweises („Bitte prüfe zwei Angaben.“) kommen aus `Z23.check.title.*`.
+
+| ID | Deutsch | English | Verwendung |
+|---|---|---|---|
+| Z24.step.basics.eyebrow | Grundlagen · Teil 1 von 7 | Basics · Part 1 of 7 | EVT-01a bis d, Eyebrow |
+| Z24.step.time.eyebrow | Datum und Uhrzeit · Teil 2 von 7 | Date and time · Part 2 of 7 | EVT-02a bis d, Eyebrow |
+| Z24.step.place.eyebrow | Ort · Teil 3 von 7 | Place · Part 3 of 7 | EVT-03a bis c, Eyebrow |
+| Z24.basics.title | Worum geht es? | What is it about? | EVT-01a bis d |
+| Z24.basics.lead | Starte mit Titel, Format und einer kurzen Beschreibung. Alles bleibt privat, bis du es einreichst. | Start with a title, a format and a short description. Everything stays private until you submit it. | EVT-01a bis c |
+| Z24.basics.title.label | Titel | Title | Feldbeschriftung |
+| Z24.basics.title.placeholder | z. B. Zwischen den Boxen | e.g. Between the Boxes | Platzhalter |
+| Z24.basics.title.hint | So heißt dein Event auf der Seite. | This is the name of your event on the page. | Hilfetext |
+| Z24.basics.title.missing | Gib deinem Event einen Titel. | Give your event a title. | EVT-01b, Fehlertext am Feld |
+| Z24.basics.format.label | Format | Format | Feldbeschriftung |
+| Z24.basics.format.placeholder | Format wählen | Choose a format | Platzhalter im Auswahlfeld |
+| Z24.basics.format.hint | Wähle das Format, das am besten passt. | Choose the format that fits best. | Hilfetext |
+| Z24.basics.format.missing | Wähle ein Format. Passt keins, melde dich bei uns. | Choose a format. If none fits, get in touch. | EVT-01b; es gibt kein „Sonstiges“ (P50) |
+| Z24.basics.format.invalid | Wähle eines der angebotenen Formate. | Choose one of the formats offered. | Fehlertext am Feld (kein Frame) |
+| Z24.basics.description.label | Beschreibung | Description | Feldbeschriftung |
+| Z24.basics.description.placeholder | Worum geht es an dem Abend? | What is the evening about? | Platzhalter, aus EVT-01d |
+| Z24.basics.description.hint | Bis zu {max} Zeichen. | Up to {max} characters. | Hilfetext (Frame: „Bis zu 2000 Zeichen.“) |
+| Z24.basics.next | Weiter zu Datum und Uhrzeit | Continue to date and time | Hauptaktion EVT-01; speichert zuerst |
+| Z24.format.concert | Konzert | Concert | Format im Auswahlfeld |
+| Z24.format.djSet | DJ-Set | DJ set | Format im Auswahlfeld |
+| Z24.format.clubNight | Party/Club | Party/Club night | Format im Auswahlfeld |
+| Z24.format.listeningSession | Listening-Session | Listening session | Format im Auswahlfeld |
+| Z24.format.opening | Vernissage | Opening | Format im Auswahlfeld |
+| Z24.format.exhibition | Ausstellung | Exhibition | Format im Auswahlfeld |
+| Z24.format.screening | Film | Film screening | Format im Auswahlfeld |
+| Z24.time.title | Wann findet es statt? | When does it take place? | EVT-02a bis d |
+| Z24.time.lead | Die Zeiten gelten in der Ortszeit des Events (Berlin). | Times are in the event's local time (Berlin). | EVT-02a bis c |
+| Z24.time.start.title | Beginn | Start | Zwischenüberschrift |
+| Z24.time.end.title | Ende | End | Zwischenüberschrift |
+| Z24.time.end.hint | Freiwillig. Ohne Ende zeigen wir nur den Beginn. | Optional. Without an end we show only the start. | unter „Ende“ |
+| Z24.time.date.label | Datum | Date | Feldbeschriftung |
+| Z24.time.date.placeholder | TT.MM.JJJJ | DD/MM/YYYY | Platzhalter; Deutsch 20.11.2026, Englisch 20/11/2026 (Vorschlag, Tag zuerst wie in Berlin) |
+| Z24.time.date.open | Kalender öffnen | Open calendar | Beschriftung des Kalender-Buttons für Screenreader (kein Frame) |
+| Z24.time.time.label | Uhrzeit | Time | Feldbeschriftung |
+| Z24.time.end.nextDay | Ende am Folgetag | Ends the next day | EVT-02c, Hilfetext unter dem Enddatum, wenn das Ende einen Tag nach dem Beginn liegt |
+| Z24.time.end.unknown | Das Ende steht noch nicht fest | The end isn't fixed yet | Auswahlfeld; angekreuzt sind die Endfelder leer und gesperrt (Vorschlag, kein Frame) |
+| Z24.time.end.beforeStart | Das Ende liegt vor dem Beginn. | The end is before the start. | EVT-02b, Fehlertext am Enddatum und Zeile im Hinweis |
+| Z24.time.date.missing | Gib das Datum an. | Enter the date. | Fehlertext am Feld (kein Frame): Uhrzeit ohne Datum |
+| Z24.time.time.missing | Gib die Uhrzeit an. | Enter the time. | Fehlertext am Feld (kein Frame): Datum ohne Uhrzeit |
+| Z24.time.date.invalid | Das ist kein gültiges Datum. Schreibe zum Beispiel 20.11.2026. | That isn't a valid date. Write something like 20/11/2026. | Fehlertext am Feld (kein Frame) |
+| Z24.time.time.invalid | Das ist keine gültige Uhrzeit. Schreibe zum Beispiel 22:00. | That isn't a valid time. Write something like 22:00. | Fehlertext am Feld (kein Frame) |
+| Z24.time.time.nonexistent | Diese Uhrzeit gibt es wegen der Zeitumstellung nicht. Wähle eine andere. | This time doesn't exist because of the clock change. Choose another one. | Fehlertext am Feld (kein Frame) |
+| Z24.time.time.ambiguous | Diese Uhrzeit gibt es wegen der Zeitumstellung zweimal. Wähle eine andere. | This time happens twice because of the clock change. Choose another one. | Fehlertext am Feld (kein Frame) |
+| Z24.time.next | Weiter zum Ort | Continue to place | Hauptaktion EVT-02; speichert zuerst |
+| Z24.place.title | Wo findet es statt? | Where does it take place? | EVT-03a bis c |
+| Z24.place.lead | Gib den Ort so an, wie Gäste ihn finden. | Give the place the way guests find it. | EVT-03a bis c |
+| Z24.place.name.label | Name des Ortes | Name of the place | Feldbeschriftung |
+| Z24.place.name.placeholder | Club Nebenraum | Club Nebenraum | Platzhalter, aus EVT-03c |
+| Z24.place.name.hint | Zum Beispiel Club, Galerie oder Hinterhof. | For example club, gallery or backyard. | Hilfetext |
+| Z24.place.name.missing | Gib den Namen des Ortes an. | Give the name of the place. | Fehlertext am Feld (kein Frame) |
+| Z24.place.street.label | Straße und Hausnummer | Street and number | Feldbeschriftung |
+| Z24.place.street.placeholder | z. B. Hinterhof 12 | e.g. Hinterhof 12 | Platzhalter, aus EVT-03b |
+| Z24.place.street.missing | Gib die Straße mit Hausnummer an, damit Gäste dich finden. | Give the street with the number so guests can find you. | EVT-03b, Fehlertext am Feld |
+| Z24.place.postalCode.label | Postleitzahl | Postal code | Feldbeschriftung |
+| Z24.place.postalCode.placeholder | 10115 | 10115 | Platzhalter, aus EVT-03c; freiwillig |
+| Z24.place.city.label | Stadt | City | Feldbeschriftung |
+| Z24.place.city.placeholder | z. B. Berlin | e.g. Berlin | Platzhalter, aus EVT-03b |
+| Z24.place.city.missing | Gib die Stadt an. | Give the city. | EVT-03b, Fehlertext am Feld |
+| Z24.place.next | Weiter zu Preis und Zugang | Continue to price and access | Hauptaktion EVT-03; speichert zuerst |
+| Z24.err.tooLong | Das ist zu lang. Höchstens {max} Zeichen. | That's too long. {max} characters at most. | Fehlertext am Feld (kein Frame): Titel, Beschreibung und Ortsangaben |
+| Z24.check.line.missing.one | Das markierte Feld fehlt noch. | The marked field is still missing. | Z01; Titel: Z23.check.title.one |
+| Z24.check.line.missing.many | Die markierten Felder fehlen noch. | The marked fields are still missing. | EVT-01b, 03b; Titel: Z23.check.title.two und many |
+| Z24.later | Später weitermachen | Continue later | zweite Aktion aller Schritte; speichert zuerst, dann EVT-08 |
+| Z24.retry | Noch einmal versuchen | Try again | Hauptaktion nach einem Fehler, Z03 |
+| Z24.saving.title | Wir speichern deinen Entwurf … | We're saving your draft … | EVT-09a, Z02 |
+| Z24.saving.line | Das dauert einen Moment. Bleib kurz auf dieser Seite. | This takes a moment. Stay on this page for a moment. | EVT-09a (im Katalog bisher: „Bitte lade die Seite nicht neu.“, der Frame gilt) |
+| Z24.saving.button | Speichere … | Saving … | EVT-09a, Button während des Speicherns, gesperrt |
+| Z24.failed.title | Das Speichern hat nicht geklappt. | Saving didn't work. | EVT-09, Z03 |
+| Z24.failed.line | Deine Eingaben sind noch da. Versuche es noch einmal. Klappt es weiter nicht, schreib uns. | What you entered is still here. Try again. If it still doesn't work, write to us. | EVT-09, Sonderfall Z03b |
+| Z24.offline.title | Keine Verbindung. | No connection. | EVT-09b |
+| Z24.offline.line | Deine Eingaben sind noch da. Sobald du wieder online bist, versuche es noch einmal. | What you entered is still here. Once you're back online, try again. | EVT-09b |
+| Z24.leave.eyebrow | Nicht gesichert | Not saved | EVT-09c |
+| Z24.leave.title | Dein Entwurf ist nicht gesichert | Your draft isn't saved | EVT-09c |
+| Z24.leave.lead | Das Speichern hat nicht geklappt. Wenn du jetzt gehst, behalten wir deine Eingaben dieses Schritts in diesem Browser, bis du weitermachst oder dich abmeldest. | Saving didn't work. If you leave now, we keep what you entered in this step in this browser until you continue or sign out. | EVT-09c |
+| Z24.leave.notice.title | Nur in diesem Browser behalten. | Kept in this browser only. | EVT-09c |
+| Z24.leave.notice.line | Auf anderen Geräten fehlt dieser Schritt noch. | This step is still missing on other devices. | EVT-09c |
+| Z24.leave.back | Zurück und noch einmal versuchen | Go back and try again | EVT-09c, Hauptaktion |
+| Z24.leave.leave | Verlassen | Leave | EVT-09c (die Flow-Karte nennt „Trotzdem verlassen“, der Frame gilt) |
+| Z24.saved.eyebrow | Entwurf gesichert | Draft saved | EVT-08 |
+| Z24.saved.title | Dein Entwurf ist gesichert | Your draft is saved | EVT-08 |
+| Z24.saved.lead | Dein Event bleibt privat, bis du es einreichst. Du kannst jederzeit dort weitermachen, wo du aufgehört hast. | Your event stays private until you submit it. You can pick up where you left off at any time. | EVT-08 |
+| Z24.saved.notice.title | Gespeichert. | Saved. | EVT-08, Z11 |
+| Z24.saved.notice.line | Alle bisherigen Angaben sind in deinem Entwurf. | Everything you've entered so far is in your draft. | EVT-08 |
+| Z24.saved.toDraft | Zum Entwurf | To the draft | EVT-08, Hauptaktion: zum ersten Schritt, der noch nicht vollständig ist |
+| Z24.saved.toHome | Zur Startseite | To the start page | EVT-08 |
+
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.
 

@@ -1,4 +1,5 @@
-import { EventBasicsForm } from "@/components/event/basics-form";
+import { redirect } from "next/navigation";
+
 import { LinkButton } from "@/components/ui/button";
 import {
   ContextCard,
@@ -7,10 +8,12 @@ import {
   SectionHeading,
   Workspace,
 } from "@/components/ui/page-shell";
+import { firstOpenStep } from "@/lib/domain/event-steps";
 import { loadOwnerEventView } from "@/lib/event/load";
 import { atmosphereSummary, priceAccessSummary } from "@/lib/event/summary";
 
-import { saveEventSection } from "../../actions";
+import { t } from "@/lib/i18n";
+import { getLang } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +31,24 @@ export default async function EditEventPage({
     `/organizer/events/${eventId}/edit`,
   );
   const base = `/organizer/events/${eventId}`;
+  const { form } = view;
+  const progress = {
+    title: form.title.trim() !== "",
+    format: form.format !== "",
+    start: form.startDate !== "" && form.startTime !== "",
+    place:
+      form.placeName.trim() !== "" &&
+      form.addressLine.trim() !== "" &&
+      form.city.trim() !== "",
+  };
+
+  // The first three steps have their own screens. Until all three are
+  // complete, "edit" leads to the first one that is not.
+  if (!(progress.title && progress.format && progress.start && progress.place)) {
+    redirect(`${base}/edit/${firstOpenStep(progress)}`);
+  }
+
+  const lang = await getLang();
   const priceAccess = priceAccessSummary(view.form);
   const atmosphere = atmosphereSummary(view.form);
 
@@ -41,11 +62,17 @@ export default async function EditEventPage({
       <Workspace
         main={
           <>
-            <SectionHeading>Grundlagen</SectionHeading>
-            <EventBasicsForm
-              action={saveEventSection.bind(null, eventId, "basics")}
-              values={view.form}
-            />
+            <div className="flex flex-wrap gap-4">
+              <LinkButton href={`${base}/edit/basics`} variant="secondary">
+                {t(lang, "Z24.step.basics.eyebrow")}
+              </LinkButton>
+              <LinkButton href={`${base}/edit/time`} variant="secondary">
+                {t(lang, "Z24.step.time.eyebrow")}
+              </LinkButton>
+              <LinkButton href={`${base}/edit/place`} variant="secondary">
+                {t(lang, "Z24.step.place.eyebrow")}
+              </LinkButton>
+            </div>
 
             <div className="mt-4 flex flex-col gap-5">
               <SectionHeading>Preis und Zugang</SectionHeading>

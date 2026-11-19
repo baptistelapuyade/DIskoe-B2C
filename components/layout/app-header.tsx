@@ -1,19 +1,9 @@
 import Link from "next/link";
 
-import { buttonClass } from "@/components/ui/button";
-import { t, type Lang } from "@/lib/i18n";
+import type { Lang } from "@/lib/i18n";
 
 import { LanguageSwitch } from "./language-switch";
-
-export function SignOutForm({ lang }: { lang: Lang }) {
-  return (
-    <form action="/auth/signout" method="post">
-      <button type="submit" className={buttonClass("ghostLg")}>
-        {t(lang, "Z20.nav.signOut")}
-      </button>
-    </form>
-  );
-}
+import { SignOutForm } from "./sign-out-form";
 
 // DISKOE / App Header (Figma 2980:8182). Wordmark left; language switch and,
 // when signed in, "Sign out" right. Desktop 76 px high, mobile 60 px.

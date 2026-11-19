@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 
 import type { Lang } from "@/lib/i18n";
 
-import { AppHeader, SignOutForm } from "./app-header";
+import { AppHeader } from "./app-header";
+import { SignOutForm } from "./sign-out-form";
 import { Footer } from "./footer";
 import { LanguageSwitch } from "./language-switch";
 import { WegBand, WegPanel, type WegStep } from "./weg-panel";

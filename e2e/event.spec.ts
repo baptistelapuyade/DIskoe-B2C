@@ -5,7 +5,7 @@ import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
 import { germanContext } from "./support/language";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the private
-// event draft (Slice 4) through the Figma screens: Eventstart, Editor,
+// event draft (Slice 4) through the Figma screens: Event steps (basics, date and time, place), editor,
 // Atmosphäre, Preis und Zugang, Veröffentlichungscheck and Eventbild. Saving an
 // incomplete draft, concrete gaps, price unknown, DST, atmosphere limit, online
 // access link, event image. Publishing is Slice 5.
@@ -92,101 +92,158 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await page.waitForURL("**/login", SLOW);
   await signInWithCode(page, emails.ownerA);
 
-  // 1. Eventstart: only "Manuell eingeben" exists; it opens an empty draft.
-  // The start page leads a new profile through its details first (ORG-103a),
-  // so the event start is opened directly.
+  // 1. Step 1 "Worum geht es?" (EVT-01a). No draft exists until the first
+  // save. The start page leads a new profile through its details first
+  // (ORG-103a), so the step is opened directly.
   await expect(page.getByRole("heading", { name: "Dein Profil" })).toBeVisible(
     SLOW,
   );
   await page.goto(`/organizer/events/new?profile=${profileA}`);
   await expect(
-    page.getByRole("heading", { name: "Was steht als Nächstes an?" }),
+    page.getByRole("heading", { name: "Worum geht es?", level: 1 }),
   ).toBeVisible(SLOW);
-  await shot(page, "01-eventstart");
-  await page.getByRole("button", { name: "Manuell eingeben" }).click();
-  await page.waitForURL("**/organizer/events/*/edit", SLOW);
+  await shot(page, "01-grundlagen");
+
+  // "Weiter" names what is missing and saves nothing (EVT-01b).
+  await page.getByRole("button", { name: "Weiter zu Datum und Uhrzeit" }).click();
+  await expect(page.getByText("Gib deinem Event einen Titel.")).toBeVisible();
+  await expect(
+    page.getByText("Wähle ein Format. Passt keins, melde dich bei uns."),
+  ).toBeVisible();
+  await expect(page.getByLabel("Titel", { exact: true })).toBeFocused();
+  await shot(page, "02-grundlagen-fehler");
+  expect(
+    sql(`select count(*) from public.events where organizer_id = '${profileA}'`),
+  ).toBe("0");
+
+  await page.getByLabel("Titel", { exact: true }).fill(TITLE);
+  await page.getByRole("combobox", { name: "Format" }).click();
+  await page.getByRole("option", { name: "Konzert" }).click();
+  await page.getByLabel("Beschreibung", { exact: true }).fill("Live im Keller.");
+  await page.getByRole("button", { name: "Weiter zu Datum und Uhrzeit" }).click();
+  await page.waitForURL("**/organizer/events/*/edit/time", SLOW);
   const eventId = page.url().split("/events/")[1].split("/")[0];
   const base = `/organizer/events/${eventId}`;
-  await expect(
-    page.getByRole("heading", { name: "Neues Event", level: 1 }),
-  ).toBeVisible(SLOW);
 
   const field = (column: string) =>
     sql(
       `select ${column} from public.event_revisions r join public.events e on e.draft_revision_id = r.id where e.id = '${eventId}'`,
     );
-  expect(field("title_state")).toBe("unanswered");
+  expect(field("title_state")).toBe("provided");
+  expect(field("format_state")).toBe("provided");
+  expect(field("start_state")).toBe("unanswered");
   expect(field("price_state")).toBe("unanswered");
-  await shot(page, "02-editor-leer");
 
-  // 2. P01/P05: an empty draft exists; the check names every gap, the image too.
-  await page.getByRole("link", { name: "Zur Vorschau" }).click();
+  // 2. P01/P05: the check names every gap that is still open.
+  await page.goto(`${base}/preview`);
   await expect(
     page.getByRole("heading", { name: "Noch Angaben offen" }),
   ).toBeVisible(SLOW);
-  await expect(page.getByText("Der Titel fehlt.")).toBeVisible();
-  await expect(page.getByText("Die Beschreibung fehlt.")).toBeVisible();
-  await expect(page.getByText("Der Ort mit Adresse fehlt.")).toBeVisible();
+  await expect(
+    page.getByText("Datum und Uhrzeit des Beginns fehlen."),
+  ).toBeVisible();
+  await expect(page.getByText("Der Ort mit Adresse und Stadt fehlt.")).toBeVisible();
   await expect(page.getByText(/^Eventbild fehlt\. Speichern/)).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Zur Prüfung einreichen" }),
   ).toBeDisabled();
   await shot(page, "03-check-luecken");
-  await page.getByRole("link", { name: "Zurück zum Editor" }).click();
 
-  // 3. Title, format, description and a night event (P11): UTC instants.
-  await page.getByLabel("Titel", { exact: true }).fill(TITLE);
-  await page.getByLabel("Hauptformat").selectOption("concert");
-  await page.getByLabel("Beschreibung", { exact: true }).fill("Live im Keller.");
-  await page.getByLabel("Beginn", { exact: true }).fill("2026-10-31T23:00");
-  await page.getByLabel("Ende", { exact: true }).fill("2026-11-01T04:00");
-  await save(page, "Grundlagen speichern");
-  await expect(
-    page.getByRole("heading", { name: TITLE, level: 1 }),
-  ).toBeVisible(SLOW);
+  // 3. Step 2 "Wann findet es statt?" (EVT-02a): a night event (P11), UTC
+  // instants. Date typed, time as time.
+  await page.goto(`${base}/edit`);
+  await page.waitForURL("**/edit/time", SLOW);
+  await shot(page, "04-datum-leer");
+  await page.locator("#startDate").fill("31.10.2026");
+  await page.locator("#startTime").fill("23:00");
+  await page.locator("#endDate").fill("01.11.2026");
+  await page.locator("#endTime").fill("04:00");
+  await expect(page.getByText("Ende am Folgetag")).toBeVisible();
+  await page.getByRole("button", { name: "Weiter zum Ort" }).click();
+  await page.waitForURL("**/edit/place", SLOW);
   expect(field(`to_char(start_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`)).toBe(
     "2026-10-31T22:00",
   );
   expect(field(`to_char(end_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`)).toBe(
     "2026-11-01T03:00",
   );
-  await page.reload();
-  await expect(page.getByLabel("Beginn", { exact: true })).toHaveValue(
-    "2026-10-31T23:00",
-    SLOW,
-  );
-  await expect(page.getByLabel("Ende", { exact: true })).toHaveValue(
-    "2026-11-01T04:00",
-  );
+  await page.goto(`${base}/edit/time`);
+  await expect(page.locator("#startDate")).toHaveValue("31.10.2026", SLOW);
+  await expect(page.locator("#startTime")).toHaveValue("23:00");
+  await expect(page.locator("#endDate")).toHaveValue("01.11.2026");
 
   // 4. P13: a time the clock change skips is refused and the input stays.
-  await page.getByLabel("Beginn", { exact: true }).fill("2026-03-29T02:30");
-  await page.getByLabel("Ende", { exact: true }).fill("2026-03-29T05:00");
-  await page.getByRole("button", { name: "Grundlagen speichern" }).click();
+  await page.locator("#startDate").fill("29.03.2026");
+  await page.locator("#startTime").fill("02:30");
+  await page.locator("#endDate").fill("29.03.2026");
+  await page.locator("#endTime").fill("05:00");
+  await page.getByRole("button", { name: "Weiter zum Ort" }).click();
   await expect(
-    page.getByRole("alert").filter({ hasText: /Zeitumstellung nicht/ }),
+    page.getByText("Diese Uhrzeit gibt es wegen der Zeitumstellung nicht."),
   ).toBeVisible(SLOW);
-  await expect(page.getByLabel("Beginn", { exact: true })).toHaveValue(
-    "2026-03-29T02:30",
-  );
+  await expect(page.locator("#startDate")).toHaveValue("29.03.2026");
   expect(field(`to_char(start_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI')`)).toBe(
     "2026-10-31T22:00",
   );
-  await page.getByLabel("Beginn", { exact: true }).fill("2026-10-31T23:00");
-  await page.getByLabel("Ende", { exact: true }).fill("2026-11-01T04:00");
 
-  // 5. Place: half-filled is refused, complete is saved.
-  await page.getByLabel("Name des Orts").fill("Keller");
-  await page.getByRole("button", { name: "Grundlagen speichern" }).click();
+  // The end before the start is named (EVT-02b), the end can be left open.
+  await page.locator("#startDate").fill("31.10.2026");
+  await page.locator("#startTime").fill("23:00");
+  await page.locator("#endDate").fill("31.10.2026");
+  await page.locator("#endTime").fill("20:00");
+  await page.getByRole("button", { name: "Weiter zum Ort" }).click();
+  await expect(page.getByText("Das Ende liegt vor dem Beginn.").first()).toBeVisible(
+    SLOW,
+  );
+  await shot(page, "05-datum-ende-vor-beginn");
+  await page.locator("#endDate").fill("01.11.2026");
+  await page.locator("#endTime").fill("04:00");
+  await page.getByRole("button", { name: "Weiter zum Ort" }).click();
+  await page.waitForURL("**/edit/place", SLOW);
+
+  // 5. Step 3 "Wo findet es statt?" (EVT-03a). "Weiter" with only a name names
+  // the street and the city (EVT-03b); "Später weitermachen" keeps the name
+  // (EVT-08) and "Zum Entwurf" leads back to this step.
+  await shot(page, "06-ort-leer");
+  await page.getByLabel("Name des Ortes").fill("Keller");
+  await page.getByRole("button", { name: "Weiter zu Preis und Zugang" }).click();
   await expect(
-    page.getByRole("alert").filter({ hasText: /Namen des Orts und die Adresse/ }),
-  ).toBeVisible(SLOW);
+    page.getByText("Gib die Straße mit Hausnummer an, damit Gäste dich finden."),
+  ).toBeVisible();
+  await expect(page.getByText("Gib die Stadt an.")).toBeVisible();
+  await shot(page, "07-ort-fehler");
+
+  // No connection (EVT-09b): the input stays, leaving asks first (EVT-09c).
+  await context.setOffline(true);
+  await page.getByRole("button", { name: "Später weitermachen" }).click();
+  await expect(page.getByText("Keine Verbindung.")).toBeVisible(SLOW);
+  await shot(page, "08-keine-verbindung");
+  await page.getByRole("link", { name: "Zurück" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Dein Entwurf ist nicht gesichert" }),
+  ).toBeVisible();
+  await shot(page, "09-nicht-gesichert");
+  await context.setOffline(false);
+  await page.getByRole("button", { name: "Zurück und noch einmal versuchen" }).click();
+  await page.waitForURL("**/saved", SLOW);
+  await expect(
+    page.getByRole("heading", { name: "Dein Entwurf ist gesichert" }),
+  ).toBeVisible();
+  await shot(page, "10-entwurf-gesichert");
+  expect(field("place_name")).toBe("Keller");
+  expect(field("place_state")).toBe("unanswered");
+  await page.getByRole("link", { name: "Zum Entwurf" }).click();
+  await page.waitForURL("**/edit/place", SLOW);
+  await expect(page.getByLabel("Name des Ortes")).toHaveValue("Keller");
   await page.getByLabel("Straße und Hausnummer").fill("Musterstraße 1");
   await page.getByLabel("Postleitzahl").fill("10115");
   await page.getByLabel("Stadt", { exact: true }).fill("Berlin");
-  await save(page, "Grundlagen speichern");
+  await page.getByRole("button", { name: "Weiter zu Preis und Zugang" }).click();
+  await page.waitForURL("**/access", SLOW);
   expect(field("place_name")).toBe("Keller");
-  await shot(page, "04-editor-gefuellt");
+  expect(field("place_state")).toBe("provided");
+  await page.goto(`${base}/edit`);
+  await shot(page, "11-editor-gefuellt");
 
   // 6. Atmosphäre: P04, four terms are an error, nothing is cut off. The
   // answer stays unanswered until "Auswahl übernehmen".
@@ -301,7 +358,10 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   // Mobile frames (Figma M01 to M03).
   await page.setViewportSize({ width: 390, height: 844 });
   for (const [path, name] of [
-    ["edit", "m1-editor"],
+    ["edit/basics", "m1-grundlagen"],
+    ["edit/time", "m1-datum"],
+    ["edit/place", "m1-ort"],
+    ["saved", "m1-gesichert"],
     ["atmosphere", "m2-atmosphaere"],
     ["preview", "m3-check"],
   ]) {
@@ -320,7 +380,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   ).toBe("private");
 
   // 13. Another organizer cannot reach the draft or any of its pages.
-  for (const path of ["edit", "access", "atmosphere", "preview", "image"]) {
+  for (const path of ["edit", "edit/time", "saved", "access", "atmosphere", "preview", "image"]) {
     const response = await otherPage.goto(`${base}/${path}`);
     expect(response?.status()).toBe(404);
   }

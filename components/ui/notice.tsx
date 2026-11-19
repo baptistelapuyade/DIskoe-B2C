@@ -9,7 +9,7 @@ export type NoticeTone = "error" | "warning" | "info" | "success";
 const TONE: Record<NoticeTone, string> = {
   error: "bg-error-subtle border-error text-error",
   warning: "bg-warning-subtle border-warning text-warning",
-  info: "bg-secondary border-border text-foreground",
+  info: "bg-brand-blue border-brand-blue text-foreground",
   success: "bg-success-subtle border-success text-success",
 };
 
