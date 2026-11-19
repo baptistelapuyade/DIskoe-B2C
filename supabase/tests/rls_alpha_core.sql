@@ -606,6 +606,30 @@ select tests.ev_insert(:'e1', :'use_e1') as ev1 \gset
 select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'ev1', :'e1'),
   1, 'owner selects the event draft');
 
+-- Event steps (Slice 5): a place that is not answered yet may hold what was
+-- typed; an answered place still needs name and address, the other states stay
+-- empty, and a provided place without a city is a gap.
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"place_state":"unanswered","place_name":"Nebenraum","address_line":null,"postal_code":null,"city":null}'),
+  'a place that is not answered yet may hold a name only');
+select tests.expect_ok(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"place_state":"unanswered","place_name":null,"address_line":"Hinterhof 4","postal_code":"10997","city":"Berlin"}'),
+  'a place that is not answered yet may hold the address without a name');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"place_state":"provided","address_line":null}'),
+  '23514', 'an answered place needs an address');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"place_state":"provided","place_name":"  "}'),
+  '23514', 'an answered place needs a name');
+select tests.expect_error(format('select tests.ev_insert(%L, %L, %L)', :'e1', :'use_e1', '{"place_state":"unknown","place_name":"Nebenraum","address_line":null,"postal_code":null,"city":null}'),
+  '23514', 'an unknown place holds no values');
+select tests.ev_insert(:'e1', :'use_e1', '{"city":null}') as ev_nocity \gset
+select tests.ev_insert(:'e1', :'use_e1', '{"place_state":"unanswered","place_name":"Nebenraum","address_line":null,"postal_code":null,"city":null}') as ev_partial \gset
+select tests.as_superuser();
+select tests.expect_true(format($q$select 'place' = any (app_private.event_gaps(%L))$q$, :'ev_nocity'),
+  'a provided place without a city is a gap');
+select tests.expect_true(format($q$select 'place' = any (app_private.event_gaps(%L))$q$, :'ev_partial'),
+  'a partial place is a gap');
+select tests.expect_true(format($q$select not ('place' = any (app_private.event_gaps(%L)))$q$, :'ev1'),
+  'a complete place with a city is no gap');
+select tests.as_user(:'uid_a');
+
 -- Event image confirmation (Slice 4): the description is optional (Slice 5)
 -- and the database reserves events/<event id>/<use id>.<ext>. A path, not a file.
 select tests.expect_true(format('select tests.confirm_event_image_with_alt_is_null(%L, null)', :'e1'),

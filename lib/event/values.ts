@@ -178,6 +178,17 @@ export function rowToValues(row: EventRevisionRow): EventDraftValues {
           }
         : null,
     ),
+    // Only while the place is not answered: what was typed so far.
+    placePartial:
+      row.place_state === "unanswered" &&
+      (row.place_name || row.address_line || row.postal_code || row.city)
+        ? {
+            name: row.place_name ?? "",
+            addressLine: row.address_line ?? "",
+            postalCode: row.postal_code ?? "",
+            city: row.city ?? "",
+          }
+        : null,
     price,
     access: answerOf(
       row.access_state,
@@ -219,10 +230,10 @@ export function rowToFormValues(row: EventRevisionRow): EventFormValues {
     endDate: end?.date ?? "",
     endTime: end?.time ?? "",
     endUnknown: values.end.state === "unknown",
-    placeName: place?.name ?? "",
-    addressLine: place?.addressLine ?? "",
-    postalCode: place?.postalCode ?? "",
-    city: place?.city ?? "",
+    placeName: place?.name ?? values.placePartial?.name ?? "",
+    addressLine: place?.addressLine ?? values.placePartial?.addressLine ?? "",
+    postalCode: place?.postalCode ?? values.placePartial?.postalCode ?? "",
+    city: place?.city ?? values.placePartial?.city ?? "",
     priceModel:
       values.price.state === "unknown"
         ? "unknown"
@@ -239,6 +250,11 @@ export function rowToFormValues(row: EventRevisionRow): EventFormValues {
     atmosphereTags: atmosphere?.tags ?? [],
     atmosphereDescription: atmosphere?.description ?? "",
   };
+}
+
+// A column of a place that is not complete yet: empty text is null.
+function partialOrNull(value: string | undefined): string | null {
+  return value ? value : null;
 }
 
 // The columns that a save writes. Every field gets its state; a value column
@@ -263,10 +279,10 @@ export function valuesToRow(
     end_state: values.end.state,
     end_at: valueOrNull(values.end),
     place_state: values.place.state,
-    place_name: place?.name ?? null,
-    address_line: place?.addressLine ?? null,
-    postal_code: place?.postalCode ?? null,
-    city: place?.city ?? null,
+    place_name: place?.name ?? partialOrNull(values.placePartial?.name),
+    address_line: place?.addressLine ?? partialOrNull(values.placePartial?.addressLine),
+    postal_code: place?.postalCode ?? partialOrNull(values.placePartial?.postalCode),
+    city: place?.city ?? partialOrNull(values.placePartial?.city),
     price_state: price.state,
     price_model: isProvided(price)
       ? price.value.model

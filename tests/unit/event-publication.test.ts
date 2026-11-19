@@ -79,12 +79,27 @@ describe("P01: title, start and address are guided; a gap blocks only publicatio
     expect(eventGapCodes(parse(), true)).toEqual([]);
   });
 
-  it("does not store a half-filled place", () => {
-    expect(errorsOf({ placeName: "Keller", addressLine: "" }).place).toMatch(
-      /Adresse/,
-    );
-    expect(errorsOf({ placeName: "", addressLine: "Musterstraße 1" }).place)
-      .toBeDefined();
+  it("keeps a half-filled place as typed, but not as an answer", () => {
+    const values = parse({ placeName: "Keller", addressLine: "", city: "" });
+
+    expect(values.place.state).toBe("unanswered");
+    expect(values.placePartial).toEqual({
+      name: "Keller",
+      addressLine: "",
+      postalCode: "10115",
+      city: "",
+    });
+    expect(eventGapCodes(values, true)).toContain("place");
+  });
+
+  it("needs the city for a place to count as answered", () => {
+    expect(parse({ city: "" }).place.state).toBe("unanswered");
+    expect(eventGapCodes(parse({ city: "" }), true)).toContain("place");
+    expect(parse().placePartial).toBeNull();
+  });
+
+  it("refuses a place part that is too long", () => {
+    expect(errorsOf({ city: "x".repeat(81) }).place).toBeDefined();
   });
 
   it("treats an untouched place as not answered", () => {
