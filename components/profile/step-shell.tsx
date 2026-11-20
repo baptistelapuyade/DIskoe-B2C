@@ -16,6 +16,7 @@ export function StepShell({
   title,
   lead,
   wide = false,
+  wideProgress = false,
   current = 0,
   children,
 }: {
@@ -26,6 +27,9 @@ export function StepShell({
   lead?: string;
   // The preview needs the full container width.
   wide?: boolean;
+  // The progress bar spans the wide column too (the submit checklist, Figma
+  // EIN-01); the other screens keep it in the 560 px column.
+  wideProgress?: boolean;
   // 0-based step of the five-step progress bar: 0 profile, 1 first event.
   current?: number;
   children: ReactNode;
@@ -41,7 +45,7 @@ export function StepShell({
   return (
     <main
       data-surface="accent"
-      className="flex w-full flex-col gap-6 px-6 pt-2 pb-12 md:px-12 md:pt-6"
+      className="flex w-full flex-col gap-6 px-6 pt-2 pb-6 md:px-12 md:pt-8 md:pb-8"
     >
       <div
         className={`flex w-full flex-col gap-6 md:gap-8 ${wide ? "max-w-[1032px]" : "max-w-[560px]"}`}
@@ -52,7 +56,7 @@ export function StepShell({
           </LinkButton>
         </div>
         <div className="flex flex-col gap-10">
-          <div className="max-w-[560px]">
+          <div className={wide && wideProgress ? "" : "max-w-[560px]"}>
             <ProgressSteps
               lang={lang}
               labels={labels}
@@ -60,7 +64,9 @@ export function StepShell({
               label={t(lang, "Z22.progress.label")}
             />
           </div>
-          <div className="flex max-w-[560px] flex-col gap-3">
+          <div
+            className={`flex flex-col gap-3 ${wide && wideProgress ? "" : "max-w-[560px]"}`}
+          >
             <p className="text-brand-iris text-[13px] leading-4 font-medium tracking-[0.78px] uppercase">
               {eyebrow}
             </p>

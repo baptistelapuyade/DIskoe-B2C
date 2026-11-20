@@ -640,6 +640,142 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z26.err.genresTooMany | Wähle höchstens {max} Richtungen. | Choose at most {max} directions. | EVT-07m-i (kein Frame) |
 | Z26.check.line.required.visitMode | Besuchsmodus fehlt noch. Auch „Noch nicht bekannt“ zählt. | Visit mode is still missing. “Not known yet” counts too. | EVT-07m-d, Hinweis oben |
 | Z26.check.line.required.language | Sprache und Untertitel fehlen noch. Auch „Noch nicht bekannt“ zählt. | Language and subtitles are still missing. “Not known yet” counts too. | EVT-07m-d, Hinweis oben |
+| Z27.submit.eyebrow | Einreichen · Prüfen | Submit · Check | EIN-01a bis 01e, Eyebrow |
+| Z27.submit.title | Prüfe, was öffentlich wird | Check what goes public | EIN-01, Titel |
+| Z27.submit.lead | Lies alles noch einmal durch. Bis DISKOE es freigibt, bleibt alles privat. | Read everything once more. Until DISKOE approves it, everything stays private. | EIN-01, Einleitung |
+| Z27.ok.title | Alle Pflichtangaben sind da. | All required details are here. | EIN-01a, Hinweis (Erfolg) |
+| Z27.ok.line | Du kannst Profil und Event jetzt einreichen. | You can submit your profile and event now. | EIN-01a, Hinweis (Erfolg) |
+| Z27.gaps.one | Eine Pflichtangabe fehlt noch. | One required detail is still missing. | EIN-01b/01e, Hinweis (Fehler), Zeile 1 |
+| Z27.gaps.two | Zwei Pflichtangaben fehlen noch. | Two required details are still missing. | EIN-01b, Hinweis (Fehler), Zeile 1 |
+| Z27.gaps.three | Drei Pflichtangaben fehlen noch. | Three required details are still missing. | EIN-01b, Hinweis (Fehler), Zeile 1 (kein Frame) |
+| Z27.gaps.many | Mehrere Pflichtangaben fehlen noch. | Several required details are still missing. | EIN-01b, Hinweis (Fehler), Zeile 1 (kein Frame) |
+| Z27.gaps.lineOne | {names}. Ergänze sie oder nimm den Haken raus, dann reichst du nur dein Profil ein. | {names}. Add it or untick the box to submit only your profile. | EIN-01b/01e, Hinweis (Fehler), Zeile 2; {names} = Namen der fehlenden Angaben |
+| Z27.gaps.lineMany | {names}. Ergänze sie oder nimm den Haken raus, dann reichst du nur dein Profil ein. | {names}. Add them or untick the box to submit only your profile. | EIN-01b, Hinweis (Fehler), Zeile 2 |
+| Z27.list.and | {a} und {b} | {a} and {b} | Aufzählung der fehlenden Angaben (bei drei und mehr: „a, b und c“) |
+| Z27.gap.title | Titel | Title | EIN-01b, Name einer fehlenden Angabe |
+| Z27.gap.description | Beschreibung | Description | EIN-01b, Name einer fehlenden Angabe |
+| Z27.gap.format | Format | Format | EIN-01b, Name einer fehlenden Angabe |
+| Z27.gap.start | Beginn | Start | EIN-01b, Name einer fehlenden Angabe |
+| Z27.gap.place | Ort | Place | EIN-01b, Name einer fehlenden Angabe |
+| Z27.gap.price | Preis | Price | EIN-01b, Name einer fehlenden Angabe |
+| Z27.gap.access | Zugang | Access | EIN-01b, Name einer fehlenden Angabe |
+| Z27.gap.accessUrl | Link zum Online-Zugang | Link for online access | EIN-01b, Name einer fehlenden Angabe (kein Frame) |
+| Z27.gap.atmosphere | Atmosphäre | Atmosphere | EIN-01b, Name einer fehlenden Angabe |
+| Z27.gap.image | Eventbild | Event image | EIN-01b, Name einer fehlenden Angabe |
+| Z27.gap.visitMode | Besuchsart | Visit mode | EIN-01e, Name einer fehlenden Angabe (kein Frame; Film hat Frame) |
+| Z27.gap.language | Sprache der Vorführung | Language of the screening | EIN-01e, Name einer fehlenden Angabe |
+| Z27.gap.visitMode.short | Besuchsart | Visit mode | EIN-01e, Button (kein Frame) |
+| Z27.gap.language.short | Sprache | Language | EIN-01e, Button |
+| Z27.gap.fix | {name} ergänzen | Add {name} | EIN-01b/01e, Hauptbutton: springt zur ersten fehlenden Angabe |
+| Z27.profile.heading | Profil | Profile | EIN-01a bis 01d, Kartenkopf; PRF-02 |
+| Z27.profile.change | Profil ändern | Change profile | EIN-01a bis 01d, Button |
+| Z27.event.heading | Erstes Event | First event | EIN-01a, 01b, 01e, Kartenkopf; PRF-02 |
+| Z27.event.change | Event ändern | Change event | EIN-01a, 01b, 01e, Button |
+| Z27.row.name | Name deines Projekts | Your project’s name | Zeile, Profil |
+| Z27.row.intro | Kurzvorstellung | Short introduction | Zeile, Profil |
+| Z27.row.slug | Profiladresse | Profile address | Zeile, Profil |
+| Z27.row.links | Links und Kontakt | Links and contact | Zeile, Profil |
+| Z27.row.profileImage | Profilbild | Profile picture | Zeile, Profil |
+| Z27.row.title | Titel | Title | Zeile, Event |
+| Z27.row.format | Format | Format | Zeile, Event |
+| Z27.row.description | Beschreibung | Description | Zeile, Event |
+| Z27.row.when | Beginn und Ende | Start and end | Zeile, Event |
+| Z27.row.place | Ort | Place | Zeile, Event |
+| Z27.row.price | Preis | Price | Zeile, Event |
+| Z27.row.access | Zugang | Access | Zeile, Event |
+| Z27.row.atmosphere | Atmosphäre | Atmosphere | Zeile, Event |
+| Z27.row.eventImage | Eventbild | Event image | Zeile, Event |
+| Z27.row.more | Mehr zum Abend | More about the evening | Zeile, Event |
+| Z27.row.moreNone | Keine Angaben | Nothing added | Zeile „Mehr zum Abend“ ohne Baustein |
+| Z27.row.missing | Fehlt | Missing | EIN-01b/01e, Badge |
+| Z27.row.notEntered | Noch nicht angegeben | Not entered yet | EIN-01b, Wert einer fehlenden Angabe |
+| Z27.row.fix | Ergänzen | Add | EIN-01b/01e, Button in der Zeile |
+| Z27.row.visitModeMissing | Besuchsart fehlt | Visit mode is missing | EIN-01e, Wert einer fehlenden Angabe (kein Frame) |
+| Z27.row.languageMissing | Sprache der Vorführung fehlt | Language of the screening is missing | EIN-01e, Wert einer fehlenden Angabe |
+| Z27.when.range | {start} bis {end} ({zone}) | {start} to {end} ({zone}) | Zeile „Beginn und Ende“; {zone} = Berlin |
+| Z27.when.single | {start} ({zone}) | {start} ({zone}) | Zeile „Beginn und Ende“ ohne Ende |
+| Z27.when.clock | {day}, {time} | {day}, {time} | Tag und Uhrzeit |
+| Z27.price.free | Frei | Free | Zeile Preis |
+| Z27.price.donation | Eintritt gegen Spende | Admission by donation | Zeile Preis |
+| Z27.price.minDonation | Eintritt gegen Spende, ab {amount} | Admission by donation, from {amount} | Zeile Preis |
+| Z27.price.from | ab {amount} | from {amount} | Zeile Preis |
+| Z27.price.fees | {price} inkl. Gebühren | {price} incl. fees | Zeile Preis |
+| Z27.price.unknown | Preis noch offen | Price not known yet | Zeile Preis |
+| Z27.event.include | Erstes Event mit einreichen | Submit the first event too | EIN-01a/01b/01d/01e, Haken |
+| Z27.event.includeHint | Nimm den Haken raus, wenn nur dein Profil geprüft werden soll. | Untick the box if only your profile should be reviewed. | EIN-01a/01b/01e, Hinweis unter dem Haken |
+| Z27.event.excludedHint | Bis dahin zeigt dein Profil „Neue Termine folgen.“ | Until then your profile shows “New dates to follow.” | EIN-01d, Hinweis unter dem Haken |
+| Z27.only.title | Du reichst nur dein Profil ein. | You are submitting only your profile. | EIN-01c/01d, Hinweis (Info) |
+| Z27.only.lineNone | Ein Event kannst du jederzeit ergänzen. Bis dahin zeigt deine Seite „Neue Termine folgen.“ | You can add an event at any time. Until then your page shows “New dates to follow.” | EIN-01c, Hinweis (Info), Zeile 2 |
+| Z27.only.lineDraft | Das Event bleibt ein privater Entwurf. Du kannst es später einreichen. | The event stays a private draft. You can submit it later. | EIN-01d, Hinweis (Info), Zeile 2 |
+| Z27.only.create | Erstes Event anlegen | Create the first event | EIN-01c/PRF-01b, Button |
+| Z27.only.submit | Nur das Profil einreichen | Submit only the profile | EIN-01b/01e, Button |
+| Z27.next.confirm | Weiter zur Bestätigung | Continue to confirmation | EIN-01a bis 01d, Hauptbutton |
+| Z27.next.preview | Vorschau der Seiten ansehen | Preview the pages | EIN-01a/01d, Button; führt bis VOR-01 (Slice 11) zu den einfachen Vorschauseiten |
+| Z27.confirm.eyebrow | Einreichen · Bestätigen | Submit · Confirm | EIN-02, Eyebrow |
+| Z27.confirm.title | Reiche deinen Stand ein | Submit your version | EIN-02, Titel |
+| Z27.confirm.lead | Mit deiner Bestätigung prüfen wir Profil und Event. Öffentlich wird erst, was wir freigeben. | With your confirmation we review your profile and event. Only what we approve goes public. | EIN-02a, Einleitung |
+| Z27.confirm.leadProfile | Mit deiner Bestätigung prüfen wir dein Profil. Öffentlich wird erst, was wir freigeben. | With your confirmation we review your profile. Only what we approve goes public. | EIN-02, Einleitung nur Profil (kein Frame) |
+| Z27.confirm.heading | Bestätige zwei Dinge | Confirm two things | EIN-02a, Überschrift |
+| Z27.confirm.hint | Auf deiner Profilseite und deiner Eventseite. Beide bekommen einen eigenen Link, den du teilen kannst. | On your profile page and your event page. Each gets its own link that you can share. | EIN-02a, Hinweis |
+| Z27.confirm.hintProfile | Auf deiner Profilseite. Sie bekommt einen eigenen Link, den du teilen kannst. | On your profile page. It gets its own link that you can share. | EIN-02, Hinweis nur Profil (kein Frame) |
+| Z27.confirm.rights | Ich habe die Angaben geprüft und bin berechtigt, für dieses Projekt zu veröffentlichen. | I have checked the details and I’m authorised to publish for this project. | EIN-02a, Haken 1 (Entwurf, rechtliche Prüfung vor der Alpha-Öffnung); gespeichert als „rights“ |
+| Z27.confirm.usage | Ich habe die nötigen Rechte an den Texten und Bildern, die öffentlich erscheinen. | I hold the necessary rights to the texts and images that appear publicly. | EIN-02a, Haken 2 (Entwurf, rechtliche Prüfung vor der Alpha-Öffnung); gespeichert als „usage“ |
+| Z27.confirm.submit | Zur Prüfung einreichen | Submit for review | EIN-02a, Hauptbutton |
+| Z27.confirm.pending | Reicht ein … | Submitting … | EIN-02, Hauptbutton während des Sendens |
+| Z27.confirm.back | Zurück zur Prüfliste | Back to the checklist | EIN-02a, Button |
+| Z27.retry | Noch einmal versuchen | Try again | EIN-02e/PRF-03c, Hauptbutton |
+| Z27.err.confirm.title | Bitte bestätige beide Punkte. | Please confirm both points. | EIN-02d, Hinweis (Fehler), Zeile 1 |
+| Z27.err.confirm.second | Setze noch den zweiten Haken, dann kannst du einreichen. | Tick the second box too, then you can submit. | EIN-02d, Hinweis (Fehler), Zeile 2 |
+| Z27.err.confirm.first | Setze noch den ersten Haken, dann kannst du einreichen. | Tick the first box too, then you can submit. | EIN-02d, Zeile 2, wenn der erste fehlt (kein Frame) |
+| Z27.err.confirm.both | Setze beide Haken, dann kannst du einreichen. | Tick both boxes, then you can submit. | EIN-02d, Zeile 2, wenn beide fehlen (kein Frame) |
+| Z27.err.submit.title | Das Einreichen hat nicht geklappt. | Submitting didn’t work. | EIN-02e, Hinweis (Fehler), Zeile 1 |
+| Z27.err.submit.line | Deine Bestätigung ist gespeichert. Versuche es noch einmal. | Your confirmation is kept. Try again. | EIN-02e, Hinweis (Fehler), Zeile 2 |
+| Z27.err.changed.title | Dein Stand hat sich geändert. | Your version has changed. | EIN-02, Hinweis (Fehler) bei DK001 (kein Frame) |
+| Z27.err.changed.line | Geh zurück zur Prüfliste und prüfe ihn noch einmal. | Go back to the checklist and check it again. | EIN-02, Hinweis (Fehler) bei DK001 (kein Frame) |
+| Z27.err.gaps.title | Es fehlen noch Pflichtangaben. | Some required details are still missing. | EIN-02, Hinweis (Fehler) bei DK002 (kein Frame) |
+| Z27.err.gaps.line | Geh zurück zur Prüfliste und ergänze sie. | Go back to the checklist and add them. | EIN-02, Hinweis (Fehler) bei DK002 (kein Frame) |
+| Z27.err.state.title | Dieser Stand ist schon eingereicht oder entschieden. | This version is already submitted or decided. | EIN-02, Hinweis (Fehler) bei DK003 (kein Frame) |
+| Z27.err.state.line | Das Ergebnis findest du im Überblick und in deiner E-Mail. | You’ll find the result in the overview and in your email. | EIN-02, Hinweis (Fehler) bei DK003 (kein Frame) |
+| Z27.review.eyebrow | Prüfung | Review | PRF-01 bis 03, Eyebrow |
+| Z27.review.title | Wir prüfen deinen Stand | We’re reviewing your version | PRF-01a, Titel |
+| Z27.review.titleProfile | Wir prüfen dein Profil | We’re reviewing your profile | PRF-01b, Titel |
+| Z27.review.lead | Du hast Profil und Event eingereicht. Wir prüfen von Hand und melden uns per E-Mail, sobald es etwas Neues gibt. Wir schreiben an {email}. | You’ve submitted your profile and event. We review by hand and email you as soon as there’s news. We write to {email}. | PRF-01a, Einleitung; {email} = Login-Adresse (nie in Logs oder Adressen) |
+| Z27.review.leadProfile | Du hast dein Profil eingereicht. Wir prüfen von Hand und melden uns per E-Mail, sobald es etwas Neues gibt. Wir schreiben an {email}. | You’ve submitted your profile. We review by hand and email you as soon as there’s news. We write to {email}. | PRF-01b, Einleitung; {email} = Login-Adresse |
+| Z27.review.pill | In Prüfung · eingereicht am {date} | In review · submitted {date} | PRF-01a/b, Pill; {date} = „Fr, 6.11.2026, 14:32“ |
+| Z27.review.firstEvent | Dein erstes Event | Your first event | PRF-01b, Überschrift |
+| Z27.review.firstEventText | Lege es an, wenn du so weit bist. Solange dein Profil in Prüfung ist, bleibt es ein privater Entwurf. Nach der Freigabe geht es von selbst live. Fehlt es noch, zeigt dein Profil „Neue Termine folgen.“ | Create it when you’re ready. While your profile is in review, it stays a private draft. After approval it goes live on its own. If it’s not there yet, your profile shows “New dates to follow.” | PRF-01b, Text |
+| Z27.review.until | Bis dahin | Until then | PRF-01a/b, Überschrift |
+| Z27.review.untilText | Deine Seiten bleiben privat. Willst du etwas ändern, ziehst du die Einreichung zurück. Dann beginnt die Prüfung von vorn. | Your pages stay private. If you want to change something, withdraw your submission. The review then starts over. | PRF-01a/b, Text |
+| Z27.review.viewSubmitted | Eingereichte Fassung ansehen | View submitted version | PRF-01a/b, Button |
+| Z27.review.withdraw | Einreichung zurückziehen | Withdraw submission | PRF-01a/b, PRF-02, Button |
+| Z27.submitted.title | Deine eingereichte Fassung | Your submitted version | PRF-02, Titel |
+| Z27.submitted.lead | So hast du sie am {date} um {time} Uhr eingereicht. Du kannst sie hier nur ansehen. | This is what you submitted on {date} at {time}. You can only view it here. | PRF-02, Einleitung |
+| Z27.submitted.notice.title | Diese Fassung wird gerade geprüft. | This version is being reviewed right now. | PRF-02, Hinweis (Info), Zeile 1 |
+| Z27.submitted.notice.line | Änderungen sind erst möglich, wenn du die Einreichung zurückziehst. | You can only change it once you withdraw the submission. | PRF-02, Hinweis (Info), Zeile 2 |
+| Z27.submitted.back | Zurück zum Stand | Back to the status | PRF-02/PRF-03c, Button |
+| Z27.withdraw.title | Einreichung zurückziehen? | Withdraw the submission? | PRF-03a, Titel |
+| Z27.withdraw.lead | Deine Seiten bleiben privat. Du kannst danach wieder alles bearbeiten. | Your pages stay private. Afterwards you can edit everything again. | PRF-03a, Einleitung |
+| Z27.withdraw.notice.title | Die Prüfung beginnt von vorn. | The review starts over. | PRF-03a, Hinweis (Warnung), Zeile 1 |
+| Z27.withdraw.notice.line | Wenn du erneut einreichst, startet sie neu. Deine Angaben bleiben als Entwurf erhalten. | If you submit again, it starts anew. Your details are kept as a draft. | PRF-03a, Hinweis (Warnung), Zeile 2 |
+| Z27.withdraw.keep | Nein, in Prüfung lassen | No, keep it in review | PRF-03a, Hauptbutton |
+| Z27.withdraw.yes | Ja, zurückziehen | Yes, withdraw | PRF-03a, Button |
+| Z27.withdraw.pending | Zieht zurück … | Withdrawing … | PRF-03a, Button während des Sendens |
+| Z27.withdrawn.eyebrow | Zurückgezogen | Withdrawn | PRF-03b, Eyebrow |
+| Z27.withdrawn.title | Du kannst wieder bearbeiten | You can edit again | PRF-03b, Titel |
+| Z27.withdrawn.lead | Die Einreichung ist zurückgezogen. Nichts davon ist öffentlich. | The submission is withdrawn. None of it is public. | PRF-03b, Einleitung |
+| Z27.withdrawn.notice.title | Die Einreichung ist zurückgezogen. | The submission is withdrawn. | PRF-03b, Hinweis (Erfolg), Zeile 1 |
+| Z27.withdrawn.notice.line | Deine Angaben sind als Entwurf gespeichert. | Your details are saved as a draft. | PRF-03b, Hinweis (Erfolg), Zeile 2 |
+| Z27.withdrawn.checklist | Zur Prüfliste | To the checklist | PRF-03b, Hauptbutton |
+| Z27.withdrawn.editProfile | Profil bearbeiten | Edit profile | PRF-03b, Button |
+| Z27.withdrawn.editEvent | Event bearbeiten | Edit event | PRF-03b, Button (nur mit Event) |
+| Z27.withdrawFailed.lead | Das Zurückziehen hat nicht geklappt. | Withdrawing didn’t work. | PRF-03c, Einleitung |
+| Z27.withdrawFailed.title | Das Zurückziehen hat nicht geklappt. | Withdrawing didn’t work. | PRF-03c, Hinweis (Fehler), Zeile 1 |
+| Z27.withdrawFailed.line | Deine Einreichung ist weiter in Prüfung. Versuche es noch einmal. | Your submission is still in review. Try again. | PRF-03c, Hinweis (Fehler), Zeile 2 |
+| Z27.decided.title | Wir haben schon entschieden | We’ve already decided | PRF-03d, Titel |
+| Z27.decided.lead | Während du hier warst, haben wir deinen Stand geprüft. | While you were here, we reviewed your version. | PRF-03d, Einleitung |
+| Z27.decided.notice.title | Zurückziehen ist nicht mehr nötig. | Withdrawing is no longer needed. | PRF-03d, Hinweis (Info), Zeile 1 |
+| Z27.decided.notice.line | Das Ergebnis findest du im Überblick und in deiner E-Mail. | You’ll find the result in the overview and in your email. | PRF-03d, Hinweis (Info), Zeile 2 |
+| Z27.decided.overview | Zum Überblick | To the overview | PRF-03d, Hauptbutton |
 
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.

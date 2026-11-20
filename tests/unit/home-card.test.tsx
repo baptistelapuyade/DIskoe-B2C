@@ -78,7 +78,7 @@ describe("ProfileCard", () => {
     const d = data({}, event(false), "ready");
     const html = card(d);
     expect(html).toContain("Vorschau ansehen und einreichen");
-    expect(hrefs(html)).toContain("/organizer/events/e1/preview");
+    expect(hrefs(html)).toContain("/organizer/profiles/p1/submit");
     expect(area(d)).toContain("Dein Bereich");
     expect(area(d)).not.toContain("Profil bearbeiten");
   });

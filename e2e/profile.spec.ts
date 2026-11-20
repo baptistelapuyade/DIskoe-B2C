@@ -11,7 +11,12 @@ import type { Database } from "../lib/db/types";
 import { clearMailbox, waitForCode } from "./support/inbucket";
 import { makeFounder, provisionAs, sql, userIdByEmail } from "./support/seed";
 import { germanContext } from "./support/language";
-import { chooseProfileImage, saveDetails, solidPng } from "./support/profile-flow";
+import {
+  chooseProfileImage,
+  saveDetails,
+  solidPng,
+  submitProfileWithoutEvent,
+} from "./support/profile-flow";
 
 // Needs the local Supabase stack (see the e2e-auth CI job). Covers the owner's
 // private profile editor, the private preview and the hand-in for review.
@@ -322,17 +327,21 @@ test.describe("profile editor, preview and hand-in", () => {
     await page.goto(previewUrl());
     await page.getByRole("link", { name: "Profil ohne Event einreichen" }).click();
     await page.waitForURL("**/submit");
+    await page.getByRole("link", { name: "Weiter zur Bestätigung" }).click();
+    await page.waitForURL(/\/submit\/confirm/);
 
     await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
-    await expect(page.getByText("Bitte bestätige beide Angaben")).toBeVisible();
+    await expect(page.getByText("Bitte bestätige beide Punkte.")).toBeVisible();
     expect(
       sql(`select count(*) from public.publication_audit where entity_id = '${profileA}' and action = 'submit_for_review'`),
     ).toBe("0");
 
     await page.getByLabel(/Angaben geprüft und bin berechtigt/).check();
-    await page.getByLabel(/öffentlich wird/).check();
+    await page.getByLabel(/nötigen Rechte/).check();
     await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
-    await expect(page.getByText("Eingereicht. DISKOE prüft dein Profil.").first()).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Wir prüfen dein Profil" }),
+    ).toBeVisible();
 
     expect(
       sql(
@@ -349,6 +358,31 @@ test.describe("profile editor, preview and hand-in", () => {
     await expect(page.getByText("Wir prüfen Profil und Event gemeinsam")).toBeVisible();
     await expect(page.getByText("Du musst nichts tun.")).toBeVisible();
     await expect(page.getByRole("link", { name: "Eingereichtes ansehen" })).toBeVisible();
+
+    // The status page: read-only copy of what was handed in, and the way back.
+    await page.goto(`/organizer/profiles/${profileA}/status`);
+    await expect(
+      page.getByText(/In Prüfung · eingereicht am /),
+    ).toBeVisible();
+    await page.getByRole("link", { name: "Eingereichte Fassung ansehen" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Deine eingereichte Fassung" }),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "Profil ändern" })).toHaveCount(0);
+    await page.getByRole("link", { name: "Einreichung zurückziehen" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Einreichung zurückziehen?" }),
+    ).toBeVisible();
+    // "No" leaves everything as it is.
+    await page.getByRole("link", { name: "Nein, in Prüfung lassen" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Wir prüfen dein Profil" }),
+    ).toBeVisible();
+    expect(
+      sql(
+        `select count(*) from public.publication_audit where entity_id = '${profileA}' and action = 'withdraw'`,
+      ),
+    ).toBe("0");
 
     await context.close();
   });
@@ -381,6 +415,30 @@ test.describe("profile editor, preview and hand-in", () => {
 
     await page.goto(previewUrl());
     await expect(page.getByRole("link", { name: "Profil ohne Event einreichen" })).toBeVisible();
+
+    await context.close();
+  });
+
+  test("the owner can withdraw a hand-in and hand in again", async ({ browser }) => {
+    const { context, page } = await pageFor(browser, "ownerA");
+
+    await submitProfileWithoutEvent(page, profileA);
+    await page.goto(`/organizer/profiles/${profileA}/withdraw`);
+    await page.getByRole("button", { name: "Ja, zurückziehen" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Du kannst wieder bearbeiten" }),
+    ).toBeVisible();
+    expect(
+      sql(
+        `select count(*) from public.publication_audit where entity_id = '${profileA}' and action = 'withdraw'`,
+      ),
+    ).toBe("1");
+
+    // After the withdrawal the checklist is the way in again.
+    await page.getByRole("link", { name: "Zur Prüfliste" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Prüfe, was öffentlich wird" }),
+    ).toBeVisible();
 
     await context.close();
   });

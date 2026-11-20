@@ -10,14 +10,6 @@ const initial: FormState = { ok: false };
 const buttonClass =
   "bg-primary text-primary-foreground rounded-md px-5 py-2.5 font-medium disabled:opacity-60";
 
-function FieldError({ id, text }: { id: string; text?: string }) {
-  return text ? (
-    <p id={id} role="alert" className="text-destructive mt-1 text-sm">
-      {text}
-    </p>
-  ) : null;
-}
-
 function Status({ state }: { state: FormState }) {
   if (!state.message) return null;
 
@@ -35,36 +27,6 @@ function Status({ state }: { state: FormState }) {
         </ul>
       ) : null}
     </div>
-  );
-}
-
-export function SubmitForm({ action }: { action: Action }) {
-  const [state, formAction, pending] = useActionState(action, initial);
-
-  return (
-    <form action={formAction} className="space-y-4" noValidate>
-      <label className="flex items-start gap-3">
-        <input type="checkbox" name="rights" className="mt-1" />
-        <span>
-          Ich habe die Angaben geprüft und bin berechtigt, für dieses Projekt zu
-          veröffentlichen.
-        </span>
-      </label>
-      <label className="flex items-start gap-3">
-        <input type="checkbox" name="usage" className="mt-1" />
-        <span>
-          Ich habe die nötigen Freigaben für die Texte und das Bild. Ich bin
-          damit einverstanden, dass mein Profil mit der Freigabe durch DISKOE
-          öffentlich wird.
-        </span>
-      </label>
-      {/* TODO(spec): the final legal wording of both declarations is open. */}
-      <FieldError id="rights-error" text={state.errors?.rights} />
-      <button type="submit" disabled={pending} className={buttonClass}>
-        {pending ? "Reicht ein …" : "Zur Prüfung einreichen"}
-      </button>
-      <Status state={state} />
-    </form>
   );
 }
 

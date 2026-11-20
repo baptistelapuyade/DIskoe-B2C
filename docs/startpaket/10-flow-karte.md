@@ -118,6 +118,8 @@ Section „Flow 1 Block 2b“ (3173:39715; bis 10.11. ein Frame mit der ID 3010:
 ## F4 · Einreichen, Prüfung, Rückfrage, Live (Block 2c, W1)
 Section „Flow 1 Block 2c“ (3173:39716; bis 10.11. Frame 3018:14952). Profil und erstes Event werden gemeinsam geprüft; Profil allein einreichen ist erlaubt.
 
+**Stand Code (20.11., Slice 8 Teil B):** `EIN-01a–e`, `EIN-02a–e`, `PRF-01a/b`, `PRF-02`, `PRF-03a–d` sind gebaut und hängen am Profil (`/organizer/profiles/[id]/submit`, `/submit/confirm`, `/status`, `/submitted`, `/withdraw`, `/withdrawn`). `EIN-01e` (Pflichtblock des Formats fehlt, Zeile „Mehr zum Abend“ mit „Fehlt“) ist als Lücke der Prüfliste gebaut. Die alten Event-Adressen `events/[id]/submit` und `/review` (In Prüfung) leiten auf diese Seiten um. `VOR-01a/b` ist verschoben auf Slice 11; „Vorschau der Seiten ansehen“ führt bis dahin auf die einfachen Vorschauseiten. Ein erstes Event, das nach der Freigabe des Profils angelegt wird, geht von selbst live.
+
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
 |---|---|---|---|---|
 | EIN-01a | 3024:17561 | Prüfliste vollständig | Profil ändern → `ORG-04`; Event ändern → `EVT-01a`; Weiter zur Bestätigung → `EIN-02a`; Vorschau der Seiten ansehen → `VOR-01a` (Profil) und `VOR-01b` (Event) | |

@@ -99,8 +99,11 @@ export async function saveEventModules(request: {
     revalidatePath(`/organizer/events/${eventId}`, "layout");
     revalidatePath("/organizer");
 
-    // The submit check (EIN-01) is a later slice: until then the overview.
-    return { status: "saved", next: `/organizer/events/${eventId}/edit` };
+    // The last step of the event leads to the submit checklist (EIN-01).
+    return {
+      status: "saved",
+      next: `/organizer/profiles/${event.organizerId}/submit`,
+    };
   } catch (error) {
     // The framework signals redirect() and notFound() by throwing; those must
     // pass through. Everything else is a failed save.

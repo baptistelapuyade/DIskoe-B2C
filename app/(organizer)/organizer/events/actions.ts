@@ -9,7 +9,6 @@ import {
 } from "@/lib/domain/profile-publication";
 import { describeEventGaps } from "@/lib/domain/event-publication";
 import { copyPublishedEventImage } from "@/lib/event/publish";
-import { loadProfileState } from "@/lib/profile/draft";
 import { requireOwnedEvent } from "@/lib/event/load";
 import { createClient } from "@/lib/supabase/server";
 
@@ -46,68 +45,6 @@ function gapMessages(details: string | null | undefined): string[] {
       (gap) => gap.message,
     ),
   ];
-}
-
-export async function submitFirstPublication(
-  eventId: string,
-  _previous: PublishFormState,
-  formData: FormData,
-): Promise<PublishFormState> {
-  const path = `/organizer/events/${eventId}/submit`;
-  const { event } = await requireOwnedEvent(eventId, path);
-
-  const rights = formData.get("rights") === "on";
-  const usage = formData.get("usage") === "on";
-
-  if (!rights || !usage) {
-    return { ok: false, errors: { rights: DECLARATIONS_MISSING } };
-  }
-
-  const supabase = await createClient();
-  const profile = await loadProfileState(supabase, event.organizerId);
-
-  if (!profile?.draftRevisionId || !event.draftRevisionId) {
-    return { ok: false, message: GENERIC_ERROR };
-  }
-
-  const { error } = await supabase.rpc("submit_first_publication", {
-    p_profile_id: event.organizerId,
-    p_expected_draft_revision_id: profile.draftRevisionId,
-    p_event_id: eventId,
-    p_expected_event_draft_revision_id: event.draftRevisionId,
-    p_confirmed_rights: rights,
-    p_confirmed_usage: usage,
-  });
-
-  if (error) {
-    switch (error.code) {
-      case "DK001":
-        return {
-          ok: false,
-          message:
-            "Der Entwurf wurde zwischenzeitlich geändert. Bitte ladet die Seite neu und prüft die Vorschau noch einmal.",
-        };
-      case "DK002":
-        return {
-          ok: false,
-          message: "Es fehlen noch Angaben.",
-          gaps: gapMessages(error.details),
-        };
-      case "DK003":
-        return {
-          ok: false,
-          message:
-            "Dieser Stand kann nicht noch einmal eingereicht werden. Bitte ändert zuerst eine Angabe, besonders wenn DISKOE euch eine Frage gestellt hat.",
-        };
-      default:
-        return { ok: false, message: GENERIC_ERROR };
-    }
-  }
-
-  revalidatePath("/organizer");
-  revalidatePath(`/organizer/events/${eventId}`, "layout");
-  revalidatePath(`/organizer/profiles/${event.organizerId}`, "layout");
-  redirect(`/organizer/events/${eventId}/review`);
 }
 
 export async function publishLaterEvent(

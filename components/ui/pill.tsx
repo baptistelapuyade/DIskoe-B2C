@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 // DISKOE / Pill (status in the profile card, Figma 2966:7696 and following).
 // Meaning is never carried by colour alone: every tone has a text label.
-export type PillTone = "neutral" | "info" | "warning" | "success";
+export type PillTone = "neutral" | "info" | "warning" | "success" | "error";
 
 const TONE: Record<PillTone, { box: string; dot: string | null }> = {
   neutral: {
@@ -13,6 +13,9 @@ const TONE: Record<PillTone, { box: string; dot: string | null }> = {
   info: { box: "bg-brand-blue text-foreground", dot: null },
   warning: { box: "bg-warning-subtle text-warning", dot: "bg-warning" },
   success: { box: "bg-success-subtle text-success", dot: "bg-success" },
+  // "Fehlt" on a row of the submit checklist (Figma EIN-01b): the word carries
+  // the meaning, the red surface only supports it.
+  error: { box: "bg-error-subtle text-error", dot: null },
 };
 
 export function Pill({

@@ -157,9 +157,7 @@ export function ProfileCard({
       actions.push({
         key: "submit",
         label: t(lang, "Z22.c.action"),
-        href: oldest
-          ? `/organizer/events/${oldest.id}/preview`
-          : `${base}/preview`,
+        href: `${base}/submit`,
         variant: "primaryLg",
       });
       break;
