@@ -1,60 +1,112 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { SubmitForm } from "@/components/profile/forms";
-import { loadOwnerProfileView } from "@/lib/profile/load";
-
-import { submitForReview } from "../actions";
+import { StepShell } from "@/components/profile/step-shell";
+import { Checklist } from "@/components/submit/checklist";
+import { SummaryCard } from "@/components/submit/summary-card";
+import { t } from "@/lib/i18n";
+import { getLang } from "@/lib/i18n/server";
+import { loadSubmitData } from "@/lib/submit/load";
+import {
+  eventRows,
+  gapHref,
+  gapName,
+  gapShortName,
+  joinNames,
+  profileRows,
+} from "@/lib/submit/rows";
 
 export const dynamic = "force-dynamic";
 
-// Interim screen: submit the profile without an event (ORG-06, second action).
-// The submit screens EIN-01 and EIN-02 replace it in a later slice; until then
-// this is the older text and form, moved here from the preview page.
-export default async function SubmitProfilePage({
+// The checklist before the first submission (Figma EIN-01a to 01e): profile and
+// first event once more, what is missing, and the choice to send the profile
+// without the event. The first submission has no other way in; a profile that
+// is already in review, or live, goes elsewhere.
+export default async function SubmitChecklistPage({
   params,
 }: {
   params: Promise<{ profileId: string }>;
 }) {
   const { profileId } = await params;
-  const view = await loadOwnerProfileView(
-    profileId,
-    `/organizer/profiles/${profileId}/submit`,
-  );
   const base = `/organizer/profiles/${profileId}`;
+  const lang = await getLang();
+  const data = await loadSubmitData(profileId, `${base}/submit`);
+  const { profile, event } = data;
 
-  if (view.status !== "ready") {
-    redirect(`${base}/preview`);
+  if (profile.live) redirect("/organizer");
+  if (profile.status === "in_review" || profile.status === "question") {
+    redirect(`${base}/status`);
   }
+  // A profile with gaps has its own screen (ORG-06) that names them.
+  if (profile.status !== "ready") redirect(`${base}/preview`);
+
+  const eventId = event?.event.id ?? null;
+  const missing = {
+    missingLabel: t(lang, "Z27.row.missing"),
+    fixLabel: t(lang, "Z27.row.fix"),
+  };
+  const firstCode = data.eventGapCodes[0];
 
   return (
-    <main className="mx-auto max-w-3xl space-y-6 px-6 py-12">
-      <Link href={`${base}/preview`} className="text-muted-foreground text-sm">
-        ← Vorschau
-      </Link>
-      <h1 className="text-3xl font-bold tracking-tight">Zur Prüfung einreichen</h1>
-      <p className="text-muted-foreground">
-        DISKOE prüft genau diesen Stand. Wenn du danach etwas änderst, beginnt
-        die Prüfung mit dem neuen Stand von vorn.
-      </p>
-      <div className="bg-muted space-y-2 rounded-lg p-4">
-        <h2 className="font-medium">So geht es weiter</h2>
-        <ol className="list-decimal space-y-1 pl-5">
-          <li>
-            DISKOE prüft dein Profil. Wir melden uns so schnell wie möglich und
-            versuchen, jedes Profil noch am selben Tag zu prüfen.
-          </li>
-          <li>
-            Du bekommst eine E-Mail: entweder die Freigabe oder eine konkrete
-            Frage.
-          </li>
-          <li>
-            Mit der Freigabe ist dein Profil sofort öffentlich. Du musst nichts
-            weiter bestätigen.
-          </li>
-        </ol>
-      </div>
-      <SubmitForm action={submitForReview.bind(null, profileId)} />
-    </main>
+    <StepShell
+      lang={lang}
+      backHref={
+        eventId ? `/organizer/events/${eventId}/edit/more` : `${base}/preview`
+      }
+      eyebrow={t(lang, "Z27.submit.eyebrow")}
+      title={t(lang, "Z27.submit.title")}
+      lead={t(lang, "Z27.submit.lead")}
+      current={2}
+      wide
+      wideProgress
+    >
+      <Checklist
+        lang={lang}
+        confirmHref={`${base}/submit/confirm`}
+        confirmProfileOnlyHref={`${base}/submit/confirm?event=none`}
+        previewHref={
+          eventId ? `/organizer/events/${eventId}/preview` : `${base}/preview`
+        }
+        newEventHref={`/organizer/events/new?profile=${profileId}`}
+        profileCard={
+          <SummaryCard
+            heading={t(lang, "Z27.profile.heading")}
+            change={{
+              label: t(lang, "Z27.profile.change"),
+              href: `${base}/edit`,
+            }}
+            rows={profileRows(lang, data)}
+            {...missing}
+          />
+        }
+        eventCard={
+          eventId ? (
+            <SummaryCard
+              heading={t(lang, "Z27.event.heading")}
+              change={{
+                label: t(lang, "Z27.event.change"),
+                href: `/organizer/events/${eventId}/edit`,
+              }}
+              rows={eventRows(lang, data)}
+              {...missing}
+            />
+          ) : null
+        }
+        gapCount={data.eventGapCodes.length}
+        gapText={joinNames(
+          lang,
+          data.eventGapCodes.map((code) => gapName(lang, code)),
+        )}
+        firstGap={
+          eventId && firstCode
+            ? {
+                label: t(lang, "Z27.gap.fix", {
+                  name: gapShortName(lang, firstCode),
+                }),
+                href: gapHref(eventId, firstCode),
+              }
+            : null
+        }
+      />
+    </StepShell>
   );
 }

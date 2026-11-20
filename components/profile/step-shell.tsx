@@ -16,6 +16,7 @@ export function StepShell({
   title,
   lead,
   wide = false,
+  wideProgress = false,
   current = 0,
   children,
 }: {
@@ -26,6 +27,9 @@ export function StepShell({
   lead?: string;
   // The preview needs the full container width.
   wide?: boolean;
+  // The progress bar spans the wide column too (the submit checklist, Figma
+  // EIN-01); the other screens keep it in the 560 px column.
+  wideProgress?: boolean;
   // 0-based step of the five-step progress bar: 0 profile, 1 first event.
   current?: number;
   children: ReactNode;
@@ -52,7 +56,7 @@ export function StepShell({
           </LinkButton>
         </div>
         <div className="flex flex-col gap-10">
-          <div className="max-w-[560px]">
+          <div className={wide && wideProgress ? "" : "max-w-[560px]"}>
             <ProgressSteps
               lang={lang}
               labels={labels}

@@ -65,12 +65,14 @@ async function submitForReview(page: Page) {
   // From the preview, the way to submit without an event.
   await page.getByRole("link", { name: "Profil ohne Event einreichen" }).click();
   await page.waitForURL("**/submit", SLOW);
+  await page.getByRole("link", { name: "Weiter zur Bestätigung" }).click();
+  await page.waitForURL("**/submit/confirm", SLOW);
   await page.getByLabel(/Angaben geprüft und bin berechtigt/).check();
-  await page.getByLabel(/öffentlich wird/).check();
+  await page.getByLabel(/nötigen Rechte/).check();
   await beat(page, 600);
   await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
   await expect(
-    page.getByText("Eingereicht. DISKOE prüft dein Profil.").first(),
+    page.getByRole("heading", { name: "Wir prüfen dein Profil" }),
   ).toBeVisible(SLOW);
   await beat(page);
 }

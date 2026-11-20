@@ -2,7 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { ProgressSteps, stateLabel } from "@/components/profile/status";
-import { loadOwnerProfileView } from "@/lib/profile/load";
+import { ReviewStatus } from "@/components/submit/review-status";
+import { getLang } from "@/lib/i18n/server";
+import { loadSubmitData } from "@/lib/submit/load";
 
 export const dynamic = "force-dynamic";
 
@@ -13,12 +15,25 @@ export default async function ProfileStatusPage({
   params: Promise<{ profileId: string }>;
 }) {
   const { profileId } = await params;
-  const view = await loadOwnerProfileView(
+  const data = await loadSubmitData(
     profileId,
     `/organizer/profiles/${profileId}/status`,
   );
+  const view = data.profile;
   const base = `/organizer/profiles/${profileId}`;
   const name = view.revision?.name || view.profile.slug;
+
+  // In review for the first time: Figma PRF-01a and 01b. The question and the
+  // live states below keep the older screen until their own slices.
+  if (!view.live && view.status === "in_review") {
+    return (
+      <ReviewStatus
+        lang={await getLang()}
+        profileId={profileId}
+        data={data}
+      />
+    );
+  }
 
   // Drafts that are not waiting for anyone have their own pages.
   if (!view.live && (view.status === "incomplete" || view.status === "ready")) {

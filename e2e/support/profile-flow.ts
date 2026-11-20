@@ -87,13 +87,16 @@ export async function chooseProfileImage(
   await page.locator('input[type="file"]').setInputFiles(file);
 }
 
-// Hand-in without an event (interim page until the submit screens EIN-01/02).
+// Hand-in without an event, through the checklist (EIN-01) and the two
+// confirmations (EIN-02) to the status page "We are reviewing your profile".
 export async function submitProfileWithoutEvent(page: Page, profileId: string) {
   await page.goto(`/organizer/profiles/${profileId}/submit`);
+  await page.getByRole("link", { name: "Weiter zur Bestätigung" }).click();
+  await page.waitForURL("**/submit/confirm");
   await page.getByLabel(/Angaben geprüft und bin berechtigt/).check();
-  await page.getByLabel(/öffentlich wird/).check();
+  await page.getByLabel(/nötigen Rechte/).check();
   await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
   await expect(
-    page.getByText("Eingereicht. DISKOE prüft dein Profil.").first(),
+    page.getByRole("heading", { name: "Wir prüfen dein Profil" }),
   ).toBeVisible();
 }

@@ -22,6 +22,11 @@ export default async function EventReviewPage({
   if (view.status !== "in_review" && view.status !== "question") {
     redirect(`${base}/preview`);
   }
+  // In review for the first time: the profile has the new screen (PRF-01).
+  // The question keeps this older screen until its own slice.
+  if (view.status === "in_review") {
+    redirect(`/organizer/profiles/${view.event.event.organizerId}/status`);
+  }
 
   const name = view.event.profileName;
   const title = view.event.form.title || "Event ohne Titel";

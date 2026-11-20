@@ -42,6 +42,12 @@ import {
   type StepIntent,
 } from "@/lib/domain/event-steps";
 import { nextDayIso } from "@/lib/event/date-input";
+import {
+  ACCESS_ID,
+  ATMOSPHERE_ID,
+  FORMAT_ID,
+  PRICE_MODEL_ID,
+} from "@/lib/event/labels";
 import { t, type Lang, type MessageId } from "@/lib/i18n";
 
 import {
@@ -58,46 +64,6 @@ import { clearRetained, loadRetained, saveRetained } from "./retained";
 // server, which decides.
 
 type Status = "idle" | "saving" | "invalid" | "failed" | "offline";
-
-const FORMAT_ID: Record<(typeof PRIMARY_FORMATS)[number], MessageId> = {
-  concert: "Z24.format.concert",
-  dj_set: "Z24.format.djSet",
-  club_night: "Z24.format.clubNight",
-  listening_session: "Z24.format.listeningSession",
-  opening: "Z24.format.opening",
-  exhibition: "Z24.format.exhibition",
-  screening: "Z24.format.screening",
-};
-
-const ACCESS_ID: Record<AccessKind, MessageId> = {
-  walk_in: "Z25.access.walkIn",
-  door: "Z25.access.door",
-  online_ticket: "Z25.access.onlineTicket",
-  online_registration: "Z25.access.onlineRegistration",
-};
-
-const PRICE_MODEL_ID: Record<(typeof PRICE_MODELS)[number], MessageId> = {
-  fixed: "Z25.price.form.fixed",
-  range: "Z25.price.form.range",
-  from_price: "Z25.price.form.fromPrice",
-  free: "Z25.price.form.free",
-  donation: "Z25.price.form.donation",
-  min_donation: "Z25.price.form.minDonation",
-  unknown: "Z25.price.form.unknown",
-};
-
-const ATMOSPHERE_ID: Record<(typeof ATMOSPHERE_TERMS)[number], MessageId> = {
-  Gemütlich: "Z25.atmo.cozy",
-  "Intim/persönlich": "Z25.atmo.intimate",
-  Entspannt: "Z25.atmo.relaxed",
-  Lebhaft: "Z25.atmo.lively",
-  Ungezwungen: "Z25.atmo.casual",
-  Experimentell: "Z25.atmo.experimental",
-  "Underground/DIY": "Z25.atmo.underground",
-  "Alternativ/unabhängig": "Z25.atmo.alternative",
-  "Community-geprägt": "Z25.atmo.community",
-  Immersiv: "Z25.atmo.immersive",
-};
 
 // Eyebrow, title, lead and main action of each step. The first three steps
 // are catalogued as Z24, the next three as Z25.
