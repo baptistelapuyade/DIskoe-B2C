@@ -127,8 +127,8 @@ export async function loadQueue(supabase: Client): Promise<QueueItem[]> {
     .from("publication_audit")
     .select("entity_id, revision_id, action, created_at")
     .eq("entity_type", "profile")
-    .in("action", ["submit_for_review", "request_changes"])
-    .order("created_at", { ascending: false });
+    .in("action", ["submit_for_review", "request_changes", "withdraw"])
+    .order("id", { ascending: false });
 
   if (error) {
     throw new Error("Queue lookup failed");
@@ -196,10 +196,15 @@ export async function loadQueue(supabase: Client): Promise<QueueItem[]> {
     }
 
     const draftId = profile.draft_revision_id;
-    const submission = own.find(
+    // The latest of submit and withdraw for the draft decides (rows are
+    // newest first): a withdrawn draft is not in the queue.
+    const lastHandIn = own.find(
       (row) =>
-        row.action === "submit_for_review" && row.revision_id === draftId,
+        (row.action === "submit_for_review" || row.action === "withdraw") &&
+        row.revision_id === draftId,
     );
+    const submission =
+      lastHandIn?.action === "submit_for_review" ? lastHandIn : undefined;
     const questionOnDraft = own.find(
       (row) => row.action === "request_changes" && row.revision_id === draftId,
     );
@@ -315,12 +320,12 @@ export async function loadFounderProfileView(
   const { data: audit } = revision
     ? await supabase
         .from("publication_audit")
-        .select("created_at")
+        .select("created_at, action")
         .eq("entity_type", "profile")
         .eq("entity_id", profileId)
         .eq("revision_id", revision.id)
-        .eq("action", "submit_for_review")
-        .order("created_at", { ascending: false })
+        .in("action", ["submit_for_review", "withdraw"])
+        .order("id", { ascending: false })
         .limit(1)
     : { data: null };
 
@@ -389,7 +394,8 @@ export async function loadFounderProfileView(
       },
       image?.confirmed === true,
     ),
-    submittedAt: audit?.[0]?.created_at ?? null,
+    submittedAt:
+      audit?.[0]?.action === "submit_for_review" ? audit[0].created_at : null,
     alreadyApproved,
     question,
     questionIsOnDraft: questionOnDraft !== null,

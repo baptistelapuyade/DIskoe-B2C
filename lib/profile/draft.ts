@@ -118,6 +118,9 @@ export async function loadRevision(
 }
 
 // The audit trail is the only record that a draft was handed in for review.
+// The latest of "submit_for_review" and "withdraw" decides (same rule as
+// app_private.is_submitted in the database): a withdrawn draft is not handed
+// in any more.
 export async function wasSubmitted(
   supabase: Client,
   profileId: string,
@@ -125,18 +128,19 @@ export async function wasSubmitted(
 ): Promise<boolean> {
   const { data, error } = await supabase
     .from("publication_audit")
-    .select("id")
+    .select("action")
     .eq("entity_type", "profile")
     .eq("entity_id", profileId)
     .eq("revision_id", revisionId)
-    .eq("action", "submit_for_review")
+    .in("action", ["submit_for_review", "withdraw"])
+    .order("id", { ascending: false })
     .limit(1);
 
   if (error) {
     throw new Error("Audit lookup failed");
   }
 
-  return (data ?? []).length > 0;
+  return data?.[0]?.action === "submit_for_review";
 }
 
 export type ReviewQuestion = { message: string; createdAt: string };

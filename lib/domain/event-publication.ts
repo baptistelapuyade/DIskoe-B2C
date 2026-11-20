@@ -14,6 +14,11 @@ import { normalizeUrl } from "./profile-publication";
 import { noValue, provided, unanswered, type Answer } from "./answers";
 import { parsePriceInput, type PriceFees } from "./money";
 import {
+  requiredAnswered,
+  requiredBlock,
+  type StoredModules,
+} from "./event-modules";
+import {
   isEndAfterStart,
   LOCAL_TIME_MESSAGE,
   localToInstant,
@@ -586,6 +591,8 @@ export type EventGapCode =
   | "access"
   | "access_url"
   | "atmosphere"
+  | "visit_mode"
+  | "language"
   | "event_image"
   | "revision_missing";
 
@@ -618,6 +625,18 @@ const GAP_TEXT: Record<EventGapCode, { field: string; message: string }> = {
     message:
       "Die Atmosphäre fehlt. Wähle bis zu drei Begriffe oder schreibe einen eigenen Satz.",
   },
+  // Required block of the format (Mehr zum Abend). "Noch nicht bekannt" is an
+  // answer; a block that was never answered is the gap.
+  visit_mode: {
+    field: "modules",
+    message:
+      "Die Besuchsart fehlt. Wähle sie oder „Noch nicht bekannt“ im Schritt „Mehr zum Abend“.",
+  },
+  language: {
+    field: "modules",
+    message:
+      "Sprache und Untertitel fehlen. Wähle sie oder „Noch nicht bekannt“ im Schritt „Mehr zum Abend“.",
+  },
   event_image: {
     field: "image",
     message: "Ein bestätigtes Eventbild fehlt.",
@@ -641,9 +660,14 @@ export function describeEventGaps(codes: readonly string[]): EventGap[] {
 // Same minimum as app_private.event_gaps in the database, plus the link check
 // of online access routes. The event image is a publication gate of the
 // Durchstich (P05: a draft and a private preview work without an image).
+//
+// The required block of the format (opening: visit mode, screening: language
+// and subtitles) is read from the stored "Mehr zum Abend" blocks. Without them
+// (null) the block counts as not answered, like in the database.
 export function eventGapCodes(
   values: EventDraftValues,
   hasConfirmedImage: boolean,
+  modules: StoredModules | null = null,
 ): EventGapCode[] {
   const gaps: EventGapCode[] = [];
 
@@ -666,6 +690,13 @@ export function eventGapCodes(
     gaps.push("access_url");
   }
   if (values.atmosphere.state !== "provided") gaps.push("atmosphere");
+  if (values.format.state === "provided") {
+    const required = requiredBlock(values.format.value);
+
+    if (required !== null && !requiredAnswered(modules, values.format.value)) {
+      gaps.push(required === "visit_mode" ? "visit_mode" : "language");
+    }
+  }
   if (!hasConfirmedImage) gaps.push("event_image");
 
   return gaps;
