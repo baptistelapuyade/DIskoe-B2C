@@ -40,7 +40,7 @@ export default async function WithdrawPage({
         lead={t(lang, "Z27.decided.lead")}
         current={3}
       >
-        <div className="flex max-w-[560px] flex-col gap-6">
+        <div className="flex max-w-[560px] flex-col gap-10">
           <Notice tone="info" title={t(lang, "Z27.decided.notice.title")}>
             {t(lang, "Z27.decided.notice.line")}
           </Notice>
@@ -66,14 +66,21 @@ export default async function WithdrawPage({
       lang={lang}
       backHref={`${base}/status`}
       eyebrow={t(lang, "Z27.review.eyebrow")}
-      title={t(lang, "Z27.withdraw.title")}
+      title={t(
+        lang,
+        failed
+          ? data.eventSubmitted
+            ? "Z27.review.title"
+            : "Z27.review.titleProfile"
+          : "Z27.withdraw.title",
+      )}
       lead={t(
         lang,
         failed ? "Z27.withdrawFailed.lead" : "Z27.withdraw.lead",
       )}
       current={3}
     >
-      <div className="flex max-w-[560px] flex-col gap-6">
+      <div className="flex max-w-[560px] flex-col gap-10">
         {failed ? (
           <Notice tone="error" title={t(lang, "Z27.withdrawFailed.title")}>
             {t(lang, "Z27.withdrawFailed.line")}

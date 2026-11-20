@@ -30,40 +30,43 @@ export function ReviewStatus({
       lang={lang}
       backHref="/organizer"
       eyebrow={t(lang, "Z27.review.eyebrow")}
-      title={t(lang, withEvent ? "Z27.review.title" : "Z27.review.titleProfile")}
-      lead={t(
+      title={t(
         lang,
-        withEvent ? "Z27.review.lead" : "Z27.review.leadProfile",
-        { email: data.loginEmail ?? "" },
+        withEvent ? "Z27.review.title" : "Z27.review.titleProfile",
       )}
+      lead={t(lang, withEvent ? "Z27.review.lead" : "Z27.review.leadProfile", {
+        email: data.loginEmail ?? "",
+      })}
       current={3}
     >
-      <div className="flex max-w-[560px] flex-col gap-8">
-        {data.submittedAt ? (
-          <p className="bg-brand-blue text-foreground w-fit rounded-full px-4 py-1.5 text-base leading-6">
-            {t(lang, "Z27.review.pill", {
-              date: formatStamp(lang, data.submittedAt),
-            })}
-          </p>
-        ) : null}
-        {withEvent ? null : (
-          <section className="flex flex-col gap-2">
+      <div className="flex max-w-[560px] flex-col gap-10">
+        <div className="flex flex-col gap-6">
+          {data.submittedAt ? (
+            <p className="bg-brand-blue text-foreground w-fit rounded-full px-4 py-2 text-base leading-6">
+              {t(lang, "Z27.review.pill", {
+                date: formatStamp(lang, data.submittedAt),
+              })}
+            </p>
+          ) : null}
+          {withEvent ? null : (
+            <section className="flex flex-col gap-1">
+              <h2 className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">
+                {t(lang, "Z27.review.firstEvent")}
+              </h2>
+              <p className="text-muted-foreground text-sm leading-5">
+                {t(lang, "Z27.review.firstEventText")}
+              </p>
+            </section>
+          )}
+          <section className="flex flex-col gap-1">
             <h2 className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">
-              {t(lang, "Z27.review.firstEvent")}
+              {t(lang, "Z27.review.until")}
             </h2>
             <p className="text-muted-foreground text-sm leading-5">
-              {t(lang, "Z27.review.firstEventText")}
+              {t(lang, "Z27.review.untilText")}
             </p>
           </section>
-        )}
-        <section className="flex flex-col gap-2">
-          <h2 className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">
-            {t(lang, "Z27.review.until")}
-          </h2>
-          <p className="text-muted-foreground text-sm leading-5">
-            {t(lang, "Z27.review.untilText")}
-          </p>
-        </section>
+        </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
           {withEvent ? (
             <>
@@ -84,10 +87,7 @@ export function ReviewStatus({
                 }
                 className={primary}
               >
-                {t(
-                  lang,
-                  event ? "Z27.withdrawn.editEvent" : "Z27.only.create",
-                )}
+                {t(lang, event ? "Z27.withdrawn.editEvent" : "Z27.only.create")}
               </Link>
               <Link href={`${base}/submitted`} className={white}>
                 {t(lang, "Z27.review.viewSubmitted")}

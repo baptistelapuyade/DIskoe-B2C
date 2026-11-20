@@ -93,7 +93,7 @@ export function Checklist({
         {profileCard}
         {hasEvent ? (
           <>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-6">
               <div className="flex min-h-11 items-center gap-3">
                 <Checkbox
                   id="include-event"

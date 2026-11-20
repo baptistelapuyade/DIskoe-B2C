@@ -7,7 +7,7 @@ import { buttonClass } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
 import { t } from "@/lib/i18n";
 import { getLang } from "@/lib/i18n/server";
-import { berlinClock } from "@/lib/submit/format";
+import { berlinClock, formatDay } from "@/lib/submit/format";
 import { loadSubmitData } from "@/lib/submit/load";
 import { eventRows, profileRows } from "@/lib/submit/rows";
 
@@ -43,27 +43,32 @@ export default async function SubmittedVersionPage({
       backHref={`${base}/status`}
       eyebrow={t(lang, "Z27.review.eyebrow")}
       title={t(lang, "Z27.submitted.title")}
-      lead={t(lang, "Z27.submitted.lead", { date, time })}
+      lead={t(lang, "Z27.submitted.lead", {
+        date: formatDay(lang, date),
+        time,
+      })}
       current={3}
       wide
       wideProgress
     >
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-10">
         <Notice tone="info" title={t(lang, "Z27.submitted.notice.title")}>
           {t(lang, "Z27.submitted.notice.line")}
         </Notice>
-        <SummaryCard
-          heading={t(lang, "Z27.profile.heading")}
-          rows={profileRows(lang, data)}
-          {...missing}
-        />
-        {data.eventSubmitted && data.event ? (
+        <div className="flex flex-col gap-6">
           <SummaryCard
-            heading={t(lang, "Z27.event.heading")}
-            rows={eventRows(lang, data)}
+            heading={t(lang, "Z27.profile.heading")}
+            rows={profileRows(lang, data)}
             {...missing}
           />
-        ) : null}
+          {data.eventSubmitted && data.event ? (
+            <SummaryCard
+              heading={t(lang, "Z27.event.heading")}
+              rows={eventRows(lang, data)}
+              {...missing}
+            />
+          ) : null}
+        </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
           <Link
             href={`${base}/status`}

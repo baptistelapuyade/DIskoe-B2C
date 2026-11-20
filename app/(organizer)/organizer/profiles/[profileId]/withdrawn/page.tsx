@@ -36,7 +36,7 @@ export default async function WithdrawnPage({
       lead={t(lang, "Z27.withdrawn.lead")}
       current={2}
     >
-      <div className="flex max-w-[560px] flex-col gap-6">
+      <div className="flex max-w-[560px] flex-col gap-10">
         <Notice tone="success" title={t(lang, "Z27.withdrawn.notice.title")}>
           {t(lang, "Z27.withdrawn.notice.line")}
         </Notice>

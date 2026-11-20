@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 
 import type { SubmitState } from "@/app/(organizer)/organizer/profiles/[profileId]/submit/actions";
 import { buttonClass } from "@/components/ui/button";
@@ -82,12 +82,23 @@ export function ConfirmForm({
   })();
 
   return (
-    <form action={formAction} noValidate className="flex flex-col gap-10">
+    <form
+      // Sent by hand, not as the form action: an action form is reset after
+      // each call, which would clear both ticks after an error. The ticks stay
+      // as they are (Figma EIN-02d).
+      onSubmit={(event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        startTransition(() => formAction(data));
+      }}
+      noValidate
+      className="flex flex-col gap-10"
+    >
       {notice}
       <input type="hidden" name="rights" value={rights ? "on" : ""} />
       <input type="hidden" name="usage" value={usage ? "on" : ""} />
-      <fieldset className="flex flex-col gap-3">
-        <legend className="mb-3 flex flex-col gap-2">
+      <fieldset className="flex flex-col">
+        <legend className="mb-6 flex flex-col gap-1">
           <span className="text-foreground text-2xl leading-[30px] font-medium tracking-[-0.4px]">
             {t(lang, "Z27.confirm.heading")}
           </span>
@@ -100,8 +111,8 @@ export function ConfirmForm({
             )}
           </span>
         </legend>
-        <div className="flex flex-col gap-1">
-          <div className="flex min-h-11 items-start gap-3 py-2.5">
+        <div className="flex flex-col gap-2">
+          <div className="flex min-h-11 items-start gap-3">
             <Checkbox
               id="confirm-rights"
               checked={rights}
@@ -116,7 +127,7 @@ export function ConfirmForm({
               {t(lang, "Z27.confirm.rights")}
             </label>
           </div>
-          <div className="flex min-h-11 items-start gap-3 py-2.5">
+          <div className="flex min-h-11 items-start gap-3">
             <Checkbox
               id="confirm-usage"
               checked={usage}

@@ -24,7 +24,7 @@ export function SummaryCard({
 }) {
   return (
     <section className="bg-card border-border flex w-full flex-col gap-4 rounded-xl border p-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-3">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <h2 className="text-foreground text-2xl leading-[30px] font-medium tracking-[-0.4px] md:flex-1">
           {heading}
         </h2>
@@ -41,13 +41,13 @@ export function SummaryCard({
         {rows.map((row) => (
           <div
             key={row.key}
-            className="border-border flex flex-col gap-1 border-t py-4 md:flex-row md:gap-6"
+            className="border-border flex flex-col gap-1.5 border-t py-4 last:pb-0 md:flex-row md:gap-6"
           >
-            <dt className="text-muted-foreground flex items-start justify-between gap-2 text-base leading-6 font-medium md:w-[260px] md:shrink-0">
+            <dt className="text-muted-foreground flex items-center justify-between gap-2 text-base leading-6 font-medium md:w-[260px] md:shrink-0 md:items-start">
               {row.label}
               {row.missing ? <Pill tone="error">{missingLabel}</Pill> : null}
             </dt>
-            <dd className="text-foreground flex min-w-0 flex-1 flex-col gap-3 text-base leading-6 whitespace-pre-line md:flex-row md:items-start md:justify-between md:gap-4">
+            <dd className="text-foreground flex min-w-0 flex-1 flex-col gap-1.5 text-base leading-6 whitespace-pre-line md:flex-row md:items-start md:justify-between md:gap-4">
               {row.missing ? (
                 <>
                   <span className="text-muted-foreground">
@@ -55,10 +55,7 @@ export function SummaryCard({
                   </span>
                   <Link
                     href={row.missing.fixHref}
-                    className={buttonClass(
-                      "secondary",
-                      "w-fit shadow-sm md:shrink-0",
-                    )}
+                    className={buttonClass("ghostLg", "w-fit md:shrink-0")}
                   >
                     {fixLabel}
                   </Link>
@@ -87,7 +84,10 @@ function RowImage({ image }: { image: NonNullable<SummaryRow["image"]> }) {
         className="rounded-full"
       />
     ) : (
-      <span aria-hidden="true" className="bg-border block size-14 rounded-full" />
+      <span
+        aria-hidden="true"
+        className="bg-border block size-14 rounded-full"
+      />
     );
   }
 
@@ -99,6 +99,9 @@ function RowImage({ image }: { image: NonNullable<SummaryRow["image"]> }) {
       className="block h-20 w-16 rounded-[4px] object-cover"
     />
   ) : (
-    <span aria-hidden="true" className="bg-border block h-20 w-16 rounded-[4px]" />
+    <span
+      aria-hidden="true"
+      className="bg-border block h-20 w-16 rounded-[4px]"
+    />
   );
 }
