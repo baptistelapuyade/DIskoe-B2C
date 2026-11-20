@@ -341,7 +341,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await page.getByRole("option", { name: "Mindestalter" }).click();
   await page.getByLabel("Mindestalter", { exact: true }).fill("18");
   await page.getByRole("button", { name: "Weiter zur Vorschau" }).click();
-  await page.waitForURL(`**${base}/edit`, SLOW);
+  // The last step leads to the submit checklist (EIN-01). This profile is still
+  // a shell, so the checklist sends the owner to its preview, which names the gaps.
+  await page.waitForURL(/\/organizer\/profiles\/[^/]+\/preview/, SLOW);
   expect(field("modules->'entry_age'->>'doors_at'")).toBe("21:30");
   expect(field("modules->'entry_age'->>'min_age'")).toBe("18");
   expect(field("modules->'music'->>'precision'")).toBe("Dub Techno");

@@ -66,7 +66,7 @@ async function submitForReview(page: Page) {
   await page.getByRole("link", { name: "Profil ohne Event einreichen" }).click();
   await page.waitForURL("**/submit", SLOW);
   await page.getByRole("link", { name: "Weiter zur Bestätigung" }).click();
-  await page.waitForURL("**/submit/confirm", SLOW);
+  await page.waitForURL(/\/submit\/confirm/, SLOW);
   await page.getByLabel(/Angaben geprüft und bin berechtigt/).check();
   await page.getByLabel(/nötigen Rechte/).check();
   await beat(page, 600);

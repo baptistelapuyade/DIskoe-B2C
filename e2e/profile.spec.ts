@@ -328,7 +328,7 @@ test.describe("profile editor, preview and hand-in", () => {
     await page.getByRole("link", { name: "Profil ohne Event einreichen" }).click();
     await page.waitForURL("**/submit");
     await page.getByRole("link", { name: "Weiter zur Bestätigung" }).click();
-    await page.waitForURL("**/submit/confirm");
+    await page.waitForURL(/\/submit\/confirm/);
 
     await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
     await expect(page.getByText("Bitte bestätige beide Punkte.")).toBeVisible();

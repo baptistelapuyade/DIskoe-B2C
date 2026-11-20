@@ -92,7 +92,7 @@ export async function chooseProfileImage(
 export async function submitProfileWithoutEvent(page: Page, profileId: string) {
   await page.goto(`/organizer/profiles/${profileId}/submit`);
   await page.getByRole("link", { name: "Weiter zur Bestätigung" }).click();
-  await page.waitForURL("**/submit/confirm");
+  await page.waitForURL(/\/submit\/confirm/);
   await page.getByLabel(/Angaben geprüft und bin berechtigt/).check();
   await page.getByLabel(/nötigen Rechte/).check();
   await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
