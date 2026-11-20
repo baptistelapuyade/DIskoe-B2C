@@ -26,11 +26,15 @@ export function ConfirmForm({
   action,
   backHref,
   profileOnly,
+  answering = false,
 }: {
   lang: Lang;
   action: Action;
   backHref: string;
   profileOnly: boolean;
+  // The answer to a founder's question (Figma RFG-03a): no heading above the
+  // ticks, other button texts.
+  answering?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, INITIAL);
   const [rights, setRights] = useState(false);
@@ -40,11 +44,12 @@ export function ConfirmForm({
   const notice = (() => {
     switch (state.status) {
       case "missing": {
-        const line = !state.rights && !state.usage
-          ? "Z27.err.confirm.both"
-          : !state.rights
-            ? "Z27.err.confirm.first"
-            : "Z27.err.confirm.second";
+        const line =
+          !state.rights && !state.usage
+            ? "Z27.err.confirm.both"
+            : !state.rights
+              ? "Z27.err.confirm.first"
+              : "Z27.err.confirm.second";
 
         return (
           <Notice tone="error" title={t(lang, "Z27.err.confirm.title")}>
@@ -98,16 +103,20 @@ export function ConfirmForm({
       <input type="hidden" name="rights" value={rights ? "on" : ""} />
       <input type="hidden" name="usage" value={usage ? "on" : ""} />
       <fieldset className="flex flex-col">
-        <legend className="mb-6 flex flex-col gap-1">
+        <legend className={answering ? "sr-only" : "mb-6 flex flex-col gap-1"}>
           <span className="text-foreground text-2xl leading-[30px] font-medium tracking-[-0.4px]">
             {t(lang, "Z27.confirm.heading")}
           </span>
-          <span className="text-muted-foreground text-sm leading-5 font-normal">
+          <span
+            className={
+              answering
+                ? "hidden"
+                : "text-muted-foreground text-sm leading-5 font-normal"
+            }
+          >
             {t(
               lang,
-              profileOnly
-                ? "Z27.confirm.hintProfile"
-                : "Z27.confirm.hint",
+              profileOnly ? "Z27.confirm.hintProfile" : "Z27.confirm.hint",
             )}
           </span>
         </legend>
@@ -120,10 +129,7 @@ export function ConfirmForm({
               aria-invalid={missing !== null && !rights}
               className="mt-1"
             />
-            <label
-              htmlFor="confirm-rights"
-              className="text-base leading-6"
-            >
+            <label htmlFor="confirm-rights" className="text-base leading-6">
               {t(lang, "Z27.confirm.rights")}
             </label>
           </div>
@@ -135,10 +141,7 @@ export function ConfirmForm({
               aria-invalid={missing !== null && !usage}
               className="mt-1"
             />
-            <label
-              htmlFor="confirm-usage"
-              className="text-base leading-6"
-            >
+            <label htmlFor="confirm-usage" className="text-base leading-6">
               {t(lang, "Z27.confirm.usage")}
             </label>
           </div>
@@ -156,14 +159,16 @@ export function ConfirmForm({
                 lang,
                 state.status === "failed"
                   ? "Z27.retry"
-                  : "Z27.confirm.submit",
+                  : answering
+                    ? "Z28.again.submit"
+                    : "Z27.confirm.submit",
               )}
         </button>
         <Link
           href={backHref}
           className={buttonClass("ghostLg", "w-full md:w-auto")}
         >
-          {t(lang, "Z27.confirm.back")}
+          {t(lang, answering ? "Z28.again.back" : "Z27.confirm.back")}
         </Link>
       </div>
     </form>

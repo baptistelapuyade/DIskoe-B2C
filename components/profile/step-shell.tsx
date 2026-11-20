@@ -18,6 +18,7 @@ export function StepShell({
   wide = false,
   wideProgress = false,
   current = 0,
+  notice,
   children,
 }: {
   lang: Lang;
@@ -32,6 +33,8 @@ export function StepShell({
   wideProgress?: boolean;
   // 0-based step of the five-step progress bar: 0 profile, 1 first event.
   current?: number;
+  // A hint between the head and the content (the open question).
+  notice?: ReactNode;
   children: ReactNode;
 }) {
   const labels = [
@@ -79,6 +82,7 @@ export function StepShell({
               </p>
             ) : null}
           </div>
+          {notice}
           {children}
         </div>
       </div>

@@ -48,7 +48,10 @@ async function signedInContext(
   states: Record<string, Awaited<ReturnType<BrowserContext["storageState"]>>>,
   key: string,
 ) {
-  return germanContext(browser, { baseURL: BASE_URL, storageState: states[key] });
+  return germanContext(browser, {
+    baseURL: BASE_URL,
+    storageState: states[key],
+  });
 }
 
 async function apiClientFor(email: string) {
@@ -240,7 +243,9 @@ test.describe("sign-in and organizer assignment", () => {
     const page = await context.newPage();
 
     await page.goto("/organizer");
-    await expect(page.getByRole("heading", { name: "Dein Profil", exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Dein Profil", exact: true }),
+    ).toBeVisible();
     await expect(page.getByText("Alpha Events")).toBeVisible();
     await expect(page.getByText("Beta Events")).toHaveCount(0);
 
@@ -353,7 +358,10 @@ test.describe("sign-in and organizer assignment", () => {
 
     await page.goto("/organizer");
     await page.getByRole("button", { name: "Abmelden" }).click();
-    await expect(page).toHaveURL(`${BASE_URL}/login`);
+    await expect(page).toHaveURL(`${BASE_URL}/signed-out`);
+    await expect(
+      page.getByRole("link", { name: "Wieder anmelden" }),
+    ).toBeVisible();
 
     await page.goto("/organizer");
     await expect(page).toHaveURL(/\/login\?next=%2Forganizer$/);

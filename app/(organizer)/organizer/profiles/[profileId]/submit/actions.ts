@@ -31,6 +31,8 @@ export type SubmitState =
 export async function submitAction(
   profileId: string,
   withEvent: boolean,
+  // The submission answers a question of the founder (Figma RFG-03a, 04).
+  answering: boolean,
   _previous: SubmitState,
   formData: FormData,
 ): Promise<SubmitState> {
@@ -96,5 +98,5 @@ export async function submitAction(
 
   revalidatePath("/organizer");
   revalidatePath(base, "layout");
-  redirect(`${base}/status`);
+  redirect(answering ? `${base}/answered` : `${base}/status`);
 }

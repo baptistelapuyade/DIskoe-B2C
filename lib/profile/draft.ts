@@ -143,7 +143,13 @@ export async function wasSubmitted(
   return data?.[0]?.action === "submit_for_review";
 }
 
-export type ReviewQuestion = { message: string; createdAt: string };
+export type ReviewQuestion = {
+  message: string;
+  createdAt: string;
+  // The question was about profile and first event together. The answer is
+  // submitted the same way (Figma RFG-03a).
+  withEvent: boolean;
+};
 
 // The founder's question about one revision, if there is one. The owner reads
 // the text but never learns who wrote it (the column is not granted).
@@ -167,7 +173,11 @@ export async function loadQuestionForRevision(
   // the event, the new pair is a new submission.
   for (const row of data ?? []) {
     if (row.event_revision_id === null) {
-      return { message: row.message, createdAt: row.created_at };
+      return {
+        message: row.message,
+        createdAt: row.created_at,
+        withEvent: false,
+      };
     }
 
     const { data: current, error: currentError } = await supabase
@@ -181,7 +191,11 @@ export async function loadQuestionForRevision(
     }
 
     if ((current ?? []).length > 0) {
-      return { message: row.message, createdAt: row.created_at };
+      return {
+        message: row.message,
+        createdAt: row.created_at,
+        withEvent: true,
+      };
     }
   }
 
@@ -197,7 +211,7 @@ export async function loadLatestQuestion(
 ): Promise<ReviewQuestion | null> {
   const { data, error } = await supabase
     .from("review_requests")
-    .select("message, created_at")
+    .select("message, created_at, event_revision_id")
     .eq("profile_id", profileId)
     .order("created_at", { ascending: false })
     .limit(1);
@@ -207,7 +221,35 @@ export async function loadLatestQuestion(
   }
 
   const row = data?.[0];
-  return row ? { message: row.message, createdAt: row.created_at } : null;
+  return row
+    ? {
+        message: row.message,
+        createdAt: row.created_at,
+        withEvent: row.event_revision_id !== null,
+      }
+    : null;
+}
+
+// When the profile was handed in for review the last time (any revision), or
+// null. A question that is newer than this one has not been answered yet.
+export async function loadLatestSubmitAt(
+  supabase: Client,
+  profileId: string,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("publication_audit")
+    .select("created_at")
+    .eq("entity_type", "profile")
+    .eq("entity_id", profileId)
+    .eq("action", "submit_for_review")
+    .order("id", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    throw new Error("Audit lookup failed");
+  }
+
+  return data?.[0]?.created_at ?? null;
 }
 
 // Returns the revision that may be edited. A draft that is confirmed,

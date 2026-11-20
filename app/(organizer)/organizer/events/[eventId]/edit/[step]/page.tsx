@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 
+import { QuestionNotice } from "@/components/question/question-notice";
 import { EventStepScreen } from "@/components/event/step-screen";
 import { EVENT_STEPS, type EventStep } from "@/lib/domain/event-steps";
 import { getLang } from "@/lib/i18n/server";
 import { loadOwnerEventView } from "@/lib/event/load";
+import { loadOpenQuestionView } from "@/lib/submit/open-question";
 
 export const dynamic = "force-dynamic";
 
@@ -34,12 +36,18 @@ export default async function EditEventStepPage({
   const lang = await getLang();
   const view = await loadOwnerEventView(eventId, `${base}/edit/${current}`);
   const { form } = view;
+  const asked = await loadOpenQuestionView(
+    lang,
+    view.event.organizerId,
+    `${base}/edit/${current}`,
+  );
 
   return (
     <EventStepScreen
       lang={lang}
       step={current}
       eventId={eventId}
+      notice={asked ? <QuestionNotice question={asked} /> : null}
       profileId={view.event.organizerId}
       backHref={
         current === "basics" ? "/organizer" : `${base}/edit/${BACK[current]}`

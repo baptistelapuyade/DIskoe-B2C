@@ -15,12 +15,15 @@ export function SummaryCard({
   rows,
   missingLabel,
   fixLabel,
+  stacked = false,
 }: {
   heading: string;
   change?: { label: string; href: string };
   rows: readonly SummaryRow[];
   missingLabel: string;
   fixLabel: string;
+  // Label above value on every width (the question card in a narrow column).
+  stacked?: boolean;
 }) {
   return (
     <section className="bg-card border-border flex w-full flex-col gap-4 rounded-xl border p-6">
@@ -41,13 +44,17 @@ export function SummaryCard({
         {rows.map((row) => (
           <div
             key={row.key}
-            className="border-border flex flex-col gap-1.5 border-t py-4 last:pb-0 md:flex-row md:gap-6"
+            className={`border-border flex flex-col gap-1.5 border-t py-4 last:pb-0 ${stacked ? "" : "md:flex-row md:gap-6"}`}
           >
-            <dt className="text-muted-foreground flex items-center justify-between gap-2 text-base leading-6 font-medium md:w-[260px] md:shrink-0 md:items-start">
+            <dt
+              className={`text-muted-foreground flex items-center justify-between gap-2 text-base leading-6 font-medium ${stacked ? "" : "md:w-[260px] md:shrink-0 md:items-start"}`}
+            >
               {row.label}
               {row.missing ? <Pill tone="error">{missingLabel}</Pill> : null}
             </dt>
-            <dd className="text-foreground flex min-w-0 flex-1 flex-col gap-1.5 text-base leading-6 whitespace-pre-line md:flex-row md:items-start md:justify-between md:gap-4">
+            <dd
+              className={`text-foreground flex min-w-0 flex-1 flex-col gap-1.5 text-base leading-6 whitespace-pre-line ${stacked ? "" : "md:flex-row md:items-start md:justify-between md:gap-4"}`}
+            >
               {row.missing ? (
                 <>
                   <span className="text-muted-foreground">

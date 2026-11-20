@@ -27,12 +27,13 @@ export default async function ProfileStatusPage({
   // live states below keep the older screen until their own slices.
   if (!view.live && view.status === "in_review") {
     return (
-      <ReviewStatus
-        lang={await getLang()}
-        profileId={profileId}
-        data={data}
-      />
+      <ReviewStatus lang={await getLang()} profileId={profileId} data={data} />
     );
+  }
+
+  // The founder's question has its own screens (Figma RFG-01 to RFG-04).
+  if (!view.live && view.status === "question") {
+    redirect(`${base}/question`);
   }
 
   // Drafts that are not waiting for anyone have their own pages.
@@ -51,11 +52,9 @@ export default async function ProfileStatusPage({
           {name} · {stateLabel(view.status, view.live)}
         </p>
         <h1 className="text-3xl font-bold tracking-tight">
-          {view.status === "question"
-            ? "Wir haben eine Frage zu deinem Profil"
-            : view.status === "in_review"
-              ? "Dein Profil ist in Prüfung"
-              : "Dein Profil ist veröffentlicht"}
+          {view.status === "in_review"
+            ? "Dein Profil ist in Prüfung"
+            : "Dein Profil ist veröffentlicht"}
         </h1>
         <ProgressSteps status={view.status} live={view.live} />
       </header>
@@ -97,55 +96,9 @@ export default async function ProfileStatusPage({
         </>
       ) : null}
 
-      {view.status === "question" ? (
-        <>
-          <section
-            aria-labelledby="question-heading"
-            className="bg-muted space-y-3 rounded-lg p-6"
-          >
-            <h2 id="question-heading" className="text-sm font-medium">
-              Frage von DISKOE
-              {view.question
-                ? ` · ${new Date(view.question.createdAt).toLocaleString(
-                    "de-DE",
-                    { timeZone: "Europe/Berlin", dateStyle: "long", timeStyle: "short" },
-                  )} Uhr`
-                : ""}
-            </h2>
-            <p className="text-lg leading-8 whitespace-pre-line">
-              {view.question ? `„${view.question.message}“` : ""}
-            </p>
-          </section>
-          <section className="bg-muted space-y-2 rounded-lg p-6">
-            <h2 className="text-lg font-semibold">Das ist keine Absage</h2>
-            <p className="leading-7">
-              Dein Profil bleibt privat, bis die Frage geklärt ist. Danach
-              schaust du dir den neuen Stand an und reichst ihn erneut ein.
-            </p>
-          </section>
-          <p className="leading-7">
-            So geht es weiter: <strong>1.</strong> Angabe korrigieren.{" "}
-            <strong>2.</strong> Vorschau ansehen. <strong>3.</strong> Erneut
-            einreichen. Alles andere bleibt, wie du es eingereicht hast.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href={`${base}/edit`}
-              className="bg-primary text-primary-foreground rounded-md px-5 py-2.5 font-medium"
-            >
-              Angabe korrigieren
-            </Link>
-            <Link
-              href={`${base}/preview`}
-              className="border-border rounded-md border px-5 py-2.5 font-medium"
-            >
-              Eingereichten Stand ansehen
-            </Link>
-          </div>
-        </>
-      ) : null}
-
-      {view.live && view.status !== "in_review" && view.status !== "question" ? (
+      {view.live &&
+      view.status !== "in_review" &&
+      view.status !== "question" ? (
         <>
           <p className="text-lg leading-8">
             DISKOE hat dein Profil freigegeben. Es ist veröffentlicht.
