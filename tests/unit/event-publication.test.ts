@@ -442,3 +442,56 @@ describe("describeEventGaps", () => {
     expect(describeEventGaps(["nope"])).toEqual([]);
   });
 });
+
+describe("Required block of the format is a publication gap (EIN-01e)", () => {
+  it("opening without visit mode is a gap, 'unknown' is an answer", () => {
+    const values = parse({ format: "opening" });
+
+    expect(eventGapCodes(values, true)).toEqual(["visit_mode"]);
+    expect(eventGapCodes(values, true, {})).toEqual(["visit_mode"]);
+    expect(
+      eventGapCodes(values, true, {
+        visit_mode: {
+          mode: "unknown",
+          window_from: null,
+          window_to: null,
+          short_visit: null,
+        },
+      }),
+    ).toEqual([]);
+  });
+
+  it("screening needs program language and subtitles", () => {
+    const values = parse({ format: "screening" });
+
+    expect(eventGapCodes(values, true)).toEqual(["language"]);
+    expect(
+      eventGapCodes(values, true, {
+        language: {
+          program: "unknown",
+          subtitles: null,
+          subtitle_language: null,
+        },
+      }),
+    ).toEqual(["language"]);
+    expect(
+      eventGapCodes(values, true, {
+        language: {
+          program: "unknown",
+          subtitles: "unknown",
+          subtitle_language: null,
+        },
+      }),
+    ).toEqual([]);
+  });
+
+  it("other formats have no required block", () => {
+    expect(eventGapCodes(parse({ format: "concert" }), true)).toEqual([]);
+  });
+
+  it("describes both gaps in plain German with the module field", () => {
+    const gaps = describeEventGaps(["visit_mode", "language"]);
+
+    expect(gaps.map((gap) => gap.field)).toEqual(["modules", "modules"]);
+  });
+});

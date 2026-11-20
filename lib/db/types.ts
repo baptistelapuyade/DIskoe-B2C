@@ -958,6 +958,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      withdraw_submission: {
+        Args: { p_expected_draft_revision_id: string; p_profile_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       access_kind: "walk_in" | "door" | "online_ticket" | "online_registration"

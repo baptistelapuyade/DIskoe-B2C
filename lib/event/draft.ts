@@ -186,20 +186,23 @@ export async function wasEventSubmitted(
   eventId: string,
   revisionId: string,
 ): Promise<boolean> {
+  // The latest of "submit_for_review" and "withdraw" decides (same rule as
+  // app_private.is_submitted in the database).
   const { data, error } = await supabase
     .from("publication_audit")
-    .select("id")
+    .select("action")
     .eq("entity_type", "event")
     .eq("entity_id", eventId)
     .eq("revision_id", revisionId)
-    .eq("action", "submit_for_review")
+    .in("action", ["submit_for_review", "withdraw"])
+    .order("id", { ascending: false })
     .limit(1);
 
   if (error) {
     throw new Error("Audit lookup failed");
   }
 
-  return (data ?? []).length > 0;
+  return data?.[0]?.action === "submit_for_review";
 }
 
 // Did the founder approve this event (together with the profile)? An event

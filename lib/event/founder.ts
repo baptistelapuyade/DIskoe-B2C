@@ -6,6 +6,7 @@ import {
   eventGapCodes,
   type EventGap,
 } from "@/lib/domain/event-publication";
+import { parseStored } from "@/lib/domain/event-modules";
 import { loadEventRevision } from "@/lib/event/draft";
 import { rowToFormValues, rowToValues, type EventFormValues } from "@/lib/event/values";
 import { loadImage, type ProfileImage } from "@/lib/profile/image";
@@ -70,17 +71,22 @@ export async function loadFounderEventView(
     // submitted. The latest submission wins.
     if (event.first_approved_revision_id || !event.draft_revision_id) continue;
 
+    // The latest of submit and withdraw decides: a withdrawn draft is not
+    // submitted.
     const { data: submitted } = await supabase
       .from("publication_audit")
-      .select("created_at")
+      .select("created_at, action")
       .eq("entity_type", "event")
       .eq("entity_id", event.id)
       .eq("revision_id", event.draft_revision_id)
-      .eq("action", "submit_for_review")
-      .order("created_at", { ascending: false })
+      .in("action", ["submit_for_review", "withdraw"])
+      .order("id", { ascending: false })
       .limit(1);
 
-    const at = submitted?.[0]?.created_at;
+    const at =
+      submitted?.[0]?.action === "submit_for_review"
+        ? submitted[0].created_at
+        : undefined;
 
     if (at && (!chosen || (chosen.submittedAt ?? "") < at)) {
       chosen = {
@@ -111,7 +117,11 @@ export async function loadFounderEventView(
     form: rowToFormValues(revision),
     image,
     gaps: describeEventGaps(
-      eventGapCodes(rowToValues(revision), image?.confirmed === true),
+      eventGapCodes(
+        rowToValues(revision),
+        image?.confirmed === true,
+        parseStored(revision.modules),
+      ),
     ),
     submittedAt: chosen.submittedAt,
   };

@@ -140,6 +140,8 @@ begin
     'price_state', 'unknown', 'price_model', 'unknown',
     'access_state', 'provided', 'access_routes', '[{"kind": "walk_in"}]'::jsonb,
     'atmosphere_state', 'provided', 'atmosphere_tags', '{warm,loud}',
+    -- An opening has a required block (visit mode); "unknown" is an answer.
+    'modules', '{"visit_mode": {"mode": "unknown", "window_from": null, "window_to": null, "short_visit": null}}'::jsonb,
     'event_image_use_id', p_use
   ) || p_over;
   select string_agg(quote_ident(k), ', '),
@@ -1708,7 +1710,8 @@ insert into tests.expected_exec values
   ('public', 'request_profile_changes'), ('public', 'claim_profile_mail'),
   ('public', 'finish_profile_mail'),
   ('public', 'submit_first_publication'), ('public', 'approve_first_publication'),
-  ('public', 'change_profile_slug'), ('app_private', 'profile_links_valid');
+  ('public', 'change_profile_slug'), ('app_private', 'profile_links_valid'),
+  ('public', 'withdraw_submission');
 select tests.expect_count($q$
   select n.nspname, p.proname
     from pg_proc p join pg_namespace n on n.oid = p.pronamespace
@@ -1846,6 +1849,8 @@ insert into tests.expected_objects values
   ('function', 'public', 'approve_first_publication'),
   ('function', 'public', 'change_profile_slug'),
   ('function', 'app_private', 'profile_links_valid'),
+  ('function', 'app_private', 'is_submitted'),
+  ('function', 'public', 'withdraw_submission'),
   ('table', 'public', 'auth_code_attempts'),
   ('function', 'public', 'auth_code_status'),
   ('function', 'public', 'auth_code_fail'),
@@ -2013,6 +2018,120 @@ select tests.expect_error(format($q$select public.change_profile_slug(%L, 'links
 select tests.as_superuser();
 select tests.expect_true(format($q$select slug = 'links-neu' from public.profiles where id = %L$q$, :'pv'),
   'the fixed address did not change');
+
+-- ===========================================================================
+-- 7f. Withdrawing a submission and the required block (Slice 8)
+-- ===========================================================================
+\set uid_e 'e0000000-0000-0000-0000-00000000000e'
+select tests.as_superuser();
+insert into auth.users (id, email) values (:'uid_e', 'owner-e@example.test');
+select tests.as_user(:'uid_f');
+select public.provision_profile_owner(:'uid_e', 'owner-e', 'Epsilon Nights') as pe \gset
+select tests.as_user(:'uid_e');
+select draft_revision_id as re1 from public.profiles where id = :'pe' \gset
+select tests.new_profile_image_use(:'pe', true) as use_e \gset
+select tests.expect_affected(format('update public.profile_revisions set profile_image_use_id = %L, name = %L, short_intro = %L, official_url = %L where id = %L', :'use_e', 'Epsilon Nights', 'Epsilon.', 'https://epsilon.example.test', :'re1'),
+  1, 'E completes the profile draft');
+select tests.expect_affected(format($q$insert into public.events (organizer_id, slug) values (%L, 'e-first-night')$q$, :'pe'),
+  1, 'E creates the first event');
+select id as ee1 from public.events where slug = 'e-first-night' \gset
+select tests.new_event_image_use(:'ee1') as use_ee1 \gset
+
+-- Required block: opening needs the visit mode (the gap check is internal,
+-- so it is read as superuser; the owner sees its effect through submitting)
+select tests.ev_insert(:'ee1', :'use_ee1', '{"modules":null}') as eve_a \gset
+select tests.ev_insert(:'ee1', :'use_ee1', '{"modules":{"visit_mode":{"mode":null,"window_from":null,"window_to":null,"short_visit":null}}}') as eve_b \gset
+select tests.ev_insert(:'ee1', :'use_ee1', '{"modules":{"music":{"precision":null,"genres":[]}}}') as eve_c \gset
+select tests.ev_insert(:'ee1', :'use_ee1', '{"primary_format":"screening","modules":{"language":{"program":"de","subtitles":null,"subtitle_language":null}}}') as evs_a \gset
+select tests.ev_insert(:'ee1', :'use_ee1', '{"primary_format":"screening","modules":{"language":{"program":"original_subtitled","subtitles":"unknown","subtitle_language":null}}}') as evs_b \gset
+select tests.ev_insert(:'ee1', :'use_ee1', '{"primary_format":"concert","modules":null}') as eve_d \gset
+select tests.ev_insert(:'ee1', :'use_ee1') as eve_ok \gset
+select tests.as_superuser();
+select tests.expect_true(format('select app_private.event_gaps(%L) = array[%L]', :'eve_a', 'visit_mode'),
+  'an opening without modules has the gap visit_mode');
+select tests.expect_true(format('select app_private.event_gaps(%L) = array[%L]', :'eve_b', 'visit_mode'),
+  'a visit mode block without a value is still a gap');
+select tests.expect_true(format('select app_private.event_gaps(%L) = array[%L]', :'eve_c', 'visit_mode'),
+  'other blocks do not answer the required block');
+select tests.expect_true(format('select app_private.event_gaps(%L) = array[%L]', :'evs_a', 'language'),
+  'a screening without subtitles has the gap language');
+select tests.expect_true(format('select app_private.event_gaps(%L) = array[]::text[]', :'evs_b'),
+  'unknown language and subtitles are valid answers');
+select tests.expect_true(format('select app_private.event_gaps(%L) = array[]::text[]', :'eve_d'),
+  'a format without a required block has no module gap');
+select tests.expect_true(format('select app_private.event_gaps(%L) = array[]::text[]', :'eve_ok'),
+  'an opening with the visit mode "unknown" is complete');
+
+select tests.as_user(:'uid_e');
+select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'eve_a', :'ee1'),
+  1, 'E selects an opening without the visit mode');
+select tests.expect_error(format('select public.submit_first_publication(%L, %L, %L, %L, true, true)', :'pe', :'re1', :'ee1', :'eve_a'),
+  'DK002', 'an opening without the visit mode cannot be submitted', 'event.visit_mode');
+select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'eve_ok', :'ee1'),
+  1, 'E selects a complete opening');
+
+-- A complete pair is handed in
+select public.submit_first_publication(:'pe', :'re1', :'ee1', :'eve_ok', true, true);
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id in (%L, %L) and action = 'submit_for_review'$q$, :'pe', :'ee1'),
+  2, 'the pair is handed in');
+select tests.as_superuser();
+select tests.expect_true(format($q$select app_private.is_submitted('profile', %L, %L) and app_private.is_submitted('event', %L, %L)$q$, :'pe', :'re1', :'ee1', :'eve_ok'),
+  'is_submitted is true for a handed-in pair');
+
+-- Withdrawing
+select tests.as_anon();
+select tests.expect_error(format('select public.withdraw_submission(%L, %L)', :'pe', :'re1'),
+  '42501', 'anon cannot execute withdraw_submission');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.withdraw_submission(%L, %L)', :'pe', :'re1'),
+  '42501', 'another owner cannot withdraw E''s submission');
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.withdraw_submission(%L, %L)', :'pe', :'re1'),
+  '42501', 'the founder cannot withdraw an owner''s submission');
+select tests.as_user(:'uid_e');
+select tests.expect_error(format('select public.withdraw_submission(%L, %L)', :'pe', gen_random_uuid()),
+  'DK001', 'a stale profile revision cannot be withdrawn');
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id in (%L, %L) and action = 'withdraw'$q$, :'pe', :'ee1'),
+  0, 'refused withdrawals leave no audit row');
+select public.withdraw_submission(:'pe', :'re1');
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id in (%L, %L) and action = 'withdraw'$q$, :'pe', :'ee1'),
+  2, 'the withdrawal is audited for profile and event');
+select public.withdraw_submission(:'pe', :'re1');
+select tests.expect_count(format($q$select id from public.publication_audit where entity_id in (%L, %L) and action = 'withdraw'$q$, :'pe', :'ee1'),
+  2, 'withdrawing twice adds nothing');
+select tests.as_superuser();
+select tests.expect_true(format($q$select not app_private.is_submitted('profile', %L, %L) and not app_private.is_submitted('event', %L, %L)$q$, :'pe', :'re1', :'ee1', :'eve_ok'),
+  'after the withdrawal nothing is handed in');
+
+-- The founder cannot decide a withdrawn submission
+select tests.as_user(:'uid_f');
+select tests.expect_error(format('select public.approve_first_publication(%L, %L, %L, %L)', :'pe', :'re1', :'ee1', :'eve_ok'),
+  'DK003', 'a withdrawn submission cannot be approved');
+select tests.expect_error(format('select public.request_profile_changes(%L, %L, %L, %L)', :'pe', :'re1', 'Is the venue right?', :'eve_ok'),
+  'DK003', 'a withdrawn submission cannot get a question');
+select tests.as_superuser();
+select tests.expect_true(format($q$select first_approved_revision_id is null and publication_state = 'private' from public.profiles where id = %L$q$, :'pe'),
+  'a refused approval of a withdrawn submission leaves the profile private');
+
+-- The unchanged revisions can be handed in again
+select tests.as_user(:'uid_e');
+select public.submit_first_publication(:'pe', :'re1', :'ee1', :'eve_ok', true, true);
+select tests.as_superuser();
+select tests.expect_true(format($q$select app_private.is_submitted('profile', %L, %L) and app_private.is_submitted('event', %L, %L)$q$, :'pe', :'re1', :'ee1', :'eve_ok'),
+  'a withdrawn pair can be handed in again');
+
+-- A question ends the owner's right to withdraw
+select tests.as_user(:'uid_f');
+select public.request_profile_changes(:'pe', :'re1', 'Is the venue right?', :'eve_ok');
+select tests.as_user(:'uid_e');
+select tests.expect_error(format('select public.withdraw_submission(%L, %L)', :'pe', :'re1'),
+  'DK003', 'a submission with a question cannot be withdrawn');
+
+-- After the first approval there is nothing to withdraw
+select tests.as_user(:'uid_d');
+select tests.expect_error(format('select public.withdraw_submission(%L, %L)', :'pc', :'rc1'),
+  'DK003', 'an approved profile cannot be withdrawn');
+select tests.as_superuser();
 
 -- ===========================================================================
 -- Summary

@@ -84,7 +84,11 @@ export async function loadOwnerEventView(
 
   const gaps = revision
     ? describeEventGaps(
-        eventGapCodes(rowToValues(revision), image?.confirmed === true),
+        eventGapCodes(
+          rowToValues(revision),
+          image?.confirmed === true,
+          parseStored(revision.modules),
+        ),
       )
     : describeEventGaps(["revision_missing"]);
 
