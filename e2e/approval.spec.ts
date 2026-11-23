@@ -667,16 +667,39 @@ test.describe("first approval, publication and public image", () => {
       ),
     ).toBeVisible();
 
+    // The old edit address leads to the editor of a live profile (LPA-01a).
     await page.goto(`/organizer/profiles/${profileA}/edit`);
+    await page.waitForURL("**/changes/edit", SLOW);
     await expect(
-      page.getByText("DISKOE hat dieses Profil freigegeben.", { exact: false }),
-    ).toHaveCount(0);
-    await saveDetails(
-      page,
-      { intro: "A new text that is not public yet." },
-      "later",
+      page.getByRole("heading", { name: "Ändere dein Profil" }),
+    ).toBeVisible(SLOW);
+    await expect(page.getByText("Dein Profil ist live.")).toBeVisible();
+
+    // A live profile stays complete: an empty introduction is not saved (01b).
+    await page.getByLabel("Kurzvorstellung").fill("");
+    await page.getByRole("button", { name: "Änderungen speichern" }).click();
+    await expect(page.getByText("Schreibe ein bis zwei Sätze.")).toBeVisible(
+      SLOW,
     );
-    await page.waitForURL("**/organizer", SLOW);
+
+    // Typed but not saved: "Cancel" asks first (01d) and keeps the values.
+    await page
+      .getByLabel("Kurzvorstellung")
+      .fill("A new text that is not public yet.");
+    await page.getByRole("button", { name: "Abbrechen" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Ohne Speichern verlassen?" }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Weiter bearbeiten" }).click();
+    await expect(page.getByLabel("Kurzvorstellung")).toHaveValue(
+      "A new text that is not public yet.",
+    );
+
+    await page.getByRole("button", { name: "Änderungen speichern" }).click();
+    await page.waitForURL("**/changes/saved", SLOW);
+    await expect(
+      page.getByRole("heading", { name: "Änderungen gespeichert" }),
+    ).toBeVisible();
 
     const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },
@@ -687,9 +710,19 @@ test.describe("first approval, publication and public image", () => {
       .eq("slug", slugA);
     expect(rows.data![0].short_intro).toBe("Alpha Events nights.");
 
-    await page.goto(`/organizer/profiles/${profileA}/preview`);
+    // The review names exactly what changed (LPA-03a).
+    await page.goto(`/organizer/profiles/${profileA}/changes`);
     await expect(
-      page.getByRole("button", { name: "Änderungen veröffentlichen" }),
+      page.getByRole("heading", { name: "Das ändert sich" }),
+    ).toBeVisible(SLOW);
+    await expect(
+      page.getByRole("heading", { name: "Kurzvorstellung" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Unverändert: Name, Links und Kontakt"),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Änderungen veröffentlichen" }),
     ).toBeVisible();
 
     await context.close();
@@ -699,23 +732,87 @@ test.describe("first approval, publication and public image", () => {
     browser,
   }) => {
     const { context, page } = await pageFor(browser, "ownerA");
-    await page.goto(`/organizer/profiles/${profileA}/preview`);
+    await page.goto(`/organizer/profiles/${profileA}/changes`);
+    await page
+      .getByRole("link", { name: "Änderungen veröffentlichen" })
+      .click();
+    await page.waitForURL("**/changes/publish?d=*", SLOW);
 
-    await page
-      .getByRole("button", { name: "Änderungen veröffentlichen" })
-      .click();
+    // Without both ticks nothing is published (04b).
+    await page.getByRole("button", { name: "Jetzt veröffentlichen" }).click();
+    await expect(page.getByText("Bitte bestätige beide Punkte.")).toBeVisible();
+    await page.getByLabel(/Angaben geprüft und bin berechtigt/).check();
+    await page.getByLabel(/nötigen Rechte/).check();
+    await page.getByRole("button", { name: "Jetzt veröffentlichen" }).click();
+
+    await page.waitForURL("**/changes/published", SLOW);
     await expect(
-      page.getByText(
-        "Die geänderten Angaben werden öffentlich sichtbar. Jetzt veröffentlichen?",
-      ),
+      page.getByRole("heading", { name: "Deine Änderungen sind live" }),
     ).toBeVisible();
-    await page
-      .getByRole("button", { name: "Ja, jetzt veröffentlichen" })
-      .click();
-    // The publish form disappears once the draft is the published revision.
-    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible(
-      SLOW,
+
+    const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false },
+    });
+    const rows = await anon
+      .from("public_profiles")
+      .select("short_intro")
+      .eq("slug", slugA);
+    expect(rows.data![0].short_intro).toBe(
+      "A new text that is not public yet.",
     );
+
+    await context.close();
+  });
+
+  test("a draft of a live profile can be discarded, and a stale draft is caught", async ({
+    browser,
+  }) => {
+    const { context, page } = await pageFor(browser, "ownerA");
+    await page.goto(`/organizer/profiles/${profileA}/changes/edit`);
+    await page.getByLabel("Kurzvorstellung").fill("Will be thrown away.");
+    await page.getByRole("button", { name: "Änderungen speichern" }).click();
+    await page.waitForURL("**/changes/saved", SLOW);
+
+    // A publish or discard for another draft than the reviewed one opens the
+    // review again with a hint (LPA-03c); nothing is published.
+    await page.goto(
+      `/organizer/profiles/${profileA}/changes/publish?d=00000000-0000-0000-0000-000000000000`,
+    );
+    await page.waitForURL("**/changes?stale=1", SLOW);
+    await expect(
+      page.getByText("Dein Entwurf hat sich geändert."),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Das ändert sich" }),
+    ).toBeVisible();
+
+    await page.getByRole("link", { name: "Änderungen verwerfen" }).click();
+    await page.waitForURL("**/changes/discard?d=*", SLOW);
+    await expect(
+      page.getByText("Das lässt sich nicht rückgängig machen."),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Ja, verwerfen" }).click();
+    await page.waitForURL("**/changes/discarded", SLOW);
+    await expect(
+      page.getByRole("heading", { name: "Entwurf verworfen" }),
+    ).toBeVisible();
+
+    // The draft row is gone, the profile points at the published revision,
+    // and the public page is as it was.
+    expect(
+      sql(
+        `select (draft_revision_id = published_revision_id)::text from public.profiles where id = '${profileA}'`,
+      ),
+    ).toBe("true");
+    expect(
+      sql(
+        `select count(*) from public.profile_revisions where profile_id = '${profileA}' and short_intro = 'Will be thrown away.'`,
+      ),
+    ).toBe("0");
+    await page.goto(`/organizer/profiles/${profileA}/changes`);
+    await expect(
+      page.getByRole("heading", { name: "Du hast nichts geändert" }),
+    ).toBeVisible(SLOW);
 
     const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },
