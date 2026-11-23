@@ -853,6 +853,90 @@ Deutsch aus den Figma-Frames RFG-01a bis RFG-04, LIV-01a bis LIV-03 und ERR-01 b
 | Z28.err.out.lead | Bis bald. Deine Angaben bleiben gespeichert. | See you soon. Your details stay saved. | ERR-05, Einleitung |
 | Z28.err.out.login | Wieder anmelden | Sign in again | ERR-05, Button |
 
+### Live-Profil ändern und veröffentlichen (Z29, Welle 1 Block 3, Slice 10, Stand 23.11.2026)
+Deutsch aus den Figma-Frames LPA-01a bis LPA-06b, LPA-01d und LPA-03c (Dev-Status „Ready for dev“ auf der Section); Englisch ist Vorschlag (Review offen). Wiederverwendet werden: Feldnamen und -hinweise aus Z23.details.* (Name, Kurzvorstellung, Profiladresse, Website, Instagram, Kontakt, „Weiteren Link hinzufügen“), die Fehlerzeilen aus Z23.check.*, die beiden Haken aus Z27.confirm.rights und Z27.confirm.usage (derselbe Wortlaut wie beim Einreichen; der Founder prüft ihn vor der Alpha-Öffnung rechtlich), „Zurück“ aus Z20.back, Eyebrow „Live“ aus Z28.live.eyebrow und „Profil ansehen“ aus Z28.live.viewProfile. Founder-Entscheidungen vom 23.11.2026: „Nichts angegeben“ und „Entfernt“ in der Änderungsansicht, neuer Hinweis bei geändertem Entwurf (LPA-03c), Einleitung der Änderungsansicht ohne Versprechen einer Seitenvorschau.
+
+| ID | Deutsch | Englisch | Verwendung |
+|---|---|---|---|
+| Z29.edit.eyebrow | Profil ändern | Edit profile | LPA-01a bis c und 01d, Eyebrow |
+| Z29.edit.title | Ändere dein Profil | Change your profile | LPA-01a bis c, Titel |
+| Z29.edit.lead | Hier änderst du die Angaben deiner öffentlichen Seite. | Here you change the details on your public page. | LPA-01a bis c, Einleitung |
+| Z29.edit.live.title | Dein Profil ist live. | Your profile is live. | LPA-01a, Hinweis (Info), Zeile 1 |
+| Z29.edit.live.line | Änderungen bleiben privat, bis du sie veröffentlichst. Öffentlich ist bis dahin der bisherige Stand. | Changes stay private until you publish them. Until then the public page keeps its current version. | LPA-01a, Hinweis (Info), Zeile 2 |
+| Z29.edit.name.required | Gib den Namen deines Projekts ein. | Enter the name of your project. | LPA-01b, Fehler am Feld Name (Text ohne Frame, gleiche Form wie intro.required) |
+| Z29.edit.intro.required | Schreibe ein bis zwei Sätze. | Write one or two sentences. | LPA-01b, Fehler am Feld Kurzvorstellung |
+| Z29.edit.links.required | Trage mindestens einen Link oder einen Kontakt ein. | Enter at least one link or a contact. | LPA-01b, Fehler am Feld Website (Text ohne Frame, gleiche Form wie intro.required) |
+| Z29.edit.fail.title | Das Speichern hat nicht geklappt. | Saving didn’t work. | LPA-01c, Hinweis (Fehler), Zeile 1 |
+| Z29.edit.fail.line | Deine Eingaben sind noch da. Versuche es noch einmal. | Your entries are still here. Try again. | LPA-01c, Hinweis (Fehler), Zeile 2 |
+| Z29.edit.save | Änderungen speichern | Save changes | LPA-01a/b, Hauptbutton |
+| Z29.edit.saving | Speichert … | Saving … | LPA-01a bis c, Hauptbutton während des Sendens |
+| Z29.edit.retry | Noch einmal speichern | Save again | LPA-01c, Hauptbutton |
+| Z29.edit.cancel | Abbrechen | Cancel | LPA-01a bis c, Button |
+| Z29.leave.title | Ohne Speichern verlassen? | Leave without saving? | LPA-01d, Titel |
+| Z29.leave.lead | Deine letzten Änderungen sind noch nicht gespeichert. | Your latest changes aren’t saved yet. | LPA-01d, Einleitung |
+| Z29.leave.notice.title | Die Änderungen gehen verloren, wenn du jetzt gehst. | The changes are lost if you leave now. | LPA-01d, Hinweis (Warnung), Zeile 1 |
+| Z29.leave.notice.line | Öffentlich bleibt der bisherige Stand, wie er ist. | The public page stays as it is. | LPA-01d, Hinweis (Warnung), Zeile 2 |
+| Z29.leave.go | Ohne Speichern verlassen | Leave without saving | LPA-01d, Button |
+| Z29.keepEditing | Weiter bearbeiten | Keep editing | LPA-01d Hauptbutton; LPA-02, LPA-03a und c, Button |
+| Z29.saved.title | Änderungen gespeichert | Changes saved | LPA-02, Titel |
+| Z29.saved.lead | Die Änderungen sind noch nicht öffentlich. Prüfe zuerst, was sich ändert. | The changes aren’t public yet. First check what changes. | LPA-02, Einleitung |
+| Z29.saved.notice.title | Gespeichert. | Saved. | LPA-02, Hinweis (Erfolg), Zeile 1 |
+| Z29.saved.notice.line | Öffentlich ist weiter der bisherige Stand. | The public page still shows its current version. | LPA-02, Hinweis (Erfolg), Zeile 2 |
+| Z29.saved.review | Vorschau ansehen und veröffentlichen | View preview and publish | LPA-02, Hauptbutton |
+| Z29.changes.eyebrow | Änderungen veröffentlichen | Publish changes | LPA-03a bis c und 04a bis c, Eyebrow |
+| Z29.changes.title | Das ändert sich | What changes | LPA-03a und c, Titel |
+| Z29.changes.lead | Das ist neu gegenüber deiner öffentlichen Seite. Alles andere bleibt, wie es ist. | This is new compared with your public page. Everything else stays as it is. | LPA-03a und c, Einleitung (Founder, 23.11.2026; die echte Seitenvorschau kommt mit VOR-01) |
+| Z29.changes.field.name | Name | Name | LPA-03a, Kartentitel (Name; Figma zeigt dafür kein Beispiel) |
+| Z29.changes.field.intro | Kurzvorstellung | Short introduction | LPA-03a, Kartentitel |
+| Z29.changes.field.links | Links und Kontakt | Links and contact | LPA-03a, Kartentitel |
+| Z29.changes.change | Ändern | Change | LPA-03a, Button auf der Karte |
+| Z29.changes.before | Bisher öffentlich | Public so far | LPA-03a, Zeilenname |
+| Z29.changes.after | Neu | New | LPA-03a, Zeilenname |
+| Z29.changes.empty | Nichts angegeben | Nothing entered | LPA-03a, Wert bei „Bisher öffentlich“, wenn es das Feld noch nicht gab (Founder, 23.11.2026) |
+| Z29.changes.removed | Entfernt | Removed | LPA-03a, Wert bei „Neu“, wenn das Feld jetzt leer ist (Founder, 23.11.2026) |
+| Z29.changes.unchanged | Unverändert: {fields}. | Unchanged: {fields}. | LPA-03a, Hinweis; {fields} sind nur die wirklich unveränderten Felder, verbunden mit „und“ |
+| Z29.changes.unchanged.name | Name | name | LPA-03a, Teil von {fields} |
+| Z29.changes.unchanged.slug | Profiladresse | profile address | LPA-03a, Teil von {fields} |
+| Z29.changes.unchanged.image | Profilbild | profile image | LPA-03a, Teil von {fields} |
+| Z29.changes.unchanged.intro | Kurzvorstellung | short introduction | LPA-03a, Teil von {fields} |
+| Z29.changes.unchanged.links | Links und Kontakt | links and contact | LPA-03a, Teil von {fields} |
+| Z29.changes.publish | Änderungen veröffentlichen | Publish changes | LPA-03a und c, Hauptbutton |
+| Z29.changes.discard | Änderungen verwerfen | Discard changes | LPA-03a und c, Button |
+| Z29.changes.stale.title | Dein Entwurf hat sich geändert. | Your draft has changed. | LPA-03c, Hinweis (Info), Zeile 1 (Entwurf in einem anderen Tab oder Gerät geändert; Founder, 23.11.2026) |
+| Z29.changes.stale.line | Prüfe ihn noch einmal. | Check it once more. | LPA-03c, Hinweis (Info), Zeile 2 |
+| Z29.none.title | Du hast nichts geändert | You haven’t changed anything | LPA-03b, Titel |
+| Z29.none.lead | Dein Entwurf ist gleich wie der öffentliche Stand. Es gibt nichts zu veröffentlichen. | Your draft matches the public version. There is nothing to publish. | LPA-03b, Einleitung |
+| Z29.none.notice.title | Keine Änderungen vorhanden. | No changes found. | LPA-03b, Hinweis (Info), Zeile 1 |
+| Z29.none.notice.line | Ändere etwas im Profil, dann erscheint es hier. | Change something in your profile and it shows up here. | LPA-03b, Hinweis (Info), Zeile 2 |
+| Z29.none.edit | Profil bearbeiten | Edit profile | LPA-03b, Hauptbutton |
+| Z29.home | Zur Startseite | To the home page | LPA-03b, 05 und 06b, Button |
+| Z29.publish.title | Änderungen veröffentlichen? | Publish the changes? | LPA-04a bis c, Titel |
+| Z29.publish.lead | Die Änderungen sind danach sofort öffentlich. DISKOE prüft sie nicht noch einmal. | The changes are public right away. DISKOE doesn’t review them again. | LPA-04a bis c, Einleitung |
+| Z29.publish.err.title | Bitte bestätige beide Punkte. | Please confirm both points. | LPA-04b, Hinweis (Fehler), Zeile 1 |
+| Z29.publish.err.line | Setze beide Haken, dann kannst du veröffentlichen. | Tick both boxes, then you can publish. | LPA-04b, Hinweis (Fehler), Zeile 2 |
+| Z29.publish.fail.title | Das Veröffentlichen hat nicht geklappt. | Publishing didn’t work. | LPA-04c, Hinweis (Fehler), Zeile 1 |
+| Z29.publish.fail.line | Öffentlich ist weiter der bisherige Stand. Deine Änderungen sind gespeichert. Versuche es noch einmal. | The public page still shows its current version. Your changes are saved. Try again. | LPA-04c, Hinweis (Fehler), Zeile 2 |
+| Z29.publish.go | Jetzt veröffentlichen | Publish now | LPA-04a/b, Hauptbutton |
+| Z29.publish.pending | Veröffentlicht … | Publishing … | LPA-04a bis c, Hauptbutton während des Sendens |
+| Z29.publish.retry | Noch einmal versuchen | Try again | LPA-04c, Hauptbutton |
+| Z29.publish.back | Zurück zur Vorschau | Back to the preview | LPA-04a bis c, Button |
+| Z29.done.title | Deine Änderungen sind live | Your changes are live | LPA-05, Titel (Eyebrow „Live“ aus Z28.live.eyebrow) |
+| Z29.done.lead | Deine öffentliche Seite zeigt jetzt den neuen Stand. | Your public page now shows the new version. | LPA-05, Einleitung |
+| Z29.done.notice.title | Veröffentlicht. | Published. | LPA-05, Hinweis (Erfolg), Zeile 1 |
+| Z29.done.notice.line | Link und Adresse deiner Seite sind gleich geblieben. | The link and address of your page haven’t changed. | LPA-05, Hinweis (Erfolg), Zeile 2 |
+| Z29.discard.eyebrow | Änderungen verwerfen | Discard changes | LPA-06a und b, Eyebrow |
+| Z29.discard.title | Änderungen verwerfen? | Discard the changes? | LPA-06a, Titel |
+| Z29.discard.lead | Dein privater Entwurf wird gelöscht. | Your private draft will be deleted. | LPA-06a, Einleitung |
+| Z29.discard.notice.title | Das lässt sich nicht rückgängig machen. | This can’t be undone. | LPA-06a, Hinweis (Warnung), Zeile 1 |
+| Z29.discard.notice.line | Öffentlich bleibt der bisherige Stand, wie er ist. | The public page stays as it is. | LPA-06a, Hinweis (Warnung), Zeile 2 |
+| Z29.discard.yes | Ja, verwerfen | Yes, discard | LPA-06a, Button |
+| Z29.discard.pending | Verwirft … | Discarding … | LPA-06a, Button während des Sendens |
+| Z29.discard.no | Nein, behalten | No, keep it | LPA-06a, Hauptbutton |
+| Z29.discarded.title | Entwurf verworfen | Draft discarded | LPA-06b, Titel |
+| Z29.discarded.lead | Dein Profil ist wieder so wie öffentlich. | Your profile is back to what is public. | LPA-06b, Einleitung |
+| Z29.discarded.notice.title | Die Änderungen sind verworfen. | The changes are discarded. | LPA-06b, Hinweis (Erfolg), Zeile 1 |
+| Z29.discarded.notice.line | Öffentlich hat sich nichts geändert. | Nothing changed on the public page. | LPA-06b, Hinweis (Erfolg), Zeile 2 |
+
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.
 
