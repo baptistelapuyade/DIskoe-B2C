@@ -31,6 +31,8 @@ export default defineConfig({
       ? "npm run build && npm run start -- --hostname 127.0.0.1"
       : "npm run dev -- --hostname 127.0.0.1",
     url: "http://127.0.0.1:3000",
+    // Show server output in the CI log so that server-side errors are visible.
+    stdout: process.env.E2E_BUILD ? "pipe" : "ignore",
     // The e2e specs read the open state (sitemap, robots); the closed state is unit-tested.
     env: { SITE_INDEXING: "on" },
     reuseExistingServer: !process.env.CI,
