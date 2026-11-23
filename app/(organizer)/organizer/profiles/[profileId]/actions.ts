@@ -75,8 +75,16 @@ export type DetailsValues = {
 
 export type SlugErrorCode = "format" | "taken" | "reserved";
 
-export type DetailsErrors = Omit<FieldErrors, "extraLinks"> & {
+// "required" is only used when a live profile is saved: it must stay complete
+// (Figma LPA-01b). Drafts of a first profile may have gaps.
+export type DetailsErrors = Omit<
+  FieldErrors,
+  "extraLinks" | "name" | "shortIntro" | "officialUrl"
+> & {
   slug?: SlugErrorCode;
+  name?: FieldErrorCode | "required";
+  shortIntro?: FieldErrorCode | "required";
+  officialUrl?: FieldErrorCode | "required";
   extraLinks?: (FieldErrorCode | null)[];
 };
 

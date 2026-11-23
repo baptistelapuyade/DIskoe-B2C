@@ -8,6 +8,11 @@ import {
   type GapCode,
   type ReviewStatus,
 } from "@/lib/domain/profile-publication";
+import {
+  diffRevisions,
+  hasChanges,
+  type ProfileChanges,
+} from "@/lib/domain/profile-changes";
 import { loadImage, type ProfileImage } from "@/lib/profile/image";
 import { isPublishedImagePublic } from "@/lib/profile/publish";
 import {
@@ -46,6 +51,15 @@ export type OwnerProfileView = {
   openQuestion: ReviewQuestion | null;
   // null = nothing published yet.
   publishedImagePublic: boolean | null;
+  // Live profiles only: what the private draft changes against the public
+  // page. null while nothing is published or the draft is the published
+  // revision itself.
+  changes: ProfileChanges | null;
+  // The draft really differs from the public page (not just a different
+  // revision id).
+  hasChanges: boolean;
+  // The published revision, for screens that show "public so far".
+  published: RevisionFields | null;
 };
 
 // Page and action guard in one: signed in, assigned to at least one profile,
@@ -144,6 +158,22 @@ export async function loadOwnerProfileView(
     status = "ready";
   }
 
+  // A live profile with a draft: compare the content with the public page.
+  // The same values as the public page are not a change, whatever the ids say.
+  const published =
+    profile.publishedRevisionId !== null &&
+    profile.draftRevisionId !== profile.publishedRevisionId
+      ? await loadRevision(supabase, profile.publishedRevisionId)
+      : null;
+  const changes =
+    published !== null && revision !== null
+      ? diffRevisions(published, revision)
+      : null;
+
+  if (status === "update_ready" && changes !== null && !hasChanges(changes)) {
+    status = "published";
+  }
+
   const publishedImagePublic = profile.publishedRevisionId
     ? await isPublishedImagePublic(supabase, profileId)
     : null;
@@ -160,5 +190,8 @@ export async function loadOwnerProfileView(
     latestQuestion,
     openQuestion,
     publishedImagePublic,
+    changes,
+    hasChanges: changes !== null && hasChanges(changes),
+    published,
   };
 }

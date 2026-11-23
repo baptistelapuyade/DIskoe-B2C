@@ -20,7 +20,9 @@ import type {
   DetailsValues,
 } from "@/app/(organizer)/organizer/profiles/[profileId]/actions";
 
-// Step 1 of the profile (ORG-03a to ORG-04). The values are controlled so that
+// Step 1 of the profile (ORG-03a to ORG-04) and, in "live" mode, the editor of
+// a live profile (LPA-01a to 01c): same fields, other buttons, and a profile
+// that must stay complete. The values are controlled so that
 // they survive an error (React resets uncontrolled forms after an action). The
 // server decides; the form only checks the format when a field is left, never
 // while typing (framework 3.3).
@@ -43,12 +45,20 @@ export function DetailsForm({
   action,
   initial,
   slugFixed,
+  mode = "first",
+  onCancel,
+  onDirtyChange,
 }: {
   lang: Lang;
   action: Action;
   initial: DetailsValues;
   // After the first approval the address cannot be changed any more.
   slugFixed: boolean;
+  mode?: "first" | "live";
+  // Live mode: "Cancel" (the screen asks first when something is unsaved).
+  onCancel?: () => void;
+  // Live mode: something was typed that is not saved yet.
+  onDirtyChange?: (dirty: boolean) => void;
 }) {
   const [state, formAction, pending] = useActionState(action, IDLE);
   const nextKey = useId();
@@ -64,6 +74,18 @@ export function DetailsForm({
     initial.extraLinks.map((value, index) => ({ key: index, value })),
   );
   const [counter, setCounter] = useState(initial.extraLinks.length);
+  const live = mode === "live";
+  const dirty =
+    values.name !== initial.name ||
+    values.shortIntro !== initial.shortIntro ||
+    values.officialUrl !== initial.officialUrl ||
+    values.instagram !== initial.instagram ||
+    values.publicContact !== initial.publicContact ||
+    rows.map((row) => row.value).join("\n") !== initial.extraLinks.join("\n");
+
+  useEffect(() => {
+    onDirtyChange?.(dirty);
+  }, [dirty, onDirtyChange]);
   // Format errors found when a field was left; cleared when it is edited.
   const [blurred, setBlurred] = useState<Partial<Record<string, FieldErrorCode | "format">>>({});
 
@@ -126,10 +148,14 @@ export function DetailsForm({
   const msg = (id: MessageId, params?: Record<string, string | number>) => t(lang, id, params);
 
   const nameError = serverError("name")
-    ? msg("Z23.details.name.tooLong", { max: LIMITS.name })
+    ? serverError("name") === "required"
+      ? msg("Z29.edit.name.required")
+      : msg("Z23.details.name.tooLong", { max: LIMITS.name })
     : undefined;
   const introError = serverError("shortIntro")
-    ? msg("Z23.details.intro.tooLong", { max: LIMITS.shortIntro })
+    ? serverError("shortIntro") === "required"
+      ? msg("Z29.edit.intro.required")
+      : msg("Z23.details.intro.tooLong", { max: LIMITS.shortIntro })
     : undefined;
   const contactError = serverError("publicContact")
     ? msg("Z23.details.contact.tooLong", { max: LIMITS.publicContact })
@@ -151,7 +177,11 @@ export function DetailsForm({
 
   const websiteCode = serverError("officialUrl") ?? blurred.officialUrl;
   const instagramCode = serverError("instagram") ?? blurred.instagram;
-  const websiteError = websiteCode ? msg("Z23.details.link.invalid") : undefined;
+  const websiteError = websiteCode
+    ? websiteCode === "required"
+      ? msg("Z29.edit.links.required")
+      : msg("Z23.details.link.invalid")
+    : undefined;
   const instagramError = instagramCode ? msg("Z23.details.instagram.invalid") : undefined;
 
   const rowCodes = server.extraLinks && !edited.has("extraLinks") ? server.extraLinks : [];
@@ -191,13 +221,24 @@ export function DetailsForm({
       ) : null}
 
       {state.status === "failed" ? (
-        <Notice tone="error" title={msg("Z23.save.failed.title")}>
-          {msg("Z23.save.failed.line")}
+        <Notice
+          tone="error"
+          title={msg(live ? "Z29.edit.fail.title" : "Z23.save.failed.title")}
+        >
+          {msg(live ? "Z29.edit.fail.line" : "Z23.save.failed.line")}
         </Notice>
       ) : null}
 
+      {live && state.status === "idle" ? (
+        <Notice tone="info" title={msg("Z29.edit.live.title")}>
+          {msg("Z29.edit.live.line")}
+        </Notice>
+      ) : null}
+
+      {/* Fields and links group are 24 px apart (Figma ORG-03a, LPA-01a). */}
       <div className="flex flex-col gap-6">
-        <Field id="name" label={msg("Z23.details.name.label")} hint={msg("Z23.details.name.hint")} error={nameError} large>
+      <div className="flex flex-col gap-6">
+        <Field id="name" label={msg("Z23.details.name.label")} hint={live && nameError ? undefined : msg("Z23.details.name.hint")} error={nameError} large>
           {(props) => (
             <input
               {...props}
@@ -212,7 +253,7 @@ export function DetailsForm({
           )}
         </Field>
 
-        <Field id="shortIntro" label={msg("Z23.details.intro.label")} hint={msg("Z23.details.intro.hint")} error={introError} large>
+        <Field id="shortIntro" label={msg("Z23.details.intro.label")} hint={live && introError ? undefined : msg("Z23.details.intro.hint")} error={introError} large>
           {(props) => (
             <textarea
               {...props}
@@ -229,7 +270,13 @@ export function DetailsForm({
         {slugFixed ? (
           <Field id="slug" label={msg("Z23.details.slug.label")} hint={msg("Z23.details.slug.fixed", { slug: initial.slug })} large>
             {(props) => (
-              <input {...props} type="text" value={initial.slug} readOnly className={controlClassLg} />
+              <input
+                {...props}
+                type="text"
+                value={initial.slug}
+                readOnly
+                className={`${controlClassLg} bg-muted text-muted-foreground`}
+              />
             )}
           </Field>
         ) : (
@@ -269,7 +316,7 @@ export function DetailsForm({
       </div>
 
       <section aria-labelledby="where-title" className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           <h2 id="where-title" className="text-2xl leading-[30px] font-medium">
             {msg("Z23.details.where.title")}
           </h2>
@@ -406,15 +453,29 @@ export function DetailsForm({
           )}
         </Field>
       </section>
-
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <Button type="submit" name="intent" value="next" variant="primaryLg" disabled={pending} aria-busy={pending}>
-          {msg("Z23.details.next")}
-        </Button>
-        <Button type="submit" name="intent" value="later" variant="ghostLg" disabled={pending} aria-busy={pending}>
-          {msg("Z23.details.later")}
-        </Button>
       </div>
+
+      {live ? (
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button type="submit" variant="primaryLg" disabled={pending} aria-busy={pending}>
+            {pending
+              ? msg("Z29.edit.saving")
+              : msg(state.status === "failed" ? "Z29.edit.retry" : "Z29.edit.save")}
+          </Button>
+          <Button variant="ghostLg" onClick={onCancel}>
+            {msg("Z29.edit.cancel")}
+          </Button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button type="submit" name="intent" value="next" variant="primaryLg" disabled={pending} aria-busy={pending}>
+            {msg("Z23.details.next")}
+          </Button>
+          <Button type="submit" name="intent" value="later" variant="ghostLg" disabled={pending} aria-busy={pending}>
+            {msg("Z23.details.later")}
+          </Button>
+        </div>
+      )}
     </form>
   );
 }

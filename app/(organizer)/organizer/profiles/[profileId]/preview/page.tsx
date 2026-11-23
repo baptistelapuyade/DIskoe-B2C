@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { ProfileHeadPreview } from "@/components/profile/head-preview";
 import { StepShell } from "@/components/profile/step-shell";
@@ -35,6 +36,12 @@ export default async function PreviewProfilePage({
     `/organizer/profiles/${profileId}/preview`,
   );
   const { revision, image } = view;
+
+  // A live profile: its changes have their own screens (Figma LPA-03a). The
+  // old screen stays only for a picture that is not public yet.
+  if (view.live && view.publishedImagePublic !== false) {
+    redirect(`/organizer/profiles/${profileId}/changes`);
+  }
 
   // Before the first submission the preview is step 3 of the profile (Figma
   // ORG-06). Later states (in review, question, changes to a live profile)

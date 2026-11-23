@@ -13,15 +13,16 @@ export function SummaryCard({
   heading,
   change,
   rows,
-  missingLabel,
-  fixLabel,
+  missingLabel = "",
+  fixLabel = "",
   stacked = false,
 }: {
   heading: string;
   change?: { label: string; href: string };
   rows: readonly SummaryRow[];
-  missingLabel: string;
-  fixLabel: string;
+  // Only for rows that can be missing (the submit screens).
+  missingLabel?: string;
+  fixLabel?: string;
   // Label above value on every width (the question card in a narrow column).
   stacked?: boolean;
 }) {

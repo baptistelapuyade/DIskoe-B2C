@@ -207,7 +207,7 @@ export function ProfileCard({
         {
           key: "publish",
           label: t(lang, "Z22.g.action"),
-          href: `${base}/preview`,
+          href: `${base}/changes`,
           variant: "primaryLg",
         },
         viewProfile(publicHref),
@@ -216,7 +216,10 @@ export function ProfileCard({
     case "live_incomplete":
       message = t(lang, "Z22.g.incomplete");
       hint = t(lang, "Z22.g.hint");
-      actions.push(edit, viewProfile(publicHref));
+      actions.push(
+        { ...edit, href: `${base}/changes/edit` },
+        viewProfile(publicHref),
+      );
       break;
   }
 
@@ -331,7 +334,7 @@ export function AreaCard({
       key: "edit",
       title: t(lang, "Z22.area.edit.title"),
       text: t(lang, "Z22.area.edit.text"),
-      href: `/organizer/profiles/${data.view.profile.id}/edit`,
+      href: `/organizer/profiles/${data.view.profile.id}/changes/edit`,
     });
   }
 
