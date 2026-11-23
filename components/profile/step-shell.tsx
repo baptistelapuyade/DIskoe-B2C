@@ -89,7 +89,7 @@ export function StepShell({
             <p className="text-brand-iris text-[13px] leading-4 font-medium tracking-[0.78px] uppercase">
               {eyebrow}
             </p>
-            <h1 className="text-foreground text-[32px] leading-[38px] font-bold md:text-[40px] md:leading-[44px] md:tracking-[-0.8px]">
+            <h1 className="text-foreground text-[32px] leading-[38px] font-bold tracking-[-0.8px] md:text-[40px] md:leading-[44px]">
               {title}
             </h1>
             {lead ? (

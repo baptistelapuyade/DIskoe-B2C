@@ -238,7 +238,7 @@ export function DetailsForm({
       {/* Fields and links group are 24 px apart (Figma ORG-03a, LPA-01a). */}
       <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-6">
-        <Field id="name" label={msg("Z23.details.name.label")} hint={msg("Z23.details.name.hint")} error={nameError} large>
+        <Field id="name" label={msg("Z23.details.name.label")} hint={live && nameError ? undefined : msg("Z23.details.name.hint")} error={nameError} large>
           {(props) => (
             <input
               {...props}
@@ -253,7 +253,7 @@ export function DetailsForm({
           )}
         </Field>
 
-        <Field id="shortIntro" label={msg("Z23.details.intro.label")} hint={msg("Z23.details.intro.hint")} error={introError} large>
+        <Field id="shortIntro" label={msg("Z23.details.intro.label")} hint={live && introError ? undefined : msg("Z23.details.intro.hint")} error={introError} large>
           {(props) => (
             <textarea
               {...props}
