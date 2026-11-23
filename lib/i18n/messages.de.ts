@@ -889,7 +889,7 @@ export const de = {
   "Z29.publish.fail.line":
     "Öffentlich ist weiter der bisherige Stand. Deine Änderungen sind gespeichert. Versuche es noch einmal.",
   "Z29.publish.go": "Jetzt veröffentlichen",
-  "Z29.publish.pending": "Veröffentlicht …",
+  "Z29.publish.pending": "Veröffentliche …",
   "Z29.publish.retry": "Noch einmal versuchen",
   "Z29.publish.back": "Zurück zur Vorschau",
   "Z29.done.title": "Deine Änderungen sind live",

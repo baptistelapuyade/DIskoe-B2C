@@ -917,7 +917,7 @@ Deutsch aus den Figma-Frames LPA-01a bis LPA-06b, LPA-01d und LPA-03c (Dev-Statu
 | Z29.publish.fail.title | Das Veröffentlichen hat nicht geklappt. | Publishing didn’t work. | LPA-04c, Hinweis (Fehler), Zeile 1 |
 | Z29.publish.fail.line | Öffentlich ist weiter der bisherige Stand. Deine Änderungen sind gespeichert. Versuche es noch einmal. | The public page still shows its current version. Your changes are saved. Try again. | LPA-04c, Hinweis (Fehler), Zeile 2 |
 | Z29.publish.go | Jetzt veröffentlichen | Publish now | LPA-04a/b, Hauptbutton |
-| Z29.publish.pending | Veröffentlicht … | Publishing … | LPA-04a bis c, Hauptbutton während des Sendens |
+| Z29.publish.pending | Veröffentliche … | Publishing … | LPA-04a bis c, Hauptbutton während des Sendens |
 | Z29.publish.retry | Noch einmal versuchen | Try again | LPA-04c, Hauptbutton |
 | Z29.publish.back | Zurück zur Vorschau | Back to the preview | LPA-04a bis c, Button |
 | Z29.done.title | Deine Änderungen sind live | Your changes are live | LPA-05, Titel (Eyebrow „Live“ aus Z28.live.eyebrow) |

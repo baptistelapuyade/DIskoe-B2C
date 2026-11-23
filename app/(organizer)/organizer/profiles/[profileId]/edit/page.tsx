@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { QuestionNotice } from "@/components/question/question-notice";
 import { DetailsForm } from "@/components/profile/details-form";
 import { StepShell } from "@/components/profile/step-shell";
@@ -22,6 +24,9 @@ export default async function EditProfilePage({
     profileId,
     `/organizer/profiles/${profileId}/edit`,
   );
+  // A live profile is changed on its own screens (Figma LPA-01a to 06b).
+  if (view.live) redirect(`/organizer/profiles/${profileId}/changes/edit`);
+
   const { revision } = view;
   const asked =
     !view.live && view.openQuestion

@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { ImagePanel } from "@/components/profile/image-panel";
 import { StepShell } from "@/components/profile/step-shell";
 import { readCrop } from "@/lib/domain/profile-publication";
@@ -23,6 +25,9 @@ export default async function ProfileImagePage({
     `/organizer/profiles/${profileId}/image`,
   );
   const base = `/organizer/profiles/${profileId}`;
+
+  // The picture of a live profile does not change in this version.
+  if (view.live) redirect(`${base}/changes/edit`);
 
   let crop = null;
 

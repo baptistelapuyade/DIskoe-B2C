@@ -137,7 +137,7 @@ describe("ProfileCard", () => {
     );
     expect(html).toContain("Änderungen noch nicht öffentlich");
     expect(html).toContain("Vorschau ansehen und veröffentlichen");
-    expect(hrefs(html)).toContain("/organizer/profiles/p1/preview");
+    expect(hrefs(html)).toContain("/organizer/profiles/p1/changes");
   });
 
   it("live with an incomplete new version asks for the missing details", () => {

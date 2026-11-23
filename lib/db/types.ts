@@ -860,6 +860,10 @@ export type Database = {
         Args: { p_kind: string; p_profile_id: string; p_revision_id: string }
         Returns: string
       }
+      discard_profile_draft: {
+        Args: { p_expected_draft_revision_id: string; p_profile_id: string }
+        Returns: undefined
+      }
       finish_profile_mail: {
         Args: {
           p_failure_code?: string
@@ -902,6 +906,8 @@ export type Database = {
       }
       publish_profile: {
         Args: {
+          p_confirmed_rights?: boolean
+          p_confirmed_usage?: boolean
           p_expected_draft_revision_id: string
           p_expected_published_revision_id?: string
           p_profile_id: string

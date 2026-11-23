@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { LinkButton } from "@/components/ui/button";
+import { Button, LinkButton } from "@/components/ui/button";
 import { ProgressSteps } from "@/components/layout/progress-steps";
 import { t, type Lang } from "@/lib/i18n";
 
@@ -18,6 +18,8 @@ export function StepShell({
   wide = false,
   wideProgress = false,
   current = 0,
+  progress = true,
+  onBack,
   notice,
   children,
 }: {
@@ -33,6 +35,12 @@ export function StepShell({
   wideProgress?: boolean;
   // 0-based step of the five-step progress bar: 0 profile, 1 first event.
   current?: number;
+  // The screens of a live profile (Figma LPA) have no progress bar: the
+  // profile is already through all five steps.
+  progress?: boolean;
+  // Only for client screens: "Back" asks first (unsaved changes, LPA-01d)
+  // instead of following the link.
+  onBack?: () => void;
   // A hint between the head and the content (the open question).
   notice?: ReactNode;
   children: ReactNode;
@@ -54,19 +62,27 @@ export function StepShell({
         className={`flex w-full flex-col gap-6 md:gap-8 ${wide ? "max-w-[1032px]" : "max-w-[560px]"}`}
       >
         <div className="flex">
-          <LinkButton href={backHref} variant="ghostLg">
-            {t(lang, "Z20.back")}
-          </LinkButton>
+          {onBack ? (
+            <Button variant="ghostLg" onClick={onBack}>
+              {t(lang, "Z20.back")}
+            </Button>
+          ) : (
+            <LinkButton href={backHref} variant="ghostLg">
+              {t(lang, "Z20.back")}
+            </LinkButton>
+          )}
         </div>
         <div className="flex flex-col gap-10">
-          <div className={wide && wideProgress ? "" : "max-w-[560px]"}>
-            <ProgressSteps
-              lang={lang}
-              labels={labels}
-              current={current}
-              label={t(lang, "Z22.progress.label")}
-            />
-          </div>
+          {progress ? (
+            <div className={wide && wideProgress ? "" : "max-w-[560px]"}>
+              <ProgressSteps
+                lang={lang}
+                labels={labels}
+                current={current}
+                label={t(lang, "Z22.progress.label")}
+              />
+            </div>
+          ) : null}
           <div
             className={`flex flex-col gap-3 ${wide && wideProgress ? "" : "max-w-[560px]"}`}
           >

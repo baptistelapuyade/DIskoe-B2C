@@ -279,6 +279,8 @@ test.describe("first approval, publication and public image", () => {
     const publish = await ownerAApi.rpc("publish_profile", {
       p_profile_id: profileA,
       p_expected_draft_revision_id: revisionA,
+      p_confirmed_rights: true,
+      p_confirmed_usage: true,
     });
     expect(publish.error?.code).toBe("DK003");
 
@@ -651,6 +653,8 @@ test.describe("first approval, publication and public image", () => {
     const again = await ownerAApi.rpc("publish_profile", {
       p_profile_id: profileA,
       p_expected_draft_revision_id: revisionA,
+      p_confirmed_rights: true,
+      p_confirmed_usage: true,
     });
     expect(again.error?.code).toBe("DK001");
 

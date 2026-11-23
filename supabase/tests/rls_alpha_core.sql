@@ -462,26 +462,26 @@ delete from public.app_roles where user_id = :'uid_b';
 -- 4. Publication: approved revision only, then ordinary publishing
 -- ===========================================================================
 select tests.as_user(:'uid_b');
-select tests.expect_error(format('select public.publish_profile(%L, %L, null)', :'pb', :'rb1'),
+select tests.expect_error(format('select public.publish_profile(%L, %L, null, true, true)', :'pb', :'rb1'),
   'DK003', 'cannot publish without first approval');
-select tests.expect_error(format('select public.publish_profile(%L, %L, null)', :'pa', :'r1'),
+select tests.expect_error(format('select public.publish_profile(%L, %L, null, true, true)', :'pa', :'r1'),
   '42501', 'B cannot publish A''s profile');
 select tests.as_user(:'uid_v');
-select tests.expect_error(format('select public.publish_profile(%L, %L, null)', :'pa', :'r1'),
+select tests.expect_error(format('select public.publish_profile(%L, %L, null, true, true)', :'pa', :'r1'),
   '42501', 'visitor cannot publish');
 select tests.as_anon();
-select tests.expect_error(format('select public.publish_profile(%L, %L, null)', :'pa', :'r1'),
+select tests.expect_error(format('select public.publish_profile(%L, %L, null, true, true)', :'pa', :'r1'),
   '42501', 'anon cannot execute publish_profile');
 
 select tests.as_user(:'uid_a');
-select tests.expect_error(format('select public.publish_profile(%L, %L, null)', :'pa', gen_random_uuid()),
+select tests.expect_error(format('select public.publish_profile(%L, %L, null, true, true)', :'pa', gen_random_uuid()),
   'DK001', 'stale draft expectation is refused');
 
 -- First publication is no longer an owner action: approval already did it.
 select tests.as_user(:'uid_a');
-select tests.expect_error(format('select public.publish_profile(%L, %L, null)', :'pa', :'r1'),
+select tests.expect_error(format('select public.publish_profile(%L, %L, null, true, true)', :'pa', :'r1'),
   'DK001', 'the owner cannot repeat the first publication');
-select tests.expect_error(format('select public.publish_profile(%L, %L, %L)', :'pa', :'r1', gen_random_uuid()),
+select tests.expect_error(format('select public.publish_profile(%L, %L, %L, true, true)', :'pa', :'r1', gen_random_uuid()),
   'DK001', 'wrong published expectation is refused');
 
 select tests.as_anon();
@@ -521,14 +521,14 @@ select tests.expect_true(format('select confirmed_by = %L and confirmed_at is no
 select tests.as_user(:'uid_a');
 select tests.expect_affected(format('update public.profiles set draft_revision_id = %L where id = %L', :'r2', :'pa'),
   1, 'owner selects the next draft');
-select tests.expect_error(format('select public.publish_profile(%L, %L, null)', :'pa', :'r2'),
+select tests.expect_error(format('select public.publish_profile(%L, %L, null, true, true)', :'pa', :'r2'),
   'DK001', 'stale published expectation is refused');
-select public.publish_profile(:'pa', :'r2', :'r1');
+select public.publish_profile(:'pa', :'r2', :'r1', true, true);
 select tests.as_anon();
 select tests.expect_true($q$select name = 'Alpha Events Reloaded' from public.public_profiles where slug = 'owner-a'$q$,
   'second revision goes live without a new approval');
 select tests.as_user(:'uid_a');
-select tests.expect_error(format('select public.publish_profile(%L, %L, %L)', :'pa', :'r2', :'r2'),
+select tests.expect_error(format('select public.publish_profile(%L, %L, %L, true, true)', :'pa', :'r2', :'r2'),
   'DK003', 'publishing the live revision again is refused');
 
 -- ===========================================================================
@@ -1711,7 +1711,7 @@ insert into tests.expected_exec values
   ('public', 'finish_profile_mail'),
   ('public', 'submit_first_publication'), ('public', 'approve_first_publication'),
   ('public', 'change_profile_slug'), ('app_private', 'profile_links_valid'),
-  ('public', 'withdraw_submission');
+  ('public', 'withdraw_submission'), ('public', 'discard_profile_draft');
 select tests.expect_count($q$
   select n.nspname, p.proname
     from pg_proc p join pg_namespace n on n.oid = p.pronamespace
@@ -1851,6 +1851,7 @@ insert into tests.expected_objects values
   ('function', 'app_private', 'profile_links_valid'),
   ('function', 'app_private', 'is_submitted'),
   ('function', 'public', 'withdraw_submission'),
+  ('function', 'public', 'discard_profile_draft'),
   ('table', 'public', 'auth_code_attempts'),
   ('function', 'public', 'auth_code_status'),
   ('function', 'public', 'auth_code_fail'),
@@ -2132,6 +2133,50 @@ select tests.as_user(:'uid_d');
 select tests.expect_error(format('select public.withdraw_submission(%L, %L)', :'pc', :'rc1'),
   'DK003', 'an approved profile cannot be withdrawn');
 select tests.as_superuser();
+
+-- ===========================================================================
+-- 7g. Changing a live profile: declarations and discarding a draft (Slice 10)
+-- ===========================================================================
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.publish_profile(%L, %L, %L)', :'pa', :'r2', :'r2'),
+  '22023', 'publishing without the declarations is refused (defaults)');
+select tests.expect_error(format('select public.publish_profile(%L, %L, %L, true, false)', :'pa', :'r2', :'r2'),
+  '22023', 'publishing needs the second declaration');
+select tests.expect_error(format('select public.publish_profile(%L, %L, %L, false, true)', :'pa', :'r2', :'r2'),
+  '22023', 'publishing needs the first declaration');
+
+select tests.expect_affected(
+  format($q$insert into public.profile_revisions (profile_id, name, short_intro, public_contact, profile_image_use_id, created_by) values (%L, 'Discard me', 'Will be thrown away', 'x@example.test', %L, %L)$q$, :'pa', :'use_a', :'uid_a'),
+  1, 'A starts a new draft of the live profile');
+select id as rd from public.profile_revisions where profile_id = :'pa' and name = 'Discard me' \gset
+select tests.expect_affected(format('update public.profiles set draft_revision_id = %L where id = %L', :'rd', :'pa'),
+  1, 'A points the draft at the new revision');
+
+select tests.as_user(:'uid_b');
+select tests.expect_error(format('select public.discard_profile_draft(%L, %L)', :'pa', :'rd'),
+  '42501', 'B cannot discard A''s draft');
+select tests.as_anon();
+select tests.expect_error(format('select public.discard_profile_draft(%L, %L)', :'pa', :'rd'),
+  '42501', 'anon cannot execute discard_profile_draft');
+select tests.as_user(:'uid_e');
+select tests.expect_error(format('select public.discard_profile_draft(%L, %L)', :'pe', :'re1'),
+  'DK003', 'a profile that never went live has no draft to discard');
+
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.discard_profile_draft(%L, %L)', :'pa', gen_random_uuid()),
+  'DK001', 'a stale draft expectation is refused');
+select public.discard_profile_draft(:'pa', :'rd');
+select tests.expect_count(format('select id from public.profile_revisions where id = %L', :'rd'), 0,
+  'the discarded draft row is gone');
+select tests.expect_true(format('select draft_revision_id = published_revision_id from public.profiles where id = %L', :'pa'),
+  'the draft pointer is back on the published revision');
+select tests.expect_count(format('select id from public.profile_revisions where id = %L', :'r2'), 1,
+  'the published revision is untouched');
+select tests.expect_error(format('select public.discard_profile_draft(%L, %L)', :'pa', :'rd'),
+  'DK003', 'discarding twice finds nothing to discard');
+select tests.as_superuser();
+select tests.expect_true(format($q$select count(*) = 1 from public.publication_audit where entity_id = %L and revision_id = %L and action = 'discard_draft'$q$, :'pa', :'rd'),
+  'discarding leaves an audit row');
 
 -- ===========================================================================
 -- Summary
