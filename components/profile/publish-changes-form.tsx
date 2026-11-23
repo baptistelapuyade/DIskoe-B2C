@@ -61,26 +61,26 @@ export function PublishChangesForm({
       <input type="hidden" name="usage" value={usage ? "on" : ""} />
       <fieldset className="flex flex-col">
         <legend className="sr-only">{t(lang, "Z27.confirm.heading")}</legend>
-        <div className="flex flex-col gap-2">
-          <div className="flex min-h-11 items-start gap-3">
+        <div className="flex flex-col">
+          <div className="flex min-h-12 items-center gap-3">
             <Checkbox
               id="publish-rights"
               checked={rights}
               onCheckedChange={(value) => setRights(value === true)}
               aria-invalid={missing !== null && !rights}
-              className="mt-1"
+              className="shrink-0"
             />
             <label htmlFor="publish-rights" className="text-base leading-6">
               {t(lang, "Z27.confirm.rights")}
             </label>
           </div>
-          <div className="flex min-h-11 items-start gap-3">
+          <div className="flex min-h-12 items-center gap-3">
             <Checkbox
               id="publish-usage"
               checked={usage}
               onCheckedChange={(value) => setUsage(value === true)}
               aria-invalid={missing !== null && !usage}
-              className="mt-1"
+              className="shrink-0"
             />
             <label htmlFor="publish-usage" className="text-base leading-6">
               {t(lang, "Z27.confirm.usage")}

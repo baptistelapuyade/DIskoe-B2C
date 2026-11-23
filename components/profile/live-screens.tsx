@@ -122,16 +122,15 @@ export function ChangesReviewScreen({
       backHref={HOME}
       progress={false}
       wide
+      wideProgress
       eyebrow={t(lang, "Z29.changes.eyebrow")}
       title={t(lang, "Z29.changes.title")}
       lead={t(lang, "Z29.changes.lead")}
       notice={
         stale ? (
-          <div className="max-w-[560px]">
-            <Notice tone="info" title={t(lang, "Z29.changes.stale.title")}>
-              {t(lang, "Z29.changes.stale.line")}
-            </Notice>
-          </div>
+          <Notice tone="info" title={t(lang, "Z29.changes.stale.title")}>
+            {t(lang, "Z29.changes.stale.line")}
+          </Notice>
         ) : null
       }
     >

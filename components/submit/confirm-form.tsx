@@ -120,26 +120,26 @@ export function ConfirmForm({
             )}
           </span>
         </legend>
-        <div className="flex flex-col gap-2">
-          <div className="flex min-h-11 items-start gap-3">
+        <div className="flex flex-col">
+          <div className="flex min-h-12 items-center gap-3">
             <Checkbox
               id="confirm-rights"
               checked={rights}
               onCheckedChange={(value) => setRights(value === true)}
               aria-invalid={missing !== null && !rights}
-              className="mt-1"
+              className="shrink-0"
             />
             <label htmlFor="confirm-rights" className="text-base leading-6">
               {t(lang, "Z27.confirm.rights")}
             </label>
           </div>
-          <div className="flex min-h-11 items-start gap-3">
+          <div className="flex min-h-12 items-center gap-3">
             <Checkbox
               id="confirm-usage"
               checked={usage}
               onCheckedChange={(value) => setUsage(value === true)}
               aria-invalid={missing !== null && !usage}
-              className="mt-1"
+              className="shrink-0"
             />
             <label htmlFor="confirm-usage" className="text-base leading-6">
               {t(lang, "Z27.confirm.usage")}
