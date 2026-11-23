@@ -13,6 +13,9 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:3000",
     trace: "on-first-retry",
+    // Without a limit a click or fill on a missing element waits until the test
+    // times out and the log names no step.
+    actionTimeout: process.env.CI ? 30_000 : 0,
     // Platform copy is English by default; the specs check German texts, so
     // their pages start with the German choice (see e2e/support/language.ts).
     storageState: { cookies: [GERMAN_COOKIE], origins: [] },
