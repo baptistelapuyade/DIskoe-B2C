@@ -27,8 +27,12 @@ export default async function SubmittedVersionPage({
   const { profile } = data;
 
   if (profile.live) redirect("/organizer");
-  if (profile.status !== "in_review" || !data.submittedAt) {
-    redirect(`${base}/status`);
+  // In review, or with the founder's question while it is still the version
+  // the question was about.
+  const asked = profile.status === "question";
+
+  if ((profile.status !== "in_review" && !asked) || !data.submittedAt) {
+    redirect(asked ? `${base}/question` : `${base}/status`);
   }
 
   const { date, time } = berlinClock(data.submittedAt);
@@ -40,7 +44,7 @@ export default async function SubmittedVersionPage({
   return (
     <StepShell
       lang={lang}
-      backHref={`${base}/status`}
+      backHref={asked ? `${base}/question` : `${base}/status`}
       eyebrow={t(lang, "Z27.review.eyebrow")}
       title={t(lang, "Z27.submitted.title")}
       lead={t(lang, "Z27.submitted.lead", {
@@ -52,9 +56,11 @@ export default async function SubmittedVersionPage({
       wideProgress
     >
       <div className="flex flex-col gap-10">
-        <Notice tone="info" title={t(lang, "Z27.submitted.notice.title")}>
-          {t(lang, "Z27.submitted.notice.line")}
-        </Notice>
+        {asked ? null : (
+          <Notice tone="info" title={t(lang, "Z27.submitted.notice.title")}>
+            {t(lang, "Z27.submitted.notice.line")}
+          </Notice>
+        )}
         <div className="flex flex-col gap-6">
           <SummaryCard
             heading={t(lang, "Z27.profile.heading")}
@@ -71,17 +77,19 @@ export default async function SubmittedVersionPage({
         </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
           <Link
-            href={`${base}/status`}
+            href={asked ? `${base}/question` : `${base}/status`}
             className={buttonClass("primaryLg", "w-full md:w-auto")}
           >
             {t(lang, "Z27.submitted.back")}
           </Link>
-          <Link
-            href={`${base}/withdraw`}
-            className={buttonClass("secondary", "w-full shadow-sm md:w-auto")}
-          >
-            {t(lang, "Z27.review.withdraw")}
-          </Link>
+          {asked ? null : (
+            <Link
+              href={`${base}/withdraw`}
+              className={buttonClass("secondary", "w-full shadow-sm md:w-auto")}
+            >
+              {t(lang, "Z27.review.withdraw")}
+            </Link>
+          )}
         </div>
       </div>
     </StepShell>

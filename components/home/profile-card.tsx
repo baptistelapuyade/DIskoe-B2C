@@ -9,6 +9,7 @@ import {
   type FirstEventState,
   type HomeKind,
 } from "@/lib/domain/home-state";
+import { splitQuestion } from "@/lib/domain/question-area";
 import type { GapCode } from "@/lib/domain/profile-publication";
 import { t, type Lang, type MessageId } from "@/lib/i18n";
 import { siteUrl } from "@/lib/public/site";
@@ -173,13 +174,13 @@ export function ProfileCard({
       break;
     case "question":
       message = view.question
-        ? `„${view.question.message}“`
+        ? `„${splitQuestion(view.question.message).text}“`
         : t(lang, "Z22.e.fallback");
       hint = t(lang, "Z22.e.hint");
       actions.push({
         key: "correct",
         label: t(lang, "Z22.e.action"),
-        href: `${base}/status`,
+        href: `${base}/question`,
         variant: "primaryLg",
       });
       break;

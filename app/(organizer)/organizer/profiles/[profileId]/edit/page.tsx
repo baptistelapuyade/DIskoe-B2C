@@ -1,8 +1,10 @@
+import { QuestionNotice } from "@/components/question/question-notice";
 import { DetailsForm } from "@/components/profile/details-form";
 import { StepShell } from "@/components/profile/step-shell";
 import { t } from "@/lib/i18n";
 import { getLang } from "@/lib/i18n/server";
 import { loadOwnerProfileView } from "@/lib/profile/load";
+import { describeQuestion } from "@/lib/submit/question";
 
 import { saveDetails } from "../actions";
 
@@ -21,6 +23,10 @@ export default async function EditProfilePage({
     `/organizer/profiles/${profileId}/edit`,
   );
   const { revision } = view;
+  const asked =
+    !view.live && view.openQuestion
+      ? describeQuestion(lang, view.openQuestion)
+      : null;
 
   return (
     <StepShell
@@ -29,6 +35,7 @@ export default async function EditProfilePage({
       eyebrow={t(lang, "Z23.details.eyebrow")}
       title={t(lang, "Z23.details.title")}
       lead={t(lang, "Z23.details.lead")}
+      notice={asked ? <QuestionNotice question={asked} /> : null}
     >
       <DetailsForm
         lang={lang}
@@ -39,7 +46,9 @@ export default async function EditProfilePage({
           shortIntro: revision?.shortIntro ?? "",
           slug: view.profile.slug,
           officialUrl: revision?.officialUrl ?? "",
-          instagram: revision?.instagramHandle ? `@${revision.instagramHandle}` : "",
+          instagram: revision?.instagramHandle
+            ? `@${revision.instagramHandle}`
+            : "",
           extraLinks: revision?.extraLinks ?? [],
           publicContact: revision?.publicContact ?? "",
         }}

@@ -10,6 +10,7 @@ import {
   type EventRevisionRow,
 } from "./values";
 import type { EventDraftValues } from "@/lib/domain/event-publication";
+import type { ReviewQuestion } from "@/lib/profile/draft";
 
 type Client = SupabaseClient<Database>;
 
@@ -231,7 +232,7 @@ export async function loadPairQuestion(
   supabase: Client,
   profileRevisionId: string,
   eventRevisionId: string,
-): Promise<{ message: string; createdAt: string } | null> {
+): Promise<ReviewQuestion | null> {
   const { data, error } = await supabase
     .from("review_requests")
     .select("message, created_at")
@@ -244,5 +245,7 @@ export async function loadPairQuestion(
   }
 
   const row = data?.[0];
-  return row ? { message: row.message, createdAt: row.created_at } : null;
+  return row
+    ? { message: row.message, createdAt: row.created_at, withEvent: true }
+    : null;
 }

@@ -96,7 +96,11 @@ async function completeAndSubmit(
 
   const asset = await client
     .from("media_assets")
-    .insert({ uploader_id: userId, private_object_path: path, mime_type: "image/png" })
+    .insert({
+      uploader_id: userId,
+      private_object_path: path,
+      mime_type: "image/png",
+    })
     .select("id")
     .single();
   expect(asset.error).toBeNull();
@@ -148,7 +152,10 @@ test.describe.configure({ mode: "serial" });
 test.describe("first approval, publication and public image", () => {
   test.setTimeout(180_000);
 
-  const states: Record<string, Awaited<ReturnType<BrowserContext["storageState"]>>> = {};
+  const states: Record<
+    string,
+    Awaited<ReturnType<BrowserContext["storageState"]>>
+  > = {};
   let profileA = "";
   let profileB = "";
   let revisionA = "";
@@ -171,15 +178,35 @@ test.describe("first approval, publication and public image", () => {
 
     const founderId = userIdByEmail(emails.founder);
     makeFounder(founderId);
-    profileA = provisionAs(founderId, userIdByEmail(emails.ownerA), slugA, "Alpha Events");
-    profileB = provisionAs(founderId, userIdByEmail(emails.ownerB), slugB, "Beta Events");
+    profileA = provisionAs(
+      founderId,
+      userIdByEmail(emails.ownerA),
+      slugA,
+      "Alpha Events",
+    );
+    profileB = provisionAs(
+      founderId,
+      userIdByEmail(emails.ownerB),
+      slugB,
+      "Beta Events",
+    );
 
     ownerAApi = await apiClientFor(emails.ownerA);
     ownerBApi = await apiClientFor(emails.ownerB);
     founderApi = await apiClientFor(emails.founder);
 
-    revisionA = await completeAndSubmit(ownerAApi, userIdByEmail(emails.ownerA), profileA, "Alpha Events");
-    revisionB = await completeAndSubmit(ownerBApi, userIdByEmail(emails.ownerB), profileB, "Beta Events");
+    revisionA = await completeAndSubmit(
+      ownerAApi,
+      userIdByEmail(emails.ownerA),
+      profileA,
+      "Alpha Events",
+    );
+    revisionB = await completeAndSubmit(
+      ownerBApi,
+      userIdByEmail(emails.ownerB),
+      profileB,
+      "Beta Events",
+    );
   });
 
   async function pageFor(browser: Browser, key: string) {
@@ -190,7 +217,10 @@ test.describe("first approval, publication and public image", () => {
     return { context, page: await context.newPage() };
   }
 
-  test("only the founder reaches the review pages", async ({ browser, request }) => {
+  test("only the founder reaches the review pages", async ({
+    browser,
+    request,
+  }) => {
     for (const key of ["ownerA", "visitor"]) {
       const { context, page } = await pageFor(browser, key);
       const response = await page.goto("/internal/approvals");
@@ -200,30 +230,46 @@ test.describe("first approval, publication and public image", () => {
       await context.close();
     }
 
-    const anonymous = await request.get("/internal/approvals", { maxRedirects: 0 });
+    const anonymous = await request.get("/internal/approvals", {
+      maxRedirects: 0,
+    });
     expect([302, 303, 307, 308]).toContain(anonymous.status());
     expect(anonymous.headers().location).toContain("/login");
   });
 
-  test("the founder reaches the review list through a link, an owner does not see it", async ({ browser }) => {
+  test("the founder reaches the review list through a link, an owner does not see it", async ({
+    browser,
+  }) => {
     const founder = await pageFor(browser, "founder");
     await founder.page.goto("/organizer");
-    const link = founder.page.getByRole("link", { name: /^Prüfung( \(\d+\))?$/ });
+    const link = founder.page.getByRole("link", {
+      name: /^Prüfung( \(\d+\))?$/,
+    });
     await expect(link).toBeVisible(SLOW);
     await link.click();
-    await expect(founder.page.getByRole("heading", { name: "Profile zur Prüfung" })).toBeVisible(SLOW);
+    await expect(
+      founder.page.getByRole("heading", { name: "Profile zur Prüfung" }),
+    ).toBeVisible(SLOW);
     // The internal pages have their own way back and out.
-    await expect(founder.page.getByRole("link", { name: "Organizer-Ansicht" })).toBeVisible();
+    await expect(
+      founder.page.getByRole("link", { name: "Organizer-Ansicht" }),
+    ).toBeVisible();
     await founder.context.close();
 
     const owner = await pageFor(browser, "ownerA");
     await owner.page.goto("/organizer");
-    await expect(owner.page.getByRole("button", { name: "Abmelden" })).toBeVisible(SLOW);
-    await expect(owner.page.getByRole("link", { name: /^Prüfung/ })).toHaveCount(0);
+    await expect(
+      owner.page.getByRole("button", { name: "Abmelden" }),
+    ).toBeVisible(SLOW);
+    await expect(
+      owner.page.getByRole("link", { name: /^Prüfung/ }),
+    ).toHaveCount(0);
     await owner.context.close();
   });
 
-  test("an owner can neither approve nor publish before the approval", async ({ browser }) => {
+  test("an owner can neither approve nor publish before the approval", async ({
+    browser,
+  }) => {
     const approve = await ownerAApi.rpc("approve_first_profile", {
       p_profile_id: profileA,
       p_expected_draft_revision_id: revisionA,
@@ -239,47 +285,91 @@ test.describe("first approval, publication and public image", () => {
     const { context, page } = await pageFor(browser, "ownerA");
     await page.goto(`/organizer/profiles/${profileA}/preview`);
     await expect(page.getByText(/In Prüfung/).first()).toBeVisible();
-    await expect(page.getByRole("button", { name: "Veröffentlichen" })).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: "Veröffentlichen" }),
+    ).toHaveCount(0);
     await context.close();
   });
 
-  test("the founder asks a question instead of approving", async ({ browser }) => {
+  test("the founder asks a question instead of approving", async ({
+    browser,
+  }) => {
     const { context, page } = await pageFor(browser, "founder");
 
     await page.goto(`/internal/approvals/${profileB}`);
-    await expect(page.getByRole("heading", { name: "Beta Events", exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Beta Events", exact: true }),
+    ).toBeVisible();
 
-    await page.getByLabel("Deine Frage an den Organizer").fill("Der Link scheint nicht zu funktionieren.");
+    await page
+      .getByLabel("Deine Frage an den Organizer")
+      .fill("Der Link scheint nicht zu funktionieren.");
     await page.getByRole("button", { name: "Rückfrage stellen" }).click();
     // The form disappears after the save; the page keeps the facts.
-    await expect(page.getByText("Zu diesem Stand ist eine Rückfrage gestellt.", { exact: false })).toBeVisible(SLOW);
-    await expect(page.getByRole("heading", { name: "Gestellte Rückfrage" })).toBeVisible();
+    await expect(
+      page.getByText("Zu diesem Stand ist eine Rückfrage gestellt.", {
+        exact: false,
+      }),
+    ).toBeVisible(SLOW);
+    await expect(
+      page.getByRole("heading", { name: "Gestellte Rückfrage" }),
+    ).toBeVisible();
 
     expect(
-      sql(`select count(*) from public.review_requests where profile_id = '${profileB}' and revision_id = '${revisionB}'`),
+      sql(
+        `select count(*) from public.review_requests where profile_id = '${profileB}' and revision_id = '${revisionB}'`,
+      ),
     ).toBe("1");
-    expect(sql(`select publication_state from public.profiles where id = '${profileB}'`)).toBe("private");
+    expect(
+      sql(
+        `select publication_state from public.profiles where id = '${profileB}'`,
+      ),
+    ).toBe("private");
 
     // The organizer gets one system mail: no question text, no token, only a
     // link to the sign-in protected start page.
     const questionMail = await waitForMail(emails.ownerB, QUESTION_MAIL);
     expect(questionMail.body).toContain("keine Absage");
-    expect(questionMail.body).toContain(`${BASE_URL}/organizer/profiles/${profileB}/status`);
-    expect(questionMail.body).not.toContain("Der Link scheint nicht zu funktionieren.");
-    expect(await mailsWithSubject(emails.ownerB, QUESTION_MAIL)).toHaveLength(1);
-    expect(await mailsWithSubject(emails.ownerA, QUESTION_MAIL)).toHaveLength(0);
+    expect(questionMail.body).toContain(
+      `${BASE_URL}/organizer/profiles/${profileB}/question`,
+    );
+    expect(questionMail.body).not.toContain(
+      "Der Link scheint nicht zu funktionieren.",
+    );
+    expect(await mailsWithSubject(emails.ownerB, QUESTION_MAIL)).toHaveLength(
+      1,
+    );
+    expect(await mailsWithSubject(emails.ownerA, QUESTION_MAIL)).toHaveLength(
+      0,
+    );
     await expect(page.getByText("Mail vom Anbieter angenommen")).toBeVisible();
-    expect(sql(`select status || ':' || attempts from public.profile_mails where profile_id = '${profileB}' and kind = 'profile_question'`)).toBe("sent:1");
-    await expect(page.getByRole("button", { name: /^Mail (erneut )?senden$/ })).toHaveCount(0);
+    expect(
+      sql(
+        `select status || ':' || attempts from public.profile_mails where profile_id = '${profileB}' and kind = 'profile_question'`,
+      ),
+    ).toBe("sent:1");
+    await expect(
+      page.getByRole("button", { name: /^Mail (erneut )?senden$/ }),
+    ).toHaveCount(0);
 
     // A failed mail is shown as failed and can be sent again from the page.
-    sql(`update public.profile_mails set status = 'failed' where profile_id = '${profileB}' and kind = 'profile_question'`);
+    sql(
+      `update public.profile_mails set status = 'failed' where profile_id = '${profileB}' and kind = 'profile_question'`,
+    );
     await page.reload();
     await expect(page.getByText("Mail fehlgeschlagen").first()).toBeVisible();
     await page.getByRole("button", { name: "Mail erneut senden" }).click();
-    await expect(page.getByText("Mail vom Anbieter angenommen")).toBeVisible(SLOW);
-    expect(sql(`select status || ':' || attempts from public.profile_mails where profile_id = '${profileB}' and kind = 'profile_question'`)).toBe("sent:2");
-    expect(await mailsWithSubject(emails.ownerB, QUESTION_MAIL)).toHaveLength(2);
+    await expect(page.getByText("Mail vom Anbieter angenommen")).toBeVisible(
+      SLOW,
+    );
+    expect(
+      sql(
+        `select status || ':' || attempts from public.profile_mails where profile_id = '${profileB}' and kind = 'profile_question'`,
+      ),
+    ).toBe("sent:2");
+    expect(await mailsWithSubject(emails.ownerB, QUESTION_MAIL)).toHaveLength(
+      2,
+    );
 
     // The question moves to its own tab.
     await page.goto("/internal/approvals?tab=question");
@@ -290,7 +380,9 @@ test.describe("first approval, publication and public image", () => {
     await context.close();
   });
 
-  test("the owner reads the question, cannot hand in the same revision again", async ({ browser }) => {
+  test("the owner reads the question, cannot hand in the same revision again", async ({
+    browser,
+  }) => {
     const resubmit = await ownerBApi.rpc("submit_profile_for_review", {
       p_profile_id: profileB,
       p_expected_draft_revision_id: revisionB,
@@ -301,51 +393,105 @@ test.describe("first approval, publication and public image", () => {
 
     const { context, page } = await pageFor(browser, "ownerB");
     await page.goto("/organizer");
-    await expect(page.getByText("Der Link scheint nicht zu funktionieren.")).toBeVisible();
-    await expect(page.getByText("Das ist keine Absage.", { exact: false })).toBeVisible();
+    await expect(
+      page.getByText("Der Link scheint nicht zu funktionieren."),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Das ist keine Absage.", { exact: false }),
+    ).toBeVisible();
     await page.getByRole("link", { name: "Angabe korrigieren" }).click();
-    await expect(page.getByRole("heading", { name: "Wir haben eine Frage zu deinem Profil" })).toBeVisible();
-    await expect(page.getByText("Der Link scheint nicht zu funktionieren.")).toBeVisible();
+    // RFG-01: the question with its card; "Correct the detail" leads to the
+    // profile, where the question stays visible as a notice.
+    await expect(
+      page.getByRole("heading", { name: "Wir haben eine Rückfrage" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Rückfrage zu deinem Stand" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Der Link scheint nicht zu funktionieren."),
+    ).toBeVisible();
+    await page.getByRole("link", { name: "Angabe korrigieren" }).click();
+    await expect(page).toHaveURL(/\/organizer\/profiles\/[^/]+\/edit$/);
+    await expect(
+      page.getByText("Der Link scheint nicht zu funktionieren."),
+    ).toBeVisible();
 
     await context.close();
   });
 
-  test("the founder sees the queue and approves exactly the shown revision", async ({ browser }) => {
+  test("the founder sees the queue and approves exactly the shown revision", async ({
+    browser,
+  }) => {
     const { context, page } = await pageFor(browser, "founder");
 
     await page.goto("/internal/approvals");
     await expect(page.getByText(`/${slugA} ·`)).toBeVisible();
 
     await page.goto(`/internal/approvals/${profileA}`);
-    await expect(page.getByRole("heading", { name: "Alpha Events", exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Alpha Events", exact: true }),
+    ).toBeVisible();
     await expect(page.getByRole("img", { name: "Bühne" })).toBeVisible();
 
     const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },
     });
-    expect((await anon.from("public_profiles").select("slug").eq("slug", slugA)).data).toEqual([]);
+    expect(
+      (await anon.from("public_profiles").select("slug").eq("slug", slugA))
+        .data,
+    ).toEqual([]);
 
-    await page.getByRole("button", { name: "Freigeben und veröffentlichen" }).click();
-    await expect(page.getByText("Dieser Stand wird sofort öffentlich.", { exact: false })).toBeVisible();
+    await page
+      .getByRole("button", { name: "Freigeben und veröffentlichen" })
+      .click();
+    await expect(
+      page.getByText("Dieser Stand wird sofort öffentlich.", { exact: false }),
+    ).toBeVisible();
     // Still nothing public before the second confirmation.
-    expect((await anon.from("public_profiles").select("slug").eq("slug", slugA)).data).toEqual([]);
-    await page.getByRole("button", { name: "Ja, freigeben und veröffentlichen" }).click();
-    await expect(page.getByText("Freigegeben und veröffentlicht.").first()).toBeVisible(SLOW);
+    expect(
+      (await anon.from("public_profiles").select("slug").eq("slug", slugA))
+        .data,
+    ).toEqual([]);
+    await page
+      .getByRole("button", { name: "Ja, freigeben und veröffentlichen" })
+      .click();
+    await expect(
+      page.getByText("Freigegeben und veröffentlicht.").first(),
+    ).toBeVisible(SLOW);
 
     expect(
-      sql(`select count(*) from public.publication_audit where entity_id = '${profileA}' and action in ('approve_first', 'publish') and revision_id = '${revisionA}'`),
+      sql(
+        `select count(*) from public.publication_audit where entity_id = '${profileA}' and action in ('approve_first', 'publish') and revision_id = '${revisionA}'`,
+      ),
     ).toBe("2");
-    expect(sql(`select publication_state from public.profiles where id = '${profileA}'`)).toBe("published");
-    expect(sql(`select published_revision_id = first_approved_revision_id from public.profiles where id = '${profileA}'`)).toBe("t");
+    expect(
+      sql(
+        `select publication_state from public.profiles where id = '${profileA}'`,
+      ),
+    ).toBe("published");
+    expect(
+      sql(
+        `select published_revision_id = first_approved_revision_id from public.profiles where id = '${profileA}'`,
+      ),
+    ).toBe("t");
 
     // Exactly one "live" mail, to the owner of this profile only.
     const liveMail = await waitForMail(emails.ownerA, LIVE_MAIL);
     expect(liveMail.body).toContain("Alpha Events");
-    expect(liveMail.body).toContain(`${BASE_URL}/organizer/profiles/${profileA}/status`);
+    expect(liveMail.body).toContain(
+      `${BASE_URL}/organizer/profiles/${profileA}/live`,
+    );
     expect(await mailsWithSubject(emails.ownerA, LIVE_MAIL)).toHaveLength(1);
     expect(await mailsWithSubject(emails.ownerB, LIVE_MAIL)).toHaveLength(0);
-    expect(sql(`select status from public.profile_mails where profile_id = '${profileA}' and kind = 'profile_live'`)).toBe("sent");
-    await expect(page.getByText("Mail vom Anbieter angenommen").first()).toBeVisible();
+    expect(
+      sql(
+        `select status from public.profile_mails where profile_id = '${profileA}' and kind = 'profile_live'`,
+      ),
+    ).toBe("sent");
+    await expect(
+      page.getByText("Mail vom Anbieter angenommen").first(),
+    ).toBeVisible();
 
     // Nothing to send again once the provider accepted the mail.
     const again = await founderApi.rpc("claim_profile_mail", {
@@ -356,7 +502,9 @@ test.describe("first approval, publication and public image", () => {
     expect(again.error).toBeNull();
     expect(again.data).toBeNull();
     await page.reload();
-    await expect(page.getByRole("button", { name: /^Mail (erneut )?senden$/ })).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: /^Mail (erneut )?senden$/ }),
+    ).toHaveCount(0);
 
     // Data and image are public; the original stays private.
     const rows = await anon
@@ -380,14 +528,21 @@ test.describe("first approval, publication and public image", () => {
       `${SUPABASE_URL}/storage/v1/object/public/private-media/${privatePath}`,
     );
     expect(privateTry.status).not.toBe(200);
-    expect(sql(`select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileA}/%'`)).toBe("1");
+    expect(
+      sql(
+        `select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileA}/%'`,
+      ),
+    ).toBe("1");
 
     // The profile moved to the finished tab; the other one is still private.
     await page.goto("/internal/approvals?tab=done");
     await expect(page.getByText(`/${slugA} ·`)).toBeVisible();
     await page.goto("/internal/approvals?tab=open");
     await expect(page.getByText(`/${slugA} ·`)).toHaveCount(0);
-    expect((await anon.from("public_profiles").select("slug").eq("slug", slugB)).data).toEqual([]);
+    expect(
+      (await anon.from("public_profiles").select("slug").eq("slug", slugB))
+        .data,
+    ).toEqual([]);
 
     await context.close();
   });
@@ -454,26 +609,44 @@ test.describe("first approval, publication and public image", () => {
     correctedB = next.data!.id;
   });
 
-  test("the corrected profile is approved and published in one step", async ({ browser }) => {
+  test("the corrected profile is approved and published in one step", async ({
+    browser,
+  }) => {
     const { context, page } = await pageFor(browser, "founder");
 
     await page.goto("/internal/approvals?tab=open");
     await expect(page.getByText(`/${slugB} ·`)).toBeVisible();
 
     await page.goto(`/internal/approvals/${profileB}`);
-    await page.getByRole("button", { name: "Freigeben und veröffentlichen" }).click();
-    await page.getByRole("button", { name: "Ja, freigeben und veröffentlichen" }).click();
-    await expect(page.getByText("Freigegeben und veröffentlicht.").first()).toBeVisible(SLOW);
+    await page
+      .getByRole("button", { name: "Freigeben und veröffentlichen" })
+      .click();
+    await page
+      .getByRole("button", { name: "Ja, freigeben und veröffentlichen" })
+      .click();
+    await expect(
+      page.getByText("Freigegeben und veröffentlicht.").first(),
+    ).toBeVisible(SLOW);
 
-    expect(sql(`select published_revision_id = '${correctedB}' from public.profiles where id = '${profileB}'`)).toBe("t");
-    expect(sql(`select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileB}/%'`)).toBe("1");
+    expect(
+      sql(
+        `select published_revision_id = '${correctedB}' from public.profiles where id = '${profileB}'`,
+      ),
+    ).toBe("t");
+    expect(
+      sql(
+        `select count(*) from storage.objects where bucket_id = 'public-media' and name like 'profiles/${profileB}/%'`,
+      ),
+    ).toBe("1");
     await waitForMail(emails.ownerB, LIVE_MAIL);
     expect(await mailsWithSubject(emails.ownerB, LIVE_MAIL)).toHaveLength(1);
 
     await context.close();
   });
 
-  test("after the approval the owner sees a live profile and may keep editing", async ({ browser }) => {
+  test("after the approval the owner sees a live profile and may keep editing", async ({
+    browser,
+  }) => {
     // The first publication is not an owner step any more.
     const again = await ownerAApi.rpc("publish_profile", {
       p_profile_id: profileA,
@@ -484,40 +657,72 @@ test.describe("first approval, publication and public image", () => {
     const { context, page } = await pageFor(browser, "ownerA");
     await page.goto("/organizer");
     await expect(page.getByText("Dein Profil ist live.")).toBeVisible(SLOW);
-    await expect(page.getByText("Änderungen bleiben privat, bis du sie selbst veröffentlichst.")).toBeVisible();
+    await expect(
+      page.getByText(
+        "Änderungen bleiben privat, bis du sie selbst veröffentlichst.",
+      ),
+    ).toBeVisible();
 
     await page.goto(`/organizer/profiles/${profileA}/edit`);
-    await expect(page.getByText("DISKOE hat dieses Profil freigegeben.", { exact: false })).toHaveCount(0);
-    await saveDetails(page, { intro: "A new text that is not public yet." }, "later");
+    await expect(
+      page.getByText("DISKOE hat dieses Profil freigegeben.", { exact: false }),
+    ).toHaveCount(0);
+    await saveDetails(
+      page,
+      { intro: "A new text that is not public yet." },
+      "later",
+    );
     await page.waitForURL("**/organizer", SLOW);
 
     const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },
     });
-    const rows = await anon.from("public_profiles").select("short_intro").eq("slug", slugA);
+    const rows = await anon
+      .from("public_profiles")
+      .select("short_intro")
+      .eq("slug", slugA);
     expect(rows.data![0].short_intro).toBe("Alpha Events nights.");
 
     await page.goto(`/organizer/profiles/${profileA}/preview`);
-    await expect(page.getByRole("button", { name: "Änderungen veröffentlichen" })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Änderungen veröffentlichen" }),
+    ).toBeVisible();
 
     await context.close();
   });
 
-  test("later changes are published only after the owner's own confirmation", async ({ browser }) => {
+  test("later changes are published only after the owner's own confirmation", async ({
+    browser,
+  }) => {
     const { context, page } = await pageFor(browser, "ownerA");
     await page.goto(`/organizer/profiles/${profileA}/preview`);
 
-    await page.getByRole("button", { name: "Änderungen veröffentlichen" }).click();
-    await expect(page.getByText("Die geänderten Angaben werden öffentlich sichtbar. Jetzt veröffentlichen?")).toBeVisible();
-    await page.getByRole("button", { name: "Ja, jetzt veröffentlichen" }).click();
+    await page
+      .getByRole("button", { name: "Änderungen veröffentlichen" })
+      .click();
+    await expect(
+      page.getByText(
+        "Die geänderten Angaben werden öffentlich sichtbar. Jetzt veröffentlichen?",
+      ),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Ja, jetzt veröffentlichen" })
+      .click();
     // The publish form disappears once the draft is the published revision.
-    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible(SLOW);
+    await expect(page.getByText("Dein Profil ist veröffentlicht.")).toBeVisible(
+      SLOW,
+    );
 
     const anon = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },
     });
-    const rows = await anon.from("public_profiles").select("short_intro").eq("slug", slugA);
-    expect(rows.data![0].short_intro).toBe("A new text that is not public yet.");
+    const rows = await anon
+      .from("public_profiles")
+      .select("short_intro")
+      .eq("slug", slugA);
+    expect(rows.data![0].short_intro).toBe(
+      "A new text that is not public yet.",
+    );
 
     await context.close();
   });

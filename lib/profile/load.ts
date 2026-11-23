@@ -12,6 +12,7 @@ import { loadImage, type ProfileImage } from "@/lib/profile/image";
 import { isPublishedImagePublic } from "@/lib/profile/publish";
 import {
   loadLatestQuestion,
+  loadLatestSubmitAt,
   loadProfileState,
   loadQuestionForRevision,
   loadRevision,
@@ -21,8 +22,7 @@ import {
   type RevisionFields,
 } from "@/lib/profile/draft";
 
-const UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export type { ProfileImage };
 
@@ -40,6 +40,10 @@ export type OwnerProfileView = {
   // The latest question while the profile is not approved yet. It stays
   // available after the owner started to correct it.
   latestQuestion: ReviewQuestion | null;
+  // The latest question that has not been answered by a new submission yet.
+  // It also stays open when the owner changed the first event and the pair no
+  // longer matches the question (the status is then "ready", not "in_review").
+  openQuestion: ReviewQuestion | null;
   // null = nothing published yet.
   publishedImagePublic: boolean | null;
 };
@@ -114,7 +118,18 @@ export async function loadOwnerProfileView(
       ? await loadLatestQuestion(supabase, profileId)
       : null;
 
-  const status = reviewStatus({
+  const lastSubmitAt =
+    latestQuestion !== null
+      ? await loadLatestSubmitAt(supabase, profileId)
+      : null;
+  const openQuestion =
+    latestQuestion !== null &&
+    (lastSubmitAt === null ||
+      Date.parse(latestQuestion.createdAt) > Date.parse(lastSubmitAt))
+      ? latestQuestion
+      : null;
+
+  let status = reviewStatus({
     gapCount: gaps.length,
     draftRevisionId: profile.draftRevisionId,
     firstApprovedRevisionId: profile.firstApprovedRevisionId,
@@ -122,6 +137,12 @@ export async function loadOwnerProfileView(
     submittedRevisionId: submitted ? (revision?.id ?? null) : null,
     questionRevisionId: question ? (revision?.id ?? null) : null,
   });
+
+  // The owner changed the first event after the question: the old pair is no
+  // longer what is in review, the new one has to be submitted again.
+  if (openQuestion !== null && status === "in_review") {
+    status = "ready";
+  }
 
   const publishedImagePublic = profile.publishedRevisionId
     ? await isPublishedImagePublic(supabase, profileId)
@@ -137,6 +158,7 @@ export async function loadOwnerProfileView(
     live: profile.publishedRevisionId !== null,
     question,
     latestQuestion,
+    openQuestion,
     publishedImagePublic,
   };
 }

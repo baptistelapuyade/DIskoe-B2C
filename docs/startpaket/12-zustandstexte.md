@@ -727,7 +727,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z27.err.confirm.title | Bitte bestätige beide Punkte. | Please confirm both points. | EIN-02d, Hinweis (Fehler), Zeile 1 |
 | Z27.err.confirm.second | Setze noch den zweiten Haken, dann kannst du einreichen. | Tick the second box too, then you can submit. | EIN-02d, Hinweis (Fehler), Zeile 2 |
 | Z27.err.confirm.first | Setze noch den ersten Haken, dann kannst du einreichen. | Tick the first box too, then you can submit. | EIN-02d, Zeile 2, wenn der erste fehlt (kein Frame) |
-| Z27.err.confirm.both | Setze beide Haken, dann kannst du einreichen. | Tick both boxes, then you can submit. | EIN-02d, Zeile 2, wenn beide fehlen (kein Frame) |
+| Z27.err.confirm.both | Setze beide Haken, dann kannst du einreichen. | Tick both boxes, then you can submit. | EIN-02d, Zeile 2, wenn beide fehlen (kein Frame; Text vom Founder am 20.11.2026 bestätigt) |
 | Z27.err.submit.title | Das Einreichen hat nicht geklappt. | Submitting didn’t work. | EIN-02e, Hinweis (Fehler), Zeile 1 |
 | Z27.err.submit.line | Deine Bestätigung ist gespeichert. Versuche es noch einmal. | Your confirmation is kept. Try again. | EIN-02e, Hinweis (Fehler), Zeile 2 |
 | Z27.err.changed.title | Dein Stand hat sich geändert. | Your version has changed. | EIN-02, Hinweis (Fehler) bei DK001 (kein Frame) |
@@ -776,6 +776,82 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z27.decided.notice.title | Zurückziehen ist nicht mehr nötig. | Withdrawing is no longer needed. | PRF-03d, Hinweis (Info), Zeile 1 |
 | Z27.decided.notice.line | Das Ergebnis findest du im Überblick und in deiner E-Mail. | You’ll find the result in the overview and in your email. | PRF-03d, Hinweis (Info), Zeile 2 |
 | Z27.decided.overview | Zum Überblick | To the overview | PRF-03d, Hauptbutton |
+
+### Rückfrage, Live und Fehlerseiten (Z28, Welle 1 Block 2c und ERR, Slice 9, Stand 20.11.2026)
+Deutsch aus den Figma-Frames RFG-01a bis RFG-04, LIV-01a bis LIV-03 und ERR-01 bis ERR-05; Englisch ist Vorschlag (Review offen). Abweichung von Figma (Founder, 20.11.2026): ERR-01 ohne den Satz „Auch das, was du gerade eingetragen hast, behalten wir in diesem Browser“, weil nichts im Browser gespeichert wird.
+
+| ID | Deutsch | Englisch | Verwendung |
+|---|---|---|---|
+| Z28.q.eyebrow | Rückfrage | Question | RFG-01a/b, Eyebrow |
+| Z28.q.title | Wir haben eine Rückfrage | We have a question | RFG-01a/b, Titel |
+| Z28.q.lead | Bevor wir freigeben können, brauchen wir eine Antwort von dir. Bis dahin bleibt alles privat. | Before we can approve, we need an answer from you. Until then everything stays private. | RFG-01a/b, Einleitung |
+| Z28.q.card.title | Rückfrage zu: {area} | Question about: {area} | RFG-01, RFG-02, Kartentitel und Hinweis auf den Bearbeiten-Schritten |
+| Z28.q.card.titleNone | Rückfrage zu deinem Stand | Question about your version | RFG-01, Kartentitel ohne betroffene Stelle (kein Frame) |
+| Z28.area.profile | Profil | Profile | RFG-01b, betroffene Stelle |
+| Z28.area.event | Erstes Event | First event | RFG-01a, betroffene Stelle |
+| Z28.area.place | Erstes Event · Ort | First event · Place | RFG-01a, RFG-02, betroffene Stelle |
+| Z28.area.time | Erstes Event · Termin | First event · Date | betroffene Stelle (kein Frame) |
+| Z28.area.image | Erstes Event · Bild | First event · Image | betroffene Stelle (kein Frame) |
+| Z28.area.price | Erstes Event · Kosten und Zugang | First event · Price and access | betroffene Stelle (kein Frame) |
+| Z28.q.asked | Unsere Frage | Our question | RFG-01/02, Zeile |
+| Z28.q.sent | Gesendet am | Sent on | RFG-01/02, Zeile |
+| Z28.q.fix | Angabe korrigieren | Correct the detail | RFG-01a/b, Hauptbutton |
+| Z28.q.view | Eingereichte Fassung ansehen | View the submitted version | RFG-01a/b, Button |
+| Z28.fix.eyebrow | Rückfrage · Korrigieren | Question · Correct | RFG-02a/b, Eyebrow |
+| Z28.fix.place.title | Korrigiere den Ort | Correct the place | RFG-02a/b, Titel |
+| Z28.fix.place.lead | Deine Antwort gilt für das Event. Am Ende reichst du den Stand erneut ein. | Your answer applies to the event. At the end you submit your version again. | RFG-02a/b, Einleitung |
+| Z28.fix.next | Weiter | Continue | RFG-02a/b, Hauptbutton |
+| Z28.fix.back | Zurück zur Rückfrage | Back to the question | RFG-02a/b, Button |
+| Z28.again.eyebrow | Rückfrage · Erneut einreichen | Question · Submit again | RFG-03a, Eyebrow |
+| Z28.again.title | Reiche deine Antwort ein | Submit your answer | RFG-03a, Titel |
+| Z28.again.lead | Deine Antwort geht zusammen mit deinem Stand zurück an uns. Die Prüfung beginnt von vorn. | Your answer goes back to us together with your version. The review starts over. | RFG-03a, Einleitung |
+| Z28.again.submit | Erneut einreichen | Submit again | RFG-03a, Hauptbutton |
+| Z28.again.back | Zurück | Back | RFG-03a, Button |
+| Z28.answered.eyebrow | Prüfung | Review | RFG-04, Eyebrow |
+| Z28.answered.title | Danke, wir schauen es uns an | Thanks, we’ll take a look | RFG-04, Titel |
+| Z28.answered.lead | Deine Antwort ist bei uns. Wir melden uns per E-Mail, sobald es etwas Neues gibt. | Your answer has reached us. We’ll email you as soon as there is news. | RFG-04, Einleitung |
+| Z28.answered.notice.title | Deine Antwort ist eingereicht. | Your answer is submitted. | RFG-04, Hinweis (Erfolg), Zeile 1 |
+| Z28.answered.notice.line | Alles bleibt privat, bis wir freigeben. | Everything stays private until we approve. | RFG-04, Hinweis (Erfolg), Zeile 2 |
+| Z28.answered.view | Eingereichte Fassung ansehen | View the submitted version | RFG-04, Hauptbutton |
+| Z28.live.eyebrow | Live | Live | LIV-01 bis 03, Eyebrow |
+| Z28.live.title | Dein Profil ist live | Your profile is live | LIV-01 bis 03, Titel |
+| Z28.live.lead | Wir haben Profil und Event freigegeben. Teile die Links, damit dich Leute finden. | We’ve approved your profile and event. Share the links so people can find you. | LIV-01a, Einleitung |
+| Z28.live.leadProfile | Wir haben dein Profil freigegeben. Teile den Link, damit dich Leute finden. | We’ve approved your profile. Share the link so people can find you. | LIV-01b, Einleitung |
+| Z28.live.since | Öffentlich seit {date} | Public since {date} | LIV-01 bis 03, Pille |
+| Z28.live.profile | Dein Profil | Your profile | LIV-01, Kartentitel |
+| Z28.live.copy | Link kopieren | Copy link | LIV-01, Button auf der Karte |
+| Z28.live.viewProfile | Profil ansehen | View profile | LIV-01 bis 03, Button |
+| Z28.live.viewEvent | Event ansehen | View event | LIV-01a, Button |
+| Z28.live.next.title | Als Nächstes | Next | LIV-01b, Überschrift |
+| Z28.live.next.line | Lege dein erstes Event an. Dann erscheint es auf deinem Profil. Bis dahin steht dort „Neue Termine folgen.“ | Create your first event. Then it appears on your profile. Until then it says “New dates to follow.” | LIV-01b, Zeile |
+| Z28.live.createEvent | Erstes Event anlegen | Create first event | LIV-01b, Hauptbutton |
+| Z28.live.copied.title | Link kopiert. | Link copied. | LIV-02, Hinweis (Erfolg), Zeile 1 |
+| Z28.live.copied.line | Du kannst ihn jetzt einfügen, wo du willst. | You can paste it wherever you like now. | LIV-02, Hinweis (Erfolg), Zeile 2 |
+| Z28.live.failed.title | Das Kopieren hat nicht geklappt. | Copying didn’t work. | LIV-03, Hinweis (Fehler), Zeile 1 |
+| Z28.live.failed.line | Markiere den Link und kopiere ihn von Hand. | Select the link and copy it by hand. | LIV-03, Hinweis (Fehler), Zeile 2 |
+| Z28.live.link.profile | Link zu deinem Profil | Link to your profile | LIV-03, Feld |
+| Z28.live.link.event | Link zum Event | Link to the event | LIV-03, Feld (Event, kein Frame) |
+| Z28.live.retry | Noch einmal kopieren | Copy again | LIV-03, Hauptbutton |
+| Z28.err.session.eyebrow | Sitzung | Session | ERR-01, Eyebrow |
+| Z28.err.session.title | Du bist abgemeldet | You’re signed out | ERR-01, Titel |
+| Z28.err.session.lead | Deine Sitzung ist abgelaufen. Melde dich neu an. Was du schon gespeichert hast, ist noch da. | Your session has expired. Sign in again. What you’ve already saved is still there. | ERR-01, Einleitung (Satz über den Browser gestrichen, Founder 20.11.2026) |
+| Z28.err.session.login | Neu anmelden | Sign in again | ERR-01, Button |
+| Z28.err.notFound.eyebrow | 404 | 404 | ERR-02, Eyebrow |
+| Z28.err.notFound.title | Diese Seite gibt es nicht | This page doesn’t exist | ERR-02, Titel |
+| Z28.err.notFound.lead | Der Link stimmt nicht, oder die Seite ist nicht mehr da. | The link is wrong, or the page is gone. | ERR-02, Einleitung |
+| Z28.err.home | Zur Startseite | To the start page | ERR-02 bis 04, Button |
+| Z28.err.forbidden.eyebrow | 403 | 403 | ERR-03, Eyebrow |
+| Z28.err.forbidden.title | Darauf hast du keinen Zugriff | You don’t have access to this | ERR-03, Titel |
+| Z28.err.forbidden.lead | Diese Seite gehört zu einem anderen Konto. Wenn du glaubst, dass das nicht stimmt, melde dich mit der Adresse an, mit der du eingeladen wurdest. | This page belongs to another account. If you think that’s wrong, sign in with the address you were invited with. | ERR-03, Einleitung |
+| Z28.err.forbidden.other | Mit anderer Adresse anmelden | Sign in with another address | ERR-03, Button |
+| Z28.err.server.eyebrow | Fehler | Error | ERR-04, Eyebrow |
+| Z28.err.server.title | Bei uns ist etwas schiefgelaufen | Something went wrong on our side | ERR-04, Titel |
+| Z28.err.server.lead | Das liegt nicht an dir. Deine Angaben sind sicher. Versuche es gleich noch einmal. | It’s not you. Your details are safe. Try again in a moment. | ERR-04, Einleitung |
+| Z28.err.server.retry | Noch einmal versuchen | Try again | ERR-04, Hauptbutton |
+| Z28.err.out.eyebrow | Abgemeldet | Signed out | ERR-05, Eyebrow |
+| Z28.err.out.title | Du bist abgemeldet | You’re signed out | ERR-05, Titel |
+| Z28.err.out.lead | Bis bald. Deine Angaben bleiben gespeichert. | See you soon. Your details stay saved. | ERR-05, Einleitung |
+| Z28.err.out.login | Wieder anmelden | Sign in again | ERR-05, Button |
 
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.

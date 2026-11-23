@@ -38,7 +38,6 @@ const QUESTION_TEXT = "Funktioniert der Link zu eurer Seite?";
 const QUESTION_MAIL = /Eine Frage zu deinem Profil/;
 const LIVE_MAIL = /ist jetzt live/;
 
-
 async function signInWithCode(page: Page, email: string) {
   await clearMailbox(email);
   await page.goto("/login");
@@ -53,7 +52,7 @@ async function signInWithCode(page: Page, email: string) {
 
 async function signOut(page: Page) {
   await page.getByRole("button", { name: "Abmelden" }).click();
-  await page.waitForURL("**/login", SLOW);
+  await page.waitForURL("**/signed-out", SLOW);
 }
 
 // Short pause so that a viewer of the video can follow what happened.
@@ -61,18 +60,28 @@ async function beat(page: Page, ms = 1200) {
   await page.waitForTimeout(ms);
 }
 
-async function submitForReview(page: Page) {
+// After a question the confirmation reads "Erneut einreichen" and ends on
+// "Danke, wir schauen es uns an" (RFG-03a, 04) instead of the first hand-in.
+async function submitForReview(page: Page, again = false) {
   // From the preview, the way to submit without an event.
-  await page.getByRole("link", { name: "Profil ohne Event einreichen" }).click();
+  await page
+    .getByRole("link", { name: "Profil ohne Event einreichen" })
+    .click();
   await page.waitForURL("**/submit", SLOW);
   await page.getByRole("link", { name: "Weiter zur Bestätigung" }).click();
   await page.waitForURL(/\/submit\/confirm/, SLOW);
   await page.getByLabel(/Angaben geprüft und bin berechtigt/).check();
   await page.getByLabel(/nötigen Rechte/).check();
   await beat(page, 600);
-  await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
+  await page
+    .getByRole("button", {
+      name: again ? "Erneut einreichen" : "Zur Prüfung einreichen",
+    })
+    .click();
   await expect(
-    page.getByRole("heading", { name: "Wir prüfen dein Profil" }),
+    page.getByRole("heading", {
+      name: again ? "Danke, wir schauen es uns an" : "Wir prüfen dein Profil",
+    }),
   ).toBeVisible(SLOW);
   await beat(page);
 }
@@ -160,9 +169,7 @@ test("the whole profile flow, from the first entry to the live profile", async (
     await beat(page);
 
     const questionMail = await waitForMail(emails.owner, QUESTION_MAIL);
-    expect(questionMail.body).toContain(
-      `${BASE_URL}/organizer/profiles/`,
-    );
+    expect(questionMail.body).toContain(`${BASE_URL}/organizer/profiles/`);
     await signOut(page);
 
     // 3. The organizer reads the question, corrects and hands in again.
@@ -174,7 +181,7 @@ test("the whole profile flow, from the first entry to the live profile", async (
     await page.getByRole("link", { name: "Angabe korrigieren" }).click();
     await expect(
       page.getByRole("heading", {
-        name: "Wir haben eine Frage zu deinem Profil",
+        name: "Wir haben eine Rückfrage",
       }),
     ).toBeVisible(SLOW);
     await beat(page);
@@ -187,10 +194,10 @@ test("the whole profile flow, from the first entry to the live profile", async (
     await beat(page);
     await page.getByRole("button", { name: "Weiter zur Vorschau" }).click();
     await page.waitForURL("**/preview", SLOW);
-    await expect(page.getByRole("img", { name: "Bühne bei Nacht" })).toBeVisible(
-      SLOW,
-    );
-    await submitForReview(page);
+    await expect(
+      page.getByRole("img", { name: "Bühne bei Nacht" }),
+    ).toBeVisible(SLOW);
+    await submitForReview(page, true);
     await signOut(page);
 
     // 4. The founder approves; the profile goes live at once.
@@ -200,9 +207,9 @@ test("the whole profile flow, from the first entry to the live profile", async (
       .locator("li", { hasText: `/${slug}` })
       .getByRole("link", { name: "Prüfen" })
       .click();
-    await expect(page.getByRole("img", { name: "Bühne bei Nacht" })).toBeVisible(
-      SLOW,
-    );
+    await expect(
+      page.getByRole("img", { name: "Bühne bei Nacht" }),
+    ).toBeVisible(SLOW);
     await beat(page);
     await page
       .getByRole("button", { name: "Freigeben und veröffentlichen" })

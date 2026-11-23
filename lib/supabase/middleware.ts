@@ -31,26 +31,22 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
 
-  const supabase = createServerClient<Database>(
-    url,
-    key,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
-          );
-        },
+  const supabase = createServerClient<Database>(url, key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) =>
+          request.cookies.set(name, value),
+        );
+        response = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options),
+        );
       },
     },
-  );
+  });
 
   const { data } = await supabase.auth.getUser();
 
@@ -59,13 +55,16 @@ export async function updateSession(request: NextRequest) {
     pathname === "/organizer" || pathname.startsWith("/organizer/");
 
   if (!data.user && inOrganizerArea) {
+    // A session cookie that no longer works means the session ran out
+    // (Figma ERR-01); no cookie at all is a visitor who never signed in.
+    const expired = request.cookies
+      .getAll()
+      .some((cookie) => /^sb-.+-auth-token/.test(cookie.name));
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = expired ? "/session-expired" : "/login";
     url.search = `?next=${encodeURIComponent(`${pathname}${search}`)}`;
     const redirect = NextResponse.redirect(url);
-    response.cookies
-      .getAll()
-      .forEach((cookie) => redirect.cookies.set(cookie));
+    response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
     return redirect;
   }
 

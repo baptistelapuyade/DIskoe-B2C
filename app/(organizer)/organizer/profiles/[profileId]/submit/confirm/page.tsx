@@ -29,14 +29,21 @@ export default async function ConfirmSubmitPage({
   const { profile } = data;
 
   if (profile.live) redirect("/organizer");
-  if (profile.status === "in_review" || profile.status === "question") {
-    redirect(`${base}/status`);
-  }
+  if (profile.status === "question") redirect(`${base}/question`);
+  if (profile.status === "in_review") redirect(`${base}/status`);
   if (profile.status !== "ready") redirect(`${base}/preview`);
+
+  // An open question of the founder: this is the answer (Figma RFG-03a). It
+  // goes back the way it was asked, with the event if the question was about
+  // profile and event together.
+  const asked = profile.openQuestion;
+  const answering = asked !== null;
 
   // The event goes with the profile unless the owner left it out. A missing
   // detail in it sends the owner back to the checklist.
-  const withEvent = data.event !== null && eventChoice !== "none";
+  const withEvent = answering
+    ? data.event !== null && asked.withEvent
+    : data.event !== null && eventChoice !== "none";
 
   if (withEvent && data.eventGapCodes.length > 0) {
     redirect(`${base}/submit`);
@@ -45,20 +52,25 @@ export default async function ConfirmSubmitPage({
   return (
     <StepShell
       lang={lang}
-      backHref={`${base}/submit`}
-      eyebrow={t(lang, "Z27.confirm.eyebrow")}
-      title={t(lang, "Z27.confirm.title")}
+      backHref={answering ? `${base}/question` : `${base}/submit`}
+      eyebrow={t(lang, answering ? "Z28.again.eyebrow" : "Z27.confirm.eyebrow")}
+      title={t(lang, answering ? "Z28.again.title" : "Z27.confirm.title")}
       lead={t(
         lang,
-        withEvent ? "Z27.confirm.lead" : "Z27.confirm.leadProfile",
+        answering
+          ? "Z28.again.lead"
+          : withEvent
+            ? "Z27.confirm.lead"
+            : "Z27.confirm.leadProfile",
       )}
       current={2}
     >
       <ConfirmForm
         lang={lang}
-        action={submitAction.bind(null, profileId, withEvent)}
-        backHref={`${base}/submit`}
+        action={submitAction.bind(null, profileId, withEvent, answering)}
+        backHref={answering ? `${base}/question` : `${base}/submit`}
         profileOnly={!withEvent}
+        answering={answering}
       />
     </StepShell>
   );

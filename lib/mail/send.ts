@@ -56,15 +56,17 @@ export async function sendProfileMail(
   }
 
   const origin = input.origin.replace(/\/+$/, "");
-  const profileUrl = `${origin}/organizer/profiles/${input.profileId}/status`;
+  const profileBase = `${origin}/organizer/profiles/${input.profileId}`;
   const content = mailFor(input.kind, {
     name: input.name,
-    // A question about profile and first event is answered on the event's
-    // review page; a live mail links to both.
+    // The question has its own screens (RFG-01), the "live" mail leads to the
+    // links to share (LIV-01), the others to the status of the profile.
     url:
-      input.kind === "profile_question" && input.event
-        ? `${origin}/organizer/events/${input.event.id}/review`
-        : profileUrl,
+      input.kind === "profile_question"
+        ? `${profileBase}/question`
+        : input.kind === "profile_live"
+          ? `${profileBase}/live`
+          : `${profileBase}/status`,
     eventTitle: input.event ? (input.event.title ?? "") : undefined,
     eventUrl: input.event
       ? `${origin}/organizer/events/${input.event.id}/manage`

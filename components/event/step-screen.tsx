@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { StepShell } from "@/components/profile/step-shell";
 import { UploadNotice } from "@/components/profile/upload-notice";
 import { ACCEPT, useImageUpload } from "@/components/profile/use-image-upload";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClass } from "@/components/ui/button";
 import { AtmosphereChip } from "@/components/ui/chip";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
@@ -222,6 +223,8 @@ export function EventStepScreen({
   initial,
   image,
   backHref,
+  correction,
+  notice,
 }: {
   lang: Lang;
   step: EventStep;
@@ -231,6 +234,20 @@ export function EventStepScreen({
   // Only the image step uses it.
   image?: StepImage;
   backHref: string;
+  // The answer to a founder's question (Figma RFG-02a/b): the step with its
+  // own head, the question card above the fields, "Continue" leads to the
+  // submission and the second button goes back to the question.
+  correction?: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    nextLabel: string;
+    backLabel: string;
+    nextHref: string;
+    card: ReactNode;
+  };
+  // A hint at the top of the form (the open question on a normal step).
+  notice?: ReactNode;
 }) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -464,7 +481,7 @@ export function EventStepScreen({
 
       if (result.status === "saved") {
         clearRetained(scope);
-        router.push(result.next);
+        router.push(correction ? correction.nextHref : result.next);
         return;
       }
 
@@ -530,7 +547,7 @@ export function EventStepScreen({
 
   const codes = Object.values(errors);
   const kind = noticeKind(errors);
-  const nextLabel = msg(STEP_TEXT[step].next);
+  const nextLabel = correction?.nextLabel ?? msg(STEP_TEXT[step].next);
   const saving = status === "saving";
   const uploading = upload.busy;
   const ticket = values.accessKinds.includes("online_ticket");
@@ -560,10 +577,10 @@ export function EventStepScreen({
     <StepShell
       lang={lang}
       backHref={backHref}
-      eyebrow={msg(STEP_TEXT[step].eyebrow)}
-      title={msg(STEP_TEXT[step].title)}
-      lead={msg(STEP_TEXT[step].lead)}
-      current={1}
+      eyebrow={correction?.eyebrow ?? msg(STEP_TEXT[step].eyebrow)}
+      title={correction?.title ?? msg(STEP_TEXT[step].title)}
+      lead={correction?.lead ?? msg(STEP_TEXT[step].lead)}
+      current={correction ? 3 : 1}
     >
       <form
         ref={formRef}
@@ -574,6 +591,8 @@ export function EventStepScreen({
           void run(unsaved ? lastIntent : "next");
         }}
       >
+        {notice}
+
         {status === "invalid" && codes.length > 0 ? (
           kind === "endBeforeStart" ? (
             <Notice tone="error" title={msg("Z23.check.title.one")}>
@@ -628,6 +647,8 @@ export function EventStepScreen({
         {step === "image" && upload.error ? (
           <UploadNotice lang={lang} error={upload.error} />
         ) : null}
+
+        {correction ? <div className="-mb-3.5">{correction.card}</div> : null}
 
         <div className="flex flex-col gap-6">
           {step === "basics" ? (
@@ -853,7 +874,11 @@ export function EventStepScreen({
               <Field
                 id="placeName"
                 label={msg("Z24.place.name.label")}
-                hint={errors.placeName ? undefined : msg("Z24.place.name.hint")}
+                hint={
+                  errors.placeName || correction
+                    ? undefined
+                    : msg("Z24.place.name.hint")
+                }
                 error={errorText("placeName")}
                 large
               >
@@ -1420,13 +1445,22 @@ export function EventStepScreen({
           >
             {mainLabel}
           </Button>
-          <Button
-            variant="ghostLg"
-            disabled={saving}
-            onClick={() => void run("later")}
-          >
-            {msg("Z24.later")}
-          </Button>
+          {correction ? (
+            <Link
+              href={backHref}
+              className={buttonClass("ghostLg", "w-full sm:w-auto")}
+            >
+              {correction.backLabel}
+            </Link>
+          ) : (
+            <Button
+              variant="ghostLg"
+              disabled={saving}
+              onClick={() => void run("later")}
+            >
+              {msg("Z24.later")}
+            </Button>
+          )}
         </div>
       </form>
     </StepShell>

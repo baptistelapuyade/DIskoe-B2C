@@ -33,9 +33,8 @@ export default async function SubmitChecklistPage({
   const { profile, event } = data;
 
   if (profile.live) redirect("/organizer");
-  if (profile.status === "in_review" || profile.status === "question") {
-    redirect(`${base}/status`);
-  }
+  if (profile.status === "question") redirect(`${base}/question`);
+  if (profile.status === "in_review") redirect(`${base}/status`);
   // A profile with gaps has its own screen (ORG-06) that names them.
   if (profile.status !== "ready") redirect(`${base}/preview`);
 

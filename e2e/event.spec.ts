@@ -64,7 +64,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   // Accounts and profiles: provisioned the way the founder does it.
   await signInWithCode(page, emails.ownerA);
   await page.getByRole("button", { name: "Abmelden" }).click();
-  await page.waitForURL("**/login", SLOW);
+  await page.waitForURL("**/signed-out", SLOW);
   const otherContext = await germanContext(browser, { baseURL: BASE_URL });
   const otherPage = await otherContext.newPage();
   await signInWithCode(otherPage, emails.ownerB);
@@ -79,7 +79,7 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   );
   provisionAs(founderId, userIdByEmail(emails.ownerB), `ev-b-${run}`, "Beta");
   await page.getByRole("button", { name: "Abmelden" }).click();
-  await page.waitForURL("**/login", SLOW);
+  await page.waitForURL("**/signed-out", SLOW);
   await signInWithCode(page, emails.ownerA);
 
   // 1. Step 1 "Worum geht es?" (EVT-01a). No draft exists until the first
