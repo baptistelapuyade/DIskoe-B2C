@@ -25,7 +25,13 @@ export default defineConfig({
     command: "npm run dev -- --hostname 127.0.0.1",
     url: "http://127.0.0.1:3000",
     // The e2e specs read the open state (sitemap, robots); the closed state is unit-tested.
-    env: { SITE_INDEXING: "on" },
+    env: {
+      SITE_INDEXING: "on",
+      // The dev server restarts itself when it nears the default Node heap
+      // limit, which stalls pages for minutes in the long specs. Give it more
+      // room in CI only.
+      ...(process.env.CI ? { NODE_OPTIONS: "--max-old-space-size=4096" } : {}),
+    },
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
