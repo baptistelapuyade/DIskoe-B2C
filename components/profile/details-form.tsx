@@ -235,6 +235,8 @@ export function DetailsForm({
         </Notice>
       ) : null}
 
+      {/* Fields and links group are 24 px apart (Figma ORG-03a, LPA-01a). */}
+      <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-6">
         <Field id="name" label={msg("Z23.details.name.label")} hint={msg("Z23.details.name.hint")} error={nameError} large>
           {(props) => (
@@ -268,7 +270,13 @@ export function DetailsForm({
         {slugFixed ? (
           <Field id="slug" label={msg("Z23.details.slug.label")} hint={msg("Z23.details.slug.fixed", { slug: initial.slug })} large>
             {(props) => (
-              <input {...props} type="text" value={initial.slug} readOnly className={controlClassLg} />
+              <input
+                {...props}
+                type="text"
+                value={initial.slug}
+                readOnly
+                className={`${controlClassLg} bg-muted text-muted-foreground`}
+              />
             )}
           </Field>
         ) : (
@@ -308,7 +316,7 @@ export function DetailsForm({
       </div>
 
       <section aria-labelledby="where-title" className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           <h2 id="where-title" className="text-2xl leading-[30px] font-medium">
             {msg("Z23.details.where.title")}
           </h2>
@@ -445,6 +453,7 @@ export function DetailsForm({
           )}
         </Field>
       </section>
+      </div>
 
       {live ? (
         <div className="flex flex-col gap-3 sm:flex-row">
