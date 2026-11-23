@@ -60,7 +60,9 @@ async function beat(page: Page, ms = 1200) {
   await page.waitForTimeout(ms);
 }
 
-async function submitForReview(page: Page) {
+// After a question the confirmation reads "Erneut einreichen" and ends on
+// "Danke, wir schauen es uns an" (RFG-03a, 04) instead of the first hand-in.
+async function submitForReview(page: Page, again = false) {
   // From the preview, the way to submit without an event.
   await page
     .getByRole("link", { name: "Profil ohne Event einreichen" })
@@ -71,9 +73,15 @@ async function submitForReview(page: Page) {
   await page.getByLabel(/Angaben geprüft und bin berechtigt/).check();
   await page.getByLabel(/nötigen Rechte/).check();
   await beat(page, 600);
-  await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
+  await page
+    .getByRole("button", {
+      name: again ? "Erneut einreichen" : "Zur Prüfung einreichen",
+    })
+    .click();
   await expect(
-    page.getByRole("heading", { name: "Wir prüfen dein Profil" }),
+    page.getByRole("heading", {
+      name: again ? "Danke, wir schauen es uns an" : "Wir prüfen dein Profil",
+    }),
   ).toBeVisible(SLOW);
   await beat(page);
 }
@@ -189,7 +197,7 @@ test("the whole profile flow, from the first entry to the live profile", async (
     await expect(
       page.getByRole("img", { name: "Bühne bei Nacht" }),
     ).toBeVisible(SLOW);
-    await submitForReview(page);
+    await submitForReview(page, true);
     await signOut(page);
 
     // 4. The founder approves; the profile goes live at once.
