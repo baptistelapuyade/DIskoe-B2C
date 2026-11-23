@@ -299,13 +299,13 @@ test.describe("sign-in and organizer assignment", () => {
     const page = await context.newPage();
 
     await clearMailbox(emails.ownerA);
+    // The auth provider allows one code per address per second (local and CI
+    // setting). The setup of this file has just sent one to this address, and a
+    // production build answers fast enough to hit that limit.
+    await page.waitForTimeout(1500);
     await page.goto("/login");
     await page.getByLabel("E-Mail-Adresse").fill(emails.ownerA);
     await page.getByRole("button", { name: "Code senden" }).click();
-    // TEMP-DEBUG
-    await page.waitForTimeout(4000);
-    console.log("DEBUG-URL", page.url());
-    console.log("DEBUG-BODY", (await page.locator("body").innerText()).slice(0, 1500));
     await expect(page.getByLabel("Code aus der E-Mail")).toBeVisible();
 
     await page.goto(await waitForLink(emails.ownerA));

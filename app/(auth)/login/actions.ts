@@ -58,7 +58,6 @@ export async function requestCode(
   });
 
   if (error) {
-    console.error("TEMP-DEBUG requestCode", error.name, error.status, error.code, error.message); // TEMP-DEBUG
     return { status: "failed", email, at: Date.now() };
   }
 
