@@ -159,10 +159,11 @@ Section „Flow 1 Block 3“ (3173:39714; bis 10.11. Frame 3027:18219). Änderun
 
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
 |---|---|---|---|---|
-| LPA-01a / b / c | 3027:18220 / 19061 / 19726 | Bearbeiten / Fehler / Speichern fehlgeschlagen | Änderungen speichern → `LPA-02`; Abbrechen → Startseite `103f` | Änderungen privat bis zur Veröffentlichung |
+| LPA-01a / b / c | 3027:18220 / 19061 / 19726 | Bearbeiten / Fehler / Speichern fehlgeschlagen | Änderungen speichern → `LPA-02`; Abbrechen → Startseite `103f`, bei ungespeicherten Eingaben zuerst `LPA-01d` | Änderungen privat bis zur Veröffentlichung |
+| LPA-01d (neu 23.11.) | 3231:2 (Mobil 3231:72) | Ungespeicherte Änderungen verwerfen? | Weiter bearbeiten → `LPA-01a`; Ohne Speichern verlassen → Startseite `103f` | verwirft nur die nicht gespeicherten Eingaben; ein früher gespeicherter Entwurf bleibt |
 | LPA-02 | 3027:20358 | Gespeichert, privat | Vorschau ansehen und veröffentlichen → `LPA-03a`; Weiter bearbeiten → `LPA-01a` | |
 | LPA-03a / b | 3027:20683 / 21131 | Änderungen ansehen / keine Änderungen | Ändern → `LPA-01a`; Änderungen veröffentlichen → `LPA-04a`; Änderungen verwerfen → `LPA-06a`; `03b`: Profil bearbeiten, Zur Startseite | |
-| LPA-04a / b / c / d | 3027:21399 / 21609 / 21907 / 22209 | Bestätigen / Haken fehlen / fehlgeschlagen / Bild noch nicht öffentlich | Jetzt veröffentlichen → `LPA-05`; `04d`: Bild noch einmal veröffentlichen | zwei Bestätigungen; Protokolleintrag |
+| LPA-04a / b / c / d | 3027:21399 / 21609 / 21907 / 22209 | Bestätigen / Haken fehlen / fehlgeschlagen / Bild noch nicht öffentlich | Jetzt veröffentlichen → `LPA-05`; `04d`: Bild noch einmal veröffentlichen | zwei Bestätigungen; Protokolleintrag. **`04d` wird in W1 nicht gebaut** (23.11.): Bild und Texte werden in der Datenbank mit einer Fassung zusammen veröffentlicht, ein Teil kann nicht allein scheitern; Bildwechsel im Live-Profil kommt später |
 | LPA-05 | 3027:22510 | Veröffentlicht | Profil ansehen → `PUB-06a`; Zur Startseite → `103f` | |
 | LPA-06a / b | 3027:22781 / 23053 | Verwerfen bestätigen / verworfen | Ja, verwerfen → `LPA-06b`; Nein, behalten → `LPA-03a` | |
 
