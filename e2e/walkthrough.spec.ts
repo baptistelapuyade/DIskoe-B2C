@@ -173,7 +173,7 @@ test("the whole profile flow, from the first entry to the live profile", async (
     await page.getByRole("link", { name: "Angabe korrigieren" }).click();
     await expect(
       page.getByRole("heading", {
-        name: "Wir haben eine Frage zu deinem Profil",
+        name: "Wir haben eine Rückfrage",
       }),
     ).toBeVisible(SLOW);
     await beat(page);
