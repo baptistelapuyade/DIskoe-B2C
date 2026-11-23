@@ -7,6 +7,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
+  // The specs share one database; on CI they run one after another.
+  workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: "http://127.0.0.1:3000",
@@ -22,17 +24,16 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev -- --hostname 127.0.0.1",
+    // The long CI job (E2E_BUILD=1) tests a production build: the dev server
+    // compiled every route on first use, grew until it restarted itself and
+    // stalled pages for minutes.
+    command: process.env.E2E_BUILD
+      ? "npm run build && npm run start -- --hostname 127.0.0.1"
+      : "npm run dev -- --hostname 127.0.0.1",
     url: "http://127.0.0.1:3000",
     // The e2e specs read the open state (sitemap, robots); the closed state is unit-tested.
-    env: {
-      SITE_INDEXING: "on",
-      // The dev server restarts itself when it nears the default Node heap
-      // limit, which stalls pages for minutes in the long specs. Give it more
-      // room in CI only.
-      ...(process.env.CI ? { NODE_OPTIONS: "--max-old-space-size=4096" } : {}),
-    },
+    env: { SITE_INDEXING: "on" },
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: process.env.E2E_BUILD ? 480_000 : 120_000,
   },
 });
