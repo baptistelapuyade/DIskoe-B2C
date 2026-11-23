@@ -302,6 +302,10 @@ test.describe("sign-in and organizer assignment", () => {
     await page.goto("/login");
     await page.getByLabel("E-Mail-Adresse").fill(emails.ownerA);
     await page.getByRole("button", { name: "Code senden" }).click();
+    // TEMP-DEBUG
+    await page.waitForTimeout(4000);
+    console.log("DEBUG-URL", page.url());
+    console.log("DEBUG-BODY", (await page.locator("body").innerText()).slice(0, 1500));
     await expect(page.getByLabel("Code aus der E-Mail")).toBeVisible();
 
     await page.goto(await waitForLink(emails.ownerA));
