@@ -7,7 +7,7 @@ export const controlClass =
 
 // Control of the v2 screens: 44 px high, 16 px text (framework §3.4, D3).
 export const controlClassLg =
-  "border-border-strong bg-input text-foreground placeholder:text-muted-foreground aria-invalid:border-error block min-h-11 w-full rounded-lg border px-3 py-[9.5px] text-base shadow-xs disabled:cursor-not-allowed disabled:opacity-60";
+  "border-border-strong bg-input text-foreground placeholder:text-muted-foreground aria-invalid:border-error aria-invalid:shadow-[0_0_0_1px_var(--color-error)] block min-h-11 w-full rounded-lg border px-3 py-[9.5px] text-base shadow-xs disabled:cursor-not-allowed disabled:opacity-60";
 
 export function Field({
   id,

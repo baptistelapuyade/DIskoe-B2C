@@ -120,7 +120,7 @@ export function ConfirmForm({
             )}
           </span>
         </legend>
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-4">
           <div className="flex min-h-12 items-center gap-3">
             <Checkbox
               id="confirm-rights"
