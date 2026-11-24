@@ -1167,7 +1167,7 @@ function MusicBlock({ msg, form, disabled, errorText, setValue }: BlockProps) {
                   {...props}
                   type="button"
                   disabled={disabled}
-                  className="border-border-strong bg-input text-foreground focus-visible:outline-ring aria-invalid:border-error flex min-h-11 w-full items-center justify-between gap-2 rounded-lg border px-3 py-[9.5px] text-left text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="border-border-strong bg-input text-foreground focus-visible:outline-ring aria-invalid:border-error flex min-h-11 w-full items-center justify-between gap-2 rounded-lg border px-3 py-[9.5px] text-left text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:shadow-[0_0_0_1px_var(--color-error)]"
                 >
                   <span
                     className={

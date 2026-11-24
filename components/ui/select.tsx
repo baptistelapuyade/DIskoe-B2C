@@ -29,7 +29,7 @@ function SelectTrigger({
       className={cn(
         "border-border-strong bg-input text-foreground data-[placeholder]:text-muted-foreground flex min-h-11 w-full items-center justify-between gap-2 rounded-lg border px-3 py-[9.5px] text-base whitespace-nowrap shadow-xs outline-none",
         "focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2",
-        "aria-invalid:border-error disabled:cursor-not-allowed disabled:opacity-60",
+        "aria-invalid:border-error disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:shadow-[0_0_0_1px_var(--color-error)]",
         "*:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2",
         className,
       )}
@@ -56,7 +56,8 @@ function SelectContent({
         position={position}
         className={cn(
           "bg-background text-foreground border-border relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-lg border shadow-md",
-          position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
+          position === "popper" &&
+            "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
           className,
         )}
         {...props}

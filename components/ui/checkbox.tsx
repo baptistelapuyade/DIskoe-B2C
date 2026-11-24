@@ -18,7 +18,7 @@ function Checkbox({
       className={cn(
         "border-border-strong bg-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary peer size-4 shrink-0 rounded-[4px] border shadow-xs outline-none",
         "focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2",
-        "aria-invalid:border-error disabled:cursor-not-allowed disabled:opacity-60",
+        "aria-invalid:border-error disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:shadow-[0_0_0_1px_var(--color-error)]",
         className,
       )}
       {...props}

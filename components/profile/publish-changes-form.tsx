@@ -61,7 +61,7 @@ export function PublishChangesForm({
       <input type="hidden" name="usage" value={usage ? "on" : ""} />
       <fieldset className="flex flex-col">
         <legend className="sr-only">{t(lang, "Z27.confirm.heading")}</legend>
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-4">
           <div className="flex min-h-12 items-center gap-3">
             <Checkbox
               id="publish-rights"

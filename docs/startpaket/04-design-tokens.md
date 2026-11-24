@@ -15,7 +15,7 @@ Quelle: Figma-Variablen (Collections `DISKOE / Primitives`, `DISKOE / Theme`, `D
 | lavender | #c3a4cc | borderStrong | #8e8e87 |
 | success | #2e7048 | successSoft | #e8f3ec |
 | warning | #8a5a00 | warningSoft | #fbf1dc |
-| error | #a6383d | errorSoft | #faeceb |
+| error | #c8202a | errorSoft | #faeceb |
 Dark-Varianten (nur Plattform-Theme, nicht Profile): inkRaised #3e3e3b, inkHigh #4a4a47, inkDeep #1f1f1e, borderDark #5a5a55, mutedOnDark #b9b9b1, errorOnDark #f29a9e, successOnDark #8fd3a8, warningOnDark #f0c46a.
 
 ## Theme (Light/Dark, Plattform-UI)
