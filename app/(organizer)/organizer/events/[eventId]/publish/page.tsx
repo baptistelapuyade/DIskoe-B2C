@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
 
 import { ConfirmForm } from "@/components/event/confirm-form";
-import { ContextCard, MutedText, PageShell, Workspace } from "@/components/ui/page-shell";
+import {
+  ContextCard,
+  MutedText,
+  PageShell,
+  Workspace,
+} from "@/components/ui/page-shell";
 import { loadPublicationView } from "@/lib/event/publication";
 import { placeText, whenText } from "@/lib/event/summary";
 

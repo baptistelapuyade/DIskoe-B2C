@@ -20,12 +20,16 @@ const TONE: Record<PillTone, { box: string; dot: string | null }> = {
 
 export function Pill({
   tone = "neutral",
+  dot: showDot = true,
   children,
 }: {
   tone?: PillTone;
+  // The lists (Figma EVL-01a, EVM-01a) show the pill without the dot.
+  dot?: boolean;
   children: ReactNode;
 }) {
-  const { box, dot } = TONE[tone];
+  const { box, dot: dotClass } = TONE[tone];
+  const dot = showDot ? dotClass : null;
   return (
     <span
       className={`inline-flex min-h-8 items-center gap-2 rounded-full px-3 py-1.5 text-sm leading-5 font-medium ${box}`}

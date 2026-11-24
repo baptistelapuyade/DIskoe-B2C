@@ -1,14 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 
-import {
-  describeGaps,
-  parseGapDetail,
-} from "@/lib/domain/profile-publication";
+import { describeGaps, parseGapDetail } from "@/lib/domain/profile-publication";
 import { describeEventGaps } from "@/lib/domain/event-publication";
 import { copyPublishedEventImage } from "@/lib/event/publish";
+import { DISCARDED_COOKIE } from "@/lib/event/discard-cookie";
+import { loadEventRevision } from "@/lib/event/draft";
 import { requireOwnedEvent } from "@/lib/event/load";
 import { createClient } from "@/lib/supabase/server";
 
@@ -41,9 +41,9 @@ function gapMessages(details: string | null | undefined): string[] {
 
   return [
     ...describeGaps(profile).map((gap) => `Profil: ${gap.message}`),
-    ...describeEventGaps(event.filter((code) => !code.startsWith("profile."))).map(
-      (gap) => gap.message,
-    ),
+    ...describeEventGaps(
+      event.filter((code) => !code.startsWith("profile.")),
+    ).map((gap) => gap.message),
   ];
 }
 
@@ -128,4 +128,58 @@ export async function retryEventImagePublish(
         message:
           "Das Bild konnte nicht veröffentlicht werden. Bitte versucht es später noch einmal.",
       };
+}
+
+// ---------------------------------------------------------------------------
+// Discard the draft of an event that was never published (Figma EVB-07a, 07b)
+// ---------------------------------------------------------------------------
+// The title for the result page travels in a short-lived cookie: the event is
+// gone by then, and a title in the address could be forged into the sentence.
+export async function discardEventDraft(
+  eventId: string,
+  expectedDraftId: string,
+): Promise<void> {
+  const base = `/organizer/events/${eventId}`;
+  const { event } = await requireOwnedEvent(eventId, `${base}/discard`);
+  const supabase = await createClient();
+  const revision = event.draftRevisionId
+    ? await loadEventRevision(supabase, event.draftRevisionId)
+    : null;
+  const title = revision?.title?.trim() || null;
+  const { data: paths, error } = await supabase.rpc("discard_event_draft", {
+    p_event_id: eventId,
+    p_expected_draft_revision_id: expectedDraftId,
+  });
+
+  if (error) {
+    // Not the draft that was shown, or it is not discardable any more (public,
+    // in review, submitted before): the management page shows the real state.
+    if (error.code === "DK001" || error.code === "DK003") {
+      redirect(`${base}/manage`);
+    }
+    if (error.code === "42501") notFound();
+
+    redirect(`${base}/discard?failed=1`);
+  }
+
+  // The files of the draft's images. The rows are gone already; a file that
+  // could not be removed is an orphan in the private bucket, never public.
+  if (paths && paths.length > 0) {
+    try {
+      await supabase.storage.from("private-media").remove(paths);
+    } catch {
+      // Best effort.
+    }
+  }
+
+  (await cookies()).set(DISCARDED_COOKIE, encodeURIComponent(title ?? ""), {
+    maxAge: 120,
+    path: "/organizer/events/discarded",
+    httpOnly: true,
+    sameSite: "lax",
+  });
+
+  revalidatePath("/organizer/events");
+  revalidatePath("/organizer");
+  redirect("/organizer/events/discarded");
 }

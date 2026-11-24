@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { AreaCard, ProfileCard } from "@/components/home/profile-card";
 import type { ProfileHomeData } from "@/components/home/profile-card";
 import { AuthShell } from "@/components/layout/auth-shell";
-import { LinkButton } from "@/components/ui/button";
 import { requireAccess } from "@/lib/auth/server";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import type { FirstEventState } from "@/lib/domain/home-state";
@@ -101,35 +99,6 @@ export default async function OrganizerHome() {
     }),
   );
 
-  // Events whose profile is being reviewed are view-only until the review
-  // ends (flow map, ORG-103d). Until the event list (EVL-01) exists, the
-  // interim list below applies this rule.
-  const reviewByProfile = new Map(
-    data.map((item) => [
-      item.view.profile.id,
-      !item.view.live &&
-      (item.view.status === "in_review" || item.view.status === "question")
-        ? item.view.status
-        : null,
-    ]),
-  );
-
-  const liveIds = data
-    .filter((item) => item.view.live)
-    .map((item) => item.view.profile.id);
-  const newEventHref =
-    liveIds.length === 1
-      ? `/organizer/events/new?profile=${liveIds[0]}`
-      : "/organizer/events/new";
-  const showEvents =
-    allEvents.length > 0 ||
-    data.some(
-      (item) =>
-        item.view.live ||
-        item.view.status === "in_review" ||
-        item.view.status === "question",
-    );
-
   return (
     <main
       data-surface="accent"
@@ -150,68 +119,10 @@ export default async function OrganizerHome() {
             <ul>
               <ProfileCard lang={lang} data={item} />
             </ul>
-            <AreaCard lang={lang} data={item} eventsHref="#events" />
+            <AreaCard lang={lang} data={item} eventsHref="/organizer/events" />
           </li>
         ))}
       </ul>
-
-      {showEvents ? (
-        <section
-          id="events"
-          aria-labelledby="events-heading"
-          className="bg-background border-border flex flex-col gap-4 rounded-xl border px-6 py-6 md:px-8"
-        >
-          <h2 id="events-heading" className="text-lg leading-6 font-medium">
-            {t(lang, "Z22.events.heading")}
-          </h2>
-          {allEvents.length > 0 ? (
-            <ul className="flex flex-col gap-2">
-              {allEvents.map((event) => {
-                const review = event.published
-                  ? null
-                  : (reviewByProfile.get(event.organizerId) ?? null);
-                const target = event.published
-                  ? "manage"
-                  : review
-                    ? "review"
-                    : "edit";
-                const state = event.published
-                  ? t(lang, "Z22.events.published")
-                  : review === "question"
-                    ? t(lang, "Z22.events.question")
-                    : review
-                      ? t(lang, "Z22.events.inReview")
-                      : t(lang, "Z22.events.draft");
-
-                return (
-                  <li key={event.id}>
-                    <Link
-                      href={`/organizer/events/${event.id}/${target}`}
-                      className="underline"
-                    >
-                      {event.title ?? t(lang, "Z22.events.untitled")}
-                    </Link>{" "}
-                    <span className="text-muted-foreground text-sm">
-                      · {state}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className="text-muted-foreground">
-              {t(lang, "Z22.events.empty")}
-            </p>
-          )}
-          {liveIds.length > 0 ? (
-            <div>
-              <LinkButton href={newEventHref} variant="ghostLg">
-                {t(lang, "Z22.events.new")}
-              </LinkButton>
-            </div>
-          ) : null}
-        </section>
-      ) : null}
     </main>
   );
 }

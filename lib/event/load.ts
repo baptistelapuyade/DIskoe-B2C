@@ -10,11 +10,7 @@ import { parseStored, type StoredModules } from "@/lib/domain/event-modules";
 import { createClient } from "@/lib/supabase/server";
 import { loadImage, type ProfileImage } from "@/lib/profile/image";
 
-import {
-  loadEventRevision,
-  loadEventState,
-  type EventState,
-} from "./draft";
+import { loadEventRevision, loadEventState, type EventState } from "./draft";
 import {
   EMPTY_FORM_VALUES,
   rowToFormValues,
@@ -22,8 +18,7 @@ import {
   type EventFormValues,
 } from "./values";
 
-const UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export type OwnerEventView = {
   userId: string;
@@ -123,7 +118,9 @@ export async function loadOwnerEvents(
   const supabase = await createClient();
   const { data: events, error } = await supabase
     .from("events")
-    .select("id, organizer_id, draft_revision_id, published_revision_id, created_at")
+    .select(
+      "id, organizer_id, draft_revision_id, published_revision_id, created_at",
+    )
     .in("organizer_id", profileIds)
     .order("created_at", { ascending: false });
 

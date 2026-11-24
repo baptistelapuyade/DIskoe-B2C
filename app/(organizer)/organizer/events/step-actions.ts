@@ -158,9 +158,7 @@ function destination(
   return `${base}/edit/${next}`;
 }
 
-export async function saveEventStep(
-  request: StepRequest,
-): Promise<StepResult> {
+export async function saveEventStep(request: StepRequest): Promise<StepResult> {
   const { step, intent, eventId, profileId, input } = request;
 
   if (
@@ -223,7 +221,9 @@ export async function saveEventStep(
     if (step === "image") {
       const altText = text(input.altText).trim();
 
-      if (!(await saveImageDescription(supabase, userId, event, altText || null))) {
+      if (
+        !(await saveImageDescription(supabase, userId, event, altText || null))
+      ) {
         return FAILED;
       }
 
@@ -282,7 +282,6 @@ export async function saveEventStep(
   }
 }
 
-
 // ---------------------------------------------------------------------------
 // Event image (Figma EVT-05a to 05f)
 // ---------------------------------------------------------------------------
@@ -336,7 +335,9 @@ async function saveImageDescription(
     altText,
   });
 
-  return useId !== null && (await linkEventImage(supabase, userId, event, useId));
+  return (
+    useId !== null && (await linkEventImage(supabase, userId, event, useId))
+  );
 }
 
 // A new use of an asset, confirmed at once. The confirmation only marks the
@@ -375,7 +376,11 @@ async function linkEventImage(
   event: Awaited<ReturnType<typeof requireOwnedEvent>>["event"],
   useId: string,
 ): Promise<boolean> {
-  const { revisionId } = await ensureEditableEventDraft(supabase, userId, event);
+  const { revisionId } = await ensureEditableEventDraft(
+    supabase,
+    userId,
+    event,
+  );
 
   const { data, error } = await supabase
     .from("event_revisions")

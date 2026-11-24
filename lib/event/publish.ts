@@ -25,7 +25,10 @@ async function publishedEventImage(supabase: Client, eventId: string) {
     return null;
   }
 
-  const revision = await loadEventRevision(supabase, event.published_revision_id);
+  const revision = await loadEventRevision(
+    supabase,
+    event.published_revision_id,
+  );
 
   if (!revision?.event_image_use_id) {
     return null;

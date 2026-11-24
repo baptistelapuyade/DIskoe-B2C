@@ -1104,8 +1104,8 @@ select tests.expect_true($q$select not public and file_size_limit = 5242880 from
   'private-media is private with a size limit');
 select tests.expect_true($q$select allowed_mime_types = array['image/jpeg','image/png','image/webp'] from storage.buckets where id in ('private-media','public-media') group by allowed_mime_types$q$,
   'both buckets accept only jpeg, png and webp');
-select tests.expect_true($q$select array_agg(policyname::text order by policyname::text) = array['private_media_insert_own','private_media_select','public_media_insert_published_profile_image','public_media_select'] from pg_policies where schemaname = 'storage' and tablename = 'objects'$q$,
-  'storage.objects carries exactly our four policies (no update, no delete)');
+select tests.expect_true($q$select array_agg(policyname::text order by policyname::text) = array['private_media_delete_unreferenced','private_media_insert_own','private_media_select','public_media_insert_published_profile_image','public_media_select'] from pg_policies where schemaname = 'storage' and tablename = 'objects'$q$,
+  'storage.objects carries exactly our five policies (no update; delete only for unreferenced own originals)');
 
 -- private originals: own prefix only
 select tests.as_user(:'uid_a');
@@ -1118,8 +1118,9 @@ select tests.expect_error($q$insert into storage.objects (bucket_id, name) value
 select tests.expect_count($q$select id from storage.objects where bucket_id = 'private-media'$q$, 1, 'A sees the own original');
 select tests.expect_affected($q$update storage.objects set name = name || 'x' where bucket_id = 'private-media'$q$,
   0, 'clients cannot rename objects');
--- (No DELETE test: real Storage blocks direct deletes with its own trigger; the
--- policy inventory above proves that no DELETE policy exists.)
+-- (Real Storage blocks direct deletes with its own trigger and removes files
+-- through its API under the same policies; the delete policy itself is tested
+-- in section 7h on the shim.)
 select tests.as_user(:'uid_b');
 select tests.expect_count($q$select id from storage.objects where bucket_id = 'private-media'$q$, 0, 'B cannot see A''s original');
 select tests.as_user(:'uid_v');
@@ -1711,7 +1712,9 @@ insert into tests.expected_exec values
   ('public', 'finish_profile_mail'),
   ('public', 'submit_first_publication'), ('public', 'approve_first_publication'),
   ('public', 'change_profile_slug'), ('app_private', 'profile_links_valid'),
-  ('public', 'withdraw_submission'), ('public', 'discard_profile_draft');
+  ('public', 'withdraw_submission'), ('public', 'discard_profile_draft'),
+  ('public', 'discard_event_draft'),
+  ('app_private', 'private_media_unreferenced');
 select tests.expect_count($q$
   select n.nspname, p.proname
     from pg_proc p join pg_namespace n on n.oid = p.pronamespace
@@ -1852,6 +1855,8 @@ insert into tests.expected_objects values
   ('function', 'app_private', 'is_submitted'),
   ('function', 'public', 'withdraw_submission'),
   ('function', 'public', 'discard_profile_draft'),
+  ('function', 'public', 'discard_event_draft'),
+  ('function', 'app_private', 'private_media_unreferenced'),
   ('table', 'public', 'auth_code_attempts'),
   ('function', 'public', 'auth_code_status'),
   ('function', 'public', 'auth_code_fail'),
@@ -2177,6 +2182,84 @@ select tests.expect_error(format('select public.discard_profile_draft(%L, %L)', 
 select tests.as_superuser();
 select tests.expect_true(format($q$select count(*) = 1 from public.publication_audit where entity_id = %L and revision_id = %L and action = 'discard_draft'$q$, :'pa', :'rd'),
   'discarding leaves an audit row');
+
+-- ===========================================================================
+-- 7h. Discarding the draft of an event that was never published (Slice 11)
+-- ===========================================================================
+select tests.as_user(:'uid_a');
+select tests.expect_affected(format($q$insert into public.events (organizer_id, slug) values (%L, 'discard-me-event')$q$, :'pa'),
+  1, 'A creates an event to throw away');
+select id as ed from public.events where slug = 'discard-me-event' \gset
+select tests.new_event_image_use(:'ed', false) as use_ed \gset
+select tests.ev_insert(:'ed', :'use_ed') as evd \gset
+select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'evd', :'ed'),
+  1, 'A selects the draft of the throw-away event');
+select a.private_object_path as path_ed
+  from public.media_assets a join public.media_uses u on u.asset_id = a.id
+ where u.id = :'use_ed' \gset
+select tests.expect_affected(format($q$insert into storage.objects (bucket_id, name) values ('private-media', %L)$q$, :'path_ed'),
+  1, 'the original of the draft image is uploaded');
+select tests.expect_affected(format($q$delete from storage.objects where bucket_id = 'private-media' and name = %L$q$, :'path_ed'),
+  0, 'a file that an image use still refers to cannot be deleted');
+
+select tests.as_user(:'uid_b');
+select tests.expect_error(format('select public.discard_event_draft(%L, %L)', :'ed', :'evd'),
+  '42501', 'B cannot discard A''s event draft');
+select tests.expect_affected(format($q$delete from storage.objects where bucket_id = 'private-media' and name = %L$q$, :'path_ed'),
+  0, 'B cannot delete A''s file');
+select tests.as_anon();
+select tests.expect_error(format('select public.discard_event_draft(%L, %L)', :'ed', :'evd'),
+  '42501', 'anon cannot execute discard_event_draft');
+
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.discard_event_draft(%L, %L)', :'e3', gen_random_uuid()),
+  'DK003', 'a published event cannot be discarded');
+select tests.expect_error(format('select public.discard_event_draft(%L, %L)', :'ed', gen_random_uuid()),
+  'DK001', 'a stale draft expectation is refused');
+
+-- Submitted: refused while the submission stands and after any confirmation.
+select tests.expect_affected(format($q$insert into public.events (organizer_id, slug) values (%L, 'submitted-event')$q$, :'pa'),
+  1, 'A creates an event that will be submitted');
+select id as es from public.events where slug = 'submitted-event' \gset
+select tests.new_event_image_use(:'es', false) as use_es \gset
+select tests.ev_insert(:'es', :'use_es') as evs \gset
+select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'evs', :'es'),
+  1, 'A selects its draft');
+select tests.as_superuser();
+insert into public.publication_audit (actor_id, entity_type, entity_id, revision_id, action)
+values (:'uid_a', 'event', :'es', :'evs', 'submit_for_review');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.discard_event_draft(%L, %L)', :'es', :'evs'),
+  'DK003', 'an event in review cannot be discarded');
+select tests.as_superuser();
+insert into public.publication_audit (actor_id, entity_type, entity_id, revision_id, action)
+values (:'uid_a', 'event', :'es', :'evs', 'withdraw');
+update public.event_revisions set confirmed_at = now(), confirmed_by = :'uid_a' where id = :'evs';
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.discard_event_draft(%L, %L)', :'es', :'evs'),
+  'DK003', 'an event that was submitted before cannot be discarded (frozen revision)');
+
+-- The throw-away event goes, with its revisions, image rows and file.
+select public.discard_event_draft(:'ed', :'evd') as gone \gset
+select tests.expect_true(format($q$select %L::text[] = array[%L]$q$, :'gone', :'path_ed'),
+  'the function returns the path of the file that is no longer referenced');
+select tests.expect_count(format('select id from public.events where id = %L', :'ed'), 0,
+  'the event is gone');
+select tests.expect_count(format('select id from public.event_revisions where event_id = %L', :'ed'), 0,
+  'its revisions are gone');
+select tests.expect_count(format('select id from public.media_uses where id = %L', :'use_ed'), 0,
+  'its image use is gone');
+select tests.expect_count(format('select a.id from public.media_assets a where a.private_object_path = %L', :'path_ed'), 0,
+  'its image asset is gone');
+select tests.expect_affected(format($q$delete from storage.objects where bucket_id = 'private-media' and name = %L$q$, :'path_ed'),
+  1, 'the file of the discarded draft can now be deleted by its owner');
+select tests.expect_error(format('select public.discard_event_draft(%L, %L)', :'ed', :'evd'),
+  '42501', 'discarding twice finds nothing');
+select tests.as_superuser();
+select tests.expect_true(format($q$select count(*) = 1 from public.publication_audit where entity_id = %L and revision_id = %L and action = 'discard_draft'$q$, :'ed', :'evd'),
+  'discarding leaves an audit row');
+select tests.expect_count(format('select id from public.events where id = any (%L::uuid[])', array[:'e3'::uuid]), 1,
+  'other events are untouched');
 
 -- ===========================================================================
 -- Summary

@@ -328,8 +328,10 @@ test.describe("cancel and reschedule a live event", () => {
     const page = await context.newPage();
 
     await page.goto(`/organizer/events/${cancel.eventId}/manage`);
-    await expect(page.getByRole("link", { name: "Event absagen" })).toBeVisible(SLOW);
-    await page.getByRole("link", { name: "Event absagen" }).click();
+    // The event has a private change, so the page is "live with changes"
+    // (EVM-01b); moving and cancelling stay available there.
+    await expect(page.getByRole("link", { name: "Absagen", exact: true })).toBeVisible(SLOW);
+    await page.getByRole("link", { name: "Absagen", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Event wirklich absagen?" })).toBeVisible(SLOW);
     await expect(page.getByText(CANCEL_TITLE).first()).toBeVisible();
 
@@ -339,10 +341,10 @@ test.describe("cancel and reschedule a live event", () => {
 
     await page.goto(`/organizer/events/${cancel.eventId}/cancel`);
     await page.getByRole("button", { name: "Event verbindlich absagen" }).click();
-    await expect(page.getByRole("heading", { name: "Event abgesagt" })).toBeVisible(SLOW);
-    await expect(page.getByText("Privater Entwurf bleibt getrennt")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Event absagen" })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Event verschieben" })).toHaveCount(0);
+    await expectManagePage(page, cancel.eventId);
+    await expect(page.getByText("Dieses Event ist als abgesagt veröffentlicht.")).toBeVisible(SLOW);
+    await expect(page.getByRole("link", { name: "Absagen", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Verschieben", exact: true })).toHaveCount(0);
 
     expect(sql(`select public_status from public.events where id = '${cancel.eventId}'`)).toBe("cancelled");
     expect(sql(`select published_revision_id from public.events where id = '${cancel.eventId}'`)).toBe(publishedBefore);
@@ -386,7 +388,8 @@ test.describe("cancel and reschedule a live event", () => {
     await page.getByLabel("Neuer Beginn").fill("2027-07-10T21:00");
     await page.getByRole("button", { name: "Verschiebung bestätigen" }).click();
     await expectManagePage(page, move.eventId);
-    await expect(page.getByText("Verschoben, neuer Termin").first()).toBeVisible(SLOW);
+    // A moved event is live again with the new date (no extra state in Figma).
+    await expect(page.getByText("Sa, 10.7.2027, 21:00", { exact: false }).first()).toBeVisible(SLOW);
 
     expect(sql(`select public_status from public.events where id = '${move.eventId}'`)).toBe("rescheduled");
     const row = await publicEvent(MOVE_TITLE);

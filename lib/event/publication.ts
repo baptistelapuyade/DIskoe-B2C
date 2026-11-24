@@ -1,6 +1,9 @@
 import { loadOwnerEventView, type OwnerEventView } from "@/lib/event/load";
 import { loadPairQuestion, wasEventSubmitted } from "@/lib/event/draft";
-import { loadOwnerProfileView, type OwnerProfileView } from "@/lib/profile/load";
+import {
+  loadOwnerProfileView,
+  type OwnerProfileView,
+} from "@/lib/profile/load";
 import type { ReviewQuestion } from "@/lib/profile/draft";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,12 +17,7 @@ import { createClient } from "@/lib/supabase/server";
 export type PublicationMode = "first" | "later" | "approved";
 
 export type PublicationStatus =
-  | "incomplete"
-  | "ready"
-  | "in_review"
-  | "question"
-  | "published"
-  | "update";
+  "incomplete" | "ready" | "in_review" | "question" | "published" | "update";
 
 export type PublicationView = {
   event: OwnerEventView;
