@@ -503,10 +503,10 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   }
   await page.setViewportSize({ width: 1128, height: 900 });
 
-  // 12. The draft appears on the home page, privately.
-  await page.goto("/organizer");
-  await expect(page.getByRole("link", { name: TITLE })).toBeVisible(SLOW);
-  await expect(page.getByText("Entwurf – privat")).toBeVisible();
+  // 12. The draft appears in the event list, privately (EVL-01a).
+  await page.goto("/organizer/events");
+  await expect(page.getByText(TITLE, { exact: true })).toBeVisible(SLOW);
+  await expect(page.getByText("Privater Entwurf", { exact: true })).toBeVisible();
   expect(
     sql(`select publication_state from public.events where id = '${eventId}'`),
   ).toBe("private");

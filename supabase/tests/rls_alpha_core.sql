@@ -2186,6 +2186,9 @@ select tests.expect_true(format($q$select count(*) = 1 from public.publication_a
 -- ===========================================================================
 -- 7h. Discarding the draft of an event that was never published (Slice 11)
 -- ===========================================================================
+-- The Storage service sets this itself for its deletes; on a real Supabase stack a
+-- direct delete is otherwise refused by storage.protect_delete().
+select set_config('storage.allow_delete_query', 'true', false);
 select tests.as_user(:'uid_a');
 select tests.expect_affected(format($q$insert into public.events (organizer_id, slug) values (%L, 'discard-me-event')$q$, :'pa'),
   1, 'A creates an event to throw away');
@@ -2256,6 +2259,7 @@ select tests.expect_affected(format($q$delete from storage.objects where bucket_
 select tests.expect_error(format('select public.discard_event_draft(%L, %L)', :'ed', :'evd'),
   '42501', 'discarding twice finds nothing');
 select tests.as_superuser();
+select set_config('storage.allow_delete_query', 'false', false);
 select tests.expect_true(format($q$select count(*) = 1 from public.publication_audit where entity_id = %L and revision_id = %L and action = 'discard_draft'$q$, :'ed', :'evd'),
   'discarding leaves an audit row');
 select tests.expect_count(format('select id from public.events where id = any (%L::uuid[])', array[:'e3'::uuid]), 1,
