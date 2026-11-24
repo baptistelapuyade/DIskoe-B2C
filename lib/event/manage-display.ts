@@ -27,6 +27,8 @@ export type ManageDisplay = {
   stateRows: { key: string; label: string; value: string }[];
   gapCount: number;
   canDiscard: boolean;
+  // The private draft (for "Änderungen verwerfen" of a live event).
+  draftId: string | null;
 };
 
 export function toManageDisplay(
@@ -86,5 +88,6 @@ export function toManageDisplay(
     ],
     gapCount: view.gapCount,
     canDiscard: view.canDiscard,
+    draftId: view.draftRevisionId,
   };
 }

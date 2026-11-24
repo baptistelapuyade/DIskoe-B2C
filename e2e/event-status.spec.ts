@@ -26,6 +26,7 @@ const slug = `delta-${run}`;
 const CANCEL_TITLE = `Zwischen den Boxen ${run}`;
 const MOVE_TITLE = `Nachschlag ${run}`;
 const BLOCKED_TITLE = `Zugabe ${run}`;
+const EDIT_TITLE = `Hofkonzert ${run}`;
 
 const PNG = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
@@ -198,6 +199,7 @@ test.describe("cancel and reschedule a live event", () => {
   let cancel: Ids;
   let move: Ids;
   let blocked: Ids;
+  let edit: Ids;
 
   async function signIn(browser: Browser, email: string) {
     const context = await germanContext(browser, { baseURL: BASE_URL });
@@ -316,6 +318,8 @@ test.describe("cancel and reschedule a live event", () => {
     await publishAlone(move);
     blocked = await createCompleteEvent(ownerApi, ownerId, profileId, BLOCKED_TITLE, null);
     await publishAlone(blocked);
+    edit = await createCompleteEvent(ownerApi, ownerId, profileId, EDIT_TITLE, null);
+    await publishAlone(edit);
   });
 
   test("cancelling needs its own confirmation and publishes no private change", async ({ browser }) => {
@@ -436,6 +440,77 @@ test.describe("cancel and reschedule a live event", () => {
       await page.goto(`/organizer/events/${blocked.eventId}/${path}`);
       await expect(page.getByRole("button", { name: /absagen|verschieben|bestätigen/i })).toHaveCount(0);
     }
+    await context.close();
+  });
+
+  // Figma EVB-01 to EVB-06b: a live event is changed in the private draft, the
+  // changes are reviewed and published with both confirmations, and a second
+  // draft is discarded again.
+  test("a live event is changed, published and discarded again", async ({ browser }) => {
+    const base = `/organizer/events/${edit.eventId}`;
+    const context = await germanContext(browser, { baseURL: BASE_URL, storageState: ownerState });
+    const page = await context.newPage();
+
+    // The steps of the first event are not for a live event.
+    await page.goto(`${base}/edit`);
+    await expect(page).toHaveURL(new RegExp(`${base}/changes/edit$`), SLOW);
+
+    // EVB-01b: a missing title is named, nothing is saved.
+    await page.getByLabel("Titel", { exact: true }).fill("");
+    await page.getByRole("button", { name: "Änderungen speichern" }).click();
+    await expect(page.getByText("Bitte prüfe eine Angabe.")).toBeVisible(SLOW);
+    await expect(page.getByText("Gib dem Event einen Titel.")).toBeVisible();
+
+    // An address without the pattern is refused with the example.
+    await page.getByLabel("Titel", { exact: true }).fill(`${EDIT_TITLE} im Hof`);
+    await page.getByLabel("Adresse", { exact: true }).fill("Nebenstraße 5");
+    await page.getByRole("button", { name: "Änderungen speichern" }).click();
+    await expect(page.getByText(/Schreibe die Adresse so: Straße Nr\., PLZ Ort/)).toBeVisible(SLOW);
+
+    // EVB-02: saved, and the public page still shows the old title.
+    await page.getByLabel("Adresse", { exact: true }).fill("Nebenstraße 5, 10117 Berlin");
+    await page.getByLabel("Beginn", { exact: true }).fill("22:00");
+    await page.getByRole("button", { name: "Änderungen speichern" }).click();
+    await expect(page).toHaveURL(new RegExp(`${base}/changes/saved$`), SLOW);
+    expect((await publicEvent(EDIT_TITLE)).data).not.toBeNull();
+    expect((await publicEvent(`${EDIT_TITLE} im Hof`)).data).toBeNull();
+
+    // EVB-03b: what changes.
+    await page.getByRole("link", { name: "Änderungen prüfen" }).click();
+    await expect(page.getByRole("heading", { name: "Das ändert sich" })).toBeVisible(SLOW);
+    await expect(page.getByText("Bisher 23:00 Uhr · Neu 22:00 Uhr")).toBeVisible();
+    await page.getByRole("link", { name: "Weiter zur Bestätigung" }).click();
+
+    // EVB-04b: both ticks are needed.
+    await expect(page.getByRole("heading", { name: "Änderungen veröffentlichen" })).toBeVisible(SLOW);
+    await page.getByRole("button", { name: "Jetzt veröffentlichen" }).click();
+    await expect(page.getByText("Bitte bestätige beide Punkte.")).toBeVisible(SLOW);
+
+    // EVB-05: published; guests see the new title.
+    await page.getByRole("checkbox").nth(0).click();
+    await page.getByRole("checkbox").nth(1).click();
+    await page.getByRole("button", { name: "Jetzt veröffentlichen" }).click();
+    await expect(page).toHaveURL(new RegExp(`${base}/changes/published$`), SLOW);
+    await expect(page.getByRole("heading", { name: "Änderungen sind veröffentlicht" })).toBeVisible();
+    expect((await publicEvent(`${EDIT_TITLE} im Hof`)).data).not.toBeNull();
+
+    // EVB-06a/06b: another change is discarded; the event stays as it was.
+    await page.goto(`${base}/changes/edit`);
+    await page.getByLabel("Beschreibung", { exact: true }).fill("Nur ein privater Gedanke.");
+    await page.getByRole("button", { name: "Änderungen speichern" }).click();
+    await expect(page).toHaveURL(new RegExp(`${base}/changes/saved$`), SLOW);
+    await page.goto(`${base}/manage`);
+    await page.getByRole("link", { name: "Änderungen verwerfen" }).click();
+    await expect(page.getByRole("heading", { name: "Änderungen verwerfen?" })).toBeVisible(SLOW);
+    await page.getByRole("button", { name: "Änderungen verwerfen" }).click();
+    await expect(page).toHaveURL(new RegExp(`${base}/changes/discarded$`), SLOW);
+    expect(
+      sql(
+        `select draft_revision_id = published_revision_id from public.events where id = '${edit.eventId}'`,
+      ),
+    ).toBe("t");
+    expect((await publicEvent(`${EDIT_TITLE} im Hof`)).data?.description).not.toBe("Nur ein privater Gedanke.");
+
     await context.close();
   });
 });

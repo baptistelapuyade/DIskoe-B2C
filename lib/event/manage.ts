@@ -31,6 +31,13 @@ export type ManageView = {
   // Only a never-published, never-submitted draft can be discarded (EVB-07).
   canDiscard: boolean;
   draftRevisionId: string | null;
+  publishedRevisionId: string | null;
+  // What publish_event expects back (optimistic check against a stale page).
+  stateVersion: number;
+  publicStatus: EventStatus;
+  // The private draft as the form shows it (the live edit screen, EVB-01);
+  // the public stand while there is no draft.
+  draftForm: EventFormValues;
 };
 
 export async function loadManageView(
@@ -91,5 +98,13 @@ export async function loadManageView(
     canDiscard:
       !published && event.firstApprovedRevisionId === null && review === null,
     draftRevisionId: event.draftRevisionId,
+    publishedRevisionId: event.publishedRevisionId,
+    stateVersion: event.stateVersion,
+    publicStatus: status,
+    draftForm: draftRow
+      ? rowToFormValues(draftRow)
+      : publishedRow
+        ? rowToFormValues(publishedRow)
+        : view.event.form,
   };
 }

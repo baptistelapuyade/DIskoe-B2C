@@ -5,6 +5,7 @@ import { EventStepScreen } from "@/components/event/step-screen";
 import { EVENT_STEPS, type EventStep } from "@/lib/domain/event-steps";
 import { getLang } from "@/lib/i18n/server";
 import { loadOwnerEventView } from "@/lib/event/load";
+import { redirectLiveEvent } from "@/lib/event/live-edit";
 import { loadOpenQuestionView } from "@/lib/submit/open-question";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +36,7 @@ export default async function EditEventStepPage({
   const base = `/organizer/events/${eventId}`;
   const lang = await getLang();
   const view = await loadOwnerEventView(eventId, `${base}/edit/${current}`);
+  redirectLiveEvent(view.event, eventId);
   const { form } = view;
   const asked = await loadOpenQuestionView(
     lang,
