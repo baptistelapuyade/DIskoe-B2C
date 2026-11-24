@@ -8,7 +8,11 @@ import {
 } from "@/lib/domain/event-publication";
 import { parseStored } from "@/lib/domain/event-modules";
 import { loadEventRevision } from "@/lib/event/draft";
-import { rowToFormValues, rowToValues, type EventFormValues } from "@/lib/event/values";
+import {
+  rowToFormValues,
+  rowToValues,
+  type EventFormValues,
+} from "@/lib/event/values";
 import { loadImage, type ProfileImage } from "@/lib/profile/image";
 
 type Client = SupabaseClient<Database>;
@@ -39,8 +43,11 @@ export async function loadFounderEventView(
     throw new Error("Event lookup failed");
   }
 
-  let chosen: { eventId: string; revisionId: string; submittedAt: string | null } | null =
-    null;
+  let chosen: {
+    eventId: string;
+    revisionId: string;
+    submittedAt: string | null;
+  } | null = null;
 
   for (const event of events ?? []) {
     if (profileApproved) {

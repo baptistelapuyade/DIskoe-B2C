@@ -2,7 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 
-import { buttonClass } from "@/components/ui/button";
+import { buttonClass, type ButtonVariant } from "@/components/ui/button";
 
 // "Share profile" (ORG-103f): copies the public profile link. The link is the
 // canonical profile address passed in by the page: no token, no personal data.
@@ -18,11 +18,13 @@ export function ShareProfile({
   label,
   copiedText,
   failedText,
+  variant = "primaryLg",
 }: {
   url: string;
   label: string;
   copiedText: string;
   failedText: string;
+  variant?: ButtonVariant;
 }) {
   const hydrated = useSyncExternalStore(
     noopSubscribe,
@@ -47,7 +49,10 @@ export function ShareProfile({
       <button
         type="button"
         onClick={share}
-        className={buttonClass("primaryLg")}
+        className={buttonClass(
+          variant,
+          variant === "secondary" ? "shadow-sm" : "",
+        )}
       >
         {label}
       </button>

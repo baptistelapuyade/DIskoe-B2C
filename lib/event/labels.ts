@@ -26,17 +26,21 @@ export const ACCESS_ID: Record<AccessKind, MessageId> = {
   online_registration: "Z25.access.onlineRegistration",
 };
 
-export const PRICE_MODEL_ID: Record<(typeof PRICE_MODELS)[number], MessageId> = {
-  fixed: "Z25.price.form.fixed",
-  range: "Z25.price.form.range",
-  from_price: "Z25.price.form.fromPrice",
-  free: "Z25.price.form.free",
-  donation: "Z25.price.form.donation",
-  min_donation: "Z25.price.form.minDonation",
-  unknown: "Z25.price.form.unknown",
-};
+export const PRICE_MODEL_ID: Record<(typeof PRICE_MODELS)[number], MessageId> =
+  {
+    fixed: "Z25.price.form.fixed",
+    range: "Z25.price.form.range",
+    from_price: "Z25.price.form.fromPrice",
+    free: "Z25.price.form.free",
+    donation: "Z25.price.form.donation",
+    min_donation: "Z25.price.form.minDonation",
+    unknown: "Z25.price.form.unknown",
+  };
 
-export const ATMOSPHERE_ID: Record<(typeof ATMOSPHERE_TERMS)[number], MessageId> = {
+export const ATMOSPHERE_ID: Record<
+  (typeof ATMOSPHERE_TERMS)[number],
+  MessageId
+> = {
   Gemütlich: "Z25.atmo.cozy",
   "Intim/persönlich": "Z25.atmo.intimate",
   Entspannt: "Z25.atmo.relaxed",

@@ -129,7 +129,8 @@ function routesFromJson(json: Json): AccessRoute[] {
       routes.push({
         kind: item.kind as AccessKind,
         url: typeof item.url === "string" && item.url !== "" ? item.url : null,
-        ...(item.availability === "available" || item.availability === "sold_out"
+        ...(item.availability === "available" ||
+        item.availability === "sold_out"
           ? { availability: item.availability }
           : {}),
       });
@@ -165,7 +166,9 @@ function providedPrice(row: EventRevisionRow): Answer<PriceValue> {
     case "fixed":
     case "from_price":
     case "min_donation":
-      return low ? provided({ model: row.price_model, amountMinor: low }) : unanswered();
+      return low
+        ? provided({ model: row.price_model, amountMinor: low })
+        : unanswered();
     case "range":
       return low && high && high > low
         ? provided({ model: "range", amountMinor: low, maxAmountMinor: high })
@@ -244,12 +247,12 @@ export function rowToValues(row: EventRevisionRow): EventDraftValues {
 
 export function rowToFormValues(row: EventRevisionRow): EventFormValues {
   const values = rowToValues(row);
-  const start = values.start.state === "provided"
-    ? instantToLocal(values.start.value)
-    : null;
-  const end = values.end.state === "provided"
-    ? instantToLocal(values.end.value)
-    : null;
+  const start =
+    values.start.state === "provided"
+      ? instantToLocal(values.start.value)
+      : null;
+  const end =
+    values.end.state === "provided" ? instantToLocal(values.end.value) : null;
   const place = valueOrNull(values.place);
   const price = valueOrNull(values.price);
   const routes = valueOrNull(values.access) ?? [];
@@ -269,11 +272,7 @@ export function rowToFormValues(row: EventRevisionRow): EventFormValues {
     postalCode: place?.postalCode ?? values.placePartial?.postalCode ?? "",
     city: place?.city ?? values.placePartial?.city ?? "",
     priceModel:
-      values.price.state === "unknown"
-        ? "unknown"
-        : price
-          ? price.model
-          : "",
+      values.price.state === "unknown" ? "unknown" : price ? price.model : "",
     priceAmount:
       price && "amountMinor" in price
         ? formatAmountInput(price.amountMinor)
@@ -287,7 +286,8 @@ export function rowToFormValues(row: EventRevisionRow): EventFormValues {
     onlineRegistrationUrl:
       routes.find((route) => route.kind === "online_registration")?.url ?? "",
     onlineTicketAvailability:
-      routes.find((route) => route.kind === "online_ticket")?.availability ?? "",
+      routes.find((route) => route.kind === "online_ticket")?.availability ??
+      "",
     atmosphereTags: atmosphere?.tags ?? [],
     atmosphereDescription: atmosphere?.description ?? "",
   };
@@ -321,8 +321,10 @@ export function valuesToRow(
     end_at: valueOrNull(values.end),
     place_state: values.place.state,
     place_name: place?.name ?? partialOrNull(values.placePartial?.name),
-    address_line: place?.addressLine ?? partialOrNull(values.placePartial?.addressLine),
-    postal_code: place?.postalCode ?? partialOrNull(values.placePartial?.postalCode),
+    address_line:
+      place?.addressLine ?? partialOrNull(values.placePartial?.addressLine),
+    postal_code:
+      place?.postalCode ?? partialOrNull(values.placePartial?.postalCode),
     city: place?.city ?? partialOrNull(values.placePartial?.city),
     price_state: price.state,
     price_model: isProvided(price)

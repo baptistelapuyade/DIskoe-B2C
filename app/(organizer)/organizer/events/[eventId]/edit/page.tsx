@@ -44,7 +44,8 @@ export default async function EditEventPage({
     access: form.accessKinds.length > 0,
     image: view.image !== null,
     atmosphere:
-      form.atmosphereTags.length > 0 || form.atmosphereDescription.trim() !== "",
+      form.atmosphereTags.length > 0 ||
+      form.atmosphereDescription.trim() !== "",
   };
 
   // The first three steps have their own screens and are needed before

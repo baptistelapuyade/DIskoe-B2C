@@ -937,6 +937,131 @@ Deutsch aus den Figma-Frames LPA-01a bis LPA-06b, LPA-01d und LPA-03c (Dev-Statu
 | Z29.discarded.notice.title | Die Änderungen sind verworfen. | The changes are discarded. | LPA-06b, Hinweis (Erfolg), Zeile 1 |
 | Z29.discarded.notice.line | Öffentlich hat sich nichts geändert. | Nothing changed on the public page. | LPA-06b, Hinweis (Erfolg), Zeile 2 |
 
+### Eventliste und Eventverwaltung (Z30, Welle 1 Flow 2 A, Slice 11, Stand 24.11.2026)
+Deutsch aus den Figma-Frames EVL-01a bis g, EVM-01a bis f und EVB-07a, b (Dev-Status „Ready for dev“ auf der Section); Englisch ist Vorschlag (Review offen). „Nicht im Frame“ heißt: Text für einen Zustand, den Figma nicht zeichnet; er folgt der Form der gezeichneten Texte und ist Vorschlag.
+
+| ID | Deutsch | Englisch | Verwendung |
+|---|---|---|---|
+| Z30.list.eyebrow | Events | Events | EVL-01a bis g, Eyebrow |
+| Z30.list.title | Deine Events | Your events | EVL-01a bis g, Titel |
+| Z30.list.lead | Hier siehst du, was öffentlich ist und was noch privat bleibt. | Here you see what is public and what stays private. | EVL-01a bis g, Einleitung |
+| Z30.list.search.label | Suchen | Search | EVL-01, Feldname |
+| Z30.list.search.placeholder | Titel oder Ort | Title or place | EVL-01, Platzhalter |
+| Z30.list.filter.label | Zustand | Status | EVL-01, Feldname des Filters |
+| Z30.filter.upcoming | Kommende | Upcoming | EVL-01, Filter (Standard) |
+| Z30.filter.all | Alle Events | All events | EVL-01d und g, Filter |
+| Z30.filter.drafts | Entwürfe | Drafts | EVL-01, Filter (Vorschlag: Optionen nicht im Frame) |
+| Z30.filter.past | Vorbei | Past | EVL-01, Filter (Vorschlag: Optionen nicht im Frame) |
+| Z30.state.live | Live | Live | EVL-01a, Pille |
+| Z30.state.changes | Änderungen nicht veröffentlicht | Changes not published | EVL-01a, Pille |
+| Z30.state.private | Privater Entwurf | Private draft | EVL-01a, Pille |
+| Z30.state.inReview | In Prüfung | In review | EVL-01, Pille (ohne Frame, Text wie Z22.events.inReview) |
+| Z30.state.question | Rückfrage von DISKOE | Question from DISKOE | EVL-01, Pille (ohne Frame, Text wie Z22.events.question) |
+| Z30.state.postponed | Neuer Termin folgt | New date to follow | EVL-01a, Pille |
+| Z30.state.cancelled | Abgesagt | Cancelled | EVL-01d, Pille |
+| Z30.state.past | Vorbei | Past | EVL-01d, Pille |
+| Z30.row.manage | Verwalten | Manage | EVL-01a, Zeilenbutton |
+| Z30.row.continue | Weiter bearbeiten | Keep editing | EVL-01a, Zeilenbutton (privater Entwurf) |
+| Z30.row.viewSubmitted | Eingereichtes ansehen | View submission | EVL-01, Zeilenbutton (In Prüfung und Rückfrage; Text wie ORG-103d) |
+| Z30.row.aria | {action}: {title} | {action}: {title} | EVL-01, Name des Zeilenbuttons für Screenreader (nicht sichtbar) |
+| Z30.row.untitled | Ohne Titel | Untitled | EVL-01, Zeile ohne Titel |
+| Z30.row.dateOpen | Termin noch offen | Date not set yet | EVL-01, Zeile ohne Datum (nicht im Frame) |
+| Z30.row.datePostponed | Neuer Termin folgt | New date to follow | EVL-01a, Zeile ohne Datum (verschoben) |
+| Z30.row.when | {weekday}, {date}, {time} | {weekday}, {date}, {time} | EVL-01a, Zeile: Datum und Beginn |
+| Z30.row.whenNoTime | {weekday}, {date} | {weekday}, {date} | EVL-01d, Zeile: nur Datum |
+| Z30.count.one | Zeige {to} von {total} Events. | Showing {to} of {total} events. | EVL-01a, Zeile unter der Liste (eine Seite) |
+| Z30.count.many | Zeige {from}–{to} von {total} Events | Showing {from}–{to} of {total} events | EVL-01g, Zeile unter der Liste (mehrere Seiten) |
+| Z30.pager.prev | Zurück | Back | EVL-01g, Pager |
+| Z30.pager.next | Weiter | Next | EVL-01g, Pager |
+| Z30.pager.page | Seite {page} von {pages} | Page {page} of {pages} | EVL-01g, Pager |
+| Z30.pager.nav | Seiten der Eventliste | Event list pages | EVL-01g, Name der Seitenleiste für Screenreader (nicht sichtbar) |
+| Z30.list.new | Neues Event anlegen | Create new event | EVL-01a, Button |
+| Z30.empty.title | Du hast noch kein Event | You have no event yet | EVL-01b, Titel |
+| Z30.empty.lead | Lege dein erstes Event an. Es bleibt privat, bis du es veröffentlichst. | Create your first event. It stays private until you publish it. | EVL-01b, Einleitung |
+| Z30.empty.cta | Erstes Event anlegen | Create your first event | EVL-01b, Button |
+| Z30.noMatch.title | Keine Events gefunden | No events found | EVL-01c, Titel |
+| Z30.noMatch.query | Zu „{query}“ gibt es {scope} nichts. Prüfe die Schreibweise oder setze den Filter zurück. | There is nothing for “{query}” {scope}. Check the spelling or reset the filter. | EVL-01c, Einleitung mit Suchbegriff |
+| Z30.noMatch.filter | Bei dieser Auswahl gibt es keine Events. Setze den Filter zurück. | There are no events for this selection. Reset the filter. | EVL-01c, Einleitung ohne Suchbegriff (nicht im Frame) |
+| Z30.noMatch.scope.upcoming | bei den kommenden Events | among the upcoming events | EVL-01c, Bereich im Satz |
+| Z30.noMatch.scope.all | bei deinen Events | among your events | EVL-01c, Bereich im Satz |
+| Z30.noMatch.scope.drafts | bei den Entwürfen | among the drafts | EVL-01c, Bereich im Satz |
+| Z30.noMatch.scope.past | bei den vergangenen Events | among the past events | EVL-01c, Bereich im Satz |
+| Z30.noMatch.reset | Filter zurücksetzen | Reset filter | EVL-01c, Button |
+| Z30.error.title | Das Laden hat nicht geklappt. | Loading didn’t work. | EVL-01e, Titel des Hinweises |
+| Z30.error.line | Das liegt nicht an dir. Versuche es noch einmal. | That’s not on you. Try again. | EVL-01e, Zeile 2 |
+| Z30.error.retry | Noch einmal laden | Load again | EVL-01e, Button |
+| Z30.loading | Lädt … | Loading … | EVL-01f, Ladezustand |
+| Z30.manage.eyebrow | Event verwalten | Manage event | EVM-01a bis f, Eyebrow |
+| Z30.manage.public.title | Öffentlich | Public | EVM-01a, Karte |
+| Z30.manage.public.view | Eventseite ansehen | View event page | EVM-01a, 01d, 01f, Button |
+| Z30.manage.row.link | Link | Link | EVM-01a, Zeile |
+| Z30.manage.row.price | Preis | Price | EVM-01a und 01c, Zeile |
+| Z30.manage.row.access | Zugang | Access | EVM-01a, Zeile |
+| Z30.manage.row.title | Titel | Title | EVM-01c, Zeile |
+| Z30.manage.row.when | Termin | Date | EVM-01c, Zeile |
+| Z30.manage.row.place | Ort | Place | EVM-01c, Zeile |
+| Z30.manage.notSet | Noch keine Angabe | Not set yet | EVM-01c, Wert ohne Angabe (nie „0“ oder „Frei“) |
+| Z30.manage.edit.title | Bearbeiten | Edit | EVM-01a, Karte |
+| Z30.manage.edit.lead | Ändere Text, Ort oder Beginn. Du entscheidest, wann die Änderung öffentlich wird. | Change text, place or start. You decide when the change goes public. | EVM-01a, Karte |
+| Z30.manage.reschedule.title | Verschieben | Reschedule | EVM-01a, Karte |
+| Z30.manage.reschedule.lead | Der Termin ändert sich. Gäste sehen den neuen Stand. | The date changes. Guests see the new details. | EVM-01a, Karte |
+| Z30.manage.cancel.title | Absagen | Cancel | EVM-01a, Karte |
+| Z30.manage.cancel.lead | Gäste sehen, dass das Event ausfällt. | Guests see that the event is off. | EVM-01a, Karte |
+| Z30.manage.copyLink | Link kopieren | Copy link | EVM-01a, Button; nach dem Kopieren „Link kopiert.“ aus Z22.share.copied |
+| Z30.manage.changes.notice.title | Gäste sehen noch den bisherigen Stand. | Guests still see the current version. | EVM-01b, Hinweis (Info), Zeile 1 |
+| Z30.manage.changes.notice.line | Deine Änderungen sind nur für dich sichtbar. | Your changes are visible only to you. | EVM-01b, Hinweis (Info), Zeile 2 |
+| Z30.manage.changes.pill | Änderungen noch nicht veröffentlicht | Changes not published yet | EVM-01b, Pille |
+| Z30.manage.changes.title | Deine Änderungen | Your changes | EVM-01b, Karte |
+| Z30.manage.changes.review | Änderungen prüfen und veröffentlichen | Review and publish changes | EVM-01b, Hauptbutton |
+| Z30.change.field.title | Titel | Title | EVM-01b, Zeile |
+| Z30.change.field.description | Beschreibung | Description | EVM-01b, Zeile |
+| Z30.change.field.format | Format | Format | EVM-01b, Zeile (nicht im Frame) |
+| Z30.change.field.start | Beginn | Start | EVM-01b, Zeile |
+| Z30.change.field.end | Ende | End | EVM-01b, Zeile (nicht im Frame) |
+| Z30.change.field.place | Ort | Place | EVM-01b, Zeile |
+| Z30.change.field.address | Adresse | Address | EVM-01b, Zeile |
+| Z30.change.field.price | Preis | Price | EVM-01b, Zeile (nicht im Frame) |
+| Z30.change.field.access | Zugang | Access | EVM-01b, Zeile (nicht im Frame) |
+| Z30.change.field.atmosphere | Atmosphäre | Atmosphere | EVM-01b, Zeile (nicht im Frame) |
+| Z30.change.field.image | Eventbild | Event image | EVM-01b, Zeile (EVB-03b) |
+| Z30.change.field.modules | Mehr zum Abend | More about the evening | EVM-01b, Zeile (nicht im Frame) |
+| Z30.change.values | Bisher {before} · Neu {after} | Before {before} · Now {after} | EVM-01b, Zeile mit Werten |
+| Z30.change.changed | Geändert | Changed | EVM-01b, Zeile ohne Werte |
+| Z30.change.added | Neu | New | EVM-01b, Zeile für Neues |
+| Z30.change.removed | Entfernt | Removed | EVM-01b, Zeile für Entferntes |
+| Z30.change.nothing | Nichts angegeben | Nothing entered | EVM-01b, leere Seite eines Vergleichs |
+| Z30.change.time | {time} Uhr | {time} | EVM-01b, Uhrzeit im Vergleich |
+| Z30.change.dateTime | {date}, {time} Uhr | {date}, {time} | EVM-01b, Datum und Uhrzeit im Vergleich |
+| Z30.manage.private.pill | Privater Entwurf | Private draft | EVM-01c, Pille |
+| Z30.manage.private.missing.one | Zum Veröffentlichen fehlt noch eine Angabe. | One detail is still missing before you can publish. | EVM-01c, Hinweis, Zeile 1 (eine Lücke) |
+| Z30.manage.private.missing.many | Zum Veröffentlichen fehlen noch Angaben. | Some details are still missing before you can publish. | EVM-01c, Hinweis, Zeile 1 (mehrere Lücken) |
+| Z30.manage.private.ready | Dieses Event ist noch privat. | This event is still private. | EVM-01c, Hinweis, Zeile 1 (keine Lücke; nicht im Frame) |
+| Z30.manage.private.line | Nur du siehst dieses Event. Gäste sehen es erst, wenn du es veröffentlichst. | Only you can see this event. Guests see it only when you publish it. | EVM-01c, Hinweis, Zeile 2 |
+| Z30.manage.private.card | Stand | Current state | EVM-01c, Karte |
+| Z30.manage.private.continue | Weiter bearbeiten | Keep editing | EVM-01c, Hauptbutton |
+| Z30.manage.private.discard | Entwurf verwerfen | Discard draft | EVM-01c, Button |
+| Z30.manage.cancelled.title | Dieses Event ist als abgesagt veröffentlicht. | This event is published as cancelled. | EVM-01d, Hinweis, Zeile 1 |
+| Z30.manage.cancelled.line | Gäste sehen die Absage auf der Eventseite. | Guests see the cancellation on the event page. | EVM-01d, Hinweis, Zeile 2 |
+| Z30.manage.cancelled.newDate | Neuen Termin setzen | Set a new date | EVM-01d, Hauptbutton |
+| Z30.manage.postponed.newDate | Ersatztermin eintragen | Add replacement date | Verwaltung bei „Neuer Termin folgt“ (kein Figma-Frame), Hauptbutton |
+| Z30.manage.past.line | Vergangene Events bleiben als Archiv auf deiner Seite. | Past events stay in the archive on your page. | EVM-01f, Hinweis |
+| Z30.discard.eyebrow | Event bearbeiten | Edit event | EVB-07a und b, Eyebrow |
+| Z30.discard.title | Entwurf verwerfen? | Discard the draft? | EVB-07a, Titel |
+| Z30.discard.lead | {title} wurde nie veröffentlicht. Der Entwurf wird gelöscht. | {title} was never published. The draft will be deleted. | EVB-07a, Einleitung |
+| Z30.discard.leadUntitled | Dieses Event wurde nie veröffentlicht. Der Entwurf wird gelöscht. | This event was never published. The draft will be deleted. | EVB-07a, Einleitung ohne Titel (nicht im Frame) |
+| Z30.discard.notice.title | Das lässt sich nicht rückgängig machen. | This can’t be undone. | EVB-07a, Hinweis (Warnung), Zeile 1 |
+| Z30.discard.notice.line | Hochgeladene Bilder des Entwurfs werden mit gelöscht. | Images uploaded for the draft are deleted too. | EVB-07a, Hinweis (Warnung), Zeile 2 |
+| Z30.discard.yes | Entwurf verwerfen | Discard draft | EVB-07a, Button |
+| Z30.discard.pending | Verwirft … | Discarding … | EVB-07a, Button während des Sendens |
+| Z30.discard.no | Abbrechen | Cancel | EVB-07a, Button |
+| Z30.discard.fail | Das Verwerfen hat nicht geklappt. Versuche es noch einmal. | Discarding didn’t work. Try again. | EVB-07a, Fehler (nicht im Frame) |
+| Z30.discarded.title | Entwurf verworfen | Draft discarded | EVB-07b, Titel |
+| Z30.discarded.lead | {title} ist gelöscht. | {title} is deleted. | EVB-07b, Einleitung |
+| Z30.discarded.leadUntitled | Der Entwurf ist gelöscht. | The draft is deleted. | EVB-07b, Einleitung ohne Titel (nicht im Frame) |
+| Z30.discarded.notice.title | Der Entwurf ist verworfen. | The draft is discarded. | EVB-07b, Hinweis (Erfolg), Zeile 1 |
+| Z30.discarded.notice.line | Dein Profil und deine anderen Events sind unverändert. | Your profile and your other events are unchanged. | EVB-07b, Hinweis (Erfolg), Zeile 2 |
+| Z30.discarded.toList | Zur Eventliste | Back to the event list | EVB-07b, Button |
+
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.
 

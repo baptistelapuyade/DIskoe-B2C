@@ -32,7 +32,11 @@ function Actions({
       <Button type="submit" disabled={pending} className="w-full sm:w-80">
         {pending ? pendingLabel : label}
       </Button>
-      <LinkButton href={backHref} variant="secondary" className="w-full sm:w-80">
+      <LinkButton
+        href={backHref}
+        variant="secondary"
+        className="w-full sm:w-80"
+      >
         Abbrechen
       </LinkButton>
     </div>

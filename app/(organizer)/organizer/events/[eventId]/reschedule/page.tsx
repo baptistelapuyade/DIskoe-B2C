@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 
-import { ConfirmStatusForm, RescheduleForm } from "@/components/event/status-forms";
+import {
+  ConfirmStatusForm,
+  RescheduleForm,
+} from "@/components/event/status-forms";
 import { LinkButton } from "@/components/ui/button";
 import {
   ContextCard,
@@ -103,7 +106,11 @@ export default async function RescheduleEventPage({
   return (
     <PageShell
       context={context}
-      title={waiting ? "Ersatztermin eintragen" : "Event auf einen neuen Termin verschieben"}
+      title={
+        waiting
+          ? "Ersatztermin eintragen"
+          : "Event auf einen neuen Termin verschieben"
+      }
       subtitle={
         waiting
           ? "Bestätigt den Ersatztermin. Bis dahin zeigt das Event „Neuer Termin folgt“."

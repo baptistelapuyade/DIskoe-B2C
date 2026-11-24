@@ -6,9 +6,7 @@
 
 import type { Lang } from "@/lib/i18n";
 
-export type DateInput =
-  | { ok: true; iso: string }
-  | { ok: false };
+export type DateInput = { ok: true; iso: string } | { ok: false };
 
 const DAY_FIRST = /^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/;
 const ISO = /^(\d{4})-(\d{2})-(\d{2})$/;

@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-import { Badge, ContextCard, MutedText, PageShell, Workspace } from "@/components/ui/page-shell";
+import {
+  Badge,
+  ContextCard,
+  MutedText,
+  PageShell,
+  Workspace,
+} from "@/components/ui/page-shell";
 import { Button, LinkButton } from "@/components/ui/button";
 import { FORMAT_LABEL } from "@/lib/domain/event-publication";
 import { loadPublicationView } from "@/lib/event/publication";
@@ -123,7 +129,9 @@ export default async function EventPreviewPage({
 
             <div className="mt-2 flex flex-wrap items-start gap-4">
               <LinkButton href={`${base}/edit`}>
-                {openGaps.length > 0 ? "Zurück zum Editor" : "Weiter bearbeiten"}
+                {openGaps.length > 0
+                  ? "Zurück zum Editor"
+                  : "Weiter bearbeiten"}
               </LinkButton>
               {openGaps.length === 0 && imageMissing ? (
                 <LinkButton href={`${base}/edit/image`} variant="primary">
@@ -155,8 +163,8 @@ export default async function EventPreviewPage({
             </div>
             {mode === "first" && complete && !profileReady ? (
               <MutedText>
-                Das Event ist vollständig. Zum Einreichen fehlen noch Angaben
-                am Profil.
+                Das Event ist vollständig. Zum Einreichen fehlen noch Angaben am
+                Profil.
               </MutedText>
             ) : status === "update" ? (
               <MutedText>
@@ -186,7 +194,11 @@ export default async function EventPreviewPage({
             ) : null}
             {imageMissing ? (
               <ContextCard
-                title={openGaps.length > 0 ? "Weitere Pflichtlücke" : "Eventbild fehlt"}
+                title={
+                  openGaps.length > 0
+                    ? "Weitere Pflichtlücke"
+                    : "Eventbild fehlt"
+                }
               >
                 <MutedText>
                   {openGaps.length > 0
@@ -205,7 +217,11 @@ export default async function EventPreviewPage({
             ) : null}
             {mode === "first" ? (
               <ContextCard
-                title={profileReady ? "Profil bereit zur Prüfung" : "Profil noch unvollständig"}
+                title={
+                  profileReady
+                    ? "Profil bereit zur Prüfung"
+                    : "Profil noch unvollständig"
+                }
               >
                 <MutedText>
                   {profileReady

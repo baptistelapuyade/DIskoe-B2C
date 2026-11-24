@@ -9,11 +9,7 @@ import {
 } from "@/lib/domain/event-publication";
 import { valueOrNull } from "@/lib/domain/answers";
 import { loadLiveEvent } from "@/lib/event/live";
-import {
-  canCancel,
-  canPostpone,
-  canReschedule,
-} from "@/lib/event/status";
+import { canCancel, canPostpone, canReschedule } from "@/lib/event/status";
 import type { EventFormValues } from "@/lib/event/values";
 import { createClient } from "@/lib/supabase/server";
 
@@ -51,7 +47,9 @@ function splitLocal(raw: FormDataEntryValue | null): {
   date: string;
   time: string;
 } {
-  const [date = "", time = ""] = (typeof raw === "string" ? raw : "").split("T");
+  const [date = "", time = ""] = (typeof raw === "string" ? raw : "").split(
+    "T",
+  );
 
   return { date, time: time.slice(0, 5) };
 }
@@ -61,7 +59,10 @@ export async function cancelEvent(
   eventId: string,
   _previous: StatusFormState,
 ): Promise<StatusFormState> {
-  const { view } = await loadLiveEvent(eventId, `/organizer/events/${eventId}/cancel`);
+  const { view } = await loadLiveEvent(
+    eventId,
+    `/organizer/events/${eventId}/cancel`,
+  );
   const event = view.event;
 
   if (!canCancel(event.publicStatus)) {
@@ -91,13 +92,17 @@ export async function postponeEvent(
   eventId: string,
   _previous: StatusFormState,
 ): Promise<StatusFormState> {
-  const { view } = await loadLiveEvent(eventId, `/organizer/events/${eventId}/reschedule`);
+  const { view } = await loadLiveEvent(
+    eventId,
+    `/organizer/events/${eventId}/reschedule`,
+  );
   const event = view.event;
 
   if (!canPostpone(event.publicStatus)) {
     return {
       ok: false,
-      message: "Dieses Event kann gerade nicht ohne neuen Termin verschoben werden.",
+      message:
+        "Dieses Event kann gerade nicht ohne neuen Termin verschoben werden.",
     };
   }
 
@@ -136,7 +141,10 @@ export async function rescheduleEvent(
   const event = view.event;
 
   if (!canReschedule(event.publicStatus)) {
-    return { ok: false, message: "Ein abgesagtes Event kann nicht verschoben werden." };
+    return {
+      ok: false,
+      message: "Ein abgesagtes Event kann nicht verschoben werden.",
+    };
   }
 
   const start = splitLocal(formData.get("start"));
@@ -150,10 +158,15 @@ export async function rescheduleEvent(
     endUnknown: formData.get("endUnknown") === "on",
   };
 
-  if (merged.startDate === live.startDate && merged.startTime === live.startTime) {
+  if (
+    merged.startDate === live.startDate &&
+    merged.startTime === live.startTime
+  ) {
     return {
       ok: false,
-      errors: { start: "Der neue Beginn muss sich vom bisherigen unterscheiden." },
+      errors: {
+        start: "Der neue Beginn muss sich vom bisherigen unterscheiden.",
+      },
     };
   }
 
@@ -174,7 +187,10 @@ export async function rescheduleEvent(
   const newStart = valueOrNull(parsed.value.start);
 
   if (newStart === null) {
-    return { ok: false, errors: { start: "Bitte gebt Datum und Uhrzeit des Beginns an." } };
+    return {
+      ok: false,
+      errors: { start: "Bitte gebt Datum und Uhrzeit des Beginns an." },
+    };
   }
 
   const supabase = await createClient();
@@ -195,7 +211,10 @@ export async function rescheduleEvent(
     }
 
     if (error.code === "22023") {
-      return { ok: false, errors: { end: "Das Ende muss nach dem Beginn liegen." } };
+      return {
+        ok: false,
+        errors: { end: "Das Ende muss nach dem Beginn liegen." },
+      };
     }
 
     return {

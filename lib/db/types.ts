@@ -860,6 +860,10 @@ export type Database = {
         Args: { p_kind: string; p_profile_id: string; p_revision_id: string }
         Returns: string
       }
+      discard_event_draft: {
+        Args: { p_event_id: string; p_expected_draft_revision_id: string }
+        Returns: string[]
+      }
       discard_profile_draft: {
         Args: { p_expected_draft_revision_id: string; p_profile_id: string }
         Returns: undefined
