@@ -139,11 +139,17 @@ export function LiveEditForm({
 }) {
   const [state, formAction, pending] = useActionState(action, IDLE);
   const [values, setValues] = useState<LiveEditValues>(initial);
+  // Until the page is hydrated the form is locked: text typed before that is
+  // thrown away or mixed into the stored text when React takes over the
+  // fields, and a click on save would send a plain GET request.
+  const [ready, setReady] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const errors: LiveEditErrors = state.status === "invalid" ? state.errors : {};
 
   const set = <K extends keyof LiveEditValues>(key: K, value: string) =>
     setValues((current) => ({ ...current, [key]: value }));
+
+  useEffect(() => setReady(true), []);
 
   // After a refused save the first field with a problem takes the focus.
   useEffect(() => {
@@ -204,118 +210,120 @@ export function LiveEditForm({
       className="flex max-w-[560px] flex-col gap-10"
     >
       {head}
-      <div className="flex flex-col gap-6">
-        <Field
-          id="title"
-          label={t(lang, "Z31.edit.title.label")}
-          error={text("title")}
-          large
-        >
-          {(props) => (
-            <Input
-              {...props}
-              value={values.title}
+      <fieldset disabled={!ready} className="contents">
+        <div className="flex flex-col gap-6">
+          <Field
+            id="title"
+            label={t(lang, "Z31.edit.title.label")}
+            error={text("title")}
+            large
+          >
+            {(props) => (
+              <Input
+                {...props}
+                value={values.title}
+                disabled={pending}
+                placeholder={t(lang, "Z31.edit.title.placeholder")}
+                onChange={(event) => set("title", event.target.value)}
+              />
+            )}
+          </Field>
+          <Field
+            id="description"
+            label={t(lang, "Z31.edit.description.label")}
+            error={text("description")}
+            large
+          >
+            {(props) => (
+              <Textarea
+                {...props}
+                rows={2}
+                value={values.description}
+                disabled={pending}
+                onChange={(event) => set("description", event.target.value)}
+              />
+            )}
+          </Field>
+          <div className="grid gap-x-4 gap-y-6 sm:grid-cols-2">
+            <DateField
+              id="startDate"
+              name="startDate"
+              label={t(lang, "Z31.edit.date.label")}
+              error={text("startDate")}
+              lang={lang}
+              value={values.startDate}
+              onChange={(value) => set("startDate", value)}
+              placeholder={t(lang, "Z24.time.date.placeholder")}
+              openLabel={t(lang, "Z24.time.date.open")}
               disabled={pending}
-              placeholder={t(lang, "Z31.edit.title.placeholder")}
-              onChange={(event) => set("title", event.target.value)}
             />
-          )}
-        </Field>
-        <Field
-          id="description"
-          label={t(lang, "Z31.edit.description.label")}
-          error={text("description")}
-          large
-        >
-          {(props) => (
-            <Textarea
-              {...props}
-              rows={2}
-              value={values.description}
-              disabled={pending}
-              onChange={(event) => set("description", event.target.value)}
-            />
-          )}
-        </Field>
-        <div className="grid gap-x-4 gap-y-6 sm:grid-cols-2">
-          <DateField
-            id="startDate"
-            name="startDate"
-            label={t(lang, "Z31.edit.date.label")}
-            error={text("startDate")}
-            lang={lang}
-            value={values.startDate}
-            onChange={(value) => set("startDate", value)}
-            placeholder={t(lang, "Z24.time.date.placeholder")}
-            openLabel={t(lang, "Z24.time.date.open")}
-            disabled={pending}
-          />
-          <Field
-            id="startTime"
-            label={t(lang, "Z31.edit.start.label")}
-            error={text("startTime")}
-            large
-          >
-            {(props) => (
-              <Input
-                {...props}
-                type="time"
-                value={values.startTime}
-                disabled={pending}
-                onChange={(event) => set("startTime", event.target.value)}
-              />
-            )}
-          </Field>
-          <Field
-            id="placeName"
-            label={t(lang, "Z31.edit.place.label")}
-            error={text("placeName")}
-            large
-          >
-            {(props) => (
-              <Input
-                {...props}
-                value={values.placeName}
-                disabled={pending}
-                placeholder={t(lang, "Z31.edit.place.placeholder")}
-                onChange={(event) => set("placeName", event.target.value)}
-              />
-            )}
-          </Field>
-          <Field
-            id="address"
-            label={t(lang, "Z31.edit.address.label")}
-            error={text("address")}
-            large
-          >
-            {(props) => (
-              <Input
-                {...props}
-                value={values.address}
-                disabled={pending}
-                autoComplete="street-address"
-                placeholder={t(lang, "Z31.edit.address.placeholder")}
-                onChange={(event) => set("address", event.target.value)}
-              />
-            )}
-          </Field>
+            <Field
+              id="startTime"
+              label={t(lang, "Z31.edit.start.label")}
+              error={text("startTime")}
+              large
+            >
+              {(props) => (
+                <Input
+                  {...props}
+                  type="time"
+                  value={values.startTime}
+                  disabled={pending}
+                  onChange={(event) => set("startTime", event.target.value)}
+                />
+              )}
+            </Field>
+            <Field
+              id="placeName"
+              label={t(lang, "Z31.edit.place.label")}
+              error={text("placeName")}
+              large
+            >
+              {(props) => (
+                <Input
+                  {...props}
+                  value={values.placeName}
+                  disabled={pending}
+                  placeholder={t(lang, "Z31.edit.place.placeholder")}
+                  onChange={(event) => set("placeName", event.target.value)}
+                />
+              )}
+            </Field>
+            <Field
+              id="address"
+              label={t(lang, "Z31.edit.address.label")}
+              error={text("address")}
+              large
+            >
+              {(props) => (
+                <Input
+                  {...props}
+                  value={values.address}
+                  disabled={pending}
+                  autoComplete="street-address"
+                  placeholder={t(lang, "Z31.edit.address.placeholder")}
+                  onChange={(event) => set("address", event.target.value)}
+                />
+              )}
+            </Field>
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col gap-3 md:flex-row md:items-center">
-        <button
-          type="submit"
-          disabled={pending}
-          className={buttonClass("primaryLg", "w-full md:w-auto")}
-        >
-          {t(lang, pending ? "Z31.edit.saving" : "Z31.edit.save")}
-        </button>
-        <Link
-          href={cancelHref}
-          className={buttonClass("secondary", "w-full shadow-sm md:w-auto")}
-        >
-          {t(lang, "Z31.edit.cancel")}
-        </Link>
-      </div>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center">
+          <button
+            type="submit"
+            disabled={pending}
+            className={buttonClass("primaryLg", "w-full md:w-auto")}
+          >
+            {t(lang, pending ? "Z31.edit.saving" : "Z31.edit.save")}
+          </button>
+          <Link
+            href={cancelHref}
+            className={buttonClass("secondary", "w-full shadow-sm md:w-auto")}
+          >
+            {t(lang, "Z31.edit.cancel")}
+          </Link>
+        </div>
+      </fieldset>
     </form>
   );
 }
