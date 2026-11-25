@@ -1114,6 +1114,30 @@ export const de = {
   "Z31.discarded.title": "Änderungen verworfen",
   "Z31.discarded.notice.title": "Die Änderungen sind verworfen.",
   "Z31.discarded.notice.line": "Öffentlich ist weiter der bisherige Stand.",
+  "Z32.manage.copy": "Als neues Event kopieren",
+  "Z32.copy.title": "Als neues Event kopieren",
+  "Z32.copy.lead":
+    "Du bekommst einen privaten Entwurf. Gäste sehen ihn erst, wenn du ihn veröffentlichst.",
+  "Z32.copy.card.title": "Das wird übernommen",
+  "Z32.copy.row.from": "Aus",
+  "Z32.copy.row.kept": "Übernommen",
+  "Z32.copy.row.new": "Neu setzen",
+  "Z32.copy.kept.value":
+    "Titel, Beschreibung, Format, Ort, Preis, Zugang, Bild, Atmosphäre und Mehr zum Abend",
+  "Z32.copy.new.value": "Datum, Uhrzeit und Ticket-Link",
+  "Z32.copy.yes": "Entwurf anlegen",
+  "Z32.copy.pending": "Legt an …",
+  "Z32.copy.no": "Abbrechen",
+  "Z32.copy.fail.title": "Das Kopieren hat nicht geklappt.",
+  "Z32.copy.fail.line":
+    "Es wurde nichts angelegt. Das ursprüngliche Event ist unverändert. Versuche es noch einmal.",
+  "Z32.copied.title": "Entwurf angelegt",
+  "Z32.copied.lead":
+    "Das neue Event ist privat. Setze jetzt Datum und Uhrzeit.",
+  "Z32.copied.notice.title": "Entwurf angelegt.",
+  "Z32.copied.notice.line": "Du kannst alles noch ändern.",
+  "Z32.copied.date": "Datum setzen",
+  "Z32.copied.list": "Zur Eventliste",
 } as const;
 
 export type MessageId = keyof typeof de;
