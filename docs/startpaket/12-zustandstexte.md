@@ -1161,6 +1161,74 @@ Deutsch aus den Figma-Frames EVM-02a/b; Englisch ist Vorschlag. Beschluss Founde
 | Z32.copied.date | Datum setzen | Set date | EVM-02b, Button |
 | Z32.copied.list | Zur Eventliste | Go to the event list | EVM-02b, Button |
 
+### Verschieben und Absagen (Z33, Welle 1 Flow 2 C, PR A, Stand 25.11.2026)
+Deutsch aus den Figma-Frames EVV-01 bis 05 und EVA-01 und 02; Englisch ist Vorschlag. Beschluss Founder 25.11.2026: In Welle 1 entfallen alle Follower-Teile der Frames (Kontrollkästchen „Hinweis an Follower sofort senden“, Follower-Sätze in den Hinweisen, MAIL-08a/c/d), weil es noch keine Follower gibt; ebenso der Satz zur Ticket-Erstattung. Die Felder „Beginn“, „Ende am“ und „Ende um“ sind getrennt, das Kontrollkästchen „Das Ende steht noch nicht fest“ entfällt (leeres Ende = Ende unbekannt). Fehler- und Ladetexte ohne Frame sind als „kein Frame“ markiert. Der Wiedereröffnen-Teil (EVV-06) folgt mit PR B.
+
+| ID | Deutsch | Englisch | Quelle |
+|---|---|---|---|
+| Z33.reschedule.title | Event verschieben | Reschedule event | EVV-01a, Titel |
+| Z33.reschedule.lead | Trage den Ersatztermin ein. Bis du bestätigst, bleibt der bisherige Termin öffentlich. | Enter the new date. Until you confirm, the current date stays public. | EVV-01a, Einleitung |
+| Z33.card.before | Bisher | Current | EVV-01a und 06a, Kartentitel |
+| Z33.row.current | Aktueller Termin | Current date | EVV-01a, 02a und 06a, Zeile |
+| Z33.field.date | Neues Datum | New date | EVV-01a, Feld |
+| Z33.field.start | Beginn | Start | EVV-01a, Feld |
+| Z33.field.endDate | Ende am (optional) | Ends on (optional) | EVV-01a, Feld |
+| Z33.field.endTime | Ende um (optional) | Ends at (optional) | EVV-01a, Feld |
+| Z33.reschedule.notice | Der Eventlink bleibt gleich. | The event link stays the same. | EVV-01a und 05a, Hinweis (Info); Follower-Satz in Welle 1 entfällt (Founder 25.11.2026) |
+| Z33.reschedule.yes | Termin verschieben | Reschedule | EVV-01a, Button |
+| Z33.reschedule.pending | Verschiebt … | Rescheduling … | EVV-01a, Button während des Verschiebens (kein Frame) |
+| Z33.reschedule.toOpen | Termin steht noch nicht fest | Date not set yet | EVV-01a, Button (zweitrangig) |
+| Z33.err.past | Der Ersatztermin muss in der Zukunft liegen. | The new date must be in the future. | EVV-01b, Hinweis, Zeile 2 |
+| Z33.err.startPast | Der Termin liegt in der Vergangenheit. | The date is in the past. | EVV-01b, Feldfehler |
+| Z33.err.startUnchanged | Das ist der bisherige Termin. Wähle einen anderen. | That is the current date. Choose a different one. | EVV-01a, Feldfehler (kein Frame) |
+| Z33.stale.title | Das Event hat sich geändert. | The event has changed. | EVV-01 und EVA-01, Fehler (kein Frame, Muster Z03) |
+| Z33.stale.line | Lade die Seite neu und prüfe den Stand noch einmal. | Reload the page and check the current state again. | EVV-01 und EVA-01, Fehler, Zeile 2 (kein Frame) |
+| Z33.fail.title | Das Verschieben hat nicht geklappt. | Rescheduling didn’t work. | EVV-02b, Fehler (Z03) |
+| Z33.fail.line | Der bisherige Termin ist weiter öffentlich. Deine Eingaben sind noch da. Versuche es noch einmal. | The current date is still public. Your entries are still here. Try again. | EVV-02b, Fehler, Zeile 2 |
+| Z33.fail.retry | Noch einmal versuchen | Try again | EVV-02b und EVA-01c, Button |
+| Z33.open.title | Verschieben ohne neuen Termin | Postpone without a new date | EVV-02a, Titel |
+| Z33.open.lead | Der bisherige Termin findet nicht statt. Bestätige das erst, wenn es feststeht. | The current date won’t go ahead. Confirm this only once it is certain. | EVV-02a, Einleitung |
+| Z33.open.notice.title | Öffentlich steht dann „Neuer Termin folgt“. | Guests will then see “New date to follow”. | EVV-02a, Hinweis (Info), Zeile 1 |
+| Z33.open.notice.line | Ticket- und Kalenderaktionen entfallen. | Ticket and calendar actions are removed. | EVV-02a, Hinweis (Info), Zeile 2; Follower-Satz in Welle 1 entfällt (Founder 25.11.2026) |
+| Z33.open.card | Überholter Termin | Outdated date | EVV-02a, Kartentitel |
+| Z33.open.yes | Ohne Termin verschieben | Postpone without a date | EVV-02a, Button |
+| Z33.open.toDate | Ersatztermin steht fest | The new date is set | EVV-02a, Button (zweitrangig) |
+| Z33.result.lead | {title} · {when} | {title} · {when} | EVV-04a, 04b und 05b, Einleitung (Titel und Termin) |
+| Z33.moved.title | Der neue Termin ist öffentlich | The new date is public | EVV-04a, Titel |
+| Z33.moved.notice.title | Gäste sehen jetzt den neuen Termin. | Guests now see the new date. | EVV-04a und 05b, Hinweis (Erfolg), Zeile 1 |
+| Z33.moved.notice.line | Der Eventlink ist gleich geblieben. | The event link hasn’t changed. | EVV-04a und 05b, Hinweis (Erfolg), Zeile 2; Follower-Satz in Welle 1 entfällt (Founder 25.11.2026) |
+| Z33.postponed.title | Verschiebung ist öffentlich | The postponement is public | EVV-04b, Titel |
+| Z33.postponed.lead | {title} · Neuer Termin folgt | {title} · New date to follow | EVV-04b, Einleitung |
+| Z33.postponed.notice.title | Gäste sehen: Neuer Termin folgt. | Guests see: New date to follow. | EVV-04b, Hinweis (Erfolg), Zeile 1 |
+| Z33.postponed.notice.line | Der alte Termin wird nicht mehr als aktuell angezeigt. | The old date is no longer shown as current. | EVV-04b, Hinweis (Erfolg), Zeile 2 |
+| Z33.postponed.next | Ersatztermin eintragen | Enter the new date | EVV-04b, Button |
+| Z33.schedule.title | Ersatztermin eintragen | Enter the new date | EVV-05a, Titel |
+| Z33.schedule.lead | Das Event wartet auf einen Termin. Mit dem Eintrag ist es wieder mit Datum öffentlich. | The event is waiting for a date. Once you enter it, the event is public with a date again. | EVV-05a, Einleitung |
+| Z33.schedule.yes | Termin eintragen | Enter date | EVV-05a, Button |
+| Z33.schedule.pending | Trägt ein … | Entering … | EVV-05a, Button während des Eintragens (kein Frame) |
+| Z33.scheduled.title | Der Termin ist eingetragen | The date is entered | EVV-05b, Titel |
+| Z33.cancel.title | Event wirklich absagen? | Really cancel this event? | EVA-01a, Titel |
+| Z33.cancel.lead | Nach der Bestätigung ist die Absage sofort öffentlich. | Once you confirm, the cancellation is public immediately. | EVA-01a, Einleitung |
+| Z33.cancel.card | Du sagst dieses Event ab | You are cancelling this event | EVA-01a, Kartentitel |
+| Z33.cancel.row.event | Event | Event | EVA-01a, Zeile |
+| Z33.cancel.row.date | Termin | Date | EVA-01a, Zeile |
+| Z33.cancel.row.place | Ort | Place | EVA-01a, Zeile |
+| Z33.cancel.confirm | Ich sage dieses Event ab. | I am cancelling this event. | EVA-01a, Kontrollkästchen |
+| Z33.cancel.yes | Event absagen | Cancel event | EVA-01a, Button |
+| Z33.cancel.pending | Sagt ab … | Cancelling … | EVA-01a, Button während des Absagens (kein Frame) |
+| Z33.cancel.no | Nicht absagen | Don’t cancel | EVA-01a, Button (zweitrangig) |
+| Z33.cancel.notice.title | Aufheben kannst du die Absage nur mit einem neuen Termin. | You can only undo the cancellation by setting a new date. | EVA-01a, Hinweis (Warnung), Zeile 1 |
+| Z33.cancel.notice.line | Die Eventseite zeigt die Absage. Ticketaktionen entfallen. | The event page shows the cancellation. Ticket actions are removed. | EVA-01a, Hinweis (Warnung), Zeile 2; Follower- und Erstattungs-Satz in Welle 1 entfallen (Founder 25.11.2026) |
+| Z33.cancel.err.title | Bitte bestätige die Absage. | Please confirm the cancellation. | EVA-01b, Hinweis, Zeile 1 |
+| Z33.cancel.err.line | Setze den Haken, dann kannst du absagen. | Tick the box, then you can cancel. | EVA-01b, Hinweis, Zeile 2 |
+| Z33.cancel.fail.title | Das Absagen hat nicht geklappt. | Cancelling didn’t work. | EVA-01c, Fehler (Z03) |
+| Z33.cancel.fail.line | Das Event ist weiter öffentlich. Deine Bestätigung ist gespeichert. Versuche es noch einmal. | The event is still public. Your confirmation is saved. Try again. | EVA-01c, Fehler, Zeile 2 |
+| Z33.cancelled.title | Die Absage ist öffentlich | The cancellation is public | EVA-02, Titel |
+| Z33.cancelled.lead | {title} wurde abgesagt. | {title} has been cancelled. | EVA-02, Einleitung |
+| Z33.cancelled.notice.title | Gäste sehen die Absage. | Guests see the cancellation. | EVA-02, Hinweis (Erfolg), Zeile 1 |
+| Z33.cancelled.notice.line | Ticketaktionen sind entfernt. | Ticket actions are removed. | EVA-02, Hinweis (Erfolg), Zeile 2; Follower-Satz in Welle 1 entfällt (Founder 25.11.2026) |
+| Z33.cancelled.private | Deine privaten Änderungen am Event wurden nicht veröffentlicht. | Your private changes to the event were not published. | EVA-02, Absatz unter dem Hinweis; nur wenn es private Änderungen gibt |
+
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.
 

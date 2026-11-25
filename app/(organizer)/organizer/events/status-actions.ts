@@ -4,60 +4,54 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import {
-  parseEventInput,
-  type EventFieldErrors,
-} from "@/lib/domain/event-publication";
-import { valueOrNull } from "@/lib/domain/answers";
+  checkReschedule,
+  type RescheduleErrors,
+} from "@/lib/domain/event-reschedule";
 import { loadLiveEvent } from "@/lib/event/live";
 import { canCancel, canPostpone, canReschedule } from "@/lib/event/status";
-import type { EventFormValues } from "@/lib/event/values";
+import { localToInstant } from "@/lib/domain/time";
 import { createClient } from "@/lib/supabase/server";
 
-export type StatusFormState = {
-  ok: boolean;
-  message?: string;
-  errors?: Pick<EventFieldErrors, "start" | "end">;
-  gaps?: string[];
-};
+// What a status form shows after a call. A call that goes through does not
+// return: it redirects to the result page (Figma EVV-04, 05b, EVA-02).
+export type StatusFormState =
+  | { status: "idle" }
+  // The entries are refused (EVV-01b); the codes become texts in the form.
+  | { status: "invalid"; errors: RescheduleErrors }
+  // "I am cancelling this event" is not ticked (EVA-01b).
+  | { status: "unchecked" }
+  // The event changed since the page was loaded (state version or status).
+  | { status: "stale" }
+  // The call did not go through; nothing changed (EVV-02b, EVA-01c).
+  | { status: "failed" };
 
-const GENERIC_ERROR =
-  "Das hat leider nicht geklappt. Bitte versucht es noch einmal.";
-const CHANGED_ERROR =
-  "Das Event hat sich zwischenzeitlich geändert. Bitte ladet die Seite neu und prüft den Stand noch einmal.";
+export type RescheduleFormState = StatusFormState;
 
 function managePath(eventId: string) {
   return `/organizer/events/${eventId}/manage`;
 }
 
-function done(eventId: string): never {
+function done(eventId: string, result: string): never {
   revalidatePath("/organizer");
+  revalidatePath("/organizer/events");
   revalidatePath(`/organizer/events/${eventId}`, "layout");
-  redirect(managePath(eventId));
+  redirect(`/organizer/events/${eventId}/${result}`);
 }
 
-function errorMessage(code: string | undefined, refused: string): string {
-  if (code === "DK001") return CHANGED_ERROR;
-  if (code === "DK003") return refused;
-
-  return GENERIC_ERROR;
+// DK001: another change came first. DK003: the status no longer allows the
+// call. Both mean "reload and look"; anything else did not go through.
+function failure(code: string | undefined): StatusFormState {
+  return code === "DK001" || code === "DK003"
+    ? { status: "stale" }
+    : { status: "failed" };
 }
 
-// "2026-10-23T22:00" (one date-time control) to date and time.
-function splitLocal(raw: FormDataEntryValue | null): {
-  date: string;
-  time: string;
-} {
-  const [date = "", time = ""] = (typeof raw === "string" ? raw : "").split(
-    "T",
-  );
-
-  return { date, time: time.slice(0, 5) };
-}
-
-// NACH-15. Status only: the database never publishes the private draft here.
+// NACH-15, EVA-01. Status only: the database never publishes the private
+// draft here. Nothing a person typed is logged.
 export async function cancelEvent(
   eventId: string,
   _previous: StatusFormState,
+  formData: FormData,
 ): Promise<StatusFormState> {
   const { view } = await loadLiveEvent(
     eventId,
@@ -65,9 +59,9 @@ export async function cancelEvent(
   );
   const event = view.event;
 
-  if (!canCancel(event.publicStatus)) {
-    return { ok: false, message: "Dieses Event ist bereits abgesagt." };
-  }
+  if (!canCancel(event.publicStatus)) redirect(managePath(eventId));
+
+  if (formData.get("confirm") !== "on") return { status: "unchecked" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("cancel_event", {
@@ -77,34 +71,24 @@ export async function cancelEvent(
     p_expected_status: event.publicStatus,
   });
 
-  if (error) {
-    return {
-      ok: false,
-      message: errorMessage(error.code, "Dieses Event ist bereits abgesagt."),
-    };
-  }
+  if (error) return failure(error.code);
 
-  done(eventId);
+  done(eventId, "cancelled");
 }
 
-// NACH-12. Without a replacement date; the published text stays as it was.
+// NACH-12, EVV-02. Without a replacement date; the published text stays as it
+// was.
 export async function postponeEvent(
   eventId: string,
   _previous: StatusFormState,
 ): Promise<StatusFormState> {
   const { view } = await loadLiveEvent(
     eventId,
-    `/organizer/events/${eventId}/reschedule`,
+    `/organizer/events/${eventId}/reschedule/open`,
   );
   const event = view.event;
 
-  if (!canPostpone(event.publicStatus)) {
-    return {
-      ok: false,
-      message:
-        "Dieses Event kann gerade nicht ohne neuen Termin verschoben werden.",
-    };
-  }
+  if (!canPostpone(event.publicStatus)) redirect(managePath(eventId));
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("postpone_event", {
@@ -114,84 +98,47 @@ export async function postponeEvent(
     p_expected_status: event.publicStatus,
   });
 
-  if (error) {
-    return {
-      ok: false,
-      message: errorMessage(
-        error.code,
-        "Dieses Event kann gerade nicht ohne neuen Termin verschoben werden.",
-      ),
-    };
-  }
+  if (error) return failure(error.code);
 
-  done(eventId);
+  done(eventId, "postponed");
 }
 
-// NACH-11. The database builds the new public revision from the live one and
-// changes only start and end; the private draft takes over the new date.
+function field(formData: FormData, name: string): string {
+  const value = formData.get(name);
+
+  return typeof value === "string" ? value : "";
+}
+
+// NACH-11, EVV-01 and EVV-05. The database builds the new public revision from
+// the live one and changes only start and end; the private draft takes over
+// the new date. `from` is where the form lives, for the sign-in redirect.
 export async function rescheduleEvent(
   eventId: string,
+  from: "reschedule" | "schedule",
   _previous: StatusFormState,
   formData: FormData,
 ): Promise<StatusFormState> {
   const { view, live } = await loadLiveEvent(
     eventId,
-    `/organizer/events/${eventId}/reschedule`,
+    `/organizer/events/${eventId}/${from}`,
   );
   const event = view.event;
 
-  if (!canReschedule(event.publicStatus)) {
-    return {
-      ok: false,
-      message: "Ein abgesagtes Event kann nicht verschoben werden.",
-    };
-  }
+  if (!canReschedule(event.publicStatus)) redirect(managePath(eventId));
 
-  const start = splitLocal(formData.get("start"));
-  const end = splitLocal(formData.get("end"));
-  const merged: EventFormValues = {
-    ...live,
-    startDate: start.date,
-    startTime: start.time,
-    endDate: end.date,
-    endTime: end.time,
-    endUnknown: formData.get("endUnknown") === "on",
-  };
+  const current = localToInstant(live.startDate, live.startTime);
+  const checked = checkReschedule(
+    {
+      startDate: field(formData, "startDate"),
+      startTime: field(formData, "startTime"),
+      endDate: field(formData, "endDate"),
+      endTime: field(formData, "endTime"),
+    },
+    current.ok ? current.instant : null,
+    new Date(),
+  );
 
-  if (
-    merged.startDate === live.startDate &&
-    merged.startTime === live.startTime
-  ) {
-    return {
-      ok: false,
-      errors: {
-        start: "Der neue Beginn muss sich vom bisherigen unterscheiden.",
-      },
-    };
-  }
-
-  const parsed = parseEventInput({
-    ...merged,
-    endUnknown: merged.endUnknown ? "on" : null,
-  });
-
-  if (!parsed.ok) {
-    return {
-      ok: false,
-      errors: { start: parsed.errors.start, end: parsed.errors.end },
-      message:
-        parsed.errors.start || parsed.errors.end ? undefined : GENERIC_ERROR,
-    };
-  }
-
-  const newStart = valueOrNull(parsed.value.start);
-
-  if (newStart === null) {
-    return {
-      ok: false,
-      errors: { start: "Bitte gebt Datum und Uhrzeit des Beginns an." },
-    };
-  }
+  if (!checked.ok) return { status: "invalid", errors: checked.errors };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("reschedule_event_date", {
@@ -199,32 +146,19 @@ export async function rescheduleEvent(
     p_expected_published_revision_id: event.publishedRevisionId as string,
     p_expected_state_version: event.stateVersion,
     p_expected_status: event.publicStatus,
-    p_new_start: newStart,
+    p_new_start: checked.start,
     // No end is an unknown end; the generated type does not show that the
     // parameter accepts null.
-    p_new_end: valueOrNull(parsed.value.end) as string,
+    p_new_end: checked.end as string,
   });
 
   if (error) {
-    if (error.code === "DK002") {
-      return { ok: false, message: "Es fehlen noch Angaben im Event." };
-    }
-
     if (error.code === "22023") {
-      return {
-        ok: false,
-        errors: { end: "Das Ende muss nach dem Beginn liegen." },
-      };
+      return { status: "invalid", errors: { endDate: "endBeforeStart" } };
     }
 
-    return {
-      ok: false,
-      message: errorMessage(
-        error.code,
-        "Der neue Beginn muss sich vom bisherigen unterscheiden.",
-      ),
-    };
+    return failure(error.code);
   }
 
-  done(eventId);
+  done(eventId, from === "schedule" ? "scheduled" : "rescheduled");
 }

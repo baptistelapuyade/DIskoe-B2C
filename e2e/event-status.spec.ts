@@ -339,12 +339,23 @@ test.describe("cancel and reschedule a live event", () => {
     await expect(page.getByRole("heading", { name: "Event wirklich absagen?" })).toBeVisible(SLOW);
     await expect(page.getByText(CANCEL_TITLE).first()).toBeVisible();
 
-    // Cancel leaves without a change.
-    await page.getByRole("link", { name: "Abbrechen" }).click();
+    // "Nicht absagen" leaves without a change.
+    await page.getByRole("link", { name: "Nicht absagen" }).click();
+    await expectManagePage(page, cancel.eventId);
     expect(sql(`select public_status from public.events where id = '${cancel.eventId}'`)).toBe("scheduled");
 
+    // EVA-01b: without the tick nothing happens.
     await page.goto(`/organizer/events/${cancel.eventId}/cancel`);
-    await page.getByRole("button", { name: "Event verbindlich absagen" }).click();
+    await page.getByRole("button", { name: "Event absagen" }).click();
+    await expect(page.getByText("Bitte bestätige die Absage.")).toBeVisible(SLOW);
+    expect(sql(`select public_status from public.events where id = '${cancel.eventId}'`)).toBe("scheduled");
+
+    // EVA-01a and EVA-02: with the tick the cancellation is public.
+    await page.getByRole("checkbox", { name: "Ich sage dieses Event ab." }).click();
+    await page.getByRole("button", { name: "Event absagen" }).click();
+    await expect(page).toHaveURL(new RegExp(`/events/${cancel.eventId}/cancelled$`), SLOW);
+    await expect(page.getByRole("heading", { name: "Die Absage ist öffentlich" })).toBeVisible(SLOW);
+    await page.getByRole("link", { name: "Zur Eventverwaltung" }).click();
     await expectManagePage(page, cancel.eventId);
     await expect(page.getByText("Dieses Event ist als abgesagt veröffentlicht.")).toBeVisible(SLOW);
     await expect(page.getByRole("link", { name: "Absagen", exact: true })).toHaveCount(0);
@@ -367,30 +378,46 @@ test.describe("cancel and reschedule a live event", () => {
     const page = await context.newPage();
 
     await page.goto(`/organizer/events/${move.eventId}/reschedule`);
-    await expect(page.getByRole("heading", { name: "Event auf einen neuen Termin verschieben" })).toBeVisible(SLOW);
-    await page.getByRole("link", { name: "Ersatztermin steht noch nicht fest" }).click();
+    await expect(page.getByRole("heading", { name: "Event verschieben" })).toBeVisible(SLOW);
+    await page.getByRole("link", { name: "Termin steht noch nicht fest" }).click();
     await expect(page.getByRole("heading", { name: "Verschieben ohne neuen Termin" })).toBeVisible(SLOW);
-    await page.getByRole("button", { name: "Ohne Ersatztermin verschieben" }).click();
+    await page.getByRole("button", { name: "Ohne Termin verschieben" }).click();
 
-    // The side card of the form says "Neuer Termin folgt" too, so wait for the
-    // redirect to the management page first.
-    await expectManagePage(page, move.eventId);
-    await expect(page.getByText("Neuer Termin folgt").first()).toBeVisible(SLOW);
+    // EVV-04b: the postponement is public.
+    await expect(page).toHaveURL(new RegExp(`/events/${move.eventId}/postponed$`), SLOW);
+    await expect(page.getByRole("heading", { name: "Verschiebung ist öffentlich" })).toBeVisible(SLOW);
     expect(sql(`select public_status from public.events where id = '${move.eventId}'`)).toBe("postponed_undated");
     expect((await publicEvent(MOVE_TITLE)).data?.public_status).toBe("postponed_undated");
 
-    // Without a date the only way on is a replacement date.
+    // Without a date the only way on is a replacement date (EVV-05a).
     await page.getByRole("link", { name: "Ersatztermin eintragen" }).click();
     await expect(page.getByRole("heading", { name: "Ersatztermin eintragen" })).toBeVisible(SLOW);
-    await expect(page.getByRole("link", { name: "Ersatztermin steht noch nicht fest" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Termin steht noch nicht fest" })).toHaveCount(0);
+
+    // Nothing entered: the start is named.
+    await page.getByRole("button", { name: "Termin eintragen" }).click();
+    await expect(page.getByText("Gib das Datum an.")).toBeVisible(SLOW);
+
+    // EVV-01b: a start in the past is refused.
+    await page.getByLabel("Neues Datum").fill("01.01.2025");
+    await page.getByLabel("Beginn").fill("20:00");
+    await page.getByRole("button", { name: "Termin eintragen" }).click();
+    await expect(page.getByText("Der Termin liegt in der Vergangenheit.")).toBeVisible(SLOW);
 
     // The old start is not a replacement.
-    await page.getByLabel("Neuer Beginn").fill("2027-06-05T23:00");
-    await page.getByRole("button", { name: "Verschiebung bestätigen" }).click();
-    await expect(page.getByText("Der neue Beginn muss sich vom bisherigen unterscheiden.")).toBeVisible(SLOW);
+    await page.getByLabel("Neues Datum").fill("05.06.2027");
+    await page.getByLabel("Beginn").fill("23:00");
+    await page.getByRole("button", { name: "Termin eintragen" }).click();
+    await expect(page.getByText("Das ist der bisherige Termin. Wähle einen anderen.")).toBeVisible(SLOW);
 
-    await page.getByLabel("Neuer Beginn").fill("2027-07-10T21:00");
-    await page.getByRole("button", { name: "Verschiebung bestätigen" }).click();
+    await page.getByLabel("Neues Datum").fill("10.07.2027");
+    await page.getByLabel("Beginn").fill("21:00");
+    await page.getByRole("button", { name: "Termin eintragen" }).click();
+
+    // EVV-05b: the date is entered.
+    await expect(page).toHaveURL(new RegExp(`/events/${move.eventId}/scheduled$`), SLOW);
+    await expect(page.getByRole("heading", { name: "Der Termin ist eingetragen" })).toBeVisible(SLOW);
+    await page.getByRole("link", { name: "Zur Eventverwaltung" }).click();
     await expectManagePage(page, move.eventId);
     // A moved event is live again with the new date (no extra state in Figma).
     await expect(page.getByText("Sa, 10.7.2027, 21:00", { exact: false }).first()).toBeVisible(SLOW);
@@ -409,12 +436,13 @@ test.describe("cancel and reschedule a live event", () => {
     const page = await context.newPage();
 
     await page.goto(`/organizer/events/${blocked.eventId}/reschedule`);
-    await expect(
-      page.getByText("Euer privater Entwurf übernimmt den neuen Termin", { exact: false }),
-    ).toBeVisible(SLOW);
-    await page.getByLabel("Neuer Beginn").fill("2027-08-14T20:00");
-    await page.getByRole("button", { name: "Verschiebung bestätigen" }).click();
-    await expectManagePage(page, blocked.eventId);
+    await expect(page.getByRole("heading", { name: "Event verschieben" })).toBeVisible(SLOW);
+    await page.getByLabel("Neues Datum").fill("14.08.2027");
+    await page.getByLabel("Beginn").fill("20:00");
+    await page.getByRole("button", { name: "Termin verschieben" }).click();
+    // EVV-04a: the new date is public.
+    await expect(page).toHaveURL(new RegExp(`/events/${blocked.eventId}/rescheduled$`), SLOW);
+    await expect(page.getByRole("heading", { name: "Der neue Termin ist öffentlich" })).toBeVisible(SLOW);
 
     expect(sql(`select public_status from public.events where id = '${blocked.eventId}'`)).toBe("rescheduled");
     const row = await publicEvent(BLOCKED_TITLE);
