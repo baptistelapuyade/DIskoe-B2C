@@ -1135,6 +1135,32 @@ Deutsch aus den Figma-Frames EVB-01a bis EVB-06b (Section „Flow 2 B“); Engli
 | Z31.discarded.notice.title | Die Änderungen sind verworfen. | The changes are discarded. | EVB-06b, Hinweis (Erfolg), Zeile 1 |
 | Z31.discarded.notice.line | Öffentlich ist weiter der bisherige Stand. | The public version is still the current one. | EVB-06b, Hinweis (Erfolg), Zeile 2 |
 
+### Als neues Event kopieren (Z32, Welle 1 Flow 2 C, Slice 13, Stand 25.11.2026)
+Deutsch aus den Figma-Frames EVM-02a/b; Englisch ist Vorschlag. Beschluss Founder 25.11.2026: Format und „Mehr zum Abend“ werden mitkopiert, der Ticket-Link und „ausverkauft“ nicht (sie gehören zum alten Termin). Fehler- und Ladetext haben keinen Frame.
+
+| ID | Deutsch | Englisch | Quelle |
+|---|---|---|---|
+| Z32.manage.copy | Als neues Event kopieren | Copy as a new event | EVM-01a und 01f, Aktion |
+| Z32.copy.title | Als neues Event kopieren | Copy as a new event | EVM-02a, Titel |
+| Z32.copy.lead | Du bekommst einen privaten Entwurf. Gäste sehen ihn erst, wenn du ihn veröffentlichst. | You get a private draft. Guests see it only when you publish it. | EVM-02a, Einleitung |
+| Z32.copy.card.title | Das wird übernommen | What carries over | EVM-02a, Kartentitel |
+| Z32.copy.row.from | Aus | From | EVM-02a, Zeile |
+| Z32.copy.row.kept | Übernommen | Copied | EVM-02a, Zeile |
+| Z32.copy.row.new | Neu setzen | To set again | EVM-02a, Zeile |
+| Z32.copy.kept.value | Titel, Beschreibung, Format, Ort, Preis, Zugang, Bild, Atmosphäre und Mehr zum Abend | Title, description, format, place, price, access, image, atmosphere and more about the evening | EVM-02a, Wert; Format und Bausteine ergänzt (Founder 25.11.2026) |
+| Z32.copy.new.value | Datum, Uhrzeit und Ticket-Link | Date, time and ticket link | EVM-02a, Wert; Ticket-Link ergänzt (Founder 25.11.2026) |
+| Z32.copy.yes | Entwurf anlegen | Create draft | EVM-02a, Button |
+| Z32.copy.pending | Legt an … | Creating … | EVM-02a, Button während des Anlegens (kein Frame) |
+| Z32.copy.no | Abbrechen | Cancel | EVM-02a, Button |
+| Z32.copy.fail.title | Das Kopieren hat nicht geklappt. | Copying didn’t work. | EVM-02a, Fehler (kein Frame, Muster M9 / Z03) |
+| Z32.copy.fail.line | Es wurde nichts angelegt. Das ursprüngliche Event ist unverändert. Versuche es noch einmal. | Nothing was created. The original event is unchanged. Try again. | EVM-02a, Fehler, Zeile 2 (kein Frame) |
+| Z32.copied.title | Entwurf angelegt | Draft created | EVM-02b, Titel |
+| Z32.copied.lead | Das neue Event ist privat. Setze jetzt Datum und Uhrzeit. | The new event is private. Set the date and time now. | EVM-02b, Einleitung |
+| Z32.copied.notice.title | Entwurf angelegt. | Draft created. | EVM-02b, Hinweis (Erfolg), Zeile 1 |
+| Z32.copied.notice.line | Du kannst alles noch ändern. | You can still change everything. | EVM-02b, Hinweis (Erfolg), Zeile 2 |
+| Z32.copied.date | Datum setzen | Set date | EVM-02b, Button |
+| Z32.copied.list | Zur Eventliste | Go to the event list | EVM-02b, Button |
+
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.
 

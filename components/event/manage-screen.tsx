@@ -154,6 +154,13 @@ export function ManageScreen({
                 failedText={t(lang, "Z22.share.failed")}
                 variant="secondary"
               />
+              {/* EVM-01a: copy as a new event (only a live event, not a
+                  postponed one). */}
+              {data.state === "live" ? (
+                <Link href={`${base}/copy`} className={secondary}>
+                  {t(lang, "Z32.manage.copy")}
+                </Link>
+              ) : null}
             </Actions>
           </>
         ) : null}
@@ -265,7 +272,13 @@ export function ManageScreen({
               {t(lang, "Z30.manage.past.line")}
             </p>
             <div className="mt-4">
-              <Actions>{viewPage}</Actions>
+              <Actions>
+                {viewPage}
+                {/* EVM-01f */}
+                <Link href={`${base}/copy`} className={secondary}>
+                  {t(lang, "Z32.manage.copy")}
+                </Link>
+              </Actions>
             </div>
           </>
         ) : null}

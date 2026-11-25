@@ -3,6 +3,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, TablesInsert } from "@/lib/db/types";
 import { eventSlug } from "@/lib/domain/event-slug";
 
+import { copyRevisionFields } from "./copy";
+import { createConfirmedEventUse } from "./image-use";
 import {
   EVENT_REVISION_COLUMNS,
   rowToCopy,
@@ -129,9 +131,28 @@ async function pointDraftAt(
   }
 }
 
-// A new private event with its first draft revision. The slug is derived from
-// the title and fixed from then on; a clash on the unique slug is retried with
-// a new random suffix.
+// The row of a new private event. The slug is derived from the title and fixed
+// from then on; a clash on the unique slug is retried with a new random suffix.
+async function insertEventRow(
+  supabase: Client,
+  organizerId: string,
+  title: string,
+): Promise<string> {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const { data, error } = await supabase
+      .from("events")
+      .insert({ organizer_id: organizerId, slug: eventSlug(title) })
+      .select("id")
+      .single();
+
+    if (data) return data.id;
+    if (error?.code !== "23505") break;
+  }
+
+  throw new Error("Could not create the event");
+}
+
+// A new private event with its first draft revision.
 export async function createEventDraft(
   supabase: Client,
   userId: string,
@@ -139,30 +160,55 @@ export async function createEventDraft(
   values: EventDraftValues,
   title: string,
 ): Promise<string> {
-  let eventId: string | null = null;
+  const eventId = await insertEventRow(supabase, organizerId, title);
+  const revisionId = await insertRevision(supabase, {
+    event_id: eventId,
+    created_by: userId,
+    ...valuesToRow(values),
+  });
+  await pointDraftAt(supabase, eventId, revisionId);
 
-  for (let attempt = 0; attempt < 4 && eventId === null; attempt += 1) {
-    const { data, error } = await supabase
-      .from("events")
-      .insert({ organizer_id: organizerId, slug: eventSlug(title) })
-      .select("id")
-      .single();
+  return eventId;
+}
 
-    if (data) {
-      eventId = data.id;
-    } else if (error?.code !== "23505") {
-      break;
+// A new private event from the public stand of another one (EVM-02). The
+// picture becomes a new use of the same file for the new event. If that fails,
+// the copy is still made without a picture: the event then names the missing
+// picture as a gap, which is better than no copy and an empty event row.
+export async function createEventCopy(
+  supabase: Client,
+  userId: string,
+  organizerId: string,
+  source: EventRevisionRow,
+): Promise<string> {
+  const eventId = await insertEventRow(
+    supabase,
+    organizerId,
+    source.title ?? "",
+  );
+  let imageUseId: string | null = null;
+
+  if (source.event_image_use_id) {
+    const { data: use } = await supabase
+      .from("media_uses")
+      .select("asset_id, alt_text")
+      .eq("id", source.event_image_use_id)
+      .maybeSingle();
+
+    if (use) {
+      imageUseId = await createConfirmedEventUse(supabase, {
+        assetId: use.asset_id,
+        eventId,
+        altText: use.alt_text,
+      });
     }
-  }
-
-  if (eventId === null) {
-    throw new Error("Could not create the event");
   }
 
   const revisionId = await insertRevision(supabase, {
     event_id: eventId,
     created_by: userId,
-    ...valuesToRow(values),
+    ...copyRevisionFields(source),
+    event_image_use_id: imageUseId,
   });
   await pointDraftAt(supabase, eventId, revisionId);
 

@@ -23,8 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // "Bearbeiten" and "Änderungen prüfen und veröffentlichen" lead to the existing
 // editor and publish page; "Verschieben" and "Absagen" to their existing
 // pages. Not built: "Von DISKOE ausgeblendet" (EVM-01e, with the founder's
-// blocks), "Als neues Event kopieren" (EVM-02), "Hinweise an Follower"
-// (wave 3).
+// blocks), "Hinweise an Follower" (wave 3).
 export default async function EventManagePage({
   params,
 }: {

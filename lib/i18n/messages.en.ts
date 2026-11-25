@@ -1080,4 +1080,27 @@ export const en: Record<MessageId, string> = {
   "Z31.discarded.title": "Changes discarded",
   "Z31.discarded.notice.title": "The changes are discarded.",
   "Z31.discarded.notice.line": "The public version is still the current one.",
+  "Z32.manage.copy": "Copy as a new event",
+  "Z32.copy.title": "Copy as a new event",
+  "Z32.copy.lead":
+    "You get a private draft. Guests see it only when you publish it.",
+  "Z32.copy.card.title": "What carries over",
+  "Z32.copy.row.from": "From",
+  "Z32.copy.row.kept": "Copied",
+  "Z32.copy.row.new": "To set again",
+  "Z32.copy.kept.value":
+    "Title, description, format, place, price, access, image, atmosphere and more about the evening",
+  "Z32.copy.new.value": "Date, time and ticket link",
+  "Z32.copy.yes": "Create draft",
+  "Z32.copy.pending": "Creating …",
+  "Z32.copy.no": "Cancel",
+  "Z32.copy.fail.title": "Copying didn’t work.",
+  "Z32.copy.fail.line":
+    "Nothing was created. The original event is unchanged. Try again.",
+  "Z32.copied.title": "Draft created",
+  "Z32.copied.lead": "The new event is private. Set the date and time now.",
+  "Z32.copied.notice.title": "Draft created.",
+  "Z32.copied.notice.line": "You can still change everything.",
+  "Z32.copied.date": "Set date",
+  "Z32.copied.list": "Go to the event list",
 };
