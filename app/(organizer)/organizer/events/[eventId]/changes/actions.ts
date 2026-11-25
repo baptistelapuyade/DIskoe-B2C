@@ -110,9 +110,10 @@ export async function saveLiveEventChanges(
 
 // ---------------------------------------------------------------------------
 // EVB-04a to 04c: publish the draft. Both declarations are checked here and
-// again by the database. The ids are the ones the owner saw on the review
-// screen: if the draft or the public page changed meanwhile (another tab or
-// device), nothing is published and the review screen opens again.
+// again by the database. The ids and the stand of the draft are the ones the
+// owner saw on the publish screen: if the draft (even in place) or the public
+// page changed meanwhile (another tab or device), nothing is published and the
+// review screen opens again.
 // ---------------------------------------------------------------------------
 export type PublishEventState =
   | { status: "idle" }
@@ -125,6 +126,8 @@ export async function publishEventChanges(
   eventId: string,
   expected: {
     draftId: string;
+    // The stand of the draft the owner saw (counter of the revision).
+    draftVersion: number | null;
     publishedId: string;
     stateVersion: number;
     status: "scheduled" | "rescheduled" | "postponed_undated" | "cancelled";
@@ -147,6 +150,7 @@ export async function publishEventChanges(
   const { error } = await supabase.rpc("publish_event", {
     p_event_id: eventId,
     p_expected_draft_revision_id: expected.draftId,
+    p_expected_draft_version: expected.draftVersion ?? undefined,
     p_expected_published_revision_id: expected.publishedId,
     p_expected_state_version: expected.stateVersion,
     p_expected_status: expected.status,

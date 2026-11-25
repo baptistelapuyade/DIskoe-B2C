@@ -44,6 +44,7 @@ export default async function PublishEventChangesPage({
       rows={changeRows(lang, view.changes)}
       action={publishEventChanges.bind(null, eventId, {
         draftId: draftRevisionId,
+        draftVersion: view.draftVersion,
         publishedId: publishedRevisionId,
         stateVersion: view.stateVersion,
         status: view.publicStatus,

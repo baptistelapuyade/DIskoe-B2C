@@ -494,6 +494,30 @@ test.describe("cancel and reschedule a live event", () => {
     await expect(page.getByRole("heading", { name: "Änderungen sind veröffentlicht" })).toBeVisible();
     expect((await publicEvent(`${EDIT_TITLE} im Hof`)).data).not.toBeNull();
 
+    // A page that showed an older stand of the same draft publishes nothing:
+    // the draft is changed in place by a second tab after the first page was
+    // opened.
+    await page.goto(`${base}/changes/edit`);
+    await page.getByLabel("Beschreibung", { exact: true }).fill("Erste Fassung.");
+    await page.getByRole("button", { name: "Änderungen speichern" }).click();
+    await expect(page).toHaveURL(new RegExp(`${base}/changes/saved$`), SLOW);
+    await page.getByRole("link", { name: "Änderungen prüfen" }).click();
+    await page.getByRole("link", { name: "Weiter zur Bestätigung" }).click();
+    await expect(page.getByRole("heading", { name: "Änderungen veröffentlichen" })).toBeVisible(SLOW);
+    await page.getByRole("checkbox").nth(0).click();
+    await page.getByRole("checkbox").nth(1).click();
+    const secondTab = await context.newPage();
+    await secondTab.goto(`${base}/changes/edit`);
+    await secondTab.getByLabel("Beschreibung", { exact: true }).fill("Zweite Fassung.");
+    await secondTab.getByRole("button", { name: "Änderungen speichern" }).click();
+    await expect(secondTab).toHaveURL(new RegExp(`${base}/changes/saved$`), SLOW);
+    await secondTab.close();
+    await page.getByRole("button", { name: "Jetzt veröffentlichen" }).click();
+    await expect(page).toHaveURL(new RegExp(`${base}/changes\\?stale=1$`), SLOW);
+    const unchanged = (await publicEvent(`${EDIT_TITLE} im Hof`)).data?.description;
+    expect(unchanged).not.toBe("Erste Fassung.");
+    expect(unchanged).not.toBe("Zweite Fassung.");
+
     // EVB-06a/06b: another change is discarded; the event stays as it was.
     await page.goto(`${base}/changes/edit`);
     await page.getByLabel("Beschreibung", { exact: true }).fill("Nur ein privater Gedanke.");

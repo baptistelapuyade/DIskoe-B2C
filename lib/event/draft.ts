@@ -73,6 +73,25 @@ export async function loadEventRevision(
   return data as EventRevisionRow | null;
 }
 
+// The counter of a draft revision, raised by the database with every change
+// of its content. The publish screen hands it back to publish_event().
+export async function loadEventRevisionVersion(
+  supabase: Client,
+  revisionId: string,
+): Promise<number | null> {
+  const { data, error } = await supabase
+    .from("event_revisions")
+    .select("content_version")
+    .eq("id", revisionId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error("Event revision version lookup failed");
+  }
+
+  return data?.content_version ?? null;
+}
+
 // revision_no is assigned by a database trigger and is deliberately not
 // grantable to clients; the generated type still lists it as required.
 type NewRevision = Omit<TablesInsert<"event_revisions">, "revision_no">;
