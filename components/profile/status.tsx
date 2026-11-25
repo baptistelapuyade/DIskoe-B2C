@@ -40,8 +40,8 @@ export function ProfileNav({
       aria-current={active === key ? "page" : undefined}
       className={
         active === key
-          ? "border-foreground border-b-2 pb-2 font-medium"
-          : "text-muted-foreground pb-2"
+          ? "border-foreground inline-flex min-h-11 items-end border-b-2 pb-2 font-medium"
+          : "text-muted-foreground inline-flex min-h-11 items-end pb-2"
       }
     >
       {label}
