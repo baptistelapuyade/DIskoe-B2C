@@ -543,12 +543,14 @@ test.describe("cancel and reschedule a live event", () => {
   test("a live event is copied as a new draft without a date", async ({ browser }) => {
     const context = await germanContext(browser, { baseURL: BASE_URL, storageState: ownerState });
     const page = await context.newPage();
+    // The edit event carries its new title since the test before.
+    const COPY_TITLE = `${EDIT_TITLE} im Hof`;
     const copies = (where: string) =>
       sql(
-        `select count(*) from public.events e join public.event_revisions r on r.id = e.draft_revision_id where r.title = '${BLOCKED_TITLE}' and ${where}`,
+        `select count(*) from public.events e join public.event_revisions r on r.id = e.draft_revision_id where r.title = '${COPY_TITLE}' and ${where}`,
       );
 
-    await page.goto(`/organizer/events/${blocked.eventId}/manage`);
+    await page.goto(`/organizer/events/${edit.eventId}/manage`);
     await page.getByRole("link", { name: "Als neues Event kopieren" }).click();
     await expect(page.getByRole("heading", { name: "Als neues Event kopieren" })).toBeVisible(SLOW);
 
@@ -560,7 +562,7 @@ test.describe("cancel and reschedule a live event", () => {
     // One private copy with an open date; the original is still the live one.
     expect(copies("e.published_revision_id is null and r.start_state = 'unanswered'")).toBe("1");
     expect(copies("e.published_revision_id is not null")).toBe("1");
-    expect((await publicEvent(BLOCKED_TITLE)).data).not.toBeNull();
+    expect((await publicEvent(COPY_TITLE)).data).not.toBeNull();
 
     // A copy that was never published has no copy page of its own.
     const copyUrl = page.url();
