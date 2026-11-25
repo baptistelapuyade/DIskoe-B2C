@@ -23,10 +23,6 @@ const LEGACY: Record<string, string> = {
   "app/(organizer)/organizer/events/[eventId]/publish/page.tsx": "VOR-01",
   "app/(organizer)/organizer/events/[eventId]/published/page.tsx": "VOR-01",
   "app/(organizer)/organizer/events/[eventId]/edit/page.tsx": "draft hub",
-  "app/(organizer)/organizer/events/[eventId]/cancel/page.tsx": "Flow 2 C",
-  "app/(organizer)/organizer/events/[eventId]/reschedule/page.tsx": "Flow 2 C",
-  "app/(organizer)/organizer/events/status-actions.ts": "Flow 2 C",
-  "components/event/status-forms.tsx": "Flow 2 C",
   "app/(organizer)/organizer/events/actions.ts": "draft actions",
   "app/(organizer)/organizer/profiles/[profileId]/status/page.tsx":
     "profile status",

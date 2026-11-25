@@ -207,6 +207,8 @@ Section (3072:265).
 ## F8 · Verschieben und Absagen (Flow 2 C, W1; Hinweise W3)
 Section (3072:266).
 
+**Stand Code (25.11., PR A, keine Migration):** `EVV-01` bis `05` und `EVA-01`/`02` sind gebaut, Deutsch und Englisch (Katalog Z33). Routen unter `/organizer/events/[id]/`: `reschedule` (EVV-01), `reschedule/open` (EVV-02), `schedule` (EVV-05a, nur für wartende Events), `rescheduled` (EVV-04a), `postponed` (EVV-04b), `scheduled` (EVV-05b), `cancel` (EVA-01), `cancelled` (EVA-02). Die Ergebnisseiten sind nur im passenden Stand erreichbar, sonst geht es zur Verwaltung. Ohne Follower in Welle 1: das Kontrollkästchen „Hinweis an Follower sofort senden“, alle Follower-Sätze und `MAIL-08a/c/d` fehlen. `EVV-06` (Absage zurücknehmen) und der Button „Neuen Termin setzen“ in `EVA-02` folgen mit PR B (Migration `reopen_event`).
+
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
 |---|---|---|---|---|
 | EVV-01a / b | 3061:25924 / 26651 | Verschieben, Ersatztermin steht fest / Datum in der Vergangenheit | Termin verschieben → `EVV-04a`; Termin steht noch nicht fest → `EVV-02a` | Hinweis an Follower, `MAIL-08a` |
