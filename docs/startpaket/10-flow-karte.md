@@ -120,6 +120,8 @@ Section „Flow 1 Block 2c“ (3173:39716; bis 10.11. Frame 3018:14952). Profil 
 
 **Stand Code (24.11., Slice 12):** `EVB-01a–c`, `02`, `03b`/`c`, `04a–c`, `05`, `06a/b` sind gebaut unter `/organizer/events/[id]/changes/…` (Live-Event bearbeiten, ohne Follower-Sätze; `EVB-03a` entfällt bis Welle 3). `EVM-01a`/`b` führen dorthin.
 
+**`EVB-01d` (25.11., nur Figma):** Verlassen-Abfrage „Ohne Speichern verlassen?“ gezeichnet in Abschnitt 3072:265 als Desktop (3264:6967) und Mobil (3264:7018), Klon von `LPA-01d`, Eyebrow „Event bearbeiten“; **nicht gebaut**, bis der Founder „Ready for dev“ setzt. `EVB-04c`: Satz korrigiert zu „Öffentlich ist weiter der bisherige Stand. Deine Änderungen sind gespeichert. Versuche es noch einmal.“ (Desktop und Mobil).
+
 **Stand Code (20.11., Slice 8 Teil B):** `EIN-01a–e`, `EIN-02a–e`, `PRF-01a/b`, `PRF-02`, `PRF-03a–d` sind gebaut und hängen am Profil (`/organizer/profiles/[id]/submit`, `/submit/confirm`, `/status`, `/submitted`, `/withdraw`, `/withdrawn`). `EIN-01e` (Pflichtblock des Formats fehlt, Zeile „Mehr zum Abend“ mit „Fehlt“) ist als Lücke der Prüfliste gebaut. Die alten Event-Adressen `events/[id]/submit` und `/review` (In Prüfung) leiten auf diese Seiten um. `VOR-01a/b` ist verschoben auf Slice 11; „Vorschau der Seiten ansehen“ führt bis dahin auf die einfachen Vorschauseiten. Ein erstes Event, das nach der Freigabe des Profils angelegt wird, geht von selbst live.
 
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
