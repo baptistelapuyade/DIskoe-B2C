@@ -132,7 +132,7 @@ export default async function PreviewProfilePage({
   return (
     <main className="mx-auto max-w-3xl space-y-10 px-6 py-12">
       <header className="space-y-3">
-        <Link href="/organizer" className="text-muted-foreground text-sm">
+        <Link href="/organizer" className="text-muted-foreground inline-flex min-h-11 items-center text-sm">
           ← Deine Profile
         </Link>
         <h1 className="text-3xl font-bold tracking-tight">Vorschau</h1>

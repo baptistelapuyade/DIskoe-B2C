@@ -43,7 +43,10 @@ export default async function ProfileStatusPage({
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-6 py-12">
-      <Link href="/organizer" className="text-muted-foreground text-sm">
+      <Link
+        href="/organizer"
+        className="text-muted-foreground inline-flex min-h-11 items-center text-sm"
+      >
         ← Zurück zu deinen Profilen
       </Link>
 

@@ -150,7 +150,7 @@ export function EventView({ event }: { event: PublicEvent }) {
                     <a
                       href={routeUrl}
                       rel="noopener noreferrer"
-                      className="text-sm leading-5 font-medium underline underline-offset-4"
+                      className="inline-flex min-h-11 w-fit items-center text-sm leading-5 font-medium underline underline-offset-4"
                     >
                       Route öffnen ↗
                     </a>
@@ -302,7 +302,7 @@ export function EventView({ event }: { event: PublicEvent }) {
           {event.organizer.shortIntro ? (
             <p className="text-base leading-6">{event.organizer.shortIntro}</p>
           ) : null}
-          <Link href={`/${event.organizer.slug}`} className="text-sm leading-5 font-medium underline underline-offset-4">
+          <Link href={`/${event.organizer.slug}`} className="inline-flex min-h-11 w-fit items-center text-sm leading-5 font-medium underline underline-offset-4">
             Zum Profil ↗
           </Link>
         </div>

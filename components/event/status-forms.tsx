@@ -4,7 +4,7 @@ import { useActionState } from "react";
 
 import type { StatusFormState } from "@/app/(organizer)/organizer/events/status-actions";
 import { Button, LinkButton } from "@/components/ui/button";
-import { controlClass, Field } from "@/components/ui/field";
+import { controlClassLg, Field } from "@/components/ui/field";
 import { StatusMessage } from "@/components/ui/page-shell";
 
 type Action = (
@@ -94,32 +94,32 @@ export function RescheduleForm({
 
   return (
     <form action={formAction} noValidate className="flex flex-col gap-5">
-      <Field id="start" label="Neuer Beginn" error={e?.start}>
+      <Field id="start" label="Neuer Beginn" error={e?.start} large>
         {(p) => (
           <input
             {...p}
             name="start"
             type="datetime-local"
             defaultValue={local(start.date, start.time)}
-            className={controlClass}
+            className={controlClassLg}
           />
         )}
       </Field>
-      <Field id="end" label="Neues Ende" error={e?.end}>
+      <Field id="end" label="Neues Ende" error={e?.end} large>
         {(p) => (
           <input
             {...p}
             name="end"
             type="datetime-local"
             defaultValue={local(end.date, end.time)}
-            className={controlClass}
+            className={controlClassLg}
           />
         )}
       </Field>
-      <p className="text-muted-foreground text-xs leading-4">
+      <p className="text-muted-foreground text-sm leading-5">
         Ortszeit: Europe/Berlin
       </p>
-      <label className="flex items-center gap-3 text-sm">
+      <label className="flex min-h-11 items-center gap-3 text-sm">
         <input
           type="checkbox"
           name="endUnknown"

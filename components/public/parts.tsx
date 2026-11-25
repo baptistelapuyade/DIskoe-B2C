@@ -61,7 +61,7 @@ export function SiteBar({
     >
       <p className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">DISKOE</p>
       {back ? (
-        <Link href={back.href} className="text-sm leading-5 underline-offset-4 hover:underline">
+        <Link href={back.href} className="inline-flex min-h-11 w-fit items-center text-sm leading-5 underline-offset-4 hover:underline">
           ← {back.label}
         </Link>
       ) : null}
@@ -128,10 +128,10 @@ export function LegalFooter() {
       aria-label="Rechtliches"
       className="mx-auto flex w-full max-w-[1128px] gap-6 px-6 pb-8 text-sm leading-5 sm:px-8"
     >
-      <Link href="/impressum" className="underline-offset-4 hover:underline">
+      <Link href="/impressum" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
         Impressum
       </Link>
-      <Link href="/datenschutz" className="underline-offset-4 hover:underline">
+      <Link href="/datenschutz" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
         Datenschutz
       </Link>
     </nav>

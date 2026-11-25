@@ -27,7 +27,7 @@ function EventRow({ event, highlight }: { event: PublicEvent; highlight: boolean
           <span className="text-sm leading-5 font-medium">Neuer Termin</span>
         ) : null}
         {event.placeName ? (
-          <span className="text-muted-foreground text-sm leading-5">{event.placeName}</span>
+          <span className={`${highlight ? "text-foreground" : "text-muted-foreground"} text-sm leading-5`}>{event.placeName}</span>
         ) : null}
       </Link>
     </li>
@@ -39,7 +39,7 @@ function ExternalLink({ url, label }: { url: string; label?: string }) {
     <a
       href={url}
       rel="noopener noreferrer nofollow"
-      className="text-base leading-6 underline underline-offset-4"
+      className="inline-flex min-h-11 w-fit items-center text-base leading-6 underline underline-offset-4"
     >
       {label ?? url.replace(/^https?:\/\//, "").replace(/\/$/, "")} ↗
     </a>
@@ -95,7 +95,7 @@ export function ProfileView({
               </ul>
               {more.length > 0 ? (
                 <details className="group flex flex-col gap-4">
-                  <summary className="text-sm leading-5 font-medium underline underline-offset-4 cursor-pointer">
+                  <summary className="flex min-h-11 w-fit items-center text-sm leading-5 font-medium underline underline-offset-4 cursor-pointer">
                     Mehr anzeigen ({more.length})
                   </summary>
                   <ul className="mt-4 flex flex-col gap-4">
@@ -121,7 +121,7 @@ export function ProfileView({
               <a
                 href={`https://www.instagram.com/${profile.instagram}/`}
                 rel="noopener noreferrer nofollow"
-                className="text-base leading-6 underline underline-offset-4"
+                className="inline-flex min-h-11 w-fit items-center text-base leading-6 underline underline-offset-4"
               >
                 Instagram @{profile.instagram} ↗
               </a>
