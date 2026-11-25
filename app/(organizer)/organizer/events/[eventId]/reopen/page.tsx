@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { ReopenScreen } from "@/components/event/status-screens";
+import { expectedState } from "@/lib/event/expected";
 import { loadLiveEvent } from "@/lib/event/live";
 import { canReopen } from "@/lib/event/status";
 import { getLang } from "@/lib/i18n/server";
@@ -28,7 +29,7 @@ export default async function ReopenEventPage({
       lang={lang}
       base={base}
       live={live}
-      action={reopenEvent.bind(null, eventId)}
+      action={reopenEvent.bind(null, eventId, expectedState(view.event))}
     />
   );
 }

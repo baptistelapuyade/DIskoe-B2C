@@ -358,7 +358,7 @@ export function StatusResultScreen({
                 >
                   {t(lang, "Z33.cancelled.newDate")}
                 </Link>
-              ) : result === "reopened" ? null : (
+              ) : result === "reopened" || result === "scheduled" ? null : (
                 <Link
                   href={publicPath}
                   className={buttonClass(

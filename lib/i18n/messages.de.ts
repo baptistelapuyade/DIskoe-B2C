@@ -1160,6 +1160,8 @@ export const de = {
   "Z33.fail.title": "Das Verschieben hat nicht geklappt.",
   "Z33.fail.line":
     "Der bisherige Termin ist weiter öffentlich. Deine Eingaben sind noch da. Versuche es noch einmal.",
+  "Z33.fail.open.line":
+    "Der bisherige Termin ist weiter öffentlich. Versuche es noch einmal.",
   "Z33.fail.retry": "Noch einmal versuchen",
   "Z33.open.title": "Verschieben ohne neuen Termin",
   "Z33.open.lead":

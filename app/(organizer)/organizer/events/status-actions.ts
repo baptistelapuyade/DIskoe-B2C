@@ -7,6 +7,7 @@ import {
   checkReschedule,
   type RescheduleErrors,
 } from "@/lib/domain/event-reschedule";
+import { type ExpectedState, expectedArgs } from "@/lib/event/expected";
 import { loadLiveEvent } from "@/lib/event/live";
 import {
   canCancel,
@@ -55,6 +56,7 @@ function failure(code: string | undefined): StatusFormState {
 // draft here. Nothing a person typed is logged.
 export async function cancelEvent(
   eventId: string,
+  expected: ExpectedState,
   _previous: StatusFormState,
   formData: FormData,
 ): Promise<StatusFormState> {
@@ -71,9 +73,7 @@ export async function cancelEvent(
   const supabase = await createClient();
   const { error } = await supabase.rpc("cancel_event", {
     p_event_id: eventId,
-    p_expected_published_revision_id: event.publishedRevisionId as string,
-    p_expected_state_version: event.stateVersion,
-    p_expected_status: event.publicStatus,
+    ...expectedArgs(expected),
   });
 
   if (error) return failure(error.code);
@@ -85,6 +85,7 @@ export async function cancelEvent(
 // was.
 export async function postponeEvent(
   eventId: string,
+  expected: ExpectedState,
   _previous: StatusFormState,
 ): Promise<StatusFormState> {
   const { view } = await loadLiveEvent(
@@ -98,9 +99,7 @@ export async function postponeEvent(
   const supabase = await createClient();
   const { error } = await supabase.rpc("postpone_event", {
     p_event_id: eventId,
-    p_expected_published_revision_id: event.publishedRevisionId as string,
-    p_expected_state_version: event.stateVersion,
-    p_expected_status: event.publicStatus,
+    ...expectedArgs(expected),
   });
 
   if (error) return failure(error.code);
@@ -120,6 +119,7 @@ function field(formData: FormData, name: string): string {
 export async function rescheduleEvent(
   eventId: string,
   from: "reschedule" | "schedule",
+  expected: ExpectedState,
   _previous: StatusFormState,
   formData: FormData,
 ): Promise<StatusFormState> {
@@ -148,9 +148,7 @@ export async function rescheduleEvent(
   const supabase = await createClient();
   const { error } = await supabase.rpc("reschedule_event_date", {
     p_event_id: eventId,
-    p_expected_published_revision_id: event.publishedRevisionId as string,
-    p_expected_state_version: event.stateVersion,
-    p_expected_status: event.publicStatus,
+    ...expectedArgs(expected),
     p_new_start: checked.start,
     // No end is an unknown end; the generated type does not show that the
     // parameter accepts null.
@@ -173,6 +171,7 @@ export async function rescheduleEvent(
 // the private draft take over the date (reopen_event).
 export async function reopenEvent(
   eventId: string,
+  expected: ExpectedState,
   _previous: StatusFormState,
   formData: FormData,
 ): Promise<StatusFormState> {
@@ -202,9 +201,7 @@ export async function reopenEvent(
   const supabase = await createClient();
   const { error } = await supabase.rpc("reopen_event", {
     p_event_id: eventId,
-    p_expected_published_revision_id: event.publishedRevisionId as string,
-    p_expected_state_version: event.stateVersion,
-    p_expected_status: event.publicStatus,
+    ...expectedArgs(expected),
     p_new_start: checked.start,
     // No end is an unknown end; the generated type does not show that the
     // parameter accepts null.

@@ -1185,6 +1185,7 @@ Deutsch aus den Figma-Frames EVV-01 bis 05 und EVA-01 und 02; Englisch ist Vorsc
 | Z33.stale.line | Lade die Seite neu und prüfe den Stand noch einmal. | Reload the page and check the current state again. | EVV-01 und EVA-01, Fehler, Zeile 2 (kein Frame) |
 | Z33.fail.title | Das Verschieben hat nicht geklappt. | Rescheduling didn’t work. | EVV-02b, Fehler (Z03) |
 | Z33.fail.line | Der bisherige Termin ist weiter öffentlich. Deine Eingaben sind noch da. Versuche es noch einmal. | The current date is still public. Your entries are still here. Try again. | EVV-02b, Fehler, Zeile 2 |
+| Z33.fail.open.line | Der bisherige Termin ist weiter öffentlich. Versuche es noch einmal. | The current date is still public. Try again. | EVV-02, Fehler ohne Eingaben, Zeile 2 (kein Frame; Englisch ist Vorschlag) |
 | Z33.fail.retry | Noch einmal versuchen | Try again | EVV-02b und EVA-01c, Button |
 | Z33.open.title | Verschieben ohne neuen Termin | Postpone without a new date | EVV-02a, Titel |
 | Z33.open.lead | Der bisherige Termin findet nicht statt. Bestätige das erst, wenn es feststeht. | The current date won’t go ahead. Confirm this only once it is certain. | EVV-02a, Einleitung |

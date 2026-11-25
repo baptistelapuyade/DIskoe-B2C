@@ -312,7 +312,7 @@ export function PostponeForm({
         info={
           state.status === "failed" ? (
             <Notice tone="error" title={t(lang, "Z33.fail.title")}>
-              {t(lang, "Z33.fail.line")}
+              {t(lang, "Z33.fail.open.line")}
             </Notice>
           ) : (
             <Notice tone="info" title={t(lang, "Z33.open.notice.title")}>

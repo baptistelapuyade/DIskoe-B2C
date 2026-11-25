@@ -1124,6 +1124,7 @@ export const en: Record<MessageId, string> = {
   "Z33.fail.title": "Rescheduling didn’t work.",
   "Z33.fail.line":
     "The current date is still public. Your entries are still here. Try again.",
+  "Z33.fail.open.line": "The current date is still public. Try again.",
   "Z33.fail.retry": "Try again",
   "Z33.open.title": "Postpone without a new date",
   "Z33.open.lead":

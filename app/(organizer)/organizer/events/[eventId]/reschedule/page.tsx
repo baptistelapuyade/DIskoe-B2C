@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { RescheduleScreen } from "@/components/event/status-screens";
+import { expectedState } from "@/lib/event/expected";
 import { loadLiveEvent } from "@/lib/event/live";
 import { canReschedule } from "@/lib/event/status";
 import { getLang } from "@/lib/i18n/server";
@@ -34,7 +35,12 @@ export default async function RescheduleEventPage({
       lang={lang}
       base={base}
       live={live}
-      action={rescheduleEvent.bind(null, eventId, "reschedule")}
+      action={rescheduleEvent.bind(
+        null,
+        eventId,
+        "reschedule",
+        expectedState(view.event),
+      )}
     />
   );
 }
