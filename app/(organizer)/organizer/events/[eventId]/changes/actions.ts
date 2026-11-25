@@ -11,6 +11,7 @@ import {
 import { ensureEditableEventDraft } from "@/lib/event/draft";
 import { requireOwnedEvent } from "@/lib/event/load";
 import { loadManageView } from "@/lib/event/manage";
+import { getLang } from "@/lib/i18n/server";
 import { copyPublishedEventImage } from "@/lib/event/publish";
 import { valuesToRow } from "@/lib/event/values";
 import { createClient } from "@/lib/supabase/server";
@@ -51,7 +52,7 @@ export async function saveLiveEventChanges(
   const base = basePath(eventId);
   const path = `${base}/changes/edit`;
   const { userId, event } = await requireOwnedEvent(eventId, path);
-  const view = await loadManageView(eventId, path);
+  const view = await loadManageView(eventId, path, await getLang());
 
   // Only a live event is changed here; before that the steps apply.
   if (view.row.state !== "live" && view.row.state !== "changes") {

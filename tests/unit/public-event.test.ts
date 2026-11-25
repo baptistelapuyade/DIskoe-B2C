@@ -65,7 +65,13 @@ const organizer = toPublicProfile(profileRow, MEDIA)!;
 const BEFORE = new Date("2026-10-20T00:00:00Z");
 
 function build(overrides: Partial<PublicEventRow>, now: Date = BEFORE) {
-  const event = toPublicEvent({ ...eventRow, ...overrides }, organizer, MEDIA, now);
+  const event = toPublicEvent(
+    "de",
+    { ...eventRow, ...overrides },
+    organizer,
+    MEDIA,
+    now,
+  );
 
   if (!event) throw new Error("event expected");
 
@@ -100,6 +106,42 @@ describe("public event shape", () => {
     expect(event.offer).toBeNull();
   });
 
+  it("words price and access in the language of the reader", () => {
+    const row: Partial<PublicEventRow> = {
+      price_model: "fixed",
+      price_amount_minor: 1200,
+      access_routes: [
+        { kind: "online_ticket", availability: "sold_out", url: null },
+        { kind: "door" },
+      ],
+    };
+    const en = toPublicEvent(
+      "en",
+      { ...eventRow, ...row },
+      organizer,
+      MEDIA,
+      BEFORE,
+    );
+    const de = toPublicEvent(
+      "de",
+      { ...eventRow, ...row },
+      organizer,
+      MEDIA,
+      BEFORE,
+    );
+
+    expect(en?.priceText).toBe("€12.00");
+    expect(en?.access.map((a) => a.label)).toEqual([
+      "Online ticket sold out",
+      "At the door",
+    ]);
+    expect(de?.priceText).toBe("12,00 €");
+    expect(de?.access.map((a) => a.label)).toEqual([
+      "Online-Ticket ausverkauft",
+      "Abendkasse",
+    ]);
+  });
+
   it("shows nothing for a price that was not asked", () => {
     const event = build({
       price_state: "unanswered",
@@ -112,12 +154,12 @@ describe("public event shape", () => {
   });
 
   it("shows 'Frei' only for a provided free price", () => {
-    expect(build({ price_model: "free", price_amount_minor: null }).priceText).toBe(
-      "Frei",
-    );
-    expect(build({ price_model: "fixed", price_amount_minor: 1200 }).priceText).toBe(
-      "12,00 €",
-    );
+    expect(
+      build({ price_model: "free", price_amount_minor: null }).priceText,
+    ).toBe("Frei");
+    expect(
+      build({ price_model: "fixed", price_amount_minor: 1200 }).priceText,
+    ).toBe("12,00 €");
   });
 
   it("drops a cancelled event's ticket link and keeps its status", () => {
@@ -143,9 +185,21 @@ describe("public event shape", () => {
   });
 
   it("needs an image and a known status", () => {
-    expect(toPublicEvent({ ...eventRow, event_image_path: null }, organizer, MEDIA)).toBeNull();
     expect(
-      toPublicEvent({ ...eventRow, public_status: null }, organizer, MEDIA),
+      toPublicEvent(
+        "de",
+        { ...eventRow, event_image_path: null },
+        organizer,
+        MEDIA,
+      ),
+    ).toBeNull();
+    expect(
+      toPublicEvent(
+        "de",
+        { ...eventRow, public_status: null },
+        organizer,
+        MEDIA,
+      ),
     ).toBeNull();
   });
 
@@ -175,7 +229,9 @@ describe("public event shape", () => {
     const late = new Date("2030-01-01T00:00:00Z");
 
     expect(build({ public_status: "cancelled" }, late).past).toBe(false);
-    expect(build({ public_status: "postponed_undated" }, late).past).toBe(false);
+    expect(build({ public_status: "postponed_undated" }, late).past).toBe(
+      false,
+    );
     expect(build({ public_status: "rescheduled" }, late).past).toBe(true);
     expect(build({}, late).ticketUrl).toBeNull();
     expect(build({}, BEFORE).ticketUrl).toBe("https://tickets.example.test/x");
@@ -203,7 +259,11 @@ describe("event JSON-LD", () => {
 
   it("leaves out the offer for an unknown price", () => {
     const data = eventJsonLd(
-      build({ price_state: "unknown", price_model: null, price_amount_minor: null }),
+      build({
+        price_state: "unknown",
+        price_model: null,
+        price_amount_minor: null,
+      }),
       SITE,
     );
 
@@ -211,7 +271,10 @@ describe("event JSON-LD", () => {
   });
 
   it("leaves out the end date when the end is not known", () => {
-    const data = eventJsonLd(build({ end_state: "unknown", end_at: null }), SITE);
+    const data = eventJsonLd(
+      build({ end_state: "unknown", end_at: null }),
+      SITE,
+    );
 
     expect(data).not.toHaveProperty("endDate");
   });
@@ -224,7 +287,10 @@ describe("event JSON-LD", () => {
   });
 
   it("gives a postponed event no start date", () => {
-    const data = eventJsonLd(build({ public_status: "postponed_undated" }), SITE);
+    const data = eventJsonLd(
+      build({ public_status: "postponed_undated" }),
+      SITE,
+    );
 
     expect(data.eventStatus).toBe("https://schema.org/EventPostponed");
     expect(data).not.toHaveProperty("startDate");

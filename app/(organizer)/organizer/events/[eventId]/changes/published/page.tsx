@@ -17,6 +17,7 @@ export default async function ChangesPublishedPage({
   const view = await loadLiveEventView(
     eventId,
     `${base}/changes/published`,
+    lang,
     "settled",
   );
 

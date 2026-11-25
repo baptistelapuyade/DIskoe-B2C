@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ProfileView } from "@/components/public/profile-view";
+import { getLang } from "@/lib/i18n/server";
 import { profileMetadata } from "@/lib/public/metadata";
 import { getPublicProfileBySlug, listUpcomingEvents } from "@/lib/public/queries";
 
@@ -26,7 +27,7 @@ export default async function ProfilePage({ params }: Props) {
     notFound();
   }
 
-  const events = await listUpcomingEvents(profile);
+  const events = await listUpcomingEvents(await getLang(), profile);
 
   return <ProfileView profile={profile} events={events} />;
 }

@@ -16,6 +16,7 @@ export default async function ChangesDiscardedPage({
   const view = await loadLiveEventView(
     eventId,
     `${base}/changes/discarded`,
+    lang,
     "settled",
   );
 

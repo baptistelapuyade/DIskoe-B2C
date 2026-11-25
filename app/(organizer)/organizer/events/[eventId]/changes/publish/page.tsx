@@ -24,7 +24,7 @@ export default async function PublishEventChangesPage({
   const { d } = await searchParams;
   const base = `/organizer/events/${eventId}`;
   const lang = await getLang();
-  const view = await loadLiveEventView(eventId, `${base}/changes/publish`);
+  const view = await loadLiveEventView(eventId, `${base}/changes/publish`, lang);
   const { draftRevisionId, publishedRevisionId } = view;
 
   if (

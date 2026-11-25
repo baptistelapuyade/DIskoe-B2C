@@ -12,10 +12,11 @@ import type { Lang } from "@/lib/i18n";
 export async function loadLiveEventView(
   eventId: string,
   currentPath: string,
+  lang: Lang,
   allow: "editable" | "settled" = "editable",
 ): Promise<ManageView> {
   const base = `/organizer/events/${eventId}`;
-  const view = await loadManageView(eventId, currentPath);
+  const view = await loadManageView(eventId, currentPath, lang);
 
   if (view.review) redirect(`${base}/review`);
 

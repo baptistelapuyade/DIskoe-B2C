@@ -6,6 +6,7 @@ import {
 } from "@/lib/domain/event-list";
 import { hasEventChanges } from "@/lib/domain/event-changes";
 import { archiveInstant } from "@/lib/domain/time";
+import { DEFAULT_LANG } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/server";
 
 import { eventContentOf } from "./changes";
@@ -81,7 +82,10 @@ export async function loadEventRows(
       published !== null &&
       draft !== null &&
       published.id !== draft.id &&
-      hasEventChanges(eventContentOf(published), eventContentOf(draft));
+      hasEventChanges(
+        eventContentOf(DEFAULT_LANG, published),
+        eventContentOf(DEFAULT_LANG, draft),
+      );
 
     return {
       id: event.id,

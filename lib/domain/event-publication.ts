@@ -18,11 +18,7 @@ import {
   requiredBlock,
   type StoredModules,
 } from "./event-modules";
-import {
-  isEndAfterStart,
-  LOCAL_TIME_MESSAGE,
-  localToInstant,
-} from "./time";
+import { isEndAfterStart, LOCAL_TIME_MESSAGE, localToInstant } from "./time";
 
 // TODO(spec): the length limits are proposals, not product decisions.
 export const EVENT_LIMITS = {
@@ -86,13 +82,6 @@ export const ACCESS_KINDS = [
 ] as const;
 
 export type AccessKind = (typeof ACCESS_KINDS)[number];
-
-export const ACCESS_LABEL: Record<AccessKind, string> = {
-  walk_in: "Ohne Anmeldung",
-  door: "Abendkasse",
-  online_ticket: "Online-Ticket",
-  online_registration: "Online-Anmeldung",
-};
 
 // Only an online ticket can be sold out (Figma EVT-04k). Not stated is not
 // "available": the page then says nothing about it.
@@ -472,11 +461,14 @@ function parseAtmosphere(
   input: EventFormInput,
   errors: EventFieldErrors,
 ): Answer<AtmosphereValue> {
-  const raw = [...new Set(list(input.atmosphereTags).map((tag) => tag.trim()))]
-    .filter((tag) => tag !== "");
+  const raw = [
+    ...new Set(list(input.atmosphereTags).map((tag) => tag.trim())),
+  ].filter((tag) => tag !== "");
   const description = text(input.atmosphereDescription);
 
-  if (raw.some((tag) => !(ATMOSPHERE_TERMS as readonly string[]).includes(tag))) {
+  if (
+    raw.some((tag) => !(ATMOSPHERE_TERMS as readonly string[]).includes(tag))
+  ) {
     errors.atmosphere = "Bitte wähle nur die angebotenen Begriffe.";
     return unanswered();
   }
@@ -685,7 +677,9 @@ export function eventGapCodes(
   if (values.access.state !== "provided") {
     gaps.push("access");
   } else if (
-    values.access.value.some((route) => isOnlineAccess(route.kind) && !route.url)
+    values.access.value.some(
+      (route) => isOnlineAccess(route.kind) && !route.url,
+    )
   ) {
     gaps.push("access_url");
   }

@@ -404,6 +404,7 @@ export const en: Record<MessageId, string> = {
   "Z25.availability.placeholder": "Choose availability",
   "Z25.availability.available": "Available",
   "Z25.availability.soldOut": "Sold out",
+  "Z25.availability.pageLabel": "Online ticket sold out",
   "Z25.availability.soldOut.hint":
     "The event page shows “Online ticket sold out”. The other ways stay visible.",
   "Z25.availability.invalid": "Choose one of the options offered.",

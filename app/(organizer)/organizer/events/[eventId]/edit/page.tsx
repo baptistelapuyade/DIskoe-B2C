@@ -61,7 +61,7 @@ export default async function EditEventPage({
   }
 
   const lang = await getLang();
-  const priceAccess = priceAccessSummary(view.form);
+  const priceAccess = priceAccessSummary(lang, view.form);
   const atmosphere = atmosphereSummary(view.form);
 
   return (

@@ -22,7 +22,7 @@ export default async function DiscardEventChangesPage({
   const { d, failed } = await searchParams;
   const base = `/organizer/events/${eventId}`;
   const lang = await getLang();
-  const view = await loadLiveEventView(eventId, `${base}/changes/discard`);
+  const view = await loadLiveEventView(eventId, `${base}/changes/discard`, lang);
   const draftId = view.draftRevisionId;
 
   if (view.changes.length === 0 || draftId === null) {

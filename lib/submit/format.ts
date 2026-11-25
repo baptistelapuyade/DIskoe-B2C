@@ -3,7 +3,7 @@
 // the organizer. Pure: built from saved values only, never from guesses. An
 // unknown price is never "Free", and nothing is invented for a missing value.
 
-import { parseAmount } from "../domain/money";
+import { formatMoney, parseAmount, priceLabel } from "../domain/money";
 import { MODULE_KEYS, storedToForm } from "../domain/event-modules";
 import type { StoredModules } from "../domain/event-modules";
 import type { AccessKind } from "../domain/event-publication";
@@ -139,14 +139,7 @@ export function placeSummary(v: EventFormValues): string | null {
 
 // "12,00 €" in German, "€12.00" in English. Whole numbers of cents only.
 export function formatAmount(lang: Lang, amountMinor: number): string {
-  const whole = Math.floor(amountMinor / 100)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, lang === "de" ? "." : ",");
-  const fraction = (amountMinor % 100).toString().padStart(2, "0");
-
-  return lang === "de"
-    ? `${whole},${fraction} €`
-    : `€${whole}.${fraction}`;
+  return formatMoney(lang, amountMinor);
 }
 
 // Null while the price is not answered. "Unknown" is an answer and shown as
@@ -183,10 +176,15 @@ export function priceSummary(lang: Lang, v: EventFormValues): string | null {
     case "range": {
       const high = parseAmount(v.priceAmountMax);
 
+      // One spelling everywhere: the symbol stands once ("8,00–15,00 €").
       return low.ok && high.ok
-        ? withFees(
-            `${formatAmount(lang, low.amountMinor)}–${formatAmount(lang, high.amountMinor)}`,
-          )
+        ? priceLabel(lang, {
+            state: "provided",
+            model: "range",
+            amountMinor: low.amountMinor,
+            maxAmountMinor: high.amountMinor,
+            fees: fees ? "included" : null,
+          })
         : null;
     }
     default:
