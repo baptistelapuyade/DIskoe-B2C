@@ -1062,6 +1062,76 @@ Deutsch aus den Figma-Frames EVL-01a bis g, EVM-01a bis f und EVB-07a, b (Dev-St
 | Z30.discarded.notice.line | Dein Profil und deine anderen Events sind unverändert. | Your profile and your other events are unchanged. | EVB-07b, Hinweis (Erfolg), Zeile 2 |
 | Z30.discarded.toList | Zur Eventliste | Back to the event list | EVB-07b, Button |
 
+### Live-Event bearbeiten (Z31, Welle 1 Flow 2 B, Slice 12, Stand 24.11.2026)
+Deutsch aus den Figma-Frames EVB-01a bis EVB-06b (Section „Flow 2 B“); Englisch ist Vorschlag (Review offen). Ohne die Sätze zu Followern (Beschluss Founder 23.11.2026: EVB-03a entfällt, EVB-03b und EVB-05 ohne Follower-Zeile). Die Zeilen der Änderungskarte („Bisher … · Neu …“) kommen aus Z30.change.*; die Haken-Sätze aus Z27.confirm.*; Hinweis „Dein Entwurf hat sich geändert“ aus Z29.changes.stale.*; Fehlertexte für Datum und Uhrzeit aus Z24.time.*. „Nicht im Frame“ heißt: Text für einen Zustand, den Figma nicht zeichnet; er folgt der Form der gezeichneten Texte und ist Vorschlag.
+
+| ID | Deutsch | Englisch | Quelle |
+|---|---|---|---|
+| Z31.edit.eyebrow | Event bearbeiten | Edit event | EVB-01 bis 06, Eyebrow |
+| Z31.edit.notice.title | Änderungen bleiben privat, bis du sie veröffentlichst. | Changes stay private until you publish them. | EVB-01a, Hinweis, Zeile 1 |
+| Z31.edit.notice.line | Gäste sehen bis dahin den bisherigen Stand. | Guests see the current version until then. | EVB-01a, Hinweis, Zeile 2 |
+| Z31.edit.title.label | Titel | Title | EVB-01a, Feldname |
+| Z31.edit.title.placeholder | Titel des Events | Event title | EVB-01b, Platzhalter |
+| Z31.edit.title.missing | Gib dem Event einen Titel. | Give the event a title. | EVB-01b, Fehler am Feld |
+| Z31.edit.description.label | Beschreibung | Description | EVB-01a, Feldname |
+| Z31.edit.description.missing | Beschreibe das Event kurz. | Describe the event briefly. | EVB-01, Fehler am Feld (nicht im Frame) |
+| Z31.edit.date.label | Datum | Date | EVB-01a, Feldname |
+| Z31.edit.start.label | Beginn | Start | EVB-01a, Feldname der Uhrzeit |
+| Z31.edit.place.label | Ort | Place | EVB-01a, Feldname |
+| Z31.edit.place.placeholder | Name des Ortes | Name of the place | EVB-01, Platzhalter (nicht im Frame) |
+| Z31.edit.address.label | Adresse | Address | EVB-01a, Feldname |
+| Z31.edit.address.placeholder | Straße Nr., PLZ Ort | Street no., postal code city | EVB-01, Platzhalter (nicht im Frame) |
+| Z31.edit.address.missing | Gib die Adresse an. | Enter the address. | EVB-01, Fehler am Feld (nicht im Frame) |
+| Z31.edit.address.invalid | Schreibe die Adresse so: Straße Nr., PLZ Ort. Zum Beispiel Kanalstraße 12, 10999 Berlin. | Write the address like this: street no., postal code city. For example Kanalstraße 12, 10999 Berlin. | EVB-01, Fehler am Feld (nicht im Frame, Beschluss Founder 24.11.2026) |
+| Z31.edit.err.title.one | Bitte prüfe eine Angabe. | Please check one entry. | EVB-01b, Hinweis, Zeile 1 |
+| Z31.edit.err.title.many | Bitte prüfe {count} Angaben. | Please check {count} entries. | EVB-01b, Hinweis, Zeile 1 bei mehreren Fehlern (nicht im Frame) |
+| Z31.edit.err.missing.title | Der Titel fehlt noch. | The title is still missing. | EVB-01b, Hinweis, Zeile 2 |
+| Z31.edit.err.missing.description | Die Beschreibung fehlt noch. | The description is still missing. | EVB-01b, Zeile 2 für diese Angabe (nicht im Frame) |
+| Z31.edit.err.missing.startDate | Das Datum fehlt noch. | The date is still missing. | EVB-01b, Zeile 2 für diese Angabe (nicht im Frame) |
+| Z31.edit.err.missing.startTime | Der Beginn fehlt noch. | The start is still missing. | EVB-01b, Zeile 2 für diese Angabe (nicht im Frame) |
+| Z31.edit.err.missing.placeName | Der Ort fehlt noch. | The place is still missing. | EVB-01b, Zeile 2 für diese Angabe (nicht im Frame) |
+| Z31.edit.err.missing.address | Die Adresse fehlt noch. | The address is still missing. | EVB-01b, Zeile 2 für diese Angabe (nicht im Frame) |
+| Z31.edit.err.line.many | Die markierten Felder brauchen eine Korrektur. | The marked fields need a correction. | EVB-01b, Zeile 2 bei mehreren Fehlern oder einer Angabe, die nicht passt (nicht im Frame) |
+| Z31.edit.fail.title | Das Speichern hat nicht geklappt. | Saving didn’t work. | EVB-01c, Hinweis, Zeile 1 |
+| Z31.edit.fail.line | Deine Eingaben sind noch da. Versuche es noch einmal. | Your entries are still here. Try again. | EVB-01c, Hinweis, Zeile 2 |
+| Z31.edit.save | Änderungen speichern | Save changes | EVB-01a bis c, Button |
+| Z31.edit.saving | Speichert … | Saving … | EVB-01, Button während des Sendens (nicht im Frame) |
+| Z31.edit.cancel | Abbrechen | Cancel | EVB-01a bis c, Button |
+| Z31.saved.title | Änderungen gespeichert | Changes saved | EVB-02, Titel |
+| Z31.saved.lead | Die Änderungen sind noch nicht öffentlich. | The changes aren’t public yet. | EVB-02, Einleitung |
+| Z31.saved.notice.title | Gespeichert. | Saved. | EVB-02, Hinweis (Erfolg), Zeile 1 |
+| Z31.saved.notice.line | Gäste sehen noch den bisherigen Stand. | Guests still see the current version. | EVB-02, Hinweis (Erfolg), Zeile 2 |
+| Z31.saved.review | Änderungen prüfen | Review changes | EVB-02, Button |
+| Z31.keepEditing | Weiter bearbeiten | Keep editing | EVB-02, 03b, 03c, Button |
+| Z31.changes.title | Das ändert sich | What changes | EVB-03b, Titel |
+| Z31.changes.lead | Prüfe die Änderungen, bevor sie öffentlich werden. | Check the changes before they go public. | EVB-03b, Einleitung |
+| Z31.changes.card | Änderungen | Changes | EVB-03b, Karte |
+| Z31.changes.next | Weiter zur Bestätigung | Continue to confirmation | EVB-03b, Button |
+| Z31.changes.discard | Änderungen verwerfen | Discard changes | EVB-03b, Button (nicht im Frame; Weg zu EVB-06a) |
+| Z31.none.title | Keine Änderungen | No changes | EVB-03c, Titel |
+| Z31.none.lead | Dein Entwurf entspricht dem öffentlichen Stand. | Your draft matches what is public. | EVB-03c, Einleitung |
+| Z31.none.notice.title | Es gibt nichts zu veröffentlichen. | There is nothing to publish. | EVB-03c, Hinweis, Zeile 1 |
+| Z31.none.notice.line | Ändere etwas, dann kannst du es hier prüfen. | Change something, then you can review it here. | EVB-03c, Hinweis, Zeile 2 |
+| Z31.toManage | Zur Eventverwaltung | Back to event management | EVB-03c, 05, 06b, Button |
+| Z31.publish.title | Änderungen veröffentlichen | Publish changes | EVB-04a bis c, Titel |
+| Z31.publish.lead | Gäste sehen den neuen Stand sofort. | Guests see the new version right away. | EVB-04a bis c, Einleitung |
+| Z31.publish.card | Das wird öffentlich | This goes public | EVB-04a bis c, Karte |
+| Z31.publish.back | Zurück zur Prüfung | Back to review | EVB-04a bis c, Button |
+| Z31.publish.fail.line | Öffentlich ist weiter der bisherige Stand. Deine Änderungen sind gespeichert. Versuche es noch einmal. | The public version is still the current one. Your changes are saved. Try again. | EVB-04c, Hinweis, Zeile 2 (Abweichung vom Frame: dort steht „Deine Bestätigung ist gespeichert“, das stimmt nicht; gespeichert sind die Änderungen) |
+| Z31.done.title | Änderungen sind veröffentlicht | Changes are published | EVB-05, Titel |
+| Z31.done.notice.title | Gäste sehen jetzt den neuen Stand. | Guests now see the new version. | EVB-05, Hinweis (Erfolg), Zeile 1 (Zeile 2 mit Follower-Hinweis entfällt, Beschluss Founder 23.11.2026) |
+| Z31.discard.title | Änderungen verwerfen? | Discard changes? | EVB-06a, Titel |
+| Z31.discard.lead | Deine privaten Änderungen gehen verloren. Öffentlich bleibt der bisherige Stand. | Your private changes will be lost. The public version stays as it is. | EVB-06a, Einleitung |
+| Z31.discard.notice.title | Das lässt sich nicht rückgängig machen. | This can’t be undone. | EVB-06a, Hinweis (Warnung), Zeile 1 |
+| Z31.discard.notice.line | Das Event selbst bleibt live. | The event itself stays live. | EVB-06a, Hinweis (Warnung), Zeile 2 |
+| Z31.discard.yes | Änderungen verwerfen | Discard changes | EVB-06a, Button |
+| Z31.discard.pending | Verwirft … | Discarding … | EVB-06a, Button während des Sendens (nicht im Frame) |
+| Z31.discard.no | Abbrechen | Cancel | EVB-06a, Button |
+| Z31.discard.fail | Das Verwerfen hat nicht geklappt. Versuche es noch einmal. | Discarding didn’t work. Try again. | EVB-06a, Fehler (nicht im Frame) |
+| Z31.discarded.title | Änderungen verworfen | Changes discarded | EVB-06b, Titel |
+| Z31.discarded.notice.title | Die Änderungen sind verworfen. | The changes are discarded. | EVB-06b, Hinweis (Erfolg), Zeile 1 |
+| Z31.discarded.notice.line | Öffentlich ist weiter der bisherige Stand. | The public version is still the current one. | EVB-06b, Hinweis (Erfolg), Zeile 2 |
+
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.
 

@@ -120,7 +120,7 @@ export function ManageScreen({
                 <ActionCard
                   title={t(lang, "Z30.manage.edit.title")}
                   lead={t(lang, "Z30.manage.edit.lead")}
-                  href={`${base}/edit`}
+                  href={`${base}/changes/edit`}
                   primaryButton
                 />
                 <ActionCard
@@ -176,9 +176,17 @@ export function ManageScreen({
               }))}
             />
             <Actions>
-              <Link href={`${base}/publish`} className={primary}>
+              <Link href={`${base}/changes`} className={primary}>
                 {t(lang, "Z30.manage.changes.review")}
               </Link>
+              {data.draftId ? (
+                <Link
+                  href={`${base}/changes/discard?d=${data.draftId}`}
+                  className={secondary}
+                >
+                  {t(lang, "Z31.changes.discard")}
+                </Link>
+              ) : null}
               {/* Not in Figma EVM-01b: a live event with private changes can
                   still be moved or cancelled (the weather does not wait). */}
               <Link href={`${base}/reschedule`} className={secondary}>

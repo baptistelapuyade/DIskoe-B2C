@@ -9,7 +9,7 @@ import { archiveInstant } from "@/lib/domain/time";
 import { createClient } from "@/lib/supabase/server";
 
 import { eventContentOf } from "./changes";
-import { loadEventRevision } from "./draft";
+import { loadEventRevision, loadEventRevisionVersion } from "./draft";
 import { loadPublicationView } from "./publication";
 import { rowToFormValues, type EventFormValues } from "./values";
 
@@ -31,6 +31,16 @@ export type ManageView = {
   // Only a never-published, never-submitted draft can be discarded (EVB-07).
   canDiscard: boolean;
   draftRevisionId: string | null;
+  // The counter of that draft; publish_event refuses a page that shows an
+  // older stand of the same draft.
+  draftVersion: number | null;
+  publishedRevisionId: string | null;
+  // What publish_event expects back (optimistic check against a stale page).
+  stateVersion: number;
+  publicStatus: EventStatus;
+  // The private draft as the form shows it (the live edit screen, EVB-01);
+  // the public stand while there is no draft.
+  draftForm: EventFormValues;
 };
 
 export async function loadManageView(
@@ -46,6 +56,9 @@ export async function loadManageView(
     : null;
   const draftRow = event.draftRevisionId
     ? await loadEventRevision(supabase, event.draftRevisionId)
+    : null;
+  const draftVersion = event.draftRevisionId
+    ? await loadEventRevisionVersion(supabase, event.draftRevisionId)
     : null;
   const published = publishedRow !== null;
   const review: ReviewHint =
@@ -91,5 +104,14 @@ export async function loadManageView(
     canDiscard:
       !published && event.firstApprovedRevisionId === null && review === null,
     draftRevisionId: event.draftRevisionId,
+    draftVersion,
+    publishedRevisionId: event.publishedRevisionId,
+    stateVersion: event.stateVersion,
+    publicStatus: status,
+    draftForm: draftRow
+      ? rowToFormValues(draftRow)
+      : publishedRow
+        ? rowToFormValues(publishedRow)
+        : view.event.form,
   };
 }

@@ -56,6 +56,7 @@ export type Database = {
           city: string | null
           confirmed_at: string | null
           confirmed_by: string | null
+          content_version: number
           country_code: string | null
           created_at: string
           created_by: string
@@ -95,6 +96,7 @@ export type Database = {
           city?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
+          content_version?: number
           country_code?: string | null
           created_at?: string
           created_by: string
@@ -134,6 +136,7 @@ export type Database = {
           city?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
+          content_version?: number
           country_code?: string | null
           created_at?: string
           created_by?: string
@@ -860,6 +863,10 @@ export type Database = {
         Args: { p_kind: string; p_profile_id: string; p_revision_id: string }
         Returns: string
       }
+      discard_event_changes: {
+        Args: { p_event_id: string; p_expected_draft_revision_id: string }
+        Returns: string[]
+      }
       discard_event_draft: {
         Args: { p_event_id: string; p_expected_draft_revision_id: string }
         Returns: string[]
@@ -902,6 +909,7 @@ export type Database = {
           p_confirmed_usage?: boolean
           p_event_id: string
           p_expected_draft_revision_id: string
+          p_expected_draft_version?: number
           p_expected_published_revision_id: string
           p_expected_state_version: number
           p_expected_status: Database["public"]["Enums"]["event_status"]

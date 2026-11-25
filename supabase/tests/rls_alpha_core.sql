@@ -761,7 +761,7 @@ select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 7,
 select tests.expect_error(format($q$select public.publish_event(%L, %L, null, 0, 'rescheduled')$q$, :'e1', :'ev1'),
   'DK001', 'wrong expected status is refused');
 
-select public.publish_event(:'e1', :'ev1', null, 0, 'scheduled');
+select public.publish_event(:'e1', :'ev1', null, 0, 'scheduled', true, true);
 
 select tests.as_superuser();
 select tests.expect_true(format($q$select state_version = 1 and public_status = 'scheduled' and published_revision_id = %L from public.events where id = %L$q$, :'ev1', :'e1'),
@@ -824,7 +824,7 @@ update public.media_uses set public_object_path = 'public/events/' || id where i
 select tests.as_user(:'uid_f');
 select public.approve_first_event(:'e2', :'evs1');
 select tests.as_user(:'uid_a');
-select public.publish_event(:'e2', :'evs1', null, 0, 'scheduled');
+select public.publish_event(:'e2', :'evs1', null, 0, 'scheduled', true, true);
 select tests.ev_insert(:'e2', :'use_e2') as evs_same \gset
 select tests.expect_ok(format('update public.events set draft_revision_id = %L where id = %L', :'evs_same', :'e2'),
   'owner prepares an unchanged draft');
@@ -908,7 +908,7 @@ update public.media_uses set public_object_path = 'public/events/' || id where i
 select tests.as_user(:'uid_f');
 select public.approve_first_event(:'e3', :'evt1');
 select tests.as_user(:'uid_a');
-select public.publish_event(:'e3', :'evt1', null, 0, 'scheduled');
+select public.publish_event(:'e3', :'evt1', null, 0, 'scheduled', true, true);
 select tests.ev_insert(:'e3', :'use_e3', '{"title":"Private Title","description":"Private text."}') as evt2 \gset
 select tests.expect_ok(format('update public.events set draft_revision_id = %L where id = %L', :'evt2', :'e3'),
   'owner has a private draft with other changes');
@@ -939,7 +939,7 @@ select tests.expect_true(format($q$select public_status = 'rescheduled' and stat
   'the date change publishes a new revision and leaves the draft pointer');
 select tests.expect_true(format($q$select title = 'Third Night' and description = 'A first night.' and start_at = '2027-08-01 20:00:00+02' and end_at = '2027-08-02 02:00:00+02' and end_state = 'provided' and confirmed_at is not null and confirmed_by = %L and event_image_use_id = %L from public.event_revisions where id = %L$q$, :'uid_a', :'use_e3', :'evt3'),
   'the new public revision is the live text with the new date, confirmed by the owner');
-select tests.expect_true(format($q$select (to_jsonb(a) - array['id','revision_no','created_at','confirmed_at','confirmed_by','start_at','end_at','end_state']) = (to_jsonb(b) - array['id','revision_no','created_at','confirmed_at','confirmed_by','start_at','end_at','end_state']) from public.event_revisions a, public.event_revisions b where a.id = %L and b.id = %L$q$, :'evt1', :'evt3'),
+select tests.expect_true(format($q$select (to_jsonb(a) - array['id','revision_no','content_version','created_at','confirmed_at','confirmed_by','start_at','end_at','end_state']) = (to_jsonb(b) - array['id','revision_no','content_version','created_at','confirmed_at','confirmed_by','start_at','end_at','end_state']) from public.event_revisions a, public.event_revisions b where a.id = %L and b.id = %L$q$, :'evt1', :'evt3'),
   'the copy changes nothing but the date (every other column equal)');
 select tests.expect_true(format($q$select title = 'Private Title' and description = 'Private text.' and start_at = '2027-08-01 20:00:00+02' and end_at = '2027-08-02 02:00:00+02' from public.event_revisions where id = %L$q$, :'evt2'),
   'the private draft keeps its changes and takes over the date');
@@ -1607,7 +1607,7 @@ insert into tests.expected_col_grants values
   ('authenticated', 'events', 'INSERT', array['organizer_id','slug']),
   ('authenticated', 'events', 'UPDATE', array['draft_revision_id']),
   ('anon',          'events', 'SELECT', array['id','slug','organizer_id','published_revision_id','first_approved_revision_id','publication_state','public_status']),
-  ('authenticated', 'event_revisions', 'SELECT', array['id','event_id','revision_no','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id','confirmed_at','created_at']),
+  ('authenticated', 'event_revisions', 'SELECT', array['id','event_id','revision_no','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id','confirmed_at','created_at','content_version']),
   ('authenticated', 'event_revisions', 'INSERT', array['event_id','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id','created_by']),
   ('authenticated', 'event_revisions', 'UPDATE', array['title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id']),
   ('anon',          'event_revisions', 'SELECT', array['id','title','description','primary_format','start_at','timezone','end_state','end_at','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_routes','atmosphere_tags','atmosphere_description','event_image_use_id','confirmed_at']),
@@ -1713,7 +1713,7 @@ insert into tests.expected_exec values
   ('public', 'submit_first_publication'), ('public', 'approve_first_publication'),
   ('public', 'change_profile_slug'), ('app_private', 'profile_links_valid'),
   ('public', 'withdraw_submission'), ('public', 'discard_profile_draft'),
-  ('public', 'discard_event_draft'),
+  ('public', 'discard_event_draft'), ('public', 'discard_event_changes'),
   ('app_private', 'private_media_unreferenced');
 select tests.expect_count($q$
   select n.nspname, p.proname
@@ -1841,6 +1841,7 @@ insert into tests.expected_objects values
   ('function', 'app_private', 'assign_event_revision_no'),
   ('function', 'app_private', 'guard_profile_revision_frozen'),
   ('function', 'app_private', 'guard_event_revision_frozen'),
+  ('function', 'app_private', 'bump_event_revision_version'),
   ('function', 'app_private', 'audit_append_only'),
   ('function', 'app_private', 'stamp_media_use_confirmation'),
   ('function', 'app_private', 'is_publishable_media_path'),
@@ -1855,7 +1856,7 @@ insert into tests.expected_objects values
   ('function', 'app_private', 'is_submitted'),
   ('function', 'public', 'withdraw_submission'),
   ('function', 'public', 'discard_profile_draft'),
-  ('function', 'public', 'discard_event_draft'),
+  ('function', 'public', 'discard_event_draft'), ('function', 'public', 'discard_event_changes'),
   ('function', 'app_private', 'private_media_unreferenced'),
   ('table', 'public', 'auth_code_attempts'),
   ('function', 'public', 'auth_code_status'),
@@ -2264,6 +2265,104 @@ select tests.expect_true(format($q$select count(*) = 1 from public.publication_a
   'discarding leaves an audit row');
 select tests.expect_count(format('select id from public.events where id = any (%L::uuid[])', array[:'e3'::uuid]), 1,
   'other events are untouched');
+
+-- ===========================================================================
+-- 7i. Changing a live event (Slice 12): declarations and discarding changes
+-- ===========================================================================
+select tests.as_user(:'uid_a');
+select tests.expect_affected(format($q$insert into public.events (organizer_id, slug) values (%L, 'live-change-event')$q$, :'pa'),
+  1, 'A creates an event that will go live');
+select id as el from public.events where slug = 'live-change-event' \gset
+select tests.new_event_image_use(:'el', true) as use_l1 \gset
+select tests.ev_insert(:'el', :'use_l1') as evl1 \gset
+select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'evl1', :'el'),
+  1, 'A selects the first draft');
+select tests.as_superuser();
+update public.media_uses set public_object_path = 'public/events/' || id where id = :'use_l1';
+select tests.as_user(:'uid_f');
+select public.approve_first_event(:'el', :'evl1');
+select tests.as_user(:'uid_a');
+select public.publish_event(:'el', :'evl1', null, 0, 'scheduled', true, true);
+
+-- A change to the live event: a new draft that carries its own picture.
+select tests.new_event_image_use(:'el', true) as use_l2 \gset
+select tests.ev_insert(:'el', :'use_l2', '{"title":"Changed Title"}') as evl2 \gset
+select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'evl2', :'el'),
+  1, 'A selects the changed draft of the live event');
+select a.private_object_path as path_l2
+  from public.media_assets a join public.media_uses u on u.asset_id = a.id
+ where u.id = :'use_l2' \gset
+
+select tests.expect_error(format($q$select public.publish_event(%L, %L, %L, 1, 'scheduled')$q$, :'el', :'evl2', :'evl1'),
+  '22023', 'changes to a live event need both declarations too');
+select tests.expect_error(format($q$select public.publish_event(%L, %L, %L, 1, 'scheduled', true, false)$q$, :'el', :'evl2', :'evl1'),
+  '22023', 'one declaration is not enough for changes either');
+
+select tests.as_user(:'uid_b');
+select tests.expect_error(format('select public.discard_event_changes(%L, %L)', :'el', :'evl2'),
+  '42501', 'B cannot discard A''s changes');
+select tests.as_anon();
+select tests.expect_error(format('select public.discard_event_changes(%L, %L)', :'el', :'evl2'),
+  '42501', 'anon cannot execute discard_event_changes');
+
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.discard_event_changes(%L, %L)', :'el', gen_random_uuid()),
+  'DK001', 'a stale draft expectation is refused');
+select public.discard_event_changes(:'el', :'evl2') as gone_l \gset
+select tests.expect_true(format($q$select %L::text[] = array[%L]$q$, :'gone_l', :'path_l2'),
+  'the function returns the original of the picture that only the draft used');
+select tests.as_superuser();
+select tests.expect_true(format($q$select draft_revision_id = published_revision_id and published_revision_id = %L from public.events where id = %L$q$, :'evl1', :'el'),
+  'the draft pointer is back on the published revision');
+select tests.expect_count(format('select id from public.event_revisions where id = %L', :'evl2'), 0,
+  'the discarded draft row is gone');
+select tests.expect_count(format('select id from public.event_revisions where id = %L', :'evl1'), 1,
+  'the published revision is untouched');
+select tests.expect_count(format('select id from public.media_uses where id = %L', :'use_l2'), 0,
+  'the picture use of the draft is gone');
+select tests.expect_count(format('select id from public.media_uses where id = %L', :'use_l1'), 1,
+  'the picture use of the public version stays');
+select tests.expect_true(format($q$select count(*) = 1 from public.publication_audit where entity_id = %L and revision_id = %L and action = 'discard_draft'$q$, :'el', :'evl2'),
+  'discarding the changes leaves an audit row');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format('select public.discard_event_changes(%L, %L)', :'el', :'evl2'),
+  'DK003', 'discarding twice finds nothing to discard');
+select tests.expect_error(format('select public.discard_event_changes(%L, %L)', :'el', :'evl1'),
+  'DK003', 'the published revision itself cannot be discarded');
+select tests.as_superuser();
+
+-- ===========================================================================
+-- 7j. A page must not publish a stand of the draft that it did not show
+-- ===========================================================================
+select tests.as_user(:'uid_a');
+select tests.new_event_image_use(:'el', true) as use_l3 \gset
+select tests.ev_insert(:'el', :'use_l3', '{"title":"Third Title"}') as evl3 \gset
+select tests.expect_affected(format('update public.events set draft_revision_id = %L where id = %L', :'evl3', :'el'),
+  1, 'A selects a third draft of the live event');
+select content_version as v0 from public.event_revisions where id = :'evl3' \gset
+select tests.expect_true(format('select %s = 1', :'v0'), 'a new revision starts at version 1');
+
+select tests.expect_affected(format($q$update public.event_revisions set description = 'Saved in a second tab' where id = %L$q$, :'evl3'),
+  1, 'the draft is edited in place');
+select content_version as v1 from public.event_revisions where id = :'evl3' \gset
+select tests.expect_true(format('select %s = %s + 1', :'v1', :'v0'), 'a change of content raises the version');
+
+select tests.expect_affected(format($q$update public.event_revisions set description = 'Saved in a second tab' where id = %L$q$, :'evl3'),
+  1, 'saving the same content again');
+select tests.expect_true(format('select content_version = %s from public.event_revisions where id = %L', :'v1', :'evl3'),
+  'the same content leaves the version as it is');
+select tests.expect_error(format($q$update public.event_revisions set content_version = 99 where id = %L$q$, :'evl3'),
+  '42501', 'an owner cannot set the version');
+
+select state_version as sv from public.events where id = :'el' \gset
+select tests.expect_error(format($q$select public.publish_event(%L, %L, %L, %s, 'scheduled', true, true, %s)$q$, :'el', :'evl3', :'evl1', :'sv', :'v0'),
+  'DK001', 'a page that showed the older stand of the draft publishes nothing');
+select tests.expect_true(format('select published_revision_id = %L from public.events where id = %L', :'evl1', :'el'),
+  'the public revision did not change');
+select public.publish_event(:'el', :'evl3', :'evl1', :'sv', 'scheduled', true, true, :'v1');
+select tests.expect_true(format('select published_revision_id = %L from public.events where id = %L', :'evl3', :'el'),
+  'the page that showed the current stand publishes it');
+select tests.as_superuser();
 
 -- ===========================================================================
 -- Summary

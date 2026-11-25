@@ -1,6 +1,7 @@
 import { EventMoreScreen } from "@/components/event/more-screen";
 import { getLang } from "@/lib/i18n/server";
 import { loadOwnerEventView } from "@/lib/event/load";
+import { redirectLiveEvent } from "@/lib/event/live-edit";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,8 @@ export default async function EditEventMorePage({
   const base = `/organizer/events/${eventId}`;
   const lang = await getLang();
   const view = await loadOwnerEventView(eventId, `${base}/edit/more`);
+
+  redirectLiveEvent(view.event, eventId);
 
   return (
     <EventMoreScreen

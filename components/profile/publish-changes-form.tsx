@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { startTransition, useActionState, useState } from "react";
 
@@ -7,7 +8,7 @@ import type { PublishState } from "@/app/(organizer)/organizer/profiles/[profile
 import { buttonClass } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Notice } from "@/components/ui/notice";
-import { t, type Lang } from "@/lib/i18n";
+import { t, type Lang, type MessageId } from "@/lib/i18n";
 
 type Action = (
   previous: PublishState,
@@ -15,6 +16,11 @@ type Action = (
 ) => Promise<PublishState>;
 
 const INITIAL: PublishState = { status: "idle" };
+
+const DEFAULT_TEXTS = {
+  failLine: "Z29.publish.fail.line",
+  back: "Z29.publish.back",
+} as const;
 
 // The two confirmations before changes to a live profile go public (Figma
 // LPA-04a to 04c). The wording is the one of the first submission
@@ -25,10 +31,20 @@ export function PublishChangesForm({
   lang,
   action,
   backHref,
+  texts = DEFAULT_TEXTS,
+  summary = null,
+  dense = false,
 }: {
   lang: Lang;
   action: Action;
   backHref: string;
+  // The two sentences that differ between profile and event.
+  texts?: { failLine: MessageId; back: MessageId };
+  // What goes public, shown between the notices and the two ticks (event
+  // frames EVB-04a to 04c: the notices come first, then the card).
+  summary?: ReactNode;
+  // The event frames' tighter rows (44 px, 12 px apart).
+  dense?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, INITIAL);
   const [rights, setRights] = useState(false);
@@ -54,40 +70,47 @@ export function PublishChangesForm({
       ) : null}
       {state.status === "failed" ? (
         <Notice tone="error" title={t(lang, "Z29.publish.fail.title")}>
-          {t(lang, "Z29.publish.fail.line")}
+          {t(lang, texts.failLine)}
         </Notice>
       ) : null}
       <input type="hidden" name="rights" value={rights ? "on" : ""} />
       <input type="hidden" name="usage" value={usage ? "on" : ""} />
-      <fieldset className="flex flex-col">
-        <legend className="sr-only">{t(lang, "Z27.confirm.heading")}</legend>
-        <div className="flex flex-col gap-4">
-          <div className="flex min-h-12 items-center gap-3">
-            <Checkbox
-              id="publish-rights"
-              checked={rights}
-              onCheckedChange={(value) => setRights(value === true)}
-              aria-invalid={missing !== null && !rights}
-              className="shrink-0"
-            />
-            <label htmlFor="publish-rights" className="text-base leading-6">
-              {t(lang, "Z27.confirm.rights")}
-            </label>
+      <div className="flex flex-col gap-6">
+        {summary}
+        <fieldset className="flex flex-col">
+          <legend className="sr-only">{t(lang, "Z27.confirm.heading")}</legend>
+          <div className={`flex flex-col ${dense ? "gap-3" : "gap-4"}`}>
+            <div
+              className={`flex items-center gap-3 ${dense ? "min-h-11" : "min-h-12"}`}
+            >
+              <Checkbox
+                id="publish-rights"
+                checked={rights}
+                onCheckedChange={(value) => setRights(value === true)}
+                aria-invalid={missing !== null && !rights}
+                className="shrink-0"
+              />
+              <label htmlFor="publish-rights" className="text-base leading-6">
+                {t(lang, "Z27.confirm.rights")}
+              </label>
+            </div>
+            <div
+              className={`flex items-center gap-3 ${dense ? "min-h-11" : "min-h-12"}`}
+            >
+              <Checkbox
+                id="publish-usage"
+                checked={usage}
+                onCheckedChange={(value) => setUsage(value === true)}
+                aria-invalid={missing !== null && !usage}
+                className="shrink-0"
+              />
+              <label htmlFor="publish-usage" className="text-base leading-6">
+                {t(lang, "Z27.confirm.usage")}
+              </label>
+            </div>
           </div>
-          <div className="flex min-h-12 items-center gap-3">
-            <Checkbox
-              id="publish-usage"
-              checked={usage}
-              onCheckedChange={(value) => setUsage(value === true)}
-              aria-invalid={missing !== null && !usage}
-              className="shrink-0"
-            />
-            <label htmlFor="publish-usage" className="text-base leading-6">
-              {t(lang, "Z27.confirm.usage")}
-            </label>
-          </div>
-        </div>
-      </fieldset>
+        </fieldset>
+      </div>
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <button
           type="submit"
@@ -107,7 +130,7 @@ export function PublishChangesForm({
           href={backHref}
           className={buttonClass("ghostLg", "w-full md:w-auto")}
         >
-          {t(lang, "Z29.publish.back")}
+          {t(lang, texts.back)}
         </Link>
       </div>
     </form>

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/page-shell";
 import { firstOpenStep } from "@/lib/domain/event-steps";
 import { loadOwnerEventView } from "@/lib/event/load";
+import { redirectLiveEvent } from "@/lib/event/live-edit";
 import { atmosphereSummary, priceAccessSummary } from "@/lib/event/summary";
 
 import { t } from "@/lib/i18n";
@@ -30,6 +31,7 @@ export default async function EditEventPage({
     eventId,
     `/organizer/events/${eventId}/edit`,
   );
+  redirectLiveEvent(view.event, eventId);
   const base = `/organizer/events/${eventId}`;
   const { form } = view;
   const progress = {
