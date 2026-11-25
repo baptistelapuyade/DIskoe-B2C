@@ -1162,7 +1162,7 @@ Deutsch aus den Figma-Frames EVM-02a/b; Englisch ist Vorschlag. Beschluss Founde
 | Z32.copied.list | Zur Eventliste | Go to the event list | EVM-02b, Button |
 
 ### Verschieben und Absagen (Z33, Welle 1 Flow 2 C, PR A, Stand 25.11.2026)
-Deutsch aus den Figma-Frames EVV-01 bis 05 und EVA-01 und 02; Englisch ist Vorschlag. Beschluss Founder 25.11.2026: In Welle 1 entfallen alle Follower-Teile der Frames (Kontrollkästchen „Hinweis an Follower sofort senden“, Follower-Sätze in den Hinweisen, MAIL-08a/c/d), weil es noch keine Follower gibt; ebenso der Satz zur Ticket-Erstattung. Die Felder „Beginn“, „Ende am“ und „Ende um“ sind getrennt, das Kontrollkästchen „Das Ende steht noch nicht fest“ entfällt (leeres Ende = Ende unbekannt). Fehler- und Ladetexte ohne Frame sind als „kein Frame“ markiert. Der Wiedereröffnen-Teil (EVV-06) folgt mit PR B.
+Deutsch aus den Figma-Frames EVV-01 bis 05 und EVA-01 und 02; Englisch ist Vorschlag. Beschluss Founder 25.11.2026: In Welle 1 entfallen alle Follower-Teile der Frames (Kontrollkästchen „Hinweis an Follower sofort senden“, Follower-Sätze in den Hinweisen, MAIL-08a/c/d), weil es noch keine Follower gibt; ebenso der Satz zur Ticket-Erstattung. Die Felder „Beginn“, „Ende am“ und „Ende um“ sind getrennt, das Kontrollkästchen „Das Ende steht noch nicht fest“ entfällt (leeres Ende = Ende unbekannt). Fehler- und Ladetexte ohne Frame sind als „kein Frame“ markiert. Der Wiedereröffnen-Teil (EVV-06 und der Button „Neuen Termin setzen“ in EVA-02) ist PR B (Stand 25.11.2026).
 
 | ID | Deutsch | Englisch | Quelle |
 |---|---|---|---|
@@ -1228,6 +1228,18 @@ Deutsch aus den Figma-Frames EVV-01 bis 05 und EVA-01 und 02; Englisch ist Vorsc
 | Z33.cancelled.notice.title | Gäste sehen die Absage. | Guests see the cancellation. | EVA-02, Hinweis (Erfolg), Zeile 1 |
 | Z33.cancelled.notice.line | Ticketaktionen sind entfernt. | Ticket actions are removed. | EVA-02, Hinweis (Erfolg), Zeile 2; Follower-Satz in Welle 1 entfällt (Founder 25.11.2026) |
 | Z33.cancelled.private | Deine privaten Änderungen am Event wurden nicht veröffentlicht. | Your private changes to the event were not published. | EVA-02, Absatz unter dem Hinweis; nur wenn es private Änderungen gibt |
+| Z33.reopen.title | Event mit neuem Termin wieder öffnen | Reopen event with a new date | EVV-06a, Titel |
+| Z33.reopen.lead | Das Event ist abgesagt. Mit einem neuen Termin ist es wieder öffentlich. | The event is cancelled. With a new date it is public again. | EVV-06a, Einleitung |
+| Z33.reopen.notice | Gäste sehen dann keine Absage mehr. | Guests will then no longer see the cancellation. | EVV-06a, Hinweis (Warnung); Follower-Zeile in Welle 1 entfällt (Founder 25.11.2026) |
+| Z33.row.state | Stand | Status | EVV-06a, Zeile |
+| Z33.reopen.yes | Event wieder öffnen | Reopen event | EVV-06a, Button |
+| Z33.reopen.pending | Öffnet … | Reopening … | EVV-06a, Button während des Öffnens (kein Frame) |
+| Z33.reopen.fail.title | Das Öffnen hat nicht geklappt. | Reopening didn’t work. | EVV-06a, Fehler (kein Frame, Muster Z03) |
+| Z33.reopen.fail.line | Die Absage ist weiter öffentlich. Deine Eingaben sind noch da. Versuche es noch einmal. | The cancellation is still public. Your entries are still here. Try again. | EVV-06a, Fehler, Zeile 2 (kein Frame) |
+| Z33.reopened.title | Das Event ist wieder öffentlich | The event is public again | EVV-06b, Titel |
+| Z33.reopened.notice.title | Die Absage ist aufgehoben. Gäste sehen den neuen Termin. | The cancellation is lifted. Guests now see the new date. | EVV-06b, Hinweis (Erfolg), Zeile 1; Follower-Satz in Welle 1 entfällt (Founder 25.11.2026) |
+| Z33.reopened.notice.line | Der Eventlink ist gleich geblieben. | The event link hasn’t changed. | EVV-06b, Hinweis (Erfolg), Zeile 2 |
+| Z33.cancelled.newDate | Neuen Termin setzen | Set a new date | EVA-02, Button (zweitrangig) |
 
 ## Mails MAIL-01 bis MAIL-14 (Deutsch und Englisch, Vorschlag 11.11.2026)
 **Status:** Der deutsche Wortlaut ist aus den Figma-Frames übernommen (Stand 11.11.2026, Seiten 20, 30, 50). Die englische Fassung ist ein **Vorschlag von Claude** und braucht die Durchsicht des Founders. Gleiche IDs in beiden Sprachen; die Mail kommt in der gespeicherten Sprache des Empfängers, ohne Wert in Englisch (siehe „Sprachen“). Platzhalter in `{…}`. **Vorschautext:** in Figma nicht gezeichnet; Vorschlag: die erste Textzeile nach der Anrede, höchstens 90 Zeichen. **Datums- und Zeitformat** folgt der Mailsprache (DE „Sa, 14.11.2026 · 20:00 Uhr“, EN „Sat, 14 Nov 2026 · 8:00 PM“); die Zeitzone ist die des Events (`Europe/Berlin`). Nach dem Kopf folgt in Organizer-Mails „Hallo,“ / „Hello,“, in Mails an Gäste nur dort, wo der Frame es zeigt.

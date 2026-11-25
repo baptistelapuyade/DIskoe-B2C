@@ -8,7 +8,12 @@ import {
   type RescheduleErrors,
 } from "@/lib/domain/event-reschedule";
 import { loadLiveEvent } from "@/lib/event/live";
-import { canCancel, canPostpone, canReschedule } from "@/lib/event/status";
+import {
+  canCancel,
+  canPostpone,
+  canReopen,
+  canReschedule,
+} from "@/lib/event/status";
 import { localToInstant } from "@/lib/domain/time";
 import { createClient } from "@/lib/supabase/server";
 
@@ -161,4 +166,58 @@ export async function rescheduleEvent(
   }
 
   done(eventId, from === "schedule" ? "scheduled" : "rescheduled");
+}
+
+// EVV-06. A cancelled event is reopened with a new date: the database lifts
+// the cancellation, builds the new public revision from the live one and lets
+// the private draft take over the date (reopen_event).
+export async function reopenEvent(
+  eventId: string,
+  _previous: StatusFormState,
+  formData: FormData,
+): Promise<StatusFormState> {
+  const { view } = await loadLiveEvent(
+    eventId,
+    `/organizer/events/${eventId}/reopen`,
+  );
+  const event = view.event;
+
+  if (!canReopen(event.publicStatus)) redirect(managePath(eventId));
+
+  const checked = checkReschedule(
+    {
+      startDate: field(formData, "startDate"),
+      startTime: field(formData, "startTime"),
+      endDate: field(formData, "endDate"),
+      endTime: field(formData, "endTime"),
+    },
+    // A cancelled event may come back on the date it had (cancelled by
+    // mistake); only a start in the past is refused.
+    null,
+    new Date(),
+  );
+
+  if (!checked.ok) return { status: "invalid", errors: checked.errors };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("reopen_event", {
+    p_event_id: eventId,
+    p_expected_published_revision_id: event.publishedRevisionId as string,
+    p_expected_state_version: event.stateVersion,
+    p_expected_status: event.publicStatus,
+    p_new_start: checked.start,
+    // No end is an unknown end; the generated type does not show that the
+    // parameter accepts null.
+    p_new_end: checked.end as string,
+  });
+
+  if (error) {
+    if (error.code === "22023") {
+      return { status: "invalid", errors: { endDate: "endBeforeStart" } };
+    }
+
+    return failure(error.code);
+  }
+
+  done(eventId, "reopened");
 }

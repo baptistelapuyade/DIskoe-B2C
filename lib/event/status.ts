@@ -25,3 +25,8 @@ export function canPostpone(status: EventStatus): boolean {
 export function canReschedule(status: EventStatus): boolean {
   return status !== "cancelled";
 }
+
+// A cancelled event is reopened with a new date (reopen_event).
+export function canReopen(status: EventStatus): boolean {
+  return status === "cancelled";
+}

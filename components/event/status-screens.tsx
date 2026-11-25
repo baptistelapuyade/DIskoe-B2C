@@ -159,6 +159,52 @@ export function ScheduleScreen({
   );
 }
 
+// EVV-06a: a cancelled event comes back with a new date.
+export function ReopenScreen({
+  lang,
+  base,
+  live,
+  action,
+}: {
+  lang: Lang;
+  base: string;
+  live: EventFormValues;
+  action: Action;
+}) {
+  return (
+    <Frame
+      lang={lang}
+      base={base}
+      title={t(lang, "Z33.reopen.title")}
+      lead={t(lang, "Z33.reopen.lead")}
+    >
+      <RescheduleForm
+        lang={lang}
+        action={action}
+        mode="reopen"
+        card={
+          <SummaryCard
+            stacked
+            heading={t(lang, "Z33.card.before")}
+            rows={[
+              {
+                key: "state",
+                label: t(lang, "Z33.row.state"),
+                text: t(lang, "Z30.state.cancelled"),
+              },
+              {
+                key: "current",
+                label: t(lang, "Z33.row.current"),
+                text: currentWhen(lang, live),
+              },
+            ]}
+          />
+        }
+      />
+    </Frame>
+  );
+}
+
 // EVA-01a, 01b and 01c
 export function CancelScreen({
   lang,
@@ -210,7 +256,7 @@ export function CancelScreen({
   );
 }
 
-type Result = "moved" | "scheduled" | "postponed" | "cancelled";
+type Result = "moved" | "scheduled" | "postponed" | "cancelled" | "reopened";
 
 const RESULT = {
   moved: {
@@ -228,6 +274,10 @@ const RESULT = {
   cancelled: {
     title: "Z33.cancelled.title",
     notice: ["Z33.cancelled.notice.title", "Z33.cancelled.notice.line"],
+  },
+  reopened: {
+    title: "Z33.reopened.title",
+    notice: ["Z33.reopened.notice.title", "Z33.reopened.notice.line"],
   },
 } as const;
 
@@ -298,7 +348,17 @@ export function StatusResultScreen({
           ) : (
             <>
               {toManage}
-              {result === "cancelled" ? null : (
+              {result === "cancelled" ? (
+                <Link
+                  href={`${base}/reopen`}
+                  className={buttonClass(
+                    "secondary",
+                    "w-full shadow-sm md:w-auto",
+                  )}
+                >
+                  {t(lang, "Z33.cancelled.newDate")}
+                </Link>
+              ) : result === "reopened" ? null : (
                 <Link
                   href={publicPath}
                   className={buttonClass(

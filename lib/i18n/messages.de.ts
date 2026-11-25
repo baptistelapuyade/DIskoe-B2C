@@ -1210,6 +1210,21 @@ export const de = {
   "Z33.cancelled.notice.line": "Ticketaktionen sind entfernt.",
   "Z33.cancelled.private":
     "Deine privaten Änderungen am Event wurden nicht veröffentlicht.",
+  "Z33.reopen.title": "Event mit neuem Termin wieder öffnen",
+  "Z33.reopen.lead":
+    "Das Event ist abgesagt. Mit einem neuen Termin ist es wieder öffentlich.",
+  "Z33.reopen.notice": "Gäste sehen dann keine Absage mehr.",
+  "Z33.row.state": "Stand",
+  "Z33.reopen.yes": "Event wieder öffnen",
+  "Z33.reopen.pending": "Öffnet …",
+  "Z33.reopen.fail.title": "Das Öffnen hat nicht geklappt.",
+  "Z33.reopen.fail.line":
+    "Die Absage ist weiter öffentlich. Deine Eingaben sind noch da. Versuche es noch einmal.",
+  "Z33.reopened.title": "Das Event ist wieder öffentlich",
+  "Z33.reopened.notice.title":
+    "Die Absage ist aufgehoben. Gäste sehen den neuen Termin.",
+  "Z33.reopened.notice.line": "Der Eventlink ist gleich geblieben.",
+  "Z33.cancelled.newDate": "Neuen Termin setzen",
 } as const;
 
 export type MessageId = keyof typeof de;

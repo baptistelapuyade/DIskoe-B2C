@@ -370,6 +370,31 @@ test.describe("cancel and reschedule a live event", () => {
     // The cancel page of a cancelled event leads back.
     await page.goto(`/organizer/events/${cancel.eventId}/cancel`);
     await expect(page).toHaveURL(new RegExp(`/events/${cancel.eventId}/manage$`));
+
+    // EVV-06: the cancelled event comes back with a new date. A start in the
+    // past is refused, the private change stays private.
+    await page.getByRole("link", { name: "Neuen Termin setzen" }).first().click();
+    await expect(page).toHaveURL(new RegExp(`/events/${cancel.eventId}/reopen$`), SLOW);
+    await expect(page.getByRole("heading", { name: "Event mit neuem Termin wieder öffnen" })).toBeVisible(SLOW);
+    await page.getByLabel("Neues Datum").fill("01.01.2025");
+    await page.getByLabel("Beginn").fill("20:00");
+    await page.getByRole("button", { name: "Event wieder öffnen" }).click();
+    await expect(page.getByText("Der Termin liegt in der Vergangenheit.")).toBeVisible(SLOW);
+    expect(sql(`select public_status from public.events where id = '${cancel.eventId}'`)).toBe("cancelled");
+
+    await page.getByLabel("Neues Datum").fill("10.08.2027");
+    await page.getByLabel("Beginn").fill("20:00");
+    await page.getByRole("button", { name: "Event wieder öffnen" }).click();
+    await expect(page).toHaveURL(new RegExp(`/events/${cancel.eventId}/reopened$`), SLOW);
+    await expect(page.getByRole("heading", { name: "Das Event ist wieder öffentlich" })).toBeVisible(SLOW);
+
+    expect(sql(`select public_status from public.events where id = '${cancel.eventId}'`)).toBe("rescheduled");
+    expect(sql(`select published_revision_id from public.events where id = '${cancel.eventId}'`)).not.toBe(publishedBefore);
+    const reopened = await publicEvent(CANCEL_TITLE);
+    expect(reopened.data?.public_status).toBe("rescheduled");
+    // 20:00 Berlin summer time is 18:00 UTC.
+    expect(new Date(reopened.data!.start_at!).toISOString()).toBe("2027-08-10T18:00:00.000Z");
+    expect(reopened.data?.description).not.toContain("Private Korrektur");
     await context.close();
   });
 
