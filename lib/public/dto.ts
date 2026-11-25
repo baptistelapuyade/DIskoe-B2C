@@ -8,13 +8,18 @@
 import type { Database, Json } from "../db/types";
 import {
   ACCESS_KINDS,
-  ACCESS_LABEL,
   type AccessKind,
   type PrimaryFormat,
 } from "../domain/event-publication";
 import { priceLabel, type PriceView } from "../domain/money";
+import { ACCESS_ID } from "../event/labels";
+import { t, type Lang } from "../i18n";
 import { linkLabel, readCrop, type Crop } from "../domain/profile-publication";
-import { archiveInstant, describeEventTime, formatLocalDate } from "../domain/time";
+import {
+  archiveInstant,
+  describeEventTime,
+  formatLocalDate,
+} from "../domain/time";
 
 type Views = Database["public"]["Views"];
 export type PublicEventRow = Views["public_events"]["Row"];
@@ -32,7 +37,8 @@ export const PUBLIC_FORMAT_LABEL: Record<PrimaryFormat, string> = {
   screening: "Filmabend / Screening",
 };
 
-export type PublicStatus = "scheduled" | "rescheduled" | "postponed_undated" | "cancelled";
+export type PublicStatus =
+  "scheduled" | "rescheduled" | "postponed_undated" | "cancelled";
 
 export type PublicProfile = {
   id: string;
@@ -94,7 +100,10 @@ export type PublicEvent = {
   organizer: PublicProfile;
 };
 
-export function publicImageUrl(base: string, path: string | null): string | null {
+export function publicImageUrl(
+  base: string,
+  path: string | null,
+): string | null {
   if (!path) return null;
 
   const root = base.replace(/\/+$/, "");
@@ -146,13 +155,15 @@ export function safeUrl(value: string | null | undefined): string | null {
   try {
     const url = new URL(value);
 
-    return url.protocol === "https:" || url.protocol === "http:" ? url.href : null;
+    return url.protocol === "https:" || url.protocol === "http:"
+      ? url.href
+      : null;
   } catch {
     return null;
   }
 }
 
-function accessFrom(json: Json | null): PublicAccess[] {
+function accessFrom(lang: Lang, json: Json | null): PublicAccess[] {
   if (!Array.isArray(json)) return [];
 
   const routes: PublicAccess[] = [];
@@ -169,11 +180,15 @@ function accessFrom(json: Json | null): PublicAccess[] {
 
       // Only an online ticket can be sold out. Other routes stay as they are
       // (P09: the other ways in remain visible).
-      const soldOut = kind === "online_ticket" && item.availability === "sold_out";
+      const soldOut =
+        kind === "online_ticket" && item.availability === "sold_out";
 
       routes.push({
         kind,
-        label: soldOut ? `${ACCESS_LABEL[kind]} ausverkauft` : ACCESS_LABEL[kind],
+        label: t(
+          lang,
+          soldOut ? "Z25.availability.pageLabel" : ACCESS_ID[kind],
+        ),
         url: typeof item.url === "string" ? safeUrl(item.url) : null,
         soldOut,
       });
@@ -245,7 +260,10 @@ function offerFrom(view: PriceView): PublicEvent["offer"] {
   if (view.model === "free") return { amount: "0", currency: "EUR" };
 
   if (view.model === "fixed") {
-    return { amount: decimal(view.amountMinor), currency: view.currency ?? "EUR" };
+    return {
+      amount: decimal(view.amountMinor),
+      currency: view.currency ?? "EUR",
+    };
   }
 
   if (view.model === "range") {
@@ -274,6 +292,7 @@ const STATUSES: readonly string[] = [
 ];
 
 export function toPublicEvent(
+  lang: Lang,
   row: PublicEventRow,
   organizer: PublicProfile,
   mediaBase: string,
@@ -312,10 +331,10 @@ export function toPublicEvent(
     now.getTime() >= new Date(archiveAt).getTime();
   const hasDate = status !== "postponed_undated";
   const view = priceView(row);
-  const access = accessFrom(row.access_routes);
+  const access = accessFrom(lang, row.access_routes);
   const town = [row.postal_code, row.city].filter(Boolean).join(" ");
-  const addressLines = [row.address_line, town].filter(
-    (line): line is string => Boolean(line),
+  const addressLines = [row.address_line, town].filter((line): line is string =>
+    Boolean(line),
   );
   // A sold-out ticket link is not offered as the way in.
   const ticket = access.find((route) => route.url !== null && !route.soldOut);
@@ -345,7 +364,7 @@ export function toPublicEvent(
         : null,
     placeName: row.place_name || null,
     addressLines,
-    priceText: priceLabel(view),
+    priceText: priceLabel(lang, view),
     offer: offerFrom(view),
     access,
     ticketUrl: status === "cancelled" || past ? null : (ticket?.url ?? null),

@@ -1,18 +1,20 @@
 // Short texts for the summary cards of the event editor. Pure: built from the
 // saved form values, never from guesses. An unanswered price is not "Frei".
 
-import { ACCESS_LABEL, type AccessKind } from "../domain/event-publication";
+import type { AccessKind } from "../domain/event-publication";
 import { parseAmount, priceLabel } from "../domain/money";
 import { formatLocalDate } from "../domain/time";
+import { t, type Lang } from "../i18n";
+import { ACCESS_ID } from "./labels";
 import type { EventFormValues } from "./values";
 
-export function priceText(v: EventFormValues): string | null {
+export function priceText(lang: Lang, v: EventFormValues): string | null {
   if (v.priceModel === "free")
-    return priceLabel({ state: "provided", model: "free" });
+    return priceLabel(lang, { state: "provided", model: "free" });
   if (v.priceModel === "donation") {
-    return priceLabel({ state: "provided", model: "donation" });
+    return priceLabel(lang, { state: "provided", model: "donation" });
   }
-  if (v.priceModel === "unknown") return priceLabel({ state: "unknown" });
+  if (v.priceModel === "unknown") return priceLabel(lang, { state: "unknown" });
 
   const fees = v.priceFees === "included" ? "included" : null;
   const low = parseAmount(v.priceAmount);
@@ -23,7 +25,7 @@ export function priceText(v: EventFormValues): string | null {
     const high = parseAmount(v.priceAmountMax);
 
     return high.ok
-      ? priceLabel({
+      ? priceLabel(lang, {
           state: "provided",
           model: "range",
           amountMinor: low.amountMinor,
@@ -38,7 +40,7 @@ export function priceText(v: EventFormValues): string | null {
     v.priceModel === "from_price" ||
     v.priceModel === "min_donation"
   ) {
-    return priceLabel({
+    return priceLabel(lang, {
       state: "provided",
       model: v.priceModel,
       amountMinor: low.amountMinor,
@@ -49,17 +51,20 @@ export function priceText(v: EventFormValues): string | null {
   return null;
 }
 
-export function accessText(v: EventFormValues): string | null {
+export function accessText(lang: Lang, v: EventFormValues): string | null {
   const labels = v.accessKinds
-    .filter((kind): kind is AccessKind => kind in ACCESS_LABEL)
-    .map((kind) => ACCESS_LABEL[kind]);
+    .filter((kind): kind is AccessKind => kind in ACCESS_ID)
+    .map((kind) => t(lang, ACCESS_ID[kind]));
 
   return labels.length > 0 ? labels.join(" · ") : null;
 }
 
 // "Preis und Zugang" summary line, or null while nothing is answered.
-export function priceAccessSummary(v: EventFormValues): string | null {
-  const parts = [priceText(v), accessText(v)].filter(
+export function priceAccessSummary(
+  lang: Lang,
+  v: EventFormValues,
+): string | null {
+  const parts = [priceText(lang, v), accessText(lang, v)].filter(
     (part): part is string => part !== null,
   );
 

@@ -33,7 +33,7 @@ export default async function EventManagePage({
   const { eventId } = await params;
   const base = `/organizer/events/${eventId}`;
   const lang = await getLang();
-  const view = await loadManageView(eventId, `${base}/manage`);
+  const view = await loadManageView(eventId, `${base}/manage`, lang);
 
   // View-only while the profile is in review.
   if (view.review) redirect(`${base}/review`);

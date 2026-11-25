@@ -21,7 +21,7 @@ export default async function DiscardEventPage({
   const { failed } = await searchParams;
   const base = `/organizer/events/${eventId}`;
   const lang = await getLang();
-  const view = await loadManageView(eventId, `${base}/discard`);
+  const view = await loadManageView(eventId, `${base}/discard`, lang);
 
   if (!view.canDiscard || view.draftRevisionId === null) {
     redirect(`${base}/manage`);

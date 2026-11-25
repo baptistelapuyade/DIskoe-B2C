@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { EventView } from "@/components/public/event-view";
 import { eventJsonLd, serializeJsonLd } from "@/lib/public/json-ld";
 import { eventMetadata } from "@/lib/public/metadata";
+import { getLang } from "@/lib/i18n/server";
 import { getPublicEvent } from "@/lib/public/queries";
 import { siteUrl } from "@/lib/public/site";
 
@@ -15,14 +16,14 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const event = await getPublicEvent(slug);
+  const event = await getPublicEvent(await getLang(), slug);
 
   return event ? eventMetadata(event) : { title: "Nicht gefunden" };
 }
 
 export default async function EventPage({ params }: Props) {
   const { slug } = await params;
-  const event = await getPublicEvent(slug);
+  const event = await getPublicEvent(await getLang(), slug);
 
   if (!event) {
     notFound();

@@ -31,7 +31,15 @@ describe("parsePriceInput", () => {
   });
 
   it("rejects unclear, negative and too large input", () => {
-    for (const bad of ["", "abc", "-5", "1.234", "1,234", "12,505", "1000000"]) {
+    for (const bad of [
+      "",
+      "abc",
+      "-5",
+      "1.234",
+      "1,234",
+      "12,505",
+      "1000000",
+    ]) {
       expect(parsePriceInput(bad).ok).toBe(false);
     }
 
@@ -41,38 +49,42 @@ describe("parsePriceInput", () => {
 
 describe("formatMoney", () => {
   it("formats cents without floats", () => {
-    expect(formatMoney(1250)).toBe("12,50 €");
-    expect(formatMoney(5)).toBe("0,05 €");
-    expect(formatMoney(123456)).toBe("1.234,56 €");
+    expect(formatMoney("de", 1250)).toBe("12,50 €");
+    expect(formatMoney("de", 5)).toBe("0,05 €");
+    expect(formatMoney("de", 123456)).toBe("1.234,56 €");
   });
 
   it("refuses non-integers and negative amounts", () => {
-    expect(() => formatMoney(12.5)).toThrow();
-    expect(() => formatMoney(-1)).toThrow();
+    expect(() => formatMoney("de", 12.5)).toThrow();
+    expect(() => formatMoney("de", -1)).toThrow();
   });
 });
 
 describe("priceLabel (P07)", () => {
   it("shows Frei only for a provided free price", () => {
-    expect(priceLabel({ state: "provided", model: "free" })).toBe("Frei");
+    expect(priceLabel("de", { state: "provided", model: "free" })).toBe("Frei");
   });
 
   it("shows an unknown price as open, never as Frei or 0", () => {
-    const label = priceLabel({ state: "unknown" });
+    const label = priceLabel("de", { state: "unknown" });
 
     expect(label).toBe("Preis noch offen");
     expect(label).not.toMatch(/Frei|0/);
   });
 
   it("shows nothing for an unanswered price", () => {
-    expect(priceLabel({ state: "unanswered" })).toBeNull();
-    expect(priceLabel({ state: "skipped" })).toBeNull();
-    expect(priceLabel({ state: "not_applicable" })).toBeNull();
+    expect(priceLabel("de", { state: "unanswered" })).toBeNull();
+    expect(priceLabel("de", { state: "skipped" })).toBeNull();
+    expect(priceLabel("de", { state: "not_applicable" })).toBeNull();
   });
 
   it("shows a fixed price in euros", () => {
     expect(
-      priceLabel({ state: "provided", model: "fixed", amountMinor: 1250 }),
+      priceLabel("de", {
+        state: "provided",
+        model: "fixed",
+        amountMinor: 1250,
+      }),
     ).toBe("12,50 €");
   });
 });
@@ -91,17 +103,25 @@ describe("parseAmount", () => {
 
 describe("priceLabel of the price forms (EVT-04)", () => {
   it("shows a donation, a minimum donation, a from price and a range", () => {
-    expect(priceLabel({ state: "provided", model: "donation" })).toBe(
+    expect(priceLabel("de", { state: "provided", model: "donation" })).toBe(
       "Eintritt gegen Spende",
     );
     expect(
-      priceLabel({ state: "provided", model: "min_donation", amountMinor: 500 }),
+      priceLabel("de", {
+        state: "provided",
+        model: "min_donation",
+        amountMinor: 500,
+      }),
     ).toBe("Eintritt gegen Spende, ab 5,00 €");
     expect(
-      priceLabel({ state: "provided", model: "from_price", amountMinor: 1000 }),
+      priceLabel("de", {
+        state: "provided",
+        model: "from_price",
+        amountMinor: 1000,
+      }),
     ).toBe("ab 10,00 €");
     expect(
-      priceLabel({
+      priceLabel("de", {
         state: "provided",
         model: "range",
         amountMinor: 800,
@@ -111,10 +131,58 @@ describe("priceLabel of the price forms (EVT-04)", () => {
   });
 
   it("adds 'inkl. Gebühren' only when the fees are stated as included", () => {
-    const fixed = { state: "provided", model: "fixed", amountMinor: 1200 } as const;
+    const fixed = {
+      state: "provided",
+      model: "fixed",
+      amountMinor: 1200,
+    } as const;
 
-    expect(priceLabel({ ...fixed, fees: "included" })).toBe("12,00 € inkl. Gebühren");
-    expect(priceLabel({ ...fixed, fees: "unknown" })).toBe("12,00 €");
-    expect(priceLabel({ ...fixed, fees: null })).toBe("12,00 €");
+    expect(priceLabel("de", { ...fixed, fees: "included" })).toBe(
+      "12,00 € inkl. Gebühren",
+    );
+    expect(priceLabel("de", { ...fixed, fees: "unknown" })).toBe("12,00 €");
+    expect(priceLabel("de", { ...fixed, fees: null })).toBe("12,00 €");
+  });
+});
+
+describe("English price texts (Z27.price.*)", () => {
+  it("formats cents with the symbol first and a decimal point", () => {
+    expect(formatMoney("en", 1250)).toBe("€12.50");
+    expect(formatMoney("en", 123456)).toBe("€1,234.56");
+  });
+
+  it("keeps the rule: free only for a provided free price, unknown is open", () => {
+    expect(priceLabel("en", { state: "provided", model: "free" })).toBe("Free");
+    expect(priceLabel("en", { state: "unknown" })).toBe("Price not known yet");
+    expect(priceLabel("en", { state: "unanswered" })).toBeNull();
+  });
+
+  it("words every price form in English", () => {
+    expect(priceLabel("en", { state: "provided", model: "donation" })).toBe(
+      "Admission by donation",
+    );
+    expect(
+      priceLabel("en", {
+        state: "provided",
+        model: "min_donation",
+        amountMinor: 500,
+      }),
+    ).toBe("Admission by donation, from €5.00");
+    expect(
+      priceLabel("en", {
+        state: "provided",
+        model: "from_price",
+        amountMinor: 1000,
+      }),
+    ).toBe("from €10.00");
+    expect(
+      priceLabel("en", {
+        state: "provided",
+        model: "range",
+        amountMinor: 800,
+        maxAmountMinor: 1500,
+        fees: "included",
+      }),
+    ).toBe("€8.00–15.00 incl. fees");
   });
 });

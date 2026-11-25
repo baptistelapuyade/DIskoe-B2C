@@ -24,7 +24,7 @@ export default async function EventChangesPage({
   const { stale } = await searchParams;
   const base = `/organizer/events/${eventId}`;
   const lang = await getLang();
-  const view = await loadLiveEventView(eventId, `${base}/changes`);
+  const view = await loadLiveEventView(eventId, `${base}/changes`, lang);
 
   if (view.changes.length === 0 || view.draftRevisionId === null) {
     return <NoChangesScreen lang={lang} base={base} />;

@@ -1,5 +1,7 @@
 import type { EventContent } from "@/lib/domain/event-changes";
 
+import type { Lang } from "@/lib/i18n";
+
 import { accessText, atmosphereSummary, priceText } from "./summary";
 import { rowToFormValues, type EventRevisionRow } from "./values";
 
@@ -8,7 +10,10 @@ const orNull = (value: string): string | null =>
 
 // The values of a revision that the comparison of "public stand against
 // private draft" looks at (EVM-01b, EVB-03). Built from the saved row only.
-export function eventContentOf(row: EventRevisionRow): EventContent {
+export function eventContentOf(
+  lang: Lang,
+  row: EventRevisionRow,
+): EventContent {
   const form = rowToFormValues(row);
   const town = [form.postalCode, form.city].filter((p) => p !== "").join(" ");
   const address = [form.addressLine, town].filter((p) => p !== "").join(", ");
@@ -27,8 +32,8 @@ export function eventContentOf(row: EventRevisionRow): EventContent {
     endTime: form.endUnknown ? null : orNull(form.endTime),
     placeName: orNull(form.placeName),
     address: orNull(address),
-    price: priceText(form),
-    access: accessText(form),
+    price: priceText(lang, form),
+    access: accessText(lang, form),
     atmosphere: atmosphereSummary(form),
     imageUseId: row.event_image_use_id,
     modules: modules === "{}" || modules === "[]" ? null : modules,

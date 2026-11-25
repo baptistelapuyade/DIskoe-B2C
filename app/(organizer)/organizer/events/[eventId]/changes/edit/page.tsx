@@ -18,7 +18,7 @@ export default async function EditLiveEventPage({
   const { eventId } = await params;
   const base = `/organizer/events/${eventId}`;
   const lang = await getLang();
-  const view = await loadLiveEventView(eventId, `${base}/changes/edit`);
+  const view = await loadLiveEventView(eventId, `${base}/changes/edit`, lang);
   const form = view.draftForm;
 
   return (

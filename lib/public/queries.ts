@@ -1,3 +1,4 @@
+import type { Lang } from "../i18n";
 import {
   toPublicEvent,
   toPublicProfile,
@@ -41,7 +42,10 @@ async function getPublicProfileById(id: string): Promise<PublicProfile | null> {
   return data ? toPublicProfile(data, mediaBase()) : null;
 }
 
-export async function getPublicEvent(slug: string): Promise<PublicEvent | null> {
+export async function getPublicEvent(
+  lang: Lang,
+  slug: string,
+): Promise<PublicEvent | null> {
   if (!EVENT_SLUG_PATTERN.test(slug)) return null;
 
   const { data, error } = await publicClient()
@@ -55,13 +59,14 @@ export async function getPublicEvent(slug: string): Promise<PublicEvent | null> 
 
   const organizer = await getPublicProfileById(data.organizer_id);
 
-  return organizer ? toPublicEvent(data, organizer, mediaBase()) : null;
+  return organizer ? toPublicEvent(lang, data, organizer, mediaBase()) : null;
 }
 
 // Events of one profile that are still to come, soonest first. Cancelled events
 // are left out. A postponed event without a new date has no date to sort by and
 // follows the dated ones.
 export async function listUpcomingEvents(
+  lang: Lang,
   profile: PublicProfile,
   now: Date = new Date(),
 ): Promise<PublicEvent[]> {
@@ -75,13 +80,15 @@ export async function listUpcomingEvents(
   if (error) throw new Error("Public events lookup failed");
 
   const events = (data ?? [])
-    .map((row) => toPublicEvent(row, profile, mediaBase(), now))
+    .map((row) => toPublicEvent(lang, row, profile, mediaBase(), now))
     .filter((event): event is PublicEvent => event !== null);
 
   const dated = events.filter(
     (event) => event.status !== "postponed_undated" && !event.past,
   );
-  const undated = events.filter((event) => event.status === "postponed_undated");
+  const undated = events.filter(
+    (event) => event.status === "postponed_undated",
+  );
 
   return [...dated, ...undated];
 }

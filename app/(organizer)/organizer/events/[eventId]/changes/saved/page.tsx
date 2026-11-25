@@ -15,7 +15,7 @@ export default async function ChangesSavedPage({
   const base = `/organizer/events/${eventId}`;
   const lang = await getLang();
 
-  await loadLiveEventView(eventId, `${base}/changes/saved`);
+  await loadLiveEventView(eventId, `${base}/changes/saved`, lang);
 
   return <ChangesSavedScreen lang={lang} base={base} />;
 }

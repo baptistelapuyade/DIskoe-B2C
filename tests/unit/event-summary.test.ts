@@ -17,32 +17,32 @@ const base: EventFormValues = { ...EMPTY_FORM_VALUES };
 
 describe("price text", () => {
   it("never shows Frei for an unanswered price", () => {
-    expect(priceText(base)).toBeNull();
-    expect(priceAccessSummary(base)).toBeNull();
+    expect(priceText("de", base)).toBeNull();
+    expect(priceAccessSummary("de", base)).toBeNull();
   });
 
   it("shows an unknown price as open, not as free", () => {
-    expect(priceText({ ...base, priceModel: "unknown" })).toBe(
+    expect(priceText("de", { ...base, priceModel: "unknown" })).toBe(
       "Preis noch offen",
     );
   });
 
   it("shows free and fixed prices", () => {
-    expect(priceText({ ...base, priceModel: "free" })).toBe("Frei");
+    expect(priceText("de", { ...base, priceModel: "free" })).toBe("Frei");
     expect(
-      priceText({ ...base, priceModel: "fixed", priceAmount: "12,5" }),
+      priceText("de", { ...base, priceModel: "fixed", priceAmount: "12,5" }),
     ).toBe("12,50 €");
   });
 
   it("shows the other price forms of EVT-04", () => {
-    expect(priceText({ ...base, priceModel: "donation" })).toBe(
+    expect(priceText("de", { ...base, priceModel: "donation" })).toBe(
       "Eintritt gegen Spende",
     );
     expect(
-      priceText({ ...base, priceModel: "from_price", priceAmount: "10" }),
+      priceText("de", { ...base, priceModel: "from_price", priceAmount: "10" }),
     ).toBe("ab 10,00 €");
     expect(
-      priceText({
+      priceText("de", {
         ...base,
         priceModel: "range",
         priceAmount: "8",
@@ -51,7 +51,7 @@ describe("price text", () => {
       }),
     ).toBe("8,00–15,00 € inkl. Gebühren");
     expect(
-      priceText({
+      priceText("de", {
         ...base,
         priceModel: "range",
         priceAmount: "8",
@@ -62,7 +62,7 @@ describe("price text", () => {
 
   it("shows nothing for a fixed price without a valid amount", () => {
     expect(
-      priceText({ ...base, priceModel: "fixed", priceAmount: "" }),
+      priceText("de", { ...base, priceModel: "fixed", priceAmount: "" }),
     ).toBeNull();
   });
 });
@@ -70,14 +70,14 @@ describe("price text", () => {
 describe("access and summary text", () => {
   it("uses the labels of the access routes", () => {
     expect(
-      accessText({ ...base, accessKinds: ["online_ticket", "door"] }),
+      accessText("de", { ...base, accessKinds: ["online_ticket", "door"] }),
     ).toBe("Online-Ticket · Abendkasse");
-    expect(accessText(base)).toBeNull();
+    expect(accessText("de", base)).toBeNull();
   });
 
   it("joins price and access", () => {
     expect(
-      priceAccessSummary({
+      priceAccessSummary("de", {
         ...base,
         priceModel: "free",
         accessKinds: ["walk_in"],
@@ -130,5 +130,23 @@ describe("atmosphere, time and place text", () => {
         city: "Berlin",
       }),
     ).toBe("Nebenraum · Beispielstraße 12, 10999 Berlin");
+  });
+});
+
+describe("English summary texts", () => {
+  it("names price and access in English", () => {
+    expect(priceText("en", { ...base, priceModel: "unknown" })).toBe(
+      "Price not known yet",
+    );
+    expect(
+      priceAccessSummary("en", {
+        ...base,
+        priceModel: "free",
+        accessKinds: ["walk_in"],
+      }),
+    ).toBe("Free · No registration");
+    expect(
+      accessText("en", { ...base, accessKinds: ["online_ticket", "door"] }),
+    ).toBe("Online ticket · At the door");
   });
 });

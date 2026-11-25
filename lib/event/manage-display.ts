@@ -55,8 +55,8 @@ export function toManageDisplay(
     base: `/organizer/events/${view.eventId}`,
     publicPath,
     publicUrl: `${siteBase}${publicPath}`,
-    price: priceText(form) ?? notSet,
-    access: accessText(form) ?? notSet,
+    price: priceText(lang, form) ?? notSet,
+    access: accessText(lang, form) ?? notSet,
     changes: changeRows(lang, view.changes),
     stateRows: [
       {
@@ -83,7 +83,7 @@ export function toManageDisplay(
       {
         key: "price",
         label: t(lang, "Z30.manage.row.price"),
-        value: priceText(form) ?? notSet,
+        value: priceText(lang, form) ?? notSet,
       },
     ],
     gapCount: view.gapCount,

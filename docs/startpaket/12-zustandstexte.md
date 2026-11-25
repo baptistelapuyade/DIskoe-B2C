@@ -496,6 +496,7 @@ Deutsch aus den Figma-Frames ORG-03a bis ORG-06 (Section „Block 2a“, Ready f
 | Z25.availability.available | Verfügbar | Available | Auswahl (kein Frame) |
 | Z25.availability.soldOut | Ausverkauft | Sold out | Auswahl EVT-04k |
 | Z25.availability.soldOut.hint | Die Eventseite zeigt „Online-Ticket ausverkauft“. Die anderen Wege bleiben sichtbar. | The event page shows “Online ticket sold out”. The other ways stay visible. | Hilfetext EVT-04k (Frame nennt die Abendkasse; hier für jeden gewählten Weg gefasst) |
+| Z25.availability.pageLabel | Online-Ticket ausverkauft | Online ticket sold out | Zugangszeile auf der Eventseite (Wortlaut aus dem Hinweis `soldOut.hint`, 25.11.2026) |
 | Z25.availability.invalid | Wähle eine der angebotenen Angaben. | Choose one of the options offered. | Fehlertext (kein Frame) |
 | Z25.link.ticket.label | Link zum Ticketverkauf | Link to ticket sales | Feldbeschriftung EVT-04a |
 | Z25.link.ticket.hint | Nur für das Online-Ticket. | For the online ticket only. | Hilfetext EVT-04a |

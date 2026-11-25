@@ -418,6 +418,7 @@ export const de = {
   "Z25.availability.placeholder": "Verfügbarkeit wählen",
   "Z25.availability.available": "Verfügbar",
   "Z25.availability.soldOut": "Ausverkauft",
+  "Z25.availability.pageLabel": "Online-Ticket ausverkauft",
   "Z25.availability.soldOut.hint":
     "Die Eventseite zeigt „Online-Ticket ausverkauft“. Die anderen Wege bleiben sichtbar.",
   "Z25.availability.invalid": "Wähle eine der angebotenen Angaben.",

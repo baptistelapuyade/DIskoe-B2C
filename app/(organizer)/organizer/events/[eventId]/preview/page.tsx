@@ -10,6 +10,7 @@ import {
 import { Button, LinkButton } from "@/components/ui/button";
 import { FORMAT_LABEL } from "@/lib/domain/event-publication";
 import { loadPublicationView } from "@/lib/event/publication";
+import { getLang } from "@/lib/i18n/server";
 import {
   accessText,
   placeText,
@@ -45,8 +46,9 @@ export default async function EventPreviewPage({
 
   const when = whenText(v);
   const place = placeText(v);
-  const price = priceText(v);
-  const access = accessText(v);
+  const lang = await getLang();
+  const price = priceText(lang, v);
+  const access = accessText(lang, v);
   const format = (FORMAT_LABEL as Record<string, string>)[v.format];
 
   return (

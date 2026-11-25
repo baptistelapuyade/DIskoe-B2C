@@ -6,6 +6,7 @@ import {
   type ReviewHint,
 } from "@/lib/domain/event-list";
 import { archiveInstant } from "@/lib/domain/time";
+import type { Lang } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/server";
 
 import { eventContentOf } from "./changes";
@@ -46,6 +47,7 @@ export type ManageView = {
 export async function loadManageView(
   eventId: string,
   currentPath: string,
+  lang: Lang,
   now: Date = new Date(),
 ): Promise<ManageView> {
   const view = await loadPublicationView(eventId, currentPath);
@@ -67,7 +69,10 @@ export async function loadManageView(
       : null;
   const changes =
     publishedRow && draftRow && publishedRow.id !== draftRow.id
-      ? diffEventContent(eventContentOf(publishedRow), eventContentOf(draftRow))
+      ? diffEventContent(
+          eventContentOf(lang, publishedRow),
+          eventContentOf(lang, draftRow),
+        )
       : [];
   const shownRow = publishedRow ?? draftRow;
   const end =

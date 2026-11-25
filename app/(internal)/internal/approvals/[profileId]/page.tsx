@@ -166,9 +166,9 @@ export default async function ApprovalDetailPage({
             <dt className="font-medium">Ort</dt>
             <dd>{placeText(eventForm) ?? "fehlt"}</dd>
             <dt className="font-medium">Eintritt</dt>
-            <dd>{priceText(eventForm) ?? "nicht angegeben"}</dd>
+            <dd>{priceText("de", eventForm) ?? "nicht angegeben"}</dd>
             <dt className="font-medium">Zugang</dt>
-            <dd>{accessText(eventForm) ?? "nicht angegeben"}</dd>
+            <dd>{accessText("de", eventForm) ?? "nicht angegeben"}</dd>
             <dt className="font-medium">Atmosphäre</dt>
             <dd>{atmosphereSummary(eventForm) ?? "nicht bestätigt"}</dd>
             <dt className="font-medium">Bildbeschreibung</dt>
