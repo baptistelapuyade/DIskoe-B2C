@@ -14,6 +14,8 @@
 - **Feste Überschriften der Plattform** (z. B. „Kommende Events“ / „Upcoming events“ auf der Profilseite) kommen aus diesem Katalog und wechseln mit der Sprache. Texte der Organizer (Name, Beschreibung, Eventtitel) bleiben in der Sprache, in der sie geschrieben wurden, und werden nicht übersetzt. Die englischen Überschriften in `PUB-06a` waren Platzhalter; sie werden bei der Aufnahme der Plattform-Überschriften als Z20 ff. sauber in beiden Sprachen geführt.
 - **Mails:** Die Sprache wird beim Anlegen gespeichert: am E-Mail-Abo (Sprache der Seite beim Bestätigen), beim Besucher-Login-Code (Sprache der Seite, auf der der Code angefordert wurde), bei Organizern am Konto (in den Einstellungen änderbar). Ohne gespeicherten Wert: Englisch. Einwilligungstexte und Mails gibt es in beiden Sprachen.
 - **Rechtstexte:** Impressum und Datenschutz in Deutsch (maßgebliche Fassung) und Englisch (Übersetzung, als solche gekennzeichnet). Rechtliche Prüfung vor der Alpha-Öffnung bleibt beim Founder.
+- **Founder-Bereich:** bleibt nur auf Deutsch (Founder, 25.11.2026), weil er ein internes Werkzeug ist; seine Texte brauchen keine englische Fassung.
+- **Preisspanne:** das Symbol steht einmal (Founder, 25.11.2026): „8,00–15,00 €“ und „€8.00–15.00“, auch auf der Bestätigungsseite.
 - **Pflege:** Die englischen Texte stehen nur in diesem Katalog (gleiche IDs). Änderungen zuerst hier, in beiden Sprachen.
 
 ## Begriffe für Gäste-Seiten (Vorschlag 10.11., Founder-Review 13:45)

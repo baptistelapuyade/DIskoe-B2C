@@ -119,7 +119,13 @@ describe("price: unknown is never free", () => {
         "en",
         form({ priceModel: "range", priceAmount: "10", priceAmountMax: "15" }),
       ),
-    ).toBe("€10.00–€15.00");
+    ).toBe("€10.00–15.00");
+    expect(
+      priceSummary(
+        "de",
+        form({ priceModel: "range", priceAmount: "10", priceAmountMax: "15" }),
+      ),
+    ).toBe("10,00–15,00 €");
     expect(priceSummary("en", form({ priceModel: "min_donation", priceAmount: "5" }))).toBe(
       "Admission by donation, from €5.00",
     );
