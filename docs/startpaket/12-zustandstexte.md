@@ -1308,7 +1308,7 @@ Texte von `PUB-01a`–`l` und `PUB-06a`–`d`. Deutsch aus Figma, bei fehlenden 
 | Z34.event.timezone | Berliner Ortszeit | Berlin time | PUB-01a, Zusatz unter der Uhrzeit |
 | Z34.event.until | Bis {date} | Until {date} | PUB-01a, Zusatz bei Ende an einem anderen Tag |
 | Z34.event.timeFrom | {time} Uhr | {time} | PUB-01a, Uhrzeit ohne bekanntes Ende (Figma: „20:00 Uhr“) |
-| Z34.event.route | Route öffnen ↗ | Open route ↗ | PUB-01a, Link unter der Adresse |
+| Z34.event.route | Route öffnen ↗ | Get directions ↗ | PUB-01a, Link unter der Adresse |
 | Z34.event.ticket | Zum Ticketanbieter ↗ | Go to ticket provider ↗ | PUB-01a, Hauptaktion |
 | Z34.event.register | Zur Anmeldung ↗ | Go to registration ↗ | PUB-01a, Hauptaktion bei Online-Anmeldung (kein Frame) |
 | Z34.event.sectionLabel | Beschreibung und Atmosphäre | Description and atmosphere | PUB-01a, Bereichsname für Screenreader (kein Frame) |
@@ -1322,7 +1322,7 @@ Texte von `PUB-01a`–`l` und `PUB-06a`–`d`. Deutsch aus Figma, bei fehlenden 
 | Z34.event.source | Angaben von {name} | Details from {name} | PUB-01a, Herkunftszeile |
 | Z34.event.confirmed | Zuletzt bestätigt am {date} | Last confirmed on {date} | PUB-01a, Herkunftszeile |
 | Z34.know.title | Gut zu wissen | Good to know | PUB-01a, Überschrift der Info-Balken |
-| Z34.know.lead | Was du vor dem Besuch wissen willst. Wir fragen es extra beim Veranstalter ab. | What you want to know before you go. We ask the organizer for it separately. | PUB-01a, Einleitung (Wortlaut des Frames; vorher „ihr“) |
+| Z34.know.lead | Was du vor dem Besuch wissen willst. Wir fragen es extra beim Veranstalter ab. | What you’ll want to know before you go. We ask the organizer for these details separately. | PUB-01a, Einleitung (Wortlaut des Frames; vorher „ihr“) |
 | Z34.bar.entry | Eintritt | Admission | PUB-01a, Balken |
 | Z34.bar.doors | Einlass | Doors | PUB-01g, Balken |
 | Z34.bar.doors.start | Beginn um {time} Uhr | Starts at {time} | PUB-01g, Detail des Balkens Einlass |
@@ -1332,15 +1332,15 @@ Texte von `PUB-01a`–`l` und `PUB-06a`–`d`. Deutsch aus Figma, bei fehlenden 
 | Z34.bar.window.dropIn | Kommt, wann ihr wollt. | Drop in any time. | PUB-01f, Detail (Frame hat zusätzlich einen freien Satz zur Dauer) |
 | Z34.bar.window.both | Gemeinsamer Beginn oder flexibel vorbeikommen. | Shared start, or drop in any time. | Zeitfenster bei Besuchsmodus „Beides“ (kein Frame) |
 | Z34.bar.window.short.ok | Ein kurzer Besuch genügt. | A short visit is fine. | Zeitfenster, Zusatz (kein Frame) |
-| Z34.bar.window.short.longer | Eher eine längere Teilnahme. | Better for a longer visit. | Zeitfenster, Zusatz (kein Frame) |
+| Z34.bar.window.short.longer | Eher eine längere Teilnahme. | Better suited to a longer visit. | Zeitfenster, Zusatz (kein Frame) |
 | Z34.bar.age | Alter | Age | PUB-01g, Balken |
 | Z34.bar.age.min | Ab {n} | {n}+ | PUB-01g, Wert des Balkens Alter |
 | Z34.bar.age.all | Für alle Altersgruppen | All ages | Balken Alter ohne Beschränkung (kein Frame) |
-| Z34.bar.age.minDetail | Zutritt ab {n} Jahren. | Admission from {n} years. | PUB-01g, Detail des Balkens Alter |
+| Z34.bar.age.minDetail | Zutritt ab {n} Jahren. | Ages {n} and over. | PUB-01g, Detail des Balkens Alter |
 | Z34.bar.language | Sprache | Language | PUB-01g, Balken |
 | Z34.bar.accessibility | Zugänglichkeit | Accessibility | PUB-01a, Balken |
 | Z34.bar.accessibility.value | Noch keine Angaben | No details yet | PUB-01a, Wert ohne Angaben |
-| Z34.bar.accessibility.detail | Der Veranstalter hat dazu nichts bestätigt. Das heißt nicht, dass der Ort nicht zugänglich ist. | The organizer hasn’t confirmed anything about this. That doesn’t mean the venue isn’t accessible. | PUB-01a, Detail ohne Angaben |
+| Z34.bar.accessibility.detail | Der Veranstalter hat dazu nichts bestätigt. Das heißt nicht, dass der Ort nicht zugänglich ist. | The organizer hasn’t confirmed any details. That doesn’t mean the venue isn’t accessible. | PUB-01a, Detail ohne Angaben |
 | Z34.bar.accessibility.ask | Veranstalter fragen | Ask the organizer | PUB-01a, Button, nur mit öffentlichem Kontakt |
 | Z34.share.button | Teilen | Share | PUB-01a, Button |
 | Z34.share.copied | Link kopiert. | Link copied. | PUB-01a, Rückmeldung nach dem Kopieren |
