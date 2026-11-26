@@ -121,14 +121,14 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
         <div className="grid gap-6 lg:grid-cols-[5fr_8fr] lg:items-start lg:gap-x-16 lg:gap-y-7">
           <div className="flex flex-col gap-3 lg:col-start-2 lg:row-start-1">
             <FormatTag format={event.format} label={event.formatLabel} />
-            <h1 className="text-[40px] leading-[44px] font-bold tracking-[-0.8px] lg:text-[56px] lg:leading-[60px] lg:tracking-[-1.5px]">
+            <h1 className="text-[40px] leading-[44px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere] lg:text-[56px] lg:leading-[60px] lg:tracking-[-1.5px]">
               {event.title}
             </h1>
             <p className="text-base leading-6">
               {t(lang, "Z34.event.by")}{" "}
               <Link
                 href={`/${event.organizer.slug}`}
-                className="underline underline-offset-4"
+                className="-my-3 inline-block py-3 underline underline-offset-4"
               >
                 {event.organizer.name} ↗
               </Link>
@@ -154,7 +154,7 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
                       cancelled ? "Z34.event.wasPlanned" : "Z34.event.when",
                     )}
                   </Eyebrow>
-                  <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px]">
+                  <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere]">
                     {event.dateLine}
                   </p>
                   <p className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">
@@ -169,7 +169,7 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
               ) : (
                 <div className="flex flex-col gap-2">
                   <Eyebrow>{t(lang, "Z34.event.when")}</Eyebrow>
-                  <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px]">
+                  <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere]">
                     {t(lang, "Z34.event.dateTbd")}
                   </p>
                 </div>
@@ -179,7 +179,7 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
                 <div className="flex flex-col gap-2">
                   <Eyebrow>{t(lang, "Z34.event.where")}</Eyebrow>
                   {event.placeName ? (
-                    <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px]">
+                    <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere]">
                       {event.placeName}
                     </p>
                   ) : null}
@@ -261,7 +261,7 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
               <h2 className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] lg:text-[40px] lg:leading-[44px]">
                 {t(lang, "Z34.event.about")}
               </h2>
-              <p className="text-base leading-6 whitespace-pre-line">
+              <p className="text-base leading-6 [overflow-wrap:anywhere] whitespace-pre-line">
                 {event.description}
               </p>
             </div>
@@ -325,7 +325,7 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
                   {BAR_ICON[bar.key]}
                   {bar.label}
                 </p>
-                <p className="text-[26px] leading-[29px] font-bold lg:leading-[33px]">
+                <p className="text-[26px] leading-[29px] font-bold [overflow-wrap:anywhere] lg:leading-[33px]">
                   {bar.value}
                 </p>
                 {bar.pills.length > 0 ? (
@@ -363,7 +363,7 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
         <div className="flex max-w-[720px] flex-col gap-4 lg:gap-4">
           <Eyebrow>{t(lang, "Z34.event.organizerEyebrow")}</Eyebrow>
           <ProfileImage url={event.organizer.imageUrl} size={64} />
-          <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] lg:text-[40px] lg:leading-[44px]">
+          <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere] lg:text-[40px] lg:leading-[44px]">
             {event.organizer.name}
           </p>
           {event.organizer.shortIntro ? (

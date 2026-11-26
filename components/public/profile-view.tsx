@@ -35,7 +35,7 @@ function EventRow({
         className={`${highlight ? "bg-brand-yellow" : "bg-background"} border-foreground flex flex-col gap-3 border p-5 hover:underline`}
       >
         <FormatTag format={event.format} label={event.formatLabel} />
-        <span className="text-2xl leading-[30px] font-bold tracking-[-0.4px]">
+        <span className="text-2xl leading-[30px] font-bold tracking-[-0.4px] [overflow-wrap:anywhere]">
           {event.title}
         </span>
         <span className="text-base leading-6">{when}</span>
@@ -98,7 +98,7 @@ export function ProfileView({
             size={96}
             crop={profile.imageCrop}
           />
-          <h1 className="text-[40px] leading-[44px] font-bold tracking-[-0.8px]">
+          <h1 className="text-[40px] leading-[44px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere]">
             {profile.name}
           </h1>
           {profile.shortIntro ? (
