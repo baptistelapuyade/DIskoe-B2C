@@ -94,6 +94,28 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   ).toBeVisible(SLOW);
   await shot(page, "01-grundlagen");
 
+  // The fields are locked until the page is hydrated: text typed before that
+  // is thrown away when React takes over the fields. The scripts are held back
+  // here to look at the page before that moment.
+  const early = await context.newPage();
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => (release = resolve));
+  await early.route(/\/_next\/static\/.*\.js/, async (route) => {
+    await gate;
+    await route.continue().catch(() => {});
+  });
+  await early.goto(`/organizer/events/new?profile=${profileA}`, {
+    waitUntil: "commit",
+  });
+  await expect(early.getByLabel("Beschreibung", { exact: true })).toBeDisabled(
+    SLOW,
+  );
+  release();
+  await expect(early.getByLabel("Beschreibung", { exact: true })).toBeEnabled(
+    SLOW,
+  );
+  await early.close();
+
   // "Weiter" names what is missing and saves nothing (EVT-01b).
   await page
     .getByRole("button", { name: "Weiter zu Datum und Uhrzeit" })

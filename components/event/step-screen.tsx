@@ -49,6 +49,7 @@ import {
   FORMAT_ID,
   PRICE_MODEL_ID,
 } from "@/lib/event/labels";
+import { useHydrated } from "@/lib/hooks/use-hydrated";
 import { t, type Lang, type MessageId } from "@/lib/i18n";
 
 import {
@@ -250,6 +251,7 @@ export function EventStepScreen({
   notice?: ReactNode;
 }) {
   const router = useRouter();
+  const hydrated = useHydrated();
   const formRef = useRef<HTMLFormElement>(null);
   const scope = `${eventId ?? `new-${profileId}`}:${step}`;
   const [values, setValues] = useState<Values>(() => toValues(initial));
@@ -591,74 +593,298 @@ export function EventStepScreen({
           void run(unsaved ? lastIntent : "next");
         }}
       >
-        {notice}
+        <fieldset disabled={!hydrated} className="contents">
+          {notice}
 
-        {status === "invalid" && codes.length > 0 ? (
-          kind === "endBeforeStart" ? (
-            <Notice tone="error" title={msg("Z23.check.title.one")}>
-              {msg("Z24.time.end.beforeStart")}
+          {status === "invalid" && codes.length > 0 ? (
+            kind === "endBeforeStart" ? (
+              <Notice tone="error" title={msg("Z23.check.title.one")}>
+                {msg("Z24.time.end.beforeStart")}
+              </Notice>
+            ) : (
+              <Notice
+                tone="error"
+                title={
+                  codes.length === 1
+                    ? msg("Z23.check.title.one")
+                    : codes.length === 2
+                      ? msg("Z23.check.title.two")
+                      : msg("Z23.check.title.many", { n: codes.length })
+                }
+              >
+                {kind === "missing"
+                  ? codes.length === 1
+                    ? msg("Z24.check.line.missing.one")
+                    : msg("Z24.check.line.missing.many")
+                  : codes.length === 1
+                    ? msg("Z23.check.line.one")
+                    : msg("Z23.check.line.many")}
+              </Notice>
+            )
+          ) : null}
+
+          {status === "failed" ? (
+            <Notice tone="error" title={msg("Z24.failed.title")}>
+              {msg("Z24.failed.line")}
             </Notice>
-          ) : (
-            <Notice
-              tone="error"
-              title={
-                codes.length === 1
-                  ? msg("Z23.check.title.one")
-                  : codes.length === 2
-                    ? msg("Z23.check.title.two")
-                    : msg("Z23.check.title.many", { n: codes.length })
-              }
-            >
-              {kind === "missing"
-                ? codes.length === 1
-                  ? msg("Z24.check.line.missing.one")
-                  : msg("Z24.check.line.missing.many")
-                : codes.length === 1
-                  ? msg("Z23.check.line.one")
-                  : msg("Z23.check.line.many")}
+          ) : null}
+
+          {status === "offline" ? (
+            <Notice tone="warning" title={msg("Z24.offline.title")}>
+              {msg("Z24.offline.line")}
             </Notice>
-          )
-        ) : null}
+          ) : null}
 
-        {status === "failed" ? (
-          <Notice tone="error" title={msg("Z24.failed.title")}>
-            {msg("Z24.failed.line")}
-          </Notice>
-        ) : null}
+          {saving ? (
+            <Notice tone="info" title={msg("Z24.saving.title")}>
+              {msg("Z24.saving.line")}
+            </Notice>
+          ) : null}
 
-        {status === "offline" ? (
-          <Notice tone="warning" title={msg("Z24.offline.title")}>
-            {msg("Z24.offline.line")}
-          </Notice>
-        ) : null}
+          {step === "image" && uploading ? (
+            <Notice tone="info" title={msg("Z23.upload.busy.title")}>
+              {msg("Z23.upload.busy.line")}
+            </Notice>
+          ) : null}
 
-        {saving ? (
-          <Notice tone="info" title={msg("Z24.saving.title")}>
-            {msg("Z24.saving.line")}
-          </Notice>
-        ) : null}
+          {step === "image" && upload.error ? (
+            <UploadNotice lang={lang} error={upload.error} />
+          ) : null}
 
-        {step === "image" && uploading ? (
-          <Notice tone="info" title={msg("Z23.upload.busy.title")}>
-            {msg("Z23.upload.busy.line")}
-          </Notice>
-        ) : null}
+          {correction ? <div className="-mb-3.5">{correction.card}</div> : null}
 
-        {step === "image" && upload.error ? (
-          <UploadNotice lang={lang} error={upload.error} />
-        ) : null}
+          <div className="flex flex-col gap-6">
+            {step === "basics" ? (
+              <>
+                <div className="grid items-start gap-6 sm:grid-cols-2 sm:gap-4">
+                  <Field
+                    id="title"
+                    label={msg("Z24.basics.title.label")}
+                    hint={
+                      errors.title ? undefined : msg("Z24.basics.title.hint")
+                    }
+                    error={errorText("title")}
+                    large
+                  >
+                    {(props) => (
+                      <Input
+                        {...props}
+                        type="text"
+                        autoComplete="off"
+                        value={values.title}
+                        disabled={saving}
+                        placeholder={msg("Z24.basics.title.placeholder")}
+                        onChange={(event) =>
+                          setValue("title", event.target.value)
+                        }
+                      />
+                    )}
+                  </Field>
 
-        {correction ? <div className="-mb-3.5">{correction.card}</div> : null}
+                  <Field
+                    id="format"
+                    label={msg("Z24.basics.format.label")}
+                    hint={
+                      errors.format ? undefined : msg("Z24.basics.format.hint")
+                    }
+                    error={errorText("format")}
+                    large
+                  >
+                    {(props) => (
+                      <Select
+                        value={values.format}
+                        disabled={saving}
+                        onValueChange={(value) => setValue("format", value)}
+                      >
+                        <SelectTrigger {...props}>
+                          <SelectValue
+                            placeholder={msg("Z24.basics.format.placeholder")}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PRIMARY_FORMATS.map((format) => (
+                            <SelectItem key={format} value={format}>
+                              {msg(FORMAT_ID[format])}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </Field>
+                </div>
 
-        <div className="flex flex-col gap-6">
-          {step === "basics" ? (
-            <>
-              <div className="grid items-start gap-6 sm:grid-cols-2 sm:gap-4">
                 <Field
-                  id="title"
-                  label={msg("Z24.basics.title.label")}
-                  hint={errors.title ? undefined : msg("Z24.basics.title.hint")}
-                  error={errorText("title")}
+                  id="description"
+                  label={msg("Z24.basics.description.label")}
+                  hint={
+                    errors.description
+                      ? undefined
+                      : msg("Z24.basics.description.hint", {
+                          max: EVENT_LIMITS.description,
+                        })
+                  }
+                  error={errorText("description")}
+                  large
+                >
+                  {(props) => (
+                    <Textarea
+                      {...props}
+                      rows={2}
+                      value={values.description}
+                      disabled={saving}
+                      placeholder={msg("Z24.basics.description.placeholder")}
+                      onChange={(event) =>
+                        setValue("description", event.target.value)
+                      }
+                    />
+                  )}
+                </Field>
+              </>
+            ) : null}
+
+            {step === "time" ? (
+              <>
+                <section
+                  aria-labelledby="start-title"
+                  className="flex flex-col gap-4"
+                >
+                  <h2
+                    id="start-title"
+                    className="text-2xl leading-[30px] font-medium"
+                  >
+                    {msg("Z24.time.start.title")}
+                  </h2>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <DateField
+                      id="startDate"
+                      name="startDate"
+                      label={msg("Z24.time.date.label")}
+                      error={errorText("startDate")}
+                      lang={lang}
+                      value={values.startDate}
+                      onChange={(value) => setValue("startDate", value)}
+                      placeholder={msg("Z24.time.date.placeholder")}
+                      openLabel={msg("Z24.time.date.open")}
+                      disabled={saving}
+                    />
+                    <Field
+                      id="startTime"
+                      label={msg("Z24.time.time.label")}
+                      error={errorText("startTime")}
+                      large
+                    >
+                      {(props) => (
+                        <Input
+                          {...props}
+                          type="time"
+                          value={values.startTime}
+                          disabled={saving}
+                          onChange={(event) =>
+                            setValue("startTime", event.target.value)
+                          }
+                        />
+                      )}
+                    </Field>
+                  </div>
+                </section>
+
+                <section
+                  aria-labelledby="end-title"
+                  className="flex flex-col gap-4"
+                >
+                  <div className="flex flex-col gap-2">
+                    <h2
+                      id="end-title"
+                      className="text-2xl leading-[30px] font-medium"
+                    >
+                      {msg("Z24.time.end.title")}
+                    </h2>
+                    <p className="text-muted-foreground text-sm leading-5">
+                      {msg("Z24.time.end.hint")}
+                    </p>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <DateField
+                      id="endDate"
+                      name="endDate"
+                      label={msg("Z24.time.date.label")}
+                      hint={
+                        startNextDay && !errors.endDate
+                          ? msg("Z24.time.end.nextDay")
+                          : undefined
+                      }
+                      error={errorText("endDate")}
+                      lang={lang}
+                      value={values.endDate}
+                      onChange={(value) => setValue("endDate", value)}
+                      placeholder={msg("Z24.time.date.placeholder")}
+                      openLabel={msg("Z24.time.date.open")}
+                      disabled={saving || values.endUnknown}
+                    />
+                    <Field
+                      id="endTime"
+                      label={msg("Z24.time.time.label")}
+                      error={errorText("endTime")}
+                      large
+                    >
+                      {(props) => (
+                        <Input
+                          {...props}
+                          type="time"
+                          value={values.endTime}
+                          disabled={saving || values.endUnknown}
+                          onChange={(event) =>
+                            setValue("endTime", event.target.value)
+                          }
+                        />
+                      )}
+                    </Field>
+                  </div>
+                  <label
+                    htmlFor="endUnknown"
+                    className="flex min-h-11 items-center gap-3 text-base leading-6"
+                  >
+                    <Checkbox
+                      id="endUnknown"
+                      checked={values.endUnknown}
+                      disabled={saving}
+                      onCheckedChange={(checked) => {
+                        const on = checked === true;
+
+                        setValues((previous) => ({
+                          ...previous,
+                          endUnknown: on,
+                          endDate: on ? "" : previous.endDate,
+                          endTime: on ? "" : previous.endTime,
+                        }));
+
+                        if (on) {
+                          setErrors((previous) => {
+                            const next = { ...previous };
+                            delete next.endDate;
+                            delete next.endTime;
+                            return next;
+                          });
+                        }
+                      }}
+                    />
+                    {msg("Z24.time.end.unknown")}
+                  </label>
+                </section>
+              </>
+            ) : null}
+
+            {step === "place" ? (
+              <div className="grid items-start gap-6 sm:grid-cols-2 sm:gap-x-4">
+                <Field
+                  id="placeName"
+                  label={msg("Z24.place.name.label")}
+                  hint={
+                    errors.placeName || correction
+                      ? undefined
+                      : msg("Z24.place.name.hint")
+                  }
+                  error={errorText("placeName")}
                   large
                 >
                   {(props) => (
@@ -666,573 +892,383 @@ export function EventStepScreen({
                       {...props}
                       type="text"
                       autoComplete="off"
-                      value={values.title}
+                      value={values.placeName}
                       disabled={saving}
-                      placeholder={msg("Z24.basics.title.placeholder")}
+                      placeholder={msg("Z24.place.name.placeholder")}
                       onChange={(event) =>
-                        setValue("title", event.target.value)
+                        setValue("placeName", event.target.value)
                       }
                     />
                   )}
                 </Field>
-
                 <Field
-                  id="format"
-                  label={msg("Z24.basics.format.label")}
-                  hint={
-                    errors.format ? undefined : msg("Z24.basics.format.hint")
-                  }
-                  error={errorText("format")}
+                  id="addressLine"
+                  label={msg("Z24.place.street.label")}
+                  error={errorText("addressLine")}
                   large
                 >
                   {(props) => (
-                    <Select
-                      value={values.format}
+                    <Input
+                      {...props}
+                      type="text"
+                      autoComplete="street-address"
+                      value={values.addressLine}
                       disabled={saving}
-                      onValueChange={(value) => setValue("format", value)}
-                    >
-                      <SelectTrigger {...props}>
-                        <SelectValue
-                          placeholder={msg("Z24.basics.format.placeholder")}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PRIMARY_FORMATS.map((format) => (
-                          <SelectItem key={format} value={format}>
-                            {msg(FORMAT_ID[format])}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      placeholder={msg("Z24.place.street.placeholder")}
+                      onChange={(event) =>
+                        setValue("addressLine", event.target.value)
+                      }
+                    />
+                  )}
+                </Field>
+                <Field
+                  id="postalCode"
+                  label={msg("Z24.place.postalCode.label")}
+                  error={errorText("postalCode")}
+                  large
+                >
+                  {(props) => (
+                    <Input
+                      {...props}
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      value={values.postalCode}
+                      disabled={saving}
+                      placeholder={msg("Z24.place.postalCode.placeholder")}
+                      onChange={(event) =>
+                        setValue("postalCode", event.target.value)
+                      }
+                    />
+                  )}
+                </Field>
+                <Field
+                  id="city"
+                  label={msg("Z24.place.city.label")}
+                  error={errorText("city")}
+                  large
+                >
+                  {(props) => (
+                    <Input
+                      {...props}
+                      type="text"
+                      autoComplete="address-level2"
+                      value={values.city}
+                      disabled={saving}
+                      placeholder={msg("Z24.place.city.placeholder")}
+                      onChange={(event) => setValue("city", event.target.value)}
+                    />
                   )}
                 </Field>
               </div>
+            ) : null}
 
-              <Field
-                id="description"
-                label={msg("Z24.basics.description.label")}
-                hint={
-                  errors.description
-                    ? undefined
-                    : msg("Z24.basics.description.hint", {
-                        max: EVENT_LIMITS.description,
-                      })
-                }
-                error={errorText("description")}
-                large
-              >
-                {(props) => (
-                  <Textarea
-                    {...props}
-                    rows={2}
-                    value={values.description}
-                    disabled={saving}
-                    placeholder={msg("Z24.basics.description.placeholder")}
-                    onChange={(event) =>
-                      setValue("description", event.target.value)
-                    }
-                  />
-                )}
-              </Field>
-            </>
-          ) : null}
+            {step === "price" ? (
+              <>
+                <fieldset className="flex flex-col gap-4">
+                  <legend className="mb-1 text-2xl leading-[30px] font-medium">
+                    {msg("Z25.access.title")}
+                  </legend>
+                  <p className="text-muted-foreground text-sm leading-5">
+                    {msg("Z25.access.hint")}
+                  </p>
+                  <div className="mt-2 flex flex-col">
+                    {ACCESS_KINDS.map((kind) => (
+                      <label
+                        key={kind}
+                        htmlFor={`access-${kind}`}
+                        className="flex min-h-11 items-center gap-3 text-base leading-6"
+                      >
+                        <Checkbox
+                          id={`access-${kind}`}
+                          checked={values.accessKinds.includes(kind)}
+                          disabled={saving}
+                          onCheckedChange={(checked) =>
+                            toggleAccess(kind, checked === true)
+                          }
+                        />
+                        {msg(ACCESS_ID[kind])}
+                      </label>
+                    ))}
+                  </div>
+                  {errors.accessKinds ? (
+                    <p role="alert" className="text-error text-sm">
+                      {errorText("accessKinds")}
+                    </p>
+                  ) : null}
+                </fieldset>
 
-          {step === "time" ? (
-            <>
-              <section
-                aria-labelledby="start-title"
-                className="flex flex-col gap-4"
-              >
-                <h2
-                  id="start-title"
-                  className="text-2xl leading-[30px] font-medium"
+                <section
+                  aria-labelledby="price-title"
+                  className="flex flex-col gap-4"
                 >
-                  {msg("Z24.time.start.title")}
-                </h2>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <DateField
-                    id="startDate"
-                    name="startDate"
-                    label={msg("Z24.time.date.label")}
-                    error={errorText("startDate")}
-                    lang={lang}
-                    value={values.startDate}
-                    onChange={(value) => setValue("startDate", value)}
-                    placeholder={msg("Z24.time.date.placeholder")}
-                    openLabel={msg("Z24.time.date.open")}
-                    disabled={saving}
-                  />
-                  <Field
-                    id="startTime"
-                    label={msg("Z24.time.time.label")}
-                    error={errorText("startTime")}
-                    large
-                  >
-                    {(props) => (
-                      <Input
-                        {...props}
-                        type="time"
-                        value={values.startTime}
-                        disabled={saving}
-                        onChange={(event) =>
-                          setValue("startTime", event.target.value)
-                        }
-                      />
-                    )}
-                  </Field>
-                </div>
-              </section>
-
-              <section
-                aria-labelledby="end-title"
-                className="flex flex-col gap-4"
-              >
-                <div className="flex flex-col gap-2">
                   <h2
-                    id="end-title"
+                    id="price-title"
                     className="text-2xl leading-[30px] font-medium"
                   >
-                    {msg("Z24.time.end.title")}
+                    {msg("Z25.price.section")}
                   </h2>
-                  <p className="text-muted-foreground text-sm leading-5">
-                    {msg("Z24.time.end.hint")}
-                  </p>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <DateField
-                    id="endDate"
-                    name="endDate"
-                    label={msg("Z24.time.date.label")}
-                    hint={
-                      startNextDay && !errors.endDate
-                        ? msg("Z24.time.end.nextDay")
-                        : undefined
+
+                  <div
+                    className={
+                      money && values.priceModel !== "range"
+                        ? "grid items-start gap-4 sm:grid-cols-2"
+                        : "flex flex-col gap-4"
                     }
-                    error={errorText("endDate")}
-                    lang={lang}
-                    value={values.endDate}
-                    onChange={(value) => setValue("endDate", value)}
-                    placeholder={msg("Z24.time.date.placeholder")}
-                    openLabel={msg("Z24.time.date.open")}
-                    disabled={saving || values.endUnknown}
-                  />
-                  <Field
-                    id="endTime"
-                    label={msg("Z24.time.time.label")}
-                    error={errorText("endTime")}
-                    large
                   >
-                    {(props) => (
-                      <Input
-                        {...props}
-                        type="time"
-                        value={values.endTime}
-                        disabled={saving || values.endUnknown}
-                        onChange={(event) =>
-                          setValue("endTime", event.target.value)
-                        }
-                      />
-                    )}
-                  </Field>
-                </div>
-                <label
-                  htmlFor="endUnknown"
-                  className="flex min-h-11 items-center gap-3 text-base leading-6"
-                >
-                  <Checkbox
-                    id="endUnknown"
-                    checked={values.endUnknown}
-                    disabled={saving}
-                    onCheckedChange={(checked) => {
-                      const on = checked === true;
-
-                      setValues((previous) => ({
-                        ...previous,
-                        endUnknown: on,
-                        endDate: on ? "" : previous.endDate,
-                        endTime: on ? "" : previous.endTime,
-                      }));
-
-                      if (on) {
-                        setErrors((previous) => {
-                          const next = { ...previous };
-                          delete next.endDate;
-                          delete next.endTime;
-                          return next;
-                        });
-                      }
-                    }}
-                  />
-                  {msg("Z24.time.end.unknown")}
-                </label>
-              </section>
-            </>
-          ) : null}
-
-          {step === "place" ? (
-            <div className="grid items-start gap-6 sm:grid-cols-2 sm:gap-x-4">
-              <Field
-                id="placeName"
-                label={msg("Z24.place.name.label")}
-                hint={
-                  errors.placeName || correction
-                    ? undefined
-                    : msg("Z24.place.name.hint")
-                }
-                error={errorText("placeName")}
-                large
-              >
-                {(props) => (
-                  <Input
-                    {...props}
-                    type="text"
-                    autoComplete="off"
-                    value={values.placeName}
-                    disabled={saving}
-                    placeholder={msg("Z24.place.name.placeholder")}
-                    onChange={(event) =>
-                      setValue("placeName", event.target.value)
-                    }
-                  />
-                )}
-              </Field>
-              <Field
-                id="addressLine"
-                label={msg("Z24.place.street.label")}
-                error={errorText("addressLine")}
-                large
-              >
-                {(props) => (
-                  <Input
-                    {...props}
-                    type="text"
-                    autoComplete="street-address"
-                    value={values.addressLine}
-                    disabled={saving}
-                    placeholder={msg("Z24.place.street.placeholder")}
-                    onChange={(event) =>
-                      setValue("addressLine", event.target.value)
-                    }
-                  />
-                )}
-              </Field>
-              <Field
-                id="postalCode"
-                label={msg("Z24.place.postalCode.label")}
-                error={errorText("postalCode")}
-                large
-              >
-                {(props) => (
-                  <Input
-                    {...props}
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="postal-code"
-                    value={values.postalCode}
-                    disabled={saving}
-                    placeholder={msg("Z24.place.postalCode.placeholder")}
-                    onChange={(event) =>
-                      setValue("postalCode", event.target.value)
-                    }
-                  />
-                )}
-              </Field>
-              <Field
-                id="city"
-                label={msg("Z24.place.city.label")}
-                error={errorText("city")}
-                large
-              >
-                {(props) => (
-                  <Input
-                    {...props}
-                    type="text"
-                    autoComplete="address-level2"
-                    value={values.city}
-                    disabled={saving}
-                    placeholder={msg("Z24.place.city.placeholder")}
-                    onChange={(event) => setValue("city", event.target.value)}
-                  />
-                )}
-              </Field>
-            </div>
-          ) : null}
-
-          {step === "price" ? (
-            <>
-              <fieldset className="flex flex-col gap-4">
-                <legend className="mb-1 text-2xl leading-[30px] font-medium">
-                  {msg("Z25.access.title")}
-                </legend>
-                <p className="text-muted-foreground text-sm leading-5">
-                  {msg("Z25.access.hint")}
-                </p>
-                <div className="mt-2 flex flex-col">
-                  {ACCESS_KINDS.map((kind) => (
-                    <label
-                      key={kind}
-                      htmlFor={`access-${kind}`}
-                      className="flex min-h-11 items-center gap-3 text-base leading-6"
-                    >
-                      <Checkbox
-                        id={`access-${kind}`}
-                        checked={values.accessKinds.includes(kind)}
-                        disabled={saving}
-                        onCheckedChange={(checked) =>
-                          toggleAccess(kind, checked === true)
-                        }
-                      />
-                      {msg(ACCESS_ID[kind])}
-                    </label>
-                  ))}
-                </div>
-                {errors.accessKinds ? (
-                  <p role="alert" className="text-error text-sm">
-                    {errorText("accessKinds")}
-                  </p>
-                ) : null}
-              </fieldset>
-
-              <section
-                aria-labelledby="price-title"
-                className="flex flex-col gap-4"
-              >
-                <h2
-                  id="price-title"
-                  className="text-2xl leading-[30px] font-medium"
-                >
-                  {msg("Z25.price.section")}
-                </h2>
-
-                <div
-                  className={
-                    money && values.priceModel !== "range"
-                      ? "grid items-start gap-4 sm:grid-cols-2"
-                      : "flex flex-col gap-4"
-                  }
-                >
-                  <Field
-                    id="priceModel"
-                    label={msg("Z25.price.form.label")}
-                    error={errorText("priceModel")}
-                    large
-                  >
-                    {(props) => (
-                      <Select
-                        value={values.priceModel}
-                        disabled={saving}
-                        onValueChange={chooseModel}
-                      >
-                        <SelectTrigger {...props}>
-                          <SelectValue
-                            placeholder={msg("Z25.price.form.placeholder")}
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {PRICE_MODELS.map((model) => (
-                            <SelectItem key={model} value={model}>
-                              {msg(PRICE_MODEL_ID[model])}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  </Field>
-
-                  {money && values.priceModel !== "range" ? (
                     <Field
-                      id="priceAmount"
-                      label={msg(
-                        values.priceModel === "from_price"
-                          ? "Z25.price.amount.fromPrice"
-                          : values.priceModel === "min_donation"
-                            ? "Z25.price.amount.minDonation"
-                            : "Z25.price.amount.fixed",
-                      )}
-                      hint={
-                        errors.priceAmount
-                          ? undefined
-                          : values.priceModel === "min_donation"
-                            ? msg("Z25.price.amount.minDonationHint")
-                            : values.priceModel === "from_price"
-                              ? msg("Z25.price.amount.lowest", { ways })
-                              : msg("Z25.price.amount.appliesTo", { ways })
-                      }
-                      error={errorText("priceAmount")}
+                      id="priceModel"
+                      label={msg("Z25.price.form.label")}
+                      error={errorText("priceModel")}
                       large
                     >
                       {(props) => (
-                        <Input
-                          {...props}
-                          type="text"
-                          inputMode="decimal"
-                          autoComplete="off"
-                          value={values.priceAmount}
+                        <Select
+                          value={values.priceModel}
                           disabled={saving}
-                          onChange={(event) =>
-                            setValue("priceAmount", event.target.value)
+                          onValueChange={chooseModel}
+                        >
+                          <SelectTrigger {...props}>
+                            <SelectValue
+                              placeholder={msg("Z25.price.form.placeholder")}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {PRICE_MODELS.map((model) => (
+                              <SelectItem key={model} value={model}>
+                                {msg(PRICE_MODEL_ID[model])}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </Field>
+
+                    {money && values.priceModel !== "range" ? (
+                      <Field
+                        id="priceAmount"
+                        label={msg(
+                          values.priceModel === "from_price"
+                            ? "Z25.price.amount.fromPrice"
+                            : values.priceModel === "min_donation"
+                              ? "Z25.price.amount.minDonation"
+                              : "Z25.price.amount.fixed",
+                        )}
+                        hint={
+                          errors.priceAmount
+                            ? undefined
+                            : values.priceModel === "min_donation"
+                              ? msg("Z25.price.amount.minDonationHint")
+                              : values.priceModel === "from_price"
+                                ? msg("Z25.price.amount.lowest", { ways })
+                                : msg("Z25.price.amount.appliesTo", { ways })
+                        }
+                        error={errorText("priceAmount")}
+                        large
+                      >
+                        {(props) => (
+                          <Input
+                            {...props}
+                            type="text"
+                            inputMode="decimal"
+                            autoComplete="off"
+                            value={values.priceAmount}
+                            disabled={saving}
+                            onChange={(event) =>
+                              setValue("priceAmount", event.target.value)
+                            }
+                          />
+                        )}
+                      </Field>
+                    ) : null}
+                  </div>
+
+                  {values.priceModel === "free" ? (
+                    <p className="text-muted-foreground text-sm leading-5">
+                      {msg("Z25.price.free.hint")}
+                    </p>
+                  ) : null}
+
+                  {values.priceModel === "donation" ? (
+                    <p className="text-muted-foreground text-sm leading-5">
+                      {msg("Z25.price.donation.hint")}
+                    </p>
+                  ) : null}
+
+                  {values.priceModel === "unknown" ? (
+                    <Notice tone="info" title={msg("Z25.price.unknown.title")}>
+                      {msg("Z25.price.unknown.line")}
+                    </Notice>
+                  ) : null}
+
+                  {values.priceModel === "range" ? (
+                    <div className="grid items-start gap-4 sm:grid-cols-2">
+                      <Field
+                        id="priceAmount"
+                        label={msg("Z25.price.amount.rangeFrom")}
+                        error={errorText("priceAmount")}
+                        large
+                      >
+                        {(props) => (
+                          <Input
+                            {...props}
+                            type="text"
+                            inputMode="decimal"
+                            autoComplete="off"
+                            value={values.priceAmount}
+                            disabled={saving}
+                            onChange={(event) =>
+                              setValue("priceAmount", event.target.value)
+                            }
+                          />
+                        )}
+                      </Field>
+                      <Field
+                        id="priceAmountMax"
+                        label={msg("Z25.price.amount.rangeTo")}
+                        error={errorText("priceAmountMax")}
+                        large
+                      >
+                        {(props) => (
+                          <Input
+                            {...props}
+                            type="text"
+                            inputMode="decimal"
+                            autoComplete="off"
+                            value={values.priceAmountMax}
+                            disabled={saving}
+                            onChange={(event) =>
+                              setValue("priceAmountMax", event.target.value)
+                            }
+                          />
+                        )}
+                      </Field>
+                    </div>
+                  ) : null}
+
+                  {money && ticket ? (
+                    <Field
+                      id="priceFees"
+                      label={msg("Z25.fees.label")}
+                      hint={
+                        errors.priceFees
+                          ? undefined
+                          : values.priceFees === "included"
+                            ? msg("Z25.fees.included.hint")
+                            : values.priceFees === "unknown"
+                              ? msg("Z25.fees.unknown.hint")
+                              : undefined
+                      }
+                      error={errorText("priceFees")}
+                      large
+                    >
+                      {(props) => (
+                        <Select
+                          value={values.priceFees}
+                          disabled={saving}
+                          onValueChange={(value) =>
+                            setValue("priceFees", value)
                           }
-                        />
+                        >
+                          <SelectTrigger {...props}>
+                            <SelectValue
+                              placeholder={msg("Z25.fees.placeholder")}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="included">
+                              {msg("Z25.fees.included")}
+                            </SelectItem>
+                            <SelectItem value="unknown">
+                              {msg("Z25.fees.unknown")}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       )}
                     </Field>
                   ) : null}
-                </div>
+                </section>
 
-                {values.priceModel === "free" ? (
-                  <p className="text-muted-foreground text-sm leading-5">
-                    {msg("Z25.price.free.hint")}
-                  </p>
-                ) : null}
-
-                {values.priceModel === "donation" ? (
-                  <p className="text-muted-foreground text-sm leading-5">
-                    {msg("Z25.price.donation.hint")}
-                  </p>
-                ) : null}
-
-                {values.priceModel === "unknown" ? (
-                  <Notice tone="info" title={msg("Z25.price.unknown.title")}>
-                    {msg("Z25.price.unknown.line")}
-                  </Notice>
-                ) : null}
-
-                {values.priceModel === "range" ? (
-                  <div className="grid items-start gap-4 sm:grid-cols-2">
+                {ticket ? (
+                  <>
                     <Field
-                      id="priceAmount"
-                      label={msg("Z25.price.amount.rangeFrom")}
-                      error={errorText("priceAmount")}
+                      id="onlineTicketAvailability"
+                      label={msg("Z25.availability.label")}
+                      hint={
+                        errors.onlineTicketAvailability ||
+                        values.onlineTicketAvailability !== "sold_out"
+                          ? undefined
+                          : msg("Z25.availability.soldOut.hint")
+                      }
+                      error={errorText("onlineTicketAvailability")}
+                      large
+                    >
+                      {(props) => (
+                        <Select
+                          value={values.onlineTicketAvailability}
+                          disabled={saving}
+                          onValueChange={(value) =>
+                            setValue("onlineTicketAvailability", value)
+                          }
+                        >
+                          <SelectTrigger {...props}>
+                            <SelectValue
+                              placeholder={msg("Z25.availability.placeholder")}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {TICKET_AVAILABILITY.map((value) => (
+                              <SelectItem key={value} value={value}>
+                                {msg(
+                                  value === "sold_out"
+                                    ? "Z25.availability.soldOut"
+                                    : "Z25.availability.available",
+                                )}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </Field>
+
+                    <Field
+                      id="onlineTicketUrl"
+                      label={msg("Z25.link.ticket.label")}
+                      hint={
+                        errors.onlineTicketUrl
+                          ? undefined
+                          : msg("Z25.link.ticket.hint")
+                      }
+                      error={errorText("onlineTicketUrl")}
                       large
                     >
                       {(props) => (
                         <Input
                           {...props}
-                          type="text"
-                          inputMode="decimal"
+                          type="url"
+                          inputMode="url"
                           autoComplete="off"
-                          value={values.priceAmount}
+                          value={values.onlineTicketUrl}
                           disabled={saving}
                           onChange={(event) =>
-                            setValue("priceAmount", event.target.value)
+                            setValue("onlineTicketUrl", event.target.value)
                           }
                         />
                       )}
                     </Field>
-                    <Field
-                      id="priceAmountMax"
-                      label={msg("Z25.price.amount.rangeTo")}
-                      error={errorText("priceAmountMax")}
-                      large
-                    >
-                      {(props) => (
-                        <Input
-                          {...props}
-                          type="text"
-                          inputMode="decimal"
-                          autoComplete="off"
-                          value={values.priceAmountMax}
-                          disabled={saving}
-                          onChange={(event) =>
-                            setValue("priceAmountMax", event.target.value)
-                          }
-                        />
-                      )}
-                    </Field>
-                  </div>
+                  </>
                 ) : null}
 
-                {money && ticket ? (
+                {values.accessKinds.includes("online_registration") ? (
                   <Field
-                    id="priceFees"
-                    label={msg("Z25.fees.label")}
+                    id="onlineRegistrationUrl"
+                    label={msg("Z25.link.registration.label")}
                     hint={
-                      errors.priceFees
+                      errors.onlineRegistrationUrl
                         ? undefined
-                        : values.priceFees === "included"
-                          ? msg("Z25.fees.included.hint")
-                          : values.priceFees === "unknown"
-                            ? msg("Z25.fees.unknown.hint")
-                            : undefined
+                        : msg("Z25.link.registration.hint")
                     }
-                    error={errorText("priceFees")}
-                    large
-                  >
-                    {(props) => (
-                      <Select
-                        value={values.priceFees}
-                        disabled={saving}
-                        onValueChange={(value) => setValue("priceFees", value)}
-                      >
-                        <SelectTrigger {...props}>
-                          <SelectValue
-                            placeholder={msg("Z25.fees.placeholder")}
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="included">
-                            {msg("Z25.fees.included")}
-                          </SelectItem>
-                          <SelectItem value="unknown">
-                            {msg("Z25.fees.unknown")}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  </Field>
-                ) : null}
-              </section>
-
-              {ticket ? (
-                <>
-                  <Field
-                    id="onlineTicketAvailability"
-                    label={msg("Z25.availability.label")}
-                    hint={
-                      errors.onlineTicketAvailability ||
-                      values.onlineTicketAvailability !== "sold_out"
-                        ? undefined
-                        : msg("Z25.availability.soldOut.hint")
-                    }
-                    error={errorText("onlineTicketAvailability")}
-                    large
-                  >
-                    {(props) => (
-                      <Select
-                        value={values.onlineTicketAvailability}
-                        disabled={saving}
-                        onValueChange={(value) =>
-                          setValue("onlineTicketAvailability", value)
-                        }
-                      >
-                        <SelectTrigger {...props}>
-                          <SelectValue
-                            placeholder={msg("Z25.availability.placeholder")}
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {TICKET_AVAILABILITY.map((value) => (
-                            <SelectItem key={value} value={value}>
-                              {msg(
-                                value === "sold_out"
-                                  ? "Z25.availability.soldOut"
-                                  : "Z25.availability.available",
-                              )}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  </Field>
-
-                  <Field
-                    id="onlineTicketUrl"
-                    label={msg("Z25.link.ticket.label")}
-                    hint={
-                      errors.onlineTicketUrl
-                        ? undefined
-                        : msg("Z25.link.ticket.hint")
-                    }
-                    error={errorText("onlineTicketUrl")}
+                    error={errorText("onlineRegistrationUrl")}
                     large
                   >
                     {(props) => (
@@ -1241,227 +1277,202 @@ export function EventStepScreen({
                         type="url"
                         inputMode="url"
                         autoComplete="off"
-                        value={values.onlineTicketUrl}
+                        value={values.onlineRegistrationUrl}
                         disabled={saving}
                         onChange={(event) =>
-                          setValue("onlineTicketUrl", event.target.value)
+                          setValue("onlineRegistrationUrl", event.target.value)
                         }
                       />
                     )}
                   </Field>
-                </>
-              ) : null}
-
-              {values.accessKinds.includes("online_registration") ? (
-                <Field
-                  id="onlineRegistrationUrl"
-                  label={msg("Z25.link.registration.label")}
-                  hint={
-                    errors.onlineRegistrationUrl
-                      ? undefined
-                      : msg("Z25.link.registration.hint")
-                  }
-                  error={errorText("onlineRegistrationUrl")}
-                  large
-                >
-                  {(props) => (
-                    <Input
-                      {...props}
-                      type="url"
-                      inputMode="url"
-                      autoComplete="off"
-                      value={values.onlineRegistrationUrl}
-                      disabled={saving}
-                      onChange={(event) =>
-                        setValue("onlineRegistrationUrl", event.target.value)
-                      }
-                    />
-                  )}
-                </Field>
-              ) : null}
-            </>
-          ) : null}
-
-          {step === "image" ? (
-            <>
-              <div className="border-border flex flex-col gap-3 rounded-md border p-4">
-                {image?.url ? (
-                  <div className="w-[200px] max-w-full overflow-hidden rounded">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={image.url}
-                      alt=""
-                      draggable={false}
-                      className="block h-auto w-full"
-                    />
-                  </div>
                 ) : null}
-                <p className="text-sm leading-5 font-medium break-all">
-                  {image?.fileName ?? msg("Z25.image.label")}
-                </p>
-                <p className="text-muted-foreground text-xs leading-4">
-                  {image ? msg("Z23.upload.another") : msg("Z23.upload.hint")}
-                </p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Button
-                    variant="ghostLg"
-                    onClick={upload.open}
-                    disabled={uploading || saving}
-                  >
-                    {msg("Z23.upload.choose")}
-                  </Button>
-                  {image ? null : (
-                    <span className="text-muted-foreground text-sm leading-5">
-                      {msg("Z23.upload.none")}
-                    </span>
-                  )}
-                </div>
-                <input
-                  ref={upload.inputRef}
-                  type="file"
-                  accept={ACCEPT}
-                  className="sr-only"
-                  tabIndex={-1}
-                  aria-hidden="true"
-                  onChange={(event) => {
-                    void upload.choose(event.target.files?.[0]);
-                    // The same file can be chosen again after an error.
-                    event.target.value = "";
-                  }}
-                />
-              </div>
+              </>
+            ) : null}
 
-              {image ? (
+            {step === "image" ? (
+              <>
+                <div className="border-border flex flex-col gap-3 rounded-md border p-4">
+                  {image?.url ? (
+                    <div className="w-[200px] max-w-full overflow-hidden rounded">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={image.url}
+                        alt=""
+                        draggable={false}
+                        className="block h-auto w-full"
+                      />
+                    </div>
+                  ) : null}
+                  <p className="text-sm leading-5 font-medium break-all">
+                    {image?.fileName ?? msg("Z25.image.label")}
+                  </p>
+                  <p className="text-muted-foreground text-xs leading-4">
+                    {image ? msg("Z23.upload.another") : msg("Z23.upload.hint")}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button
+                      variant="ghostLg"
+                      onClick={upload.open}
+                      disabled={uploading || saving}
+                    >
+                      {msg("Z23.upload.choose")}
+                    </Button>
+                    {image ? null : (
+                      <span className="text-muted-foreground text-sm leading-5">
+                        {msg("Z23.upload.none")}
+                      </span>
+                    )}
+                  </div>
+                  <input
+                    ref={upload.inputRef}
+                    type="file"
+                    accept={ACCEPT}
+                    className="sr-only"
+                    tabIndex={-1}
+                    aria-hidden="true"
+                    onChange={(event) => {
+                      void upload.choose(event.target.files?.[0]);
+                      // The same file can be chosen again after an error.
+                      event.target.value = "";
+                    }}
+                  />
+                </div>
+
+                {image ? (
+                  <Field
+                    id="altText"
+                    label={msg("Z23.image.alt.label")}
+                    hint={
+                      errors.altText ? undefined : msg("Z23.image.alt.hint")
+                    }
+                    error={errorText("altText")}
+                    large
+                  >
+                    {(props) => (
+                      <Textarea
+                        {...props}
+                        rows={2}
+                        value={values.altText}
+                        disabled={saving}
+                        placeholder={msg("Z23.image.alt.placeholder")}
+                        onChange={(event) =>
+                          setValue("altText", event.target.value)
+                        }
+                      />
+                    )}
+                  </Field>
+                ) : (
+                  <p className="text-muted-foreground text-sm leading-5">
+                    {msg("Z25.image.missingHint")}
+                  </p>
+                )}
+              </>
+            ) : null}
+
+            {step === "atmosphere" ? (
+              <>
+                <fieldset className="flex flex-col gap-6">
+                  <legend className="sr-only">
+                    {msg("Z25.atmosphere.group")}
+                  </legend>
+                  <div className="flex flex-wrap gap-2">
+                    {ATMOSPHERE_TERMS.map((term) => {
+                      const checked = values.atmosphereTags.includes(term);
+
+                      return (
+                        <AtmosphereChip
+                          key={term}
+                          value={term}
+                          label={msg(ATMOSPHERE_ID[term])}
+                          checked={checked}
+                          disabled={
+                            saving ||
+                            (!checked &&
+                              values.atmosphereTags.length >=
+                                MAX_ATMOSPHERE_TAGS)
+                          }
+                          onChange={(on) => toggleTerm(term, on)}
+                        />
+                      );
+                    })}
+                  </div>
+                  <p
+                    aria-live="polite"
+                    className="text-muted-foreground text-sm leading-5"
+                  >
+                    {msg("Z25.atmosphere.count", {
+                      n: values.atmosphereTags.length,
+                      max: MAX_ATMOSPHERE_TAGS,
+                    })}
+                    {values.atmosphereTags.length === 0 &&
+                    values.atmosphereDescription.trim() === ""
+                      ? ` ${msg("Z25.atmosphere.needed")}`
+                      : ""}
+                  </p>
+                  {errors.atmosphereTags ? (
+                    <p role="alert" className="text-error text-sm">
+                      {errorText("atmosphereTags")}
+                    </p>
+                  ) : null}
+                </fieldset>
+
                 <Field
-                  id="altText"
-                  label={msg("Z23.image.alt.label")}
-                  hint={errors.altText ? undefined : msg("Z23.image.alt.hint")}
-                  error={errorText("altText")}
+                  id="atmosphereDescription"
+                  label={msg("Z25.atmosphere.text.label")}
+                  hint={
+                    errors.atmosphereDescription
+                      ? undefined
+                      : msg("Z25.atmosphere.text.hint", {
+                          max: EVENT_LIMITS.atmosphereDescription,
+                        })
+                  }
+                  error={errorText("atmosphereDescription")}
                   large
                 >
                   {(props) => (
                     <Textarea
                       {...props}
                       rows={2}
-                      value={values.altText}
+                      value={values.atmosphereDescription}
                       disabled={saving}
-                      placeholder={msg("Z23.image.alt.placeholder")}
+                      placeholder={msg("Z25.atmosphere.text.placeholder")}
                       onChange={(event) =>
-                        setValue("altText", event.target.value)
+                        setValue("atmosphereDescription", event.target.value)
                       }
                     />
                   )}
                 </Field>
-              ) : (
-                <p className="text-muted-foreground text-sm leading-5">
-                  {msg("Z25.image.missingHint")}
-                </p>
-              )}
-            </>
-          ) : null}
+              </>
+            ) : null}
+          </div>
 
-          {step === "atmosphere" ? (
-            <>
-              <fieldset className="flex flex-col gap-6">
-                <legend className="sr-only">
-                  {msg("Z25.atmosphere.group")}
-                </legend>
-                <div className="flex flex-wrap gap-2">
-                  {ATMOSPHERE_TERMS.map((term) => {
-                    const checked = values.atmosphereTags.includes(term);
-
-                    return (
-                      <AtmosphereChip
-                        key={term}
-                        value={term}
-                        label={msg(ATMOSPHERE_ID[term])}
-                        checked={checked}
-                        disabled={
-                          saving ||
-                          (!checked &&
-                            values.atmosphereTags.length >= MAX_ATMOSPHERE_TAGS)
-                        }
-                        onChange={(on) => toggleTerm(term, on)}
-                      />
-                    );
-                  })}
-                </div>
-                <p
-                  aria-live="polite"
-                  className="text-muted-foreground text-sm leading-5"
-                >
-                  {msg("Z25.atmosphere.count", {
-                    n: values.atmosphereTags.length,
-                    max: MAX_ATMOSPHERE_TAGS,
-                  })}
-                  {values.atmosphereTags.length === 0 &&
-                  values.atmosphereDescription.trim() === ""
-                    ? ` ${msg("Z25.atmosphere.needed")}`
-                    : ""}
-                </p>
-                {errors.atmosphereTags ? (
-                  <p role="alert" className="text-error text-sm">
-                    {errorText("atmosphereTags")}
-                  </p>
-                ) : null}
-              </fieldset>
-
-              <Field
-                id="atmosphereDescription"
-                label={msg("Z25.atmosphere.text.label")}
-                hint={
-                  errors.atmosphereDescription
-                    ? undefined
-                    : msg("Z25.atmosphere.text.hint", {
-                        max: EVENT_LIMITS.atmosphereDescription,
-                      })
-                }
-                error={errorText("atmosphereDescription")}
-                large
-              >
-                {(props) => (
-                  <Textarea
-                    {...props}
-                    rows={2}
-                    value={values.atmosphereDescription}
-                    disabled={saving}
-                    placeholder={msg("Z25.atmosphere.text.placeholder")}
-                    onChange={(event) =>
-                      setValue("atmosphereDescription", event.target.value)
-                    }
-                  />
-                )}
-              </Field>
-            </>
-          ) : null}
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button
-            type="submit"
-            variant="primaryLg"
-            disabled={saving || uploading}
-            aria-busy={saving}
-          >
-            {mainLabel}
-          </Button>
-          {correction ? (
-            <Link
-              href={backHref}
-              className={buttonClass("ghostLg", "w-full sm:w-auto")}
-            >
-              {correction.backLabel}
-            </Link>
-          ) : (
+          <div className="flex flex-col gap-3 sm:flex-row">
             <Button
-              variant="ghostLg"
-              disabled={saving}
-              onClick={() => void run("later")}
+              type="submit"
+              variant="primaryLg"
+              disabled={saving || uploading}
+              aria-busy={saving}
             >
-              {msg("Z24.later")}
+              {mainLabel}
             </Button>
-          )}
-        </div>
+            {correction ? (
+              <Link
+                href={backHref}
+                className={buttonClass("ghostLg", "w-full sm:w-auto")}
+              >
+                {correction.backLabel}
+              </Link>
+            ) : (
+              <Button
+                variant="ghostLg"
+                disabled={saving}
+                onClick={() => void run("later")}
+              >
+                {msg("Z24.later")}
+              </Button>
+            )}
+          </div>
+        </fieldset>
       </form>
     </StepShell>
   );
