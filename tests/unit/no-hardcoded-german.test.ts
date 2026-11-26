@@ -38,13 +38,7 @@ const LEGACY: Record<string, string> = {
   "app/(internal)/internal/approvals/actions.ts": "founder area",
   "app/(internal)/internal/approvals/[profileId]/page.tsx": "founder area",
   "lib/profile/founder.ts": "founder area",
-  // Public pages, rebuilt with PUB-01 / PUB-06.
-  "components/public/event-view.tsx": "PUB-01",
-  "components/public/share-button.tsx": "PUB-01",
-  "lib/public/tags.ts": "PUB-01",
-  "lib/public/info-bars.ts": "PUB-01",
   "app/page.tsx": "start page",
-  "components/public/profile-view.tsx": "PUB-01",
   "app/(organizer)/organizer/events/new/page.tsx": "profile picker",
   // Legal texts: German is the authoritative version, English follows.
   "lib/legal/texts.ts": "legal texts",

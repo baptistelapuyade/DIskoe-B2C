@@ -141,7 +141,7 @@ begin
     'access_state', 'provided', 'access_routes', '[{"kind": "walk_in"}]'::jsonb,
     'atmosphere_state', 'provided', 'atmosphere_tags', '{warm,loud}',
     -- An opening has a required block (visit mode); "unknown" is an answer.
-    'modules', '{"visit_mode": {"mode": "unknown", "window_from": null, "window_to": null, "short_visit": null}}'::jsonb,
+    'modules', '{"visit_mode": {"mode": "unknown", "window_from": null, "window_to": null, "short_visit": null}, "participants": {"text": "Guest list"}}'::jsonb,
     'event_image_use_id', p_use
   ) || p_over;
   select string_agg(quote_ident(k), ', '),
@@ -770,6 +770,8 @@ select tests.as_anon();
 select tests.expect_count('select id from public.public_events', 1, 'anon sees the published event');
 select tests.expect_true($q$select price_state = 'unknown' and price_model = 'unknown' and price_amount_minor is null and end_at is null from public.public_events where slug = 'summer-opening'$q$,
   'unknown price and unknown end stay unknown publicly (P07, P12)');
+select tests.expect_true($q$select modules = '{"visit_mode": {"mode": "unknown", "window_from": null, "window_to": null, "short_visit": null}}'::jsonb from public.public_events where slug = 'summer-opening'$q$,
+  'public view shows the designed blocks of "Mehr zum Abend" and leaves the free-text blocks out');
 
 -- A private change stays private.
 select tests.as_user(:'uid_a');
@@ -1675,7 +1677,7 @@ insert into tests.expected_col_grants values
   ('authenticated', 'event_revisions', 'SELECT', array['id','event_id','revision_no','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id','confirmed_at','created_at','content_version']),
   ('authenticated', 'event_revisions', 'INSERT', array['event_id','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id','created_by']),
   ('authenticated', 'event_revisions', 'UPDATE', array['title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id']),
-  ('anon',          'event_revisions', 'SELECT', array['id','title','description','primary_format','start_at','timezone','end_state','end_at','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_routes','atmosphere_tags','atmosphere_description','event_image_use_id','confirmed_at']),
+  ('anon',          'event_revisions', 'SELECT', array['id','title','description','primary_format','start_at','timezone','end_state','end_at','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_routes','atmosphere_tags','atmosphere_description','modules','event_image_use_id','confirmed_at']),
   ('authenticated', 'media_assets', 'SELECT', array['id','uploader_id','private_object_path','mime_type','created_at','original_filename']),
   ('authenticated', 'media_assets', 'INSERT', array['uploader_id','private_object_path','mime_type','original_filename']),
   ('authenticated', 'media_assets', 'UPDATE', array['mime_type']),

@@ -1,15 +1,31 @@
 import Link from "next/link";
 
+import { t, type Lang } from "@/lib/i18n";
 import type { PublicEvent, PublicProfile } from "@/lib/public/dto";
 
-import { Band, Eyebrow, FormatTag, LegalFooter, ProfileImage, SiteBar } from "./parts";
+import {
+  Band,
+  Eyebrow,
+  FormatTag,
+  LegalFooter,
+  ProfileImage,
+  SiteBar,
+} from "./parts";
 
 const VISIBLE = 3;
 
-function EventRow({ event, highlight }: { event: PublicEvent; highlight: boolean }) {
+function EventRow({
+  lang,
+  event,
+  highlight,
+}: {
+  lang: Lang;
+  event: PublicEvent;
+  highlight: boolean;
+}) {
   const when =
     event.status === "postponed_undated"
-      ? "Neuer Termin folgt"
+      ? t(lang, "Z34.event.dateTbd")
       : [event.dateLine, event.timeLine].filter(Boolean).join(" · ");
 
   return (
@@ -24,10 +40,16 @@ function EventRow({ event, highlight }: { event: PublicEvent; highlight: boolean
         </span>
         <span className="text-base leading-6">{when}</span>
         {event.status === "rescheduled" ? (
-          <span className="text-sm leading-5 font-medium">Neuer Termin</span>
+          <span className="text-sm leading-5 font-medium">
+            {t(lang, "Z34.profile.rescheduled")}
+          </span>
         ) : null}
         {event.placeName ? (
-          <span className={`${highlight ? "text-foreground" : "text-muted-foreground"} text-sm leading-5`}>{event.placeName}</span>
+          <span
+            className={`${highlight ? "text-foreground" : "text-muted-foreground"} text-sm leading-5`}
+          >
+            {event.placeName}
+          </span>
         ) : null}
       </Link>
     </li>
@@ -47,60 +69,78 @@ function ExternalLink({ url, label }: { url: string; label?: string }) {
 }
 
 export function ProfileView({
+  lang,
   profile,
   events,
 }: {
+  lang: Lang;
   profile: PublicProfile;
   events: PublicEvent[];
 }) {
   const hasLinks = Boolean(
     profile.officialUrl ||
-      profile.instagram ||
-      profile.extraLinks.length > 0 ||
-      profile.publicContact,
+    profile.instagram ||
+    profile.extraLinks.length > 0 ||
+    profile.publicContact,
   );
   const shown = events.slice(0, VISIBLE);
   const more = events.slice(VISIBLE);
 
   return (
     <main>
-      <SiteBar />
+      <SiteBar lang={lang} />
 
-      <Band tone="surface" label="Veranstalter">
+      <Band tone="surface" label={t(lang, "Z34.profile.eyebrow")}>
         <div className="flex max-w-[704px] flex-col gap-5">
-          <Eyebrow>Veranstalter</Eyebrow>
-          <ProfileImage url={profile.imageUrl} size={96} crop={profile.imageCrop} />
+          <Eyebrow>{t(lang, "Z34.profile.eyebrow")}</Eyebrow>
+          <ProfileImage
+            url={profile.imageUrl}
+            size={96}
+            crop={profile.imageCrop}
+          />
           <h1 className="text-[40px] leading-[44px] font-bold tracking-[-0.8px]">
             {profile.name}
           </h1>
           {profile.shortIntro ? (
-            <p className="text-base leading-6 whitespace-pre-line">{profile.shortIntro}</p>
+            <p className="text-base leading-6 whitespace-pre-line">
+              {profile.shortIntro}
+            </p>
           ) : null}
         </div>
       </Band>
 
-      <Band tone="paper" label="Kommende Events">
+      <Band tone="paper" label={t(lang, "Z34.profile.upcoming")}>
         <div className="flex max-w-[704px] flex-col gap-6">
           <h2 className="text-[32px] leading-[38px] font-bold tracking-[-0.8px]">
-            Kommende Events
+            {t(lang, "Z34.profile.upcoming")}
           </h2>
           {events.length === 0 ? (
-            <p className="text-base leading-6">Neue Termine folgen.</p>
+            <p className="text-base leading-6">{t(lang, "Z34.profile.none")}</p>
           ) : (
             <>
               <ul className="flex flex-col gap-4">
                 {shown.map((event, index) => (
-                  <EventRow key={event.id} event={event} highlight={index === 0} />
+                  <EventRow
+                    key={event.id}
+                    lang={lang}
+                    event={event}
+                    highlight={index === 0}
+                  />
                 ))}
               </ul>
               {more.length > 0 ? (
                 <details className="group flex flex-col gap-4">
-                  <summary className="flex min-h-11 w-fit items-center text-sm leading-5 font-medium underline underline-offset-4 cursor-pointer">
-                    Mehr anzeigen ({more.length})
+                  <summary className="flex min-h-11 w-fit cursor-pointer items-center text-sm leading-5 font-medium underline underline-offset-4">
+                    {t(lang, "Z34.profile.more", { n: more.length })}
                   </summary>
                   <ul className="mt-4 flex flex-col gap-4">
                     {more.map((event) => (
-                      <EventRow key={event.id} event={event} highlight={false} />
+                      <EventRow
+                        key={event.id}
+                        lang={lang}
+                        event={event}
+                        highlight={false}
+                      />
                     ))}
                   </ul>
                 </details>
@@ -111,19 +151,23 @@ export function ProfileView({
       </Band>
 
       {hasLinks ? (
-        <Band tone="ink" label="Links und Kontakt">
+        <Band tone="ink" label={t(lang, "Z34.profile.links")}>
           <div className="flex max-w-[704px] flex-col gap-4">
             <h2 className="text-[32px] leading-[38px] font-bold tracking-[-0.8px]">
-              Links und Kontakt
+              {t(lang, "Z34.profile.links")}
             </h2>
-            {profile.officialUrl ? <ExternalLink url={profile.officialUrl} /> : null}
+            {profile.officialUrl ? (
+              <ExternalLink url={profile.officialUrl} />
+            ) : null}
             {profile.instagram ? (
               <a
                 href={`https://www.instagram.com/${profile.instagram}/`}
                 rel="noopener noreferrer nofollow"
                 className="inline-flex min-h-11 w-fit items-center text-base leading-6 underline underline-offset-4"
               >
-                Instagram @{profile.instagram} ↗
+                {t(lang, "Z34.profile.instagram", {
+                  handle: profile.instagram,
+                })}
               </a>
             ) : null}
             {profile.extraLinks.map((link) => (
@@ -135,7 +179,7 @@ export function ProfileView({
           </div>
         </Band>
       ) : null}
-      <LegalFooter />
+      <LegalFooter lang={lang} />
     </main>
   );
 }

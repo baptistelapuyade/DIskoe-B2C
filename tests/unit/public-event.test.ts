@@ -55,6 +55,7 @@ const eventRow: PublicEventRow = {
   ],
   atmosphere_tags: ["Lebhaft"],
   atmosphere_description: null,
+  modules: null,
   event_image_path: "events/e1/u1.png",
   published_at: "2026-10-20T10:00:00Z",
 };
@@ -78,13 +79,36 @@ function build(overrides: Partial<PublicEventRow>, now: Date = BEFORE) {
   return event;
 }
 
+describe("blocks of Mehr zum Abend on the public event", () => {
+  it("shows the four designed blocks and never the free-text blocks", () => {
+    const event = build({
+      modules: {
+        entry_age: { doors_at: "21:30", age_rule: "minimum", min_age: 18 },
+        music: { precision: "Dub Techno", genres: ["electronic", "nonsense"] },
+        participants: { text: "Mara, Karo" },
+        bring_participation: { text: "Ausweis" },
+      },
+    });
+
+    expect(event.modules.entry_age?.doors_at).toBe("21:30");
+    expect(event.modules.music?.genres).toEqual(["electronic"]);
+    expect(event.modules).not.toHaveProperty("participants");
+    expect(event.modules).not.toHaveProperty("bring_participation");
+    expect(event.startTime).toBe("23:00");
+  });
+
+  it("has no blocks when the step was never saved", () => {
+    expect(build({ modules: null }).modules).toEqual({});
+  });
+});
+
 describe("public event shape", () => {
   it("shows a night over midnight with both days in Berlin time", () => {
     const event = build({});
 
-    expect(event.dateLine).toBe("Sa., 31.10.2026");
+    expect(event.dateLine).toBe("Sa, 31. Oktober");
     expect(event.timeLine).toBe("23:00 → 04:00");
-    expect(event.untilLine).toBe("Bis So., 01.11.2026");
+    expect(event.untilLine).toBe("Bis So, 1. November");
   });
 
   it("shows only the start when the end is not known, and invents no end", () => {

@@ -1,3 +1,5 @@
+import { Clock, MessageCircle, User } from "lucide-react";
+
 // Icons of the "Gut zu wissen" bars. Paths are the Figma components
 // "Icon / badge-euro" (533:53937) and "Icon / circle-help" (533:53668), read
 // from the file. The stroke colour follows the text colour (currentColor)
@@ -5,7 +7,10 @@
 
 type IconProps = { size?: number };
 
-function Svg({ size = 22, children }: IconProps & { children: React.ReactNode }) {
+function Svg({
+  size = 22,
+  children,
+}: IconProps & { children: React.ReactNode }) {
   return (
     <svg
       width={size}
@@ -41,5 +46,30 @@ export function CircleHelpIcon(props: IconProps) {
       <path d="M9.08997 9.00008C9.32507 8.33175 9.78912 7.76819 10.3999 7.40921C11.0107 7.05024 11.7289 6.91902 12.4271 7.03879C13.1254 7.15857 13.7588 7.52161 14.215 8.06361C14.6713 8.60561 14.921 9.2916 14.92 10.0001C14.92 12.0001 11.92 13.0001 11.92 13.0001" />
       <path d="M12 17H12.01" />
     </Svg>
+  );
+}
+
+// The remaining bars use the same line style from the icon set that is
+// already a dependency (lucide), at the same size and stroke weight.
+export function ClockIcon({ size = 22 }: IconProps) {
+  return (
+    <Clock size={size} strokeWidth={1.5} aria-hidden="true" focusable="false" />
+  );
+}
+
+export function UserIcon({ size = 22 }: IconProps) {
+  return (
+    <User size={size} strokeWidth={1.5} aria-hidden="true" focusable="false" />
+  );
+}
+
+export function MessageCircleIcon({ size = 22 }: IconProps) {
+  return (
+    <MessageCircle
+      size={size}
+      strokeWidth={1.5}
+      aria-hidden="true"
+      focusable="false"
+    />
   );
 }

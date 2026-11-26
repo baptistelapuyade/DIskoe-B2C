@@ -292,7 +292,7 @@ test.describe("public pages", () => {
     expect(response?.status()).toBe(200);
 
     await expect(page.getByRole("heading", { level: 1, name: LIVE.title })).toBeVisible(SLOW);
-        await expect(page.getByText("Sa., 05.06.2027").first()).toBeVisible();
+        await expect(page.getByText(/Sa, 5\. Juni( 2027)?/).first()).toBeVisible();
     await expect(page.getByText("Preis noch offen").first()).toBeVisible();
     await expect(page.getByText("Frei", { exact: true })).toHaveCount(0);
     // "Gut zu wissen": the entry bar answers the cost, accessibility is always
@@ -303,11 +303,10 @@ test.describe("public pages", () => {
     await expect(bars.getByText("Zugänglichkeit", { exact: true })).toBeVisible();
     await expect(bars.getByText("Noch keine Angaben")).toBeVisible();
     await expect(page.getByRole("link", { name: "Veranstalter fragen" })).toHaveCount(0);
-    // PUB-01 actions: sharing is there, "Merken" is a disabled placeholder,
-    // there is no follow or change subscription in the alpha.
+    // PUB-01 actions: sharing is there; "Merken", follow and the change
+    // subscription are wave 3 and not on the page (no dead controls).
     await expect(page.getByRole("button", { name: "Teilen" })).toBeVisible(SLOW);
-    await expect(page.getByRole("button", { name: "Merken" })).toBeDisabled();
-    await expect(page.getByText("kommt nach der Alpha")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Merken" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /benachrichtig|Neue Events/ })).toHaveCount(0);
     await expect(page.getByText("Party / Clubabend").first()).toBeVisible();
     await expect(page.getByRole("link", { name: /Pub Kollektiv/ }).first()).toBeVisible();
@@ -349,11 +348,31 @@ test.describe("public pages", () => {
     expect(jsonLd.eventStatus).toBe("https://schema.org/EventCancelled");
   });
 
+  test("a visitor without a stored choice gets the browser language and can switch", async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      storageState: { cookies: [], origins: [] },
+      extraHTTPHeaders: { "Accept-Language": "en-GB,en;q=0.9" },
+    });
+    const page = await context.newPage();
+
+    await page.goto(`/e/${LIVE.slug}`);
+    await expect(page.getByRole("region", { name: "Good to know" })).toBeVisible(SLOW);
+    await expect(page.getByText("Price not known yet").first()).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+
+    await page.getByRole("button", { name: "DE" }).click();
+    await expect(page.getByRole("region", { name: "Gut zu wissen" })).toBeVisible(SLOW);
+    await expect(page.locator("html")).toHaveAttribute("lang", "de");
+    await context.close();
+  });
+
   test("an event postponed without a date shows no date", async ({ page }) => {
     await page.goto(`/e/${POSTPONED.slug}`);
 
     await expect(page.getByRole("status").getByText("Neuer Termin folgt")).toBeVisible(SLOW);
-    await expect(page.getByText("Sa., 05.06.2027")).toHaveCount(0);
+    await expect(page.getByText(/Sa, 5\. Juni/)).toHaveCount(0);
 
     const jsonLd = JSON.parse(
       (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",

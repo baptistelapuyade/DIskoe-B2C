@@ -1,19 +1,25 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { cache } from "react";
 
 import {
   LANG_COOKIE,
-  parseLang,
+  langFromAcceptLanguage,
   t,
   type Lang,
   type MessageId,
   type Params,
 } from "./index";
 
-// Reads the language of the current request (cookie, default English).
+// Reads the language of the current request: the stored choice (cookie), else
+// the language the browser asks for (German or English), else English
+// (founder, 26.11.2026). Link previews and crawlers send no cookie, so they
+// get the language of their request header, English as a rule.
 export const getLang = cache(async (): Promise<Lang> => {
-  const store = await cookies();
-  return parseLang(store.get(LANG_COOKIE)?.value);
+  const stored = (await cookies()).get(LANG_COOKIE)?.value;
+
+  if (stored === "de" || stored === "en") return stored;
+
+  return langFromAcceptLanguage((await headers()).get("accept-language"));
 });
 
 // Server-side translator for the current request.

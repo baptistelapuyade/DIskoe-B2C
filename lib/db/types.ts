@@ -759,6 +759,7 @@ export type Database = {
           end_state: Database["public"]["Enums"]["answer_state"] | null
           event_image_path: string | null
           id: string | null
+          modules: Json | null
           organizer_id: string | null
           place_name: string | null
           postal_code: string | null

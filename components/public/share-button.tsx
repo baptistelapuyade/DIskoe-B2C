@@ -13,7 +13,17 @@ type State = "idle" | "copied" | "failed";
 
 const noopSubscribe = () => () => {};
 
-export function ShareButton({ url, title }: { url: string; title: string }) {
+export type ShareLabels = { share: string; copied: string; failed: string };
+
+export function ShareButton({
+  url,
+  title,
+  labels,
+}: {
+  url: string;
+  title: string;
+  labels: ShareLabels;
+}) {
   const hydrated = useSyncExternalStore(
     noopSubscribe,
     () => true,
@@ -42,14 +52,18 @@ export function ShareButton({ url, title }: { url: string; title: string }) {
 
   return (
     <>
-      <button type="button" onClick={share} className={buttonClass("secondary", "w-full")}>
-        Teilen
+      <button
+        type="button"
+        onClick={share}
+        className={buttonClass("secondary", "w-full")}
+      >
+        {labels.share}
       </button>
       <p role="status" className="col-span-2 text-sm leading-5 empty:hidden">
         {state === "copied"
-          ? "Link kopiert."
+          ? labels.copied
           : state === "failed"
-            ? "Der Link konnte nicht kopiert werden."
+            ? labels.failed
             : ""}
       </p>
     </>

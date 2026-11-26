@@ -13,28 +13,26 @@ import {
 } from "../domain/event-publication";
 import { priceLabel, type PriceView } from "../domain/money";
 import { ACCESS_ID } from "../event/labels";
-import { t, type Lang } from "../i18n";
+import { t, type Lang, type MessageId } from "../i18n";
+import { parseStored, type StoredModules } from "../domain/event-modules";
 import { linkLabel, readCrop, type Crop } from "../domain/profile-publication";
-import {
-  archiveInstant,
-  describeEventTime,
-  formatLocalDate,
-} from "../domain/time";
+import { archiveInstant, describeEventTime } from "../domain/time";
+import { formatEventDate, yearIn } from "./format";
 
 type Views = Database["public"]["Views"];
 export type PublicEventRow = Views["public_events"]["Row"];
 export type PublicProfileRow = Views["public_profiles"]["Row"];
 
 // The names of the format tags as the design shows them (Figma, tokens doc
-// "Format-Tags"). The editor uses shorter labels (FORMAT_LABEL).
-export const PUBLIC_FORMAT_LABEL: Record<PrimaryFormat, string> = {
-  concert: "Konzert / Live-Musik",
-  dj_set: "DJ-Set",
-  club_night: "Party / Clubabend",
-  listening_session: "Listening-Session",
-  opening: "Vernissage",
-  exhibition: "Ausstellungsabend / Offspace",
-  screening: "Filmabend / Screening",
+// "Format-Tags"), as catalog IDs. The editor uses shorter labels (FORMAT_ID).
+export const PUBLIC_FORMAT_ID: Record<PrimaryFormat, MessageId> = {
+  concert: "Z34.format.concert",
+  dj_set: "Z34.format.djSet",
+  club_night: "Z34.format.clubNight",
+  listening_session: "Z34.format.listeningSession",
+  opening: "Z34.format.opening",
+  exhibition: "Z34.format.exhibition",
+  screening: "Z34.format.screening",
 };
 
 export type PublicStatus =
@@ -81,11 +79,13 @@ export type PublicEvent = {
   // Display lines in the event's zone. All null for a postponed event without
   // a new date: the old date is not valid any more.
   dateLine: string | null;
+  // Local start time "HH:MM"; null for a postponed event without a new date.
+  startTime: string | null;
   timeLine: string | null;
   untilLine: string | null;
   placeName: string | null;
   addressLines: string[];
-  // Shown text: "12,00 €", "Frei", "Preis noch offen" or null (not asked).
+  // Shown text: "12,00 €", "Free", "Price not known yet" or null (not asked).
   priceText: string | null;
   // Machine readable price for JSON-LD. Only for a provided price.
   // highAmount is set for a price range (amount is then the lower end).
@@ -95,6 +95,9 @@ export type PublicEvent = {
   ticketUrl: string | null;
   atmosphereTags: string[];
   atmosphereDescription: string | null;
+  // The blocks of "Mehr zum Abend" that the page shows (Einlass und Alter,
+  // Besuchsmodus, Sprache und Untertitel, Musik). Times are local "HH:MM".
+  modules: StoredModules;
   imageUrl: string;
   publishedAt: string | null;
   organizer: PublicProfile;
@@ -284,6 +287,18 @@ function decimal(amountMinor: number): string {
   return `${whole}.${cents}`;
 }
 
+// The blocks the page shows. The two free-text blocks have no public design
+// yet and never leave the database view; they are dropped here as well.
+function publicModules(json: Json | null): StoredModules {
+  const { participants, bring_participation, ...shown } =
+    parseStored(json) ?? {};
+
+  void participants;
+  void bring_participation;
+
+  return shown;
+}
+
 const STATUSES: readonly string[] = [
   "scheduled",
   "rescheduled",
@@ -330,6 +345,7 @@ export function toPublicEvent(
     (status === "scheduled" || status === "rescheduled") &&
     now.getTime() >= new Date(archiveAt).getTime();
   const hasDate = status !== "postponed_undated";
+  const thisYear = yearIn(row.timezone, now);
   const view = priceView(row);
   const access = accessFrom(lang, row.access_routes);
   const town = [row.postal_code, row.city].filter(Boolean).join(" ");
@@ -345,22 +361,25 @@ export function toPublicEvent(
     title: row.title,
     description: row.description || null,
     format: row.primary_format,
-    formatLabel: PUBLIC_FORMAT_LABEL[row.primary_format],
+    formatLabel: t(lang, PUBLIC_FORMAT_ID[row.primary_format]),
     status,
     startInstant: row.start_at,
     endInstant,
     timezone: row.timezone,
     archiveAt,
     past,
-    dateLine: hasDate ? formatLocalDate(time.startDate) : null,
+    dateLine: hasDate ? formatEventDate(lang, time.startDate, thisYear) : null,
+    startTime: hasDate ? time.startTime : null,
     timeLine: hasDate
       ? time.endTime
         ? `${time.startTime} → ${time.endTime}`
-        : `${time.startTime} Uhr`
+        : t(lang, "Z34.event.timeFrom", { time: time.startTime })
       : null,
     untilLine:
       hasDate && time.endDate && time.endDate !== time.startDate
-        ? `Bis ${formatLocalDate(time.endDate)}`
+        ? t(lang, "Z34.event.until", {
+            date: formatEventDate(lang, time.endDate, thisYear),
+          })
         : null,
     placeName: row.place_name || null,
     addressLines,
@@ -370,6 +389,7 @@ export function toPublicEvent(
     ticketUrl: status === "cancelled" || past ? null : (ticket?.url ?? null),
     atmosphereTags: row.atmosphere_tags ?? [],
     atmosphereDescription: row.atmosphere_description || null,
+    modules: publicModules(row.modules),
     imageUrl,
     publishedAt: row.published_at,
     organizer,
