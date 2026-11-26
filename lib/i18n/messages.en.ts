@@ -1124,6 +1124,7 @@ export const en: Record<MessageId, string> = {
   "Z33.fail.title": "Rescheduling didn’t work.",
   "Z33.fail.line":
     "The current date is still public. Your entries are still here. Try again.",
+  "Z33.fail.open.line": "The current date is still public. Try again.",
   "Z33.fail.retry": "Try again",
   "Z33.open.title": "Postpone without a new date",
   "Z33.open.lead":
@@ -1174,4 +1175,19 @@ export const en: Record<MessageId, string> = {
   "Z33.cancelled.notice.line": "Ticket actions are removed.",
   "Z33.cancelled.private":
     "Your private changes to the event were not published.",
+  "Z33.reopen.title": "Reopen event with a new date",
+  "Z33.reopen.lead":
+    "The event is cancelled. With a new date it is public again.",
+  "Z33.reopen.notice": "Guests will then no longer see the cancellation.",
+  "Z33.row.state": "Status",
+  "Z33.reopen.yes": "Reopen event",
+  "Z33.reopen.pending": "Reopening …",
+  "Z33.reopen.fail.title": "Reopening didn’t work.",
+  "Z33.reopen.fail.line":
+    "The cancellation is still public. Your entries are still here. Try again.",
+  "Z33.reopened.title": "The event is public again",
+  "Z33.reopened.notice.title":
+    "The cancellation is lifted. Guests now see the new date.",
+  "Z33.reopened.notice.line": "The event link hasn’t changed.",
+  "Z33.cancelled.newDate": "Set a new date",
 };

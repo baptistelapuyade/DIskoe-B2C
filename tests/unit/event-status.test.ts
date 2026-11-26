@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { canCancel, canPostpone, canReschedule } from "../../lib/event/status";
+import { canCancel, canPostpone, canReopen, canReschedule } from "../../lib/event/status";
 
 describe("allowed status changes", () => {
   it("lets a scheduled or rescheduled event be postponed, not a cancelled or postponed one", () => {
@@ -17,5 +17,14 @@ describe("allowed status changes", () => {
     }
     expect(canCancel("cancelled")).toBe(false);
     expect(canReschedule("cancelled")).toBe(false);
+  });
+});
+
+describe("reopening", () => {
+  it("is only for a cancelled event", () => {
+    expect(canReopen("cancelled")).toBe(true);
+    for (const status of ["scheduled", "rescheduled", "postponed_undated"] as const) {
+      expect(canReopen(status)).toBe(false);
+    }
   });
 });

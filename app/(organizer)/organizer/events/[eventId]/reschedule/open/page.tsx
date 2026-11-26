@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { PostponeScreen } from "@/components/event/status-screens";
+import { expectedState } from "@/lib/event/expected";
 import { loadLiveEvent } from "@/lib/event/live";
 import { canPostpone } from "@/lib/event/status";
 import { getLang } from "@/lib/i18n/server";
@@ -31,7 +32,7 @@ export default async function PostponeEventPage({
       lang={lang}
       base={base}
       live={live}
-      action={postponeEvent.bind(null, eventId)}
+      action={postponeEvent.bind(null, eventId, expectedState(view.event))}
     />
   );
 }

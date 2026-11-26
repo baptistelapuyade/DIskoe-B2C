@@ -257,7 +257,7 @@ export function ManageScreen({
             </div>
             {pill}
             <Actions>
-              <Link href={`${base}/reschedule`} className={primary}>
+              <Link href={`${base}/reopen`} className={primary}>
                 {t(lang, "Z30.manage.cancelled.newDate")}
               </Link>
               {viewPage}

@@ -935,6 +935,17 @@ export type Database = {
         }
         Returns: undefined
       }
+      reopen_event: {
+        Args: {
+          p_event_id: string
+          p_expected_published_revision_id: string
+          p_expected_state_version: number
+          p_expected_status: Database["public"]["Enums"]["event_status"]
+          p_new_end: string
+          p_new_start: string
+        }
+        Returns: undefined
+      }
       reschedule_event: {
         Args: {
           p_event_id: string

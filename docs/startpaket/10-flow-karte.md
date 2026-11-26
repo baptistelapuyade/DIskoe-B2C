@@ -207,7 +207,9 @@ Section (3072:265).
 ## F8 · Verschieben und Absagen (Flow 2 C, W1; Hinweise W3)
 Section (3072:266).
 
-**Stand Code (25.11., PR A, keine Migration):** `EVV-01` bis `05` und `EVA-01`/`02` sind gebaut, Deutsch und Englisch (Katalog Z33). Routen unter `/organizer/events/[id]/`: `reschedule` (EVV-01), `reschedule/open` (EVV-02), `schedule` (EVV-05a, nur für wartende Events), `rescheduled` (EVV-04a), `postponed` (EVV-04b), `scheduled` (EVV-05b), `cancel` (EVA-01), `cancelled` (EVA-02). Die Ergebnisseiten sind nur im passenden Stand erreichbar, sonst geht es zur Verwaltung. Ohne Follower in Welle 1: das Kontrollkästchen „Hinweis an Follower sofort senden“, alle Follower-Sätze und `MAIL-08a/c/d` fehlen. `EVV-06` (Absage zurücknehmen) und der Button „Neuen Termin setzen“ in `EVA-02` folgen mit PR B (Migration `reopen_event`).
+**Stand Code (25.11., PR A, keine Migration):** `EVV-01` bis `05` und `EVA-01`/`02` sind gebaut, Deutsch und Englisch (Katalog Z33). Routen unter `/organizer/events/[id]/`: `reschedule` (EVV-01), `reschedule/open` (EVV-02), `schedule` (EVV-05a, nur für wartende Events), `rescheduled` (EVV-04a), `postponed` (EVV-04b), `scheduled` (EVV-05b), `cancel` (EVA-01), `cancelled` (EVA-02). Die Ergebnisseiten sind nur im passenden Stand erreichbar, sonst geht es zur Verwaltung. Ohne Follower in Welle 1: das Kontrollkästchen „Hinweis an Follower sofort senden“, alle Follower-Sätze und `MAIL-08a/c/d` fehlen. 
+
+**Stand Code (25.11., PR B, mit Migration):** `EVV-06a`/`b` sind gebaut unter `/organizer/events/[id]/reopen` und `/reopened`; Einstieg aus `EVA-02` („Neuen Termin setzen“) und aus der Verwaltung eines abgesagten Events. Die Datenbankfunktion `reopen_event` hebt die Absage auf, veröffentlicht eine neue Fassung aus dem veröffentlichten Stand mit nur Beginn und Ende geändert, setzt den Stand auf „verschoben“ und lässt den privaten Entwurf das Datum übernehmen. `/reschedule` leitet bei einem abgesagten Event auf `/reopen` um.
 
 | Kennung | Knoten | Zustand | Aktionen → Ziel | Folgen |
 |---|---|---|---|---|

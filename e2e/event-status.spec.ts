@@ -370,6 +370,31 @@ test.describe("cancel and reschedule a live event", () => {
     // The cancel page of a cancelled event leads back.
     await page.goto(`/organizer/events/${cancel.eventId}/cancel`);
     await expect(page).toHaveURL(new RegExp(`/events/${cancel.eventId}/manage$`));
+
+    // EVV-06: the cancelled event comes back with a new date. A start in the
+    // past is refused, the private change stays private.
+    await page.getByRole("link", { name: "Neuen Termin setzen" }).first().click();
+    await expect(page).toHaveURL(new RegExp(`/events/${cancel.eventId}/reopen$`), SLOW);
+    await expect(page.getByRole("heading", { name: "Event mit neuem Termin wieder öffnen" })).toBeVisible(SLOW);
+    await page.getByLabel("Neues Datum").fill("01.01.2025");
+    await page.getByLabel("Beginn").fill("20:00");
+    await page.getByRole("button", { name: "Event wieder öffnen" }).click();
+    await expect(page.getByText("Der Termin liegt in der Vergangenheit.")).toBeVisible(SLOW);
+    expect(sql(`select public_status from public.events where id = '${cancel.eventId}'`)).toBe("cancelled");
+
+    await page.getByLabel("Neues Datum").fill("10.08.2027");
+    await page.getByLabel("Beginn").fill("20:00");
+    await page.getByRole("button", { name: "Event wieder öffnen" }).click();
+    await expect(page).toHaveURL(new RegExp(`/events/${cancel.eventId}/reopened$`), SLOW);
+    await expect(page.getByRole("heading", { name: "Das Event ist wieder öffentlich" })).toBeVisible(SLOW);
+
+    expect(sql(`select public_status from public.events where id = '${cancel.eventId}'`)).toBe("rescheduled");
+    expect(sql(`select published_revision_id from public.events where id = '${cancel.eventId}'`)).not.toBe(publishedBefore);
+    const reopened = await publicEvent(CANCEL_TITLE);
+    expect(reopened.data?.public_status).toBe("rescheduled");
+    // 20:00 Berlin summer time is 18:00 UTC.
+    expect(new Date(reopened.data!.start_at!).toISOString()).toBe("2027-08-10T18:00:00.000Z");
+    expect(reopened.data?.description).not.toContain("Private Korrektur");
     await context.close();
   });
 
@@ -458,6 +483,38 @@ test.describe("cancel and reschedule a live event", () => {
       ),
     ).toBe("2027-08-14T18:00|Noch nicht veröffentlichte Beschreibung.");
     await context.close();
+  });
+
+  // The page binds what the owner saw; a change made in between is not
+  // overwritten but reported (DK001).
+  test("a change made after the page was opened is reported, not overwritten", async ({ browser }) => {
+    const first = await germanContext(browser, { baseURL: BASE_URL, storageState: ownerState });
+    const second = await germanContext(browser, { baseURL: BASE_URL, storageState: ownerState });
+    const one = await first.newPage();
+    const two = await second.newPage();
+
+    for (const page of [one, two]) {
+      await page.goto(`/organizer/events/${blocked.eventId}/reschedule`);
+      await expect(page.getByRole("heading", { name: "Event verschieben" })).toBeVisible(SLOW);
+      await expect(page.getByLabel("Neues Datum")).toBeEnabled(SLOW);
+    }
+
+    await two.getByLabel("Neues Datum").fill("15.08.2027");
+    await two.getByLabel("Beginn").fill("19:00");
+    await two.getByRole("button", { name: "Termin verschieben" }).click();
+    await expect(two).toHaveURL(new RegExp(`/events/${blocked.eventId}/rescheduled$`), SLOW);
+
+    await one.getByLabel("Neues Datum").fill("16.08.2027");
+    await one.getByLabel("Beginn").fill("20:00");
+    await one.getByRole("button", { name: "Termin verschieben" }).click();
+    await expect(one.getByText("Das Event hat sich geändert.")).toBeVisible(SLOW);
+    // What was typed stays, and the other change is public.
+    await expect(one.getByLabel("Neues Datum")).toHaveValue("16.08.2027");
+    const row = await publicEvent(BLOCKED_TITLE);
+    // 19:00 Berlin summer time is 17:00 UTC.
+    expect(new Date(row.data!.start_at!).toISOString()).toBe("2027-08-15T17:00:00.000Z");
+    await first.close();
+    await second.close();
   });
 
   test("someone else does not reach the pages", async ({ browser }) => {

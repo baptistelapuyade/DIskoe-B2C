@@ -115,7 +115,7 @@ export function RescheduleForm({
 }: {
   lang: Lang;
   action: Action;
-  mode: "reschedule" | "schedule";
+  mode: "reschedule" | "schedule" | "reopen";
   card: ReactNode;
   // EVV-01a: "Date not set yet" leads to EVV-02.
   openHref?: string;
@@ -147,8 +147,17 @@ export function RescheduleForm({
     }
   }, [state]);
 
-  const yes = scheduling ? "Z33.schedule.yes" : "Z33.reschedule.yes";
-  const busy = scheduling ? "Z33.schedule.pending" : "Z33.reschedule.pending";
+  const reopening = mode === "reopen";
+  const yes = scheduling
+    ? "Z33.schedule.yes"
+    : reopening
+      ? "Z33.reopen.yes"
+      : "Z33.reschedule.yes";
+  const busy = scheduling
+    ? "Z33.schedule.pending"
+    : reopening
+      ? "Z33.reopen.pending"
+      : "Z33.reschedule.pending";
 
   return (
     <form
@@ -173,9 +182,17 @@ export function RescheduleForm({
         state={state}
         info={
           state.status === "failed" ? (
-            <Notice tone="error" title={t(lang, "Z33.fail.title")}>
-              {t(lang, "Z33.fail.line")}
+            <Notice
+              tone="error"
+              title={t(
+                lang,
+                reopening ? "Z33.reopen.fail.title" : "Z33.fail.title",
+              )}
+            >
+              {t(lang, reopening ? "Z33.reopen.fail.line" : "Z33.fail.line")}
             </Notice>
+          ) : reopening ? (
+            <Notice tone="warning" title={t(lang, "Z33.reopen.notice")} />
           ) : (
             <Notice tone="info" title={t(lang, "Z33.reschedule.notice")} />
           )
@@ -295,7 +312,7 @@ export function PostponeForm({
         info={
           state.status === "failed" ? (
             <Notice tone="error" title={t(lang, "Z33.fail.title")}>
-              {t(lang, "Z33.fail.line")}
+              {t(lang, "Z33.fail.open.line")}
             </Notice>
           ) : (
             <Notice tone="info" title={t(lang, "Z33.open.notice.title")}>

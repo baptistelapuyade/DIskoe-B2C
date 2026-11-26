@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { CancelScreen } from "@/components/event/status-screens";
+import { expectedState } from "@/lib/event/expected";
 import { loadLiveEvent } from "@/lib/event/live";
 import { canCancel } from "@/lib/event/status";
 import { getLang } from "@/lib/i18n/server";
@@ -29,7 +30,7 @@ export default async function CancelEventPage({
       lang={lang}
       base={base}
       live={live}
-      action={cancelEvent.bind(null, eventId)}
+      action={cancelEvent.bind(null, eventId, expectedState(view.event))}
     />
   );
 }

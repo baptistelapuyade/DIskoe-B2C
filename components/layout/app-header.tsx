@@ -19,7 +19,7 @@ export function AppHeader({
   extra?: React.ReactNode;
 }) {
   return (
-    <header className="flex h-15 items-center justify-between px-6 md:h-19 md:px-12">
+    <header className="flex h-15 items-center justify-between px-4 min-[360px]:px-6 md:h-19 md:px-12">
       <Link
         href={homeHref}
         className="text-foreground focus-visible:outline-ring flex min-h-11 items-center text-[22px] leading-[26px] font-bold tracking-[1.32px] focus-visible:outline-2 focus-visible:outline-offset-2 md:text-[28px] md:tracking-[1.68px]"

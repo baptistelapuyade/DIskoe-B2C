@@ -985,6 +985,71 @@ select tests.expect_true(format($q$select e.draft_revision_id not in (%L, e.publ
 select tests.expect_true(format($q$select start_at = '2027-06-05 19:00:00+02' from public.event_revisions where id = %L$q$, :'evt1'),
   'the frozen revision itself is untouched');
 
+-- Reopening a cancelled event with a new date (EVV-06): the public revision is
+-- a copy of the live one with the new date, the cancellation is lifted, the
+-- private draft keeps its other changes and takes over the date.
+select tests.as_user(:'uid_a');
+select tests.expect_affected(format($q$insert into public.events (organizer_id, slug) values (%L, 'fourth-night')$q$, :'pa'),
+  1, 'owner creates a fourth event');
+select id as e4 from public.events where slug = 'fourth-night' \gset
+select tests.new_event_image_use(:'e4') as use_e4 \gset
+select tests.ev_insert(:'e4', :'use_e4', '{"title":"Fourth Night"}') as evq1 \gset
+select tests.expect_ok(format('update public.events set draft_revision_id = %L where id = %L', :'evq1', :'e4'),
+  'owner selects the fourth event draft');
+select tests.as_superuser();
+update public.media_uses set public_object_path = 'public/events/' || id where id = :'use_e4';
+select tests.as_user(:'uid_f');
+select public.approve_first_event(:'e4', :'evq1');
+select tests.as_user(:'uid_a');
+select public.publish_event(:'e4', :'evq1', null, 0, 'scheduled', true, true);
+select tests.ev_insert(:'e4', :'use_e4', '{"title":"Private Fourth","description":"Private text."}') as evq2 \gset
+select tests.expect_ok(format('update public.events set draft_revision_id = %L where id = %L', :'evq2', :'e4'),
+  'owner has a private draft with other changes');
+
+select tests.expect_error(format($q$select public.reopen_event(%L, %L, 1, 'scheduled', '2027-12-01 20:00:00+01', null)$q$, :'e4', :'evq1'),
+  'DK003', 'a live event that is not cancelled cannot be reopened');
+select public.cancel_event(:'e4', :'evq1', 1, 'scheduled');
+
+select tests.as_user(:'uid_b');
+select tests.expect_error(format($q$select public.reopen_event(%L, %L, 2, 'cancelled', '2027-12-01 20:00:00+01', null)$q$, :'e4', :'evq1'),
+  '42501', 'B cannot reopen A''s event');
+select tests.as_anon();
+select tests.expect_error(format($q$select public.reopen_event(%L, %L, 2, 'cancelled', '2027-12-01 20:00:00+01', null)$q$, :'e4', :'evq1'),
+  '42501', 'anon cannot call reopen_event');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$select public.reopen_event(%L, %L, 1, 'cancelled', '2027-12-01 20:00:00+01', null)$q$, :'e4', :'evq1'),
+  'DK001', 'reopening with a stale version is refused');
+select tests.expect_error(format($q$select public.reopen_event(%L, %L, 2, 'scheduled', '2027-12-01 20:00:00+01', null)$q$, :'e4', :'evq1'),
+  'DK001', 'reopening with the wrong status is refused');
+select tests.expect_error(format($q$select public.reopen_event(%L, %L, 2, 'cancelled', '2027-12-01 20:00:00+01', null)$q$, :'e4', gen_random_uuid()),
+  'DK001', 'reopening against another published revision is refused');
+select tests.expect_error(format($q$select public.reopen_event(%L, %L, 2, 'cancelled', null, null)$q$, :'e4', :'evq1'),
+  '22023', 'a new start is required');
+select tests.expect_error(format($q$select public.reopen_event(%L, %L, 2, 'cancelled', '2027-12-01 20:00:00+01', '2027-12-01 19:00:00+01')$q$, :'e4', :'evq1'),
+  '22023', 'the end must be after the start');
+select tests.as_superuser();
+select tests.expect_true(format($q$select public_status = 'cancelled' and cancelled_at is not null and state_version = 2 from public.events where id = %L$q$, :'e4'),
+  'refused calls leave the cancelled event as it was');
+
+select tests.as_user(:'uid_a');
+select public.reopen_event(:'e4', :'evq1', 2, 'cancelled', '2027-12-01 20:00:00+01', '2027-12-02 02:00:00+01');
+select tests.as_superuser();
+select published_revision_id as evq3 from public.events where id = :'e4' \gset
+select tests.expect_true(format($q$select public_status = 'rescheduled' and cancelled_at is null and cancelled_by is null and state_version = 3 and published_revision_id not in (%L, %L) and draft_revision_id = %L from public.events where id = %L$q$, :'evq1', :'evq2', :'evq2', :'e4'),
+  'reopening lifts the cancellation, publishes a new revision and leaves the draft pointer');
+select tests.expect_true(format($q$select (to_jsonb(a) - array['id','revision_no','content_version','created_at','confirmed_at','confirmed_by','start_at','end_at','end_state']) = (to_jsonb(b) - array['id','revision_no','content_version','created_at','confirmed_at','confirmed_by','start_at','end_at','end_state']) and b.start_at = '2027-12-01 20:00:00+01' and b.end_at = '2027-12-02 02:00:00+01' and b.confirmed_by = %L from public.event_revisions a, public.event_revisions b where a.id = %L and b.id = %L$q$, :'uid_a', :'evq1', :'evq3'),
+  'the new public revision is the live one with the new date, confirmed by the owner');
+select tests.expect_true(format($q$select title = 'Private Fourth' and description = 'Private text.' and start_at = '2027-12-01 20:00:00+01' and end_at = '2027-12-02 02:00:00+01' from public.event_revisions where id = %L$q$, :'evq2'),
+  'the private draft keeps its changes and takes over the date');
+select tests.expect_true(format($q$select count(*) filter (where action = 'cancel') = 1 and count(*) filter (where action = 'reopen' and revision_id = %L) = 1 from public.publication_audit where entity_id = %L$q$, :'evq3', :'e4'),
+  'the cancellation stays in the audit and the reopening is added');
+select tests.as_anon();
+select tests.expect_true($q$select title = 'Fourth Night' and public_status = 'rescheduled' and start_at = '2027-12-01 20:00:00+01' from public.public_events where slug = 'fourth-night'$q$,
+  'public view shows the new date and not the private text');
+select tests.as_user(:'uid_a');
+select tests.expect_error(format($q$select public.reopen_event(%L, %L, 3, 'rescheduled', '2028-01-01 20:00:00+01', null)$q$, :'e4', :'evq3'),
+  'DK003', 'a reopened event cannot be reopened again');
+
 -- ===========================================================================
 -- 7. Cross-role access matrix: founder, owners, visitor, anon, direct tables
 -- ===========================================================================
@@ -1706,7 +1771,7 @@ insert into tests.expected_exec values
   ('public', 'approve_first_event'), ('public', 'publish_profile'),
   ('public', 'publish_event'), ('public', 'reschedule_event'),
   ('public', 'cancel_event'), ('public', 'postpone_event'),
-  ('public', 'reschedule_event_date'),
+  ('public', 'reschedule_event_date'), ('public', 'reopen_event'),
   ('public', 'submit_profile_for_review'),
   ('public', 'request_profile_changes'), ('public', 'claim_profile_mail'),
   ('public', 'finish_profile_mail'),
@@ -1831,6 +1896,7 @@ insert into tests.expected_objects values
   ('function', 'public', 'reschedule_event'), ('function', 'public', 'cancel_event'),
   ('function', 'public', 'postpone_event'),
   ('function', 'public', 'reschedule_event_date'),
+  ('function', 'public', 'reopen_event'),
   ('function', 'app_private', 'copy_event_revision'),
   ('function', 'app_private', 'is_founder'), ('function', 'app_private', 'owns_profile'),
   ('function', 'app_private', 'owns_event'), ('function', 'app_private', 'profile_gaps'),

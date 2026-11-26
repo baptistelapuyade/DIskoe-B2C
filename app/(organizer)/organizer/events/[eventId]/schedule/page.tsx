@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { ScheduleScreen } from "@/components/event/status-screens";
+import { expectedState } from "@/lib/event/expected";
 import { loadLiveEvent } from "@/lib/event/live";
 import { getLang } from "@/lib/i18n/server";
 
@@ -28,7 +29,12 @@ export default async function ScheduleEventPage({
     <ScheduleScreen
       lang={lang}
       base={base}
-      action={rescheduleEvent.bind(null, eventId, "schedule")}
+      action={rescheduleEvent.bind(
+        null,
+        eventId,
+        "schedule",
+        expectedState(view.event),
+      )}
     />
   );
 }
