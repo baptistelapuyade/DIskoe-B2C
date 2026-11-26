@@ -61,6 +61,7 @@ import {
   SUBTITLES_ID,
   VISIT_MODE_ID,
 } from "@/lib/event/module-summary";
+import { useHydrated } from "@/lib/hooks/use-hydrated";
 import { t, type Lang, type MessageId } from "@/lib/i18n";
 
 import { saveEventModules } from "@/app/(organizer)/organizer/events/module-actions";
@@ -148,6 +149,7 @@ export function EventMoreScreen({
   backHref: string;
 }) {
   const router = useRouter();
+  const hydrated = useHydrated();
   const formRef = useRef<HTMLFormElement>(null);
   const scope = `${eventId}:more`;
   const required = requiredBlock(format);
@@ -527,260 +529,262 @@ export function EventMoreScreen({
           void run(unsaved ? lastIntent : "next");
         }}
       >
-        {status === "invalid" && errorBlocks.size > 0 ? (
-          <Notice
-            tone="error"
-            title={
-              errorBlocks.size === 1
-                ? msg("Z23.check.title.one")
-                : errorBlocks.size === 2
-                  ? msg("Z23.check.title.two")
-                  : msg("Z23.check.title.many", { n: errorBlocks.size })
-            }
-          >
-            {onlyRequired && errorBlocks.size === 1
-              ? msg(
-                  required === "language"
-                    ? "Z26.check.line.required.language"
-                    : "Z26.check.line.required.visitMode",
-                )
-              : errorBlocks.size === 1
-                ? msg("Z23.check.line.one")
-                : msg("Z23.check.line.many")}
-          </Notice>
-        ) : null}
+        <fieldset disabled={!hydrated} className="contents">
+          {status === "invalid" && errorBlocks.size > 0 ? (
+            <Notice
+              tone="error"
+              title={
+                errorBlocks.size === 1
+                  ? msg("Z23.check.title.one")
+                  : errorBlocks.size === 2
+                    ? msg("Z23.check.title.two")
+                    : msg("Z23.check.title.many", { n: errorBlocks.size })
+              }
+            >
+              {onlyRequired && errorBlocks.size === 1
+                ? msg(
+                    required === "language"
+                      ? "Z26.check.line.required.language"
+                      : "Z26.check.line.required.visitMode",
+                  )
+                : errorBlocks.size === 1
+                  ? msg("Z23.check.line.one")
+                  : msg("Z23.check.line.many")}
+            </Notice>
+          ) : null}
 
-        {status === "failed" ? (
-          <Notice tone="error" title={msg("Z24.failed.title")}>
-            {msg("Z24.failed.line")}
-          </Notice>
-        ) : null}
+          {status === "failed" ? (
+            <Notice tone="error" title={msg("Z24.failed.title")}>
+              {msg("Z24.failed.line")}
+            </Notice>
+          ) : null}
 
-        {status === "offline" ? (
-          <Notice tone="warning" title={msg("Z24.offline.title")}>
-            {msg("Z24.offline.line")}
-          </Notice>
-        ) : null}
+          {status === "offline" ? (
+            <Notice tone="warning" title={msg("Z24.offline.title")}>
+              {msg("Z24.offline.line")}
+            </Notice>
+          ) : null}
 
-        {saving ? (
-          <Notice tone="info" title={msg("Z24.saving.title")}>
-            {msg("Z24.saving.line")}
-          </Notice>
-        ) : null}
+          {saving ? (
+            <Notice tone="info" title={msg("Z24.saving.title")}>
+              {msg("Z24.saving.line")}
+            </Notice>
+          ) : null}
 
-        {shown.length > 0 ? (
-          <ul className="flex flex-col gap-3">
-            {shown.map((key) => {
-              if (!blocks.includes(key)) {
+          {shown.length > 0 ? (
+            <ul className="flex flex-col gap-3">
+              {shown.map((key) => {
+                if (!blocks.includes(key)) {
+                  return (
+                    <li
+                      key={key}
+                      className="border-border-strong text-muted-foreground flex flex-col items-start justify-between gap-3 rounded-lg border border-dashed p-4 text-sm leading-5 sm:flex-row sm:items-center"
+                    >
+                      <span>
+                        {msg("Z26.removed.line", { name: msg(BLOCK_ID[key]) })}
+                      </span>
+                      <Button
+                        variant="ghostLg"
+                        disabled={saving}
+                        onClick={() => restoreBlock(key)}
+                      >
+                        {msg("Z26.removed.undo")}
+                      </Button>
+                    </li>
+                  );
+                }
+
+                const isOpen = open.includes(key);
+                const summary = moduleSummary(lang, key, form);
+                const isRequired = key === required;
+                // A required block that is only unanswered keeps its own line
+                // (EVT-07m-d); a field that does not fit says so (EVT-07m-g).
+                const hasError = (Object.keys(errors) as ModuleField[]).some(
+                  (field) =>
+                    FIELD_BLOCK[field] === key &&
+                    errors[field] !== "requiredMissing",
+                );
+                const subline = hasError
+                  ? msg("Z26.card.error")
+                  : (summary ??
+                    (isRequired
+                      ? msg("Z26.card.requiredEmpty")
+                      : msg("Z26.card.empty")));
+                const action = isOpen
+                  ? msg("Z26.card.collapse")
+                  : summary
+                    ? msg("Z26.card.edit")
+                    : msg("Z26.card.fill");
+
                 return (
                   <li
                     key={key}
-                    className="border-border-strong text-muted-foreground flex flex-col items-start justify-between gap-3 rounded-lg border border-dashed p-4 text-sm leading-5 sm:flex-row sm:items-center"
+                    className="border-border bg-background flex flex-col gap-6 rounded-lg border p-4"
                   >
-                    <span>
-                      {msg("Z26.removed.line", { name: msg(BLOCK_ID[key]) })}
-                    </span>
-                    <Button
-                      variant="ghostLg"
-                      disabled={saving}
-                      onClick={() => restoreBlock(key)}
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={`block-${key}`}
+                      onClick={() => toggle(key)}
+                      className="focus-visible:outline-ring flex w-full items-start justify-between gap-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
-                      {msg("Z26.removed.undo")}
-                    </Button>
+                      <span className="flex min-w-0 flex-col gap-1">
+                        <h2 className="text-foreground text-xl leading-7">
+                          {msg(BLOCK_ID[key])}
+                        </h2>
+                        <span className="text-muted-foreground text-sm leading-5 [overflow-wrap:anywhere]">
+                          {subline}
+                        </span>
+                      </span>
+                      <span className="flex shrink-0 flex-col items-end gap-1 text-sm leading-5">
+                        {isRequired ? (
+                          <span className="text-brand-iris">
+                            {msg("Z26.card.required")}
+                          </span>
+                        ) : null}
+                        <span className="text-muted-foreground">{action}</span>
+                      </span>
+                    </button>
+
+                    {isOpen ? (
+                      <div id={`block-${key}`} className="flex flex-col gap-6">
+                        {key === "entry_age" ? (
+                          <EntryAge
+                            msg={msg}
+                            form={form}
+                            disabled={saving}
+                            errorText={errorText}
+                            setValue={setValue}
+                          />
+                        ) : null}
+                        {key === "visit_mode" ? (
+                          <VisitMode
+                            msg={msg}
+                            form={form}
+                            disabled={saving}
+                            errorText={errorText}
+                            setValue={setValue}
+                          />
+                        ) : null}
+                        {key === "language" ? (
+                          <LanguageBlock
+                            msg={msg}
+                            form={form}
+                            required={isRequired}
+                            disabled={saving}
+                            errorText={errorText}
+                            setValue={setValue}
+                          />
+                        ) : null}
+                        {key === "music" ? (
+                          <MusicBlock
+                            msg={msg}
+                            form={form}
+                            disabled={saving}
+                            errorText={errorText}
+                            setValue={setValue}
+                          />
+                        ) : null}
+                        {key === "participants" ? (
+                          <Field
+                            id="participants"
+                            label={msg("Z26.participants.label")}
+                            hint={
+                              errors.participants
+                                ? undefined
+                                : msg("Z26.participants.hint")
+                            }
+                            error={errorText("participants")}
+                            large
+                          >
+                            {(props) => (
+                              <Textarea
+                                {...props}
+                                rows={3}
+                                value={form.participants}
+                                disabled={saving}
+                                onChange={(event) =>
+                                  setValue(
+                                    "participants",
+                                    event.target.value,
+                                    "participants",
+                                  )
+                                }
+                              />
+                            )}
+                          </Field>
+                        ) : null}
+                        {key === "bring_participation" ? (
+                          <Field
+                            id="bringText"
+                            label={msg("Z26.bring.label")}
+                            error={errorText("bringText")}
+                            large
+                          >
+                            {(props) => (
+                              <Textarea
+                                {...props}
+                                rows={3}
+                                value={form.bringText}
+                                disabled={saving}
+                                placeholder={msg("Z26.bring.placeholder")}
+                                onChange={(event) =>
+                                  setValue(
+                                    "bringText",
+                                    event.target.value,
+                                    "bringText",
+                                  )
+                                }
+                              />
+                            )}
+                          </Field>
+                        ) : null}
+
+                        {!isRequired ? (
+                          <div className="flex">
+                            <Button
+                              variant="ghostLg"
+                              disabled={saving}
+                              onClick={() => removeBlock(key)}
+                            >
+                              {msg("Z26.card.remove")}
+                            </Button>
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : null}
                   </li>
                 );
-              }
+              })}
+            </ul>
+          ) : null}
 
-              const isOpen = open.includes(key);
-              const summary = moduleSummary(lang, key, form);
-              const isRequired = key === required;
-              // A required block that is only unanswered keeps its own line
-              // (EVT-07m-d); a field that does not fit says so (EVT-07m-g).
-              const hasError = (Object.keys(errors) as ModuleField[]).some(
-                (field) =>
-                  FIELD_BLOCK[field] === key &&
-                  errors[field] !== "requiredMissing",
-              );
-              const subline = hasError
-                ? msg("Z26.card.error")
-                : (summary ??
-                  (isRequired
-                    ? msg("Z26.card.requiredEmpty")
-                    : msg("Z26.card.empty")));
-              const action = isOpen
-                ? msg("Z26.card.collapse")
-                : summary
-                  ? msg("Z26.card.edit")
-                  : msg("Z26.card.fill");
+          <div className="flex">
+            <Button
+              variant="ghostLg"
+              disabled={saving}
+              onClick={() => {
+                setPicked([]);
+                setView("picker");
+              }}
+            >
+              {msg("Z26.more.add")}
+            </Button>
+          </div>
 
-              return (
-                <li
-                  key={key}
-                  className="border-border bg-background flex flex-col gap-6 rounded-lg border p-4"
-                >
-                  <button
-                    type="button"
-                    aria-expanded={isOpen}
-                    aria-controls={`block-${key}`}
-                    onClick={() => toggle(key)}
-                    className="focus-visible:outline-ring flex w-full items-start justify-between gap-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2"
-                  >
-                    <span className="flex min-w-0 flex-col gap-1">
-                      <h2 className="text-foreground text-xl leading-7">
-                        {msg(BLOCK_ID[key])}
-                      </h2>
-                      <span className="text-muted-foreground text-sm leading-5 [overflow-wrap:anywhere]">
-                        {subline}
-                      </span>
-                    </span>
-                    <span className="flex shrink-0 flex-col items-end gap-1 text-sm leading-5">
-                      {isRequired ? (
-                        <span className="text-brand-iris">
-                          {msg("Z26.card.required")}
-                        </span>
-                      ) : null}
-                      <span className="text-muted-foreground">{action}</span>
-                    </span>
-                  </button>
-
-                  {isOpen ? (
-                    <div id={`block-${key}`} className="flex flex-col gap-6">
-                      {key === "entry_age" ? (
-                        <EntryAge
-                          msg={msg}
-                          form={form}
-                          disabled={saving}
-                          errorText={errorText}
-                          setValue={setValue}
-                        />
-                      ) : null}
-                      {key === "visit_mode" ? (
-                        <VisitMode
-                          msg={msg}
-                          form={form}
-                          disabled={saving}
-                          errorText={errorText}
-                          setValue={setValue}
-                        />
-                      ) : null}
-                      {key === "language" ? (
-                        <LanguageBlock
-                          msg={msg}
-                          form={form}
-                          required={isRequired}
-                          disabled={saving}
-                          errorText={errorText}
-                          setValue={setValue}
-                        />
-                      ) : null}
-                      {key === "music" ? (
-                        <MusicBlock
-                          msg={msg}
-                          form={form}
-                          disabled={saving}
-                          errorText={errorText}
-                          setValue={setValue}
-                        />
-                      ) : null}
-                      {key === "participants" ? (
-                        <Field
-                          id="participants"
-                          label={msg("Z26.participants.label")}
-                          hint={
-                            errors.participants
-                              ? undefined
-                              : msg("Z26.participants.hint")
-                          }
-                          error={errorText("participants")}
-                          large
-                        >
-                          {(props) => (
-                            <Textarea
-                              {...props}
-                              rows={3}
-                              value={form.participants}
-                              disabled={saving}
-                              onChange={(event) =>
-                                setValue(
-                                  "participants",
-                                  event.target.value,
-                                  "participants",
-                                )
-                              }
-                            />
-                          )}
-                        </Field>
-                      ) : null}
-                      {key === "bring_participation" ? (
-                        <Field
-                          id="bringText"
-                          label={msg("Z26.bring.label")}
-                          error={errorText("bringText")}
-                          large
-                        >
-                          {(props) => (
-                            <Textarea
-                              {...props}
-                              rows={3}
-                              value={form.bringText}
-                              disabled={saving}
-                              placeholder={msg("Z26.bring.placeholder")}
-                              onChange={(event) =>
-                                setValue(
-                                  "bringText",
-                                  event.target.value,
-                                  "bringText",
-                                )
-                              }
-                            />
-                          )}
-                        </Field>
-                      ) : null}
-
-                      {!isRequired ? (
-                        <div className="flex">
-                          <Button
-                            variant="ghostLg"
-                            disabled={saving}
-                            onClick={() => removeBlock(key)}
-                          >
-                            {msg("Z26.card.remove")}
-                          </Button>
-                        </div>
-                      ) : null}
-                    </div>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ul>
-        ) : null}
-
-        <div className="flex">
-          <Button
-            variant="ghostLg"
-            disabled={saving}
-            onClick={() => {
-              setPicked([]);
-              setView("picker");
-            }}
-          >
-            {msg("Z26.more.add")}
-          </Button>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button type="submit" variant="primaryLg" disabled={saving}>
-            {mainLabel}
-          </Button>
-          <Button
-            variant="ghostLg"
-            disabled={saving}
-            onClick={() => void run("later")}
-          >
-            {msg("Z26.more.skip")}
-          </Button>
-        </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button type="submit" variant="primaryLg" disabled={saving}>
+              {mainLabel}
+            </Button>
+            <Button
+              variant="ghostLg"
+              disabled={saving}
+              onClick={() => void run("later")}
+            >
+              {msg("Z26.more.skip")}
+            </Button>
+          </div>
+        </fieldset>
       </form>
     </StepShell>
   );

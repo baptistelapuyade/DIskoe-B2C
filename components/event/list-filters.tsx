@@ -13,10 +13,13 @@ import {
 } from "@/components/ui/select";
 import { EVENT_FILTERS, type EventFilter } from "@/lib/domain/event-list";
 import { EVENT_LIST_PATH, listHref } from "@/lib/event/list-href";
+import { useHydrated } from "@/lib/hooks/use-hydrated";
 
 // Search and state filter of the event list (Figma EVL-01a). Both change the
 // address, so the list is a normal server page: shareable, back button works.
-// Without scripts the search box still works with Enter (plain GET form).
+// The search box is read-only until the page is hydrated: text typed earlier
+// is thrown away when the fields are hydrated. (This also means it does not
+// work without scripts.)
 export function ListFilters({
   query,
   filter,
@@ -32,6 +35,7 @@ export function ListFilters({
   };
 }) {
   const router = useRouter();
+  const hydrated = useHydrated();
   const [text, setText] = useState(query);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selected, setSelected] = useState<EventFilter>(filter);
@@ -82,6 +86,7 @@ export function ListFilters({
           value={text}
           placeholder={labels.placeholder}
           autoComplete="off"
+          readOnly={!hydrated}
           onChange={(event) => search(event.target.value)}
         />
       </div>
