@@ -19,14 +19,12 @@ const SCAN_DIRS = ["app", "components", "lib"];
 
 const LEGACY: Record<string, string> = {
   // Old wireframe pages, replaced by their Figma flows (see docs/STATUS.md).
-  "app/(organizer)/organizer/events/[eventId]/preview/page.tsx": "VOR-01",
-  "app/(organizer)/organizer/events/[eventId]/publish/page.tsx": "VOR-01",
-  "app/(organizer)/organizer/events/[eventId]/published/page.tsx": "VOR-01",
+  "app/(organizer)/organizer/events/[eventId]/publish/page.tsx": "NACH-17",
+  "app/(organizer)/organizer/events/[eventId]/published/page.tsx": "NACH-18",
   "app/(organizer)/organizer/events/[eventId]/edit/page.tsx": "draft hub",
   "app/(organizer)/organizer/events/actions.ts": "draft actions",
   "app/(organizer)/organizer/profiles/[profileId]/status/page.tsx":
     "profile status",
-  "app/(organizer)/organizer/profiles/[profileId]/preview/page.tsx": "VOR-01",
   "app/(organizer)/organizer/profiles/[profileId]/actions.ts":
     "profile actions",
   "components/profile/status.tsx": "profile status",
