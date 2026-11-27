@@ -594,9 +594,9 @@ test.describe("first publication: profile and first event together", () => {
       ),
     ).toBe("published");
 
-    // A published event has no publish screen any more.
+    // A published event has no publish screen any more: it is managed.
     await page.goto(`/organizer/events/${later.eventId}/publish`);
-    await expect(page).toHaveURL(/\/published$/);
+    await expect(page).toHaveURL(/\/manage$/);
     await context.close();
   });
 });
