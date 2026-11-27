@@ -16,6 +16,7 @@ Quelle: Figma-Variablen (Collections `DISKOE / Primitives`, `DISKOE / Theme`, `D
 | success | #2e7048 | successSoft | #e8f3ec |
 | warning | #8a5a00 | warningSoft | #fbf1dc |
 | error | #c8202a | errorSoft | #faeceb |
+Statusflächen der öffentlichen Eventseite (Figma `accent/accent-purple`, `red/400`, Text `black`; 27.11.2026): statusMoved #d7b4ff (neuer Termin), statusStopped #f87171 (Termin folgt, abgesagt), statusInk #000000. Kontrast Schwarz auf beiden Flächen über 7 : 1.
 Dark-Varianten (nur Plattform-Theme, nicht Profile): inkRaised #3e3e3b, inkHigh #4a4a47, inkDeep #1f1f1e, borderDark #5a5a55, mutedOnDark #b9b9b1, errorOnDark #f29a9e, successOnDark #8fd3a8, warningOnDark #f0c46a.
 
 ## Theme (Light/Dark, Plattform-UI)

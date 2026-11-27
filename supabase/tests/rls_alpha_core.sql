@@ -844,6 +844,12 @@ select tests.expect_true(format($q$select public_status = 'rescheduled' and publ
 select tests.as_anon();
 select tests.expect_true($q$select start_at = '2027-06-06 19:00:00+02'::timestamptz and public_status = 'rescheduled' from public.public_events where slug = 'second-night'$q$,
   'public view shows the new start');
+select tests.as_superuser();
+select tests.expect_true(format($q$select e.previous_start_at = r.start_at from public.events e, public.event_revisions r where e.id = %L and r.id = %L$q$, :'e2', :'evs1'),
+  'rescheduling remembers the start it replaced');
+select tests.as_anon();
+select tests.expect_true($q$select previous_start_at is not null and previous_start_at <> start_at from public.public_events where slug = 'second-night'$q$,
+  'public view shows the date a rescheduled event replaced');
 
 -- The copy of a revision (rescheduling) carries the blocks of step 7 over.
 select tests.as_user(:'uid_a');
@@ -889,6 +895,8 @@ select tests.expect_true(format($q$select public_status = 'rescheduled' and publ
 select tests.as_anon();
 select tests.expect_true($q$select start_at = '2027-07-10 19:00:00+02'::timestamptz and public_status = 'rescheduled' from public.public_events where slug = 'second-night'$q$,
   'public view shows the replacement date');
+select tests.expect_true($q$select previous_start_at = '2027-06-06 19:00:00+02'::timestamptz from public.public_events where slug = 'second-night'$q$,
+  'a replacement after postponing remembers the date that was postponed');
 
 -- A cancelled event can neither be postponed nor rescheduled.
 select tests.as_user(:'uid_a');
@@ -1670,10 +1678,10 @@ insert into tests.expected_col_grants values
   ('authenticated', 'profile_revisions', 'INSERT', array['profile_id','name','short_intro','official_url','public_contact','profile_image_use_id','created_by','instagram_handle','extra_links']),
   ('authenticated', 'profile_revisions', 'UPDATE', array['name','short_intro','official_url','public_contact','profile_image_use_id','instagram_handle','extra_links']),
   ('anon',          'profile_revisions', 'SELECT', array['id','name','short_intro','official_url','public_contact','profile_image_use_id','confirmed_at','instagram_handle','extra_links']),
-  ('authenticated', 'events', 'SELECT', array['id','organizer_id','slug','draft_revision_id','published_revision_id','first_approved_revision_id','approved_at','publication_state','public_status','state_version','cancelled_at','created_at','updated_at']),
+  ('authenticated', 'events', 'SELECT', array['id','organizer_id','slug','draft_revision_id','published_revision_id','first_approved_revision_id','approved_at','publication_state','public_status','state_version','cancelled_at','created_at','updated_at','previous_start_at']),
   ('authenticated', 'events', 'INSERT', array['organizer_id','slug']),
   ('authenticated', 'events', 'UPDATE', array['draft_revision_id']),
-  ('anon',          'events', 'SELECT', array['id','slug','organizer_id','published_revision_id','first_approved_revision_id','publication_state','public_status']),
+  ('anon',          'events', 'SELECT', array['id','slug','organizer_id','published_revision_id','first_approved_revision_id','publication_state','public_status','previous_start_at']),
   ('authenticated', 'event_revisions', 'SELECT', array['id','event_id','revision_no','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id','confirmed_at','created_at','content_version']),
   ('authenticated', 'event_revisions', 'INSERT', array['event_id','title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id','created_by']),
   ('authenticated', 'event_revisions', 'UPDATE', array['title_state','title','description_state','description','format_state','primary_format','start_state','start_at','timezone','end_state','end_at','place_state','place_name','address_line','postal_code','city','country_code','price_state','price_model','price_amount_minor','price_max_amount_minor','price_fee_model','currency','access_state','access_routes','atmosphere_state','atmosphere_tags','atmosphere_description','modules','event_image_use_id']),
@@ -1900,6 +1908,7 @@ insert into tests.expected_objects values
   ('function', 'public', 'reschedule_event_date'),
   ('function', 'public', 'reopen_event'),
   ('function', 'app_private', 'copy_event_revision'),
+  ('function', 'app_private', 'events_remember_previous_start'),
   ('function', 'app_private', 'is_founder'), ('function', 'app_private', 'owns_profile'),
   ('function', 'app_private', 'owns_event'), ('function', 'app_private', 'profile_gaps'),
   ('function', 'app_private', 'event_gaps'),

@@ -28,23 +28,35 @@ import {
   SiteBar,
 } from "./parts";
 
-// The status variants (PUB-01b to d, e). Wording confirmed by the founder on
-// 2026-11-03; now in the catalog (Z34.notice.*).
-const STATUS_NOTICE: Record<
+// The status panels of PUB-01j to l (new date, date to follow, cancelled) and
+// the plain notice of a past event (PUB-01e). Wording in the catalog
+// (Z34.notice.*).
+const STATUS_PANEL: Record<
   Exclude<PublicEvent["status"], "scheduled">,
-  { title: MessageId; text: MessageId }
+  {
+    tone: string;
+    eyebrow: MessageId;
+    headline: MessageId;
+    context: MessageId;
+  }
 > = {
   rescheduled: {
-    title: "Z34.notice.rescheduled.title",
-    text: "Z34.notice.rescheduled.text",
+    tone: "bg-status-moved",
+    eyebrow: "Z34.notice.rescheduled.eyebrow",
+    headline: "Z34.notice.rescheduled.headline",
+    context: "Z34.notice.rescheduled.context",
   },
   postponed_undated: {
-    title: "Z34.notice.postponed.title",
-    text: "Z34.notice.postponed.text",
+    tone: "bg-status-stopped",
+    eyebrow: "Z34.notice.postponed.eyebrow",
+    headline: "Z34.notice.postponed.headline",
+    context: "Z34.notice.postponed.context",
   },
   cancelled: {
-    title: "Z34.notice.cancelled.title",
-    text: "Z34.notice.cancelled.text",
+    tone: "bg-status-stopped",
+    eyebrow: "Z34.notice.cancelled.eyebrow",
+    headline: "Z34.notice.cancelled.headline",
+    context: "Z34.notice.cancelled.context",
   },
 };
 
@@ -52,6 +64,24 @@ const PAST_NOTICE = {
   title: "Z34.notice.past.title",
   text: "Z34.notice.past.text",
 } as const;
+
+// The line under the headline of a status panel. A rescheduled event whose old
+// date is not known says only the new one.
+function panelContext(
+  lang: Lang,
+  event: PublicEvent,
+  id: MessageId,
+): string | null {
+  if (event.status === "rescheduled") {
+    if (!event.newLine) return null;
+
+    return event.earlier
+      ? t(lang, id, { old: event.earlier.line, new: event.newLine })
+      : t(lang, "Z34.notice.rescheduled.contextNew", { new: event.newLine });
+  }
+
+  return event.earlier ? t(lang, id, { old: event.earlier.line }) : null;
+}
 
 const BAR_ICON: Record<InfoBar["key"], React.ReactNode> = {
   doors: <ClockIcon />,
@@ -69,12 +99,11 @@ function ticketLabel(kind: string): MessageId {
 }
 
 export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
-  const notice = event.past
-    ? PAST_NOTICE
-    : event.status === "scheduled"
-      ? null
-      : STATUS_NOTICE[event.status];
+  const panel =
+    event.status === "scheduled" ? null : STATUS_PANEL[event.status];
   const cancelled = event.status === "cancelled";
+  const postponed = event.status === "postponed_undated";
+  const moved = event.status === "rescheduled";
   const ticketRoute = event.ticketUrl
     ? event.access.find((route) => route.url === event.ticketUrl)
     : undefined;
@@ -104,21 +133,38 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
       />
 
       <Band tone="neutral100" label={t(lang, "Z34.event.label")} wide>
-        {notice ? (
+        {panel ? (
           <div
             role="status"
-            className={`${cancelled ? "bg-error-subtle text-error" : event.past ? "bg-background text-foreground border-border border" : "bg-warning-subtle text-warning"} mb-6 flex flex-col gap-1 rounded-lg px-5 py-4`}
+            className={`${panel.tone} text-status-ink mb-6 flex flex-col gap-3 rounded-[10px] p-5 lg:mb-8`}
+          >
+            <p className="text-[13px] leading-4 font-medium tracking-[0.78px] uppercase">
+              {t(lang, panel.eyebrow)}
+            </p>
+            <p className="text-2xl leading-[30px] font-bold tracking-[-0.6px] [overflow-wrap:anywhere] lg:text-[32px] lg:leading-[38px] lg:tracking-[-0.8px]">
+              {t(lang, panel.headline)}
+            </p>
+            {panelContext(lang, event, panel.context) ? (
+              <p className="text-sm leading-5">
+                {panelContext(lang, event, panel.context)}
+              </p>
+            ) : null}
+          </div>
+        ) : event.past ? (
+          <div
+            role="status"
+            className="bg-background text-foreground border-border mb-6 flex flex-col gap-1 rounded-lg border px-5 py-4"
           >
             <p className="text-lg leading-6 font-bold">
-              {t(lang, notice.title)}
+              {t(lang, PAST_NOTICE.title)}
             </p>
-            <p className="text-base leading-6">{t(lang, notice.text)}</p>
+            <p className="text-base leading-6">{t(lang, PAST_NOTICE.text)}</p>
           </div>
         ) : null}
 
         {/* PUB-01: flyer left, information right (lg). On small screens the
             order is identity, flyer, information. */}
-        <div className="grid gap-6 lg:grid-cols-[5fr_8fr] lg:items-start lg:gap-x-16 lg:gap-y-7">
+        <div className="grid gap-6 lg:grid-cols-[5fr_8fr] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-16 lg:gap-y-7">
           <div className="flex flex-col gap-3 lg:col-start-2 lg:row-start-1">
             <FormatTag format={event.format} label={event.formatLabel} />
             <h1 className="text-[40px] leading-[44px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere] lg:text-[56px] lg:leading-[60px] lg:tracking-[-1.5px]">
@@ -140,7 +186,7 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
             <img
               src={event.imageUrl}
               alt=""
-              className={`${cancelled ? "opacity-60 grayscale" : ""} h-full w-full object-contain`}
+              className="h-full w-full object-contain"
             />
           </div>
 
@@ -151,33 +197,61 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
                   <Eyebrow>
                     {t(
                       lang,
-                      cancelled ? "Z34.event.wasPlanned" : "Z34.event.when",
+                      cancelled
+                        ? "Z34.event.cancelledDate"
+                        : moved
+                          ? "Z34.event.newDate"
+                          : "Z34.event.when",
                     )}
                   </Eyebrow>
-                  <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere]">
+                  <p
+                    className={`${cancelled ? "text-2xl leading-[30px] font-medium tracking-[-0.4px]" : "text-[32px] leading-[38px] font-bold tracking-[-0.8px]"} [overflow-wrap:anywhere]`}
+                  >
                     {event.dateLine}
                   </p>
-                  <p className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">
-                    {event.timeLine}
-                  </p>
-                  <p className="text-muted-foreground text-sm leading-5">
-                    {[event.untilLine, t(lang, "Z34.event.timezone")]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
+                  {cancelled ? (
+                    <p className="text-base leading-6">
+                      {t(lang, "Z34.event.originally", {
+                        time: event.timeLine ?? "",
+                      })}
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">
+                        {event.timeLine}
+                      </p>
+                      <p className="text-muted-foreground text-sm leading-5">
+                        {[event.untilLine, t(lang, "Z34.event.timezone")]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                      {moved && event.earlier ? (
+                        <p className="text-sm leading-5 line-through">
+                          {t(lang, "Z34.event.previously", {
+                            date: event.earlier.date,
+                          })}
+                        </p>
+                      ) : null}
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
-                  <Eyebrow>{t(lang, "Z34.event.when")}</Eyebrow>
+                  <Eyebrow>{t(lang, "Z34.event.newDate")}</Eyebrow>
                   <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere]">
-                    {t(lang, "Z34.event.dateTbd")}
+                    {t(lang, "Z34.event.dateOpen")}
                   </p>
                 </div>
               )}
 
               {hasPlace ? (
                 <div className="flex flex-col gap-2">
-                  <Eyebrow>{t(lang, "Z34.event.where")}</Eyebrow>
+                  <Eyebrow>
+                    {t(
+                      lang,
+                      postponed ? "Z34.event.formerPlace" : "Z34.event.where",
+                    )}
+                  </Eyebrow>
                   {event.placeName ? (
                     <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere]">
                       {event.placeName}
@@ -190,7 +264,7 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
                       </span>
                     ))}
                   </address>
-                  {routeUrl ? (
+                  {routeUrl && !cancelled && !postponed ? (
                     <a
                       href={routeUrl}
                       rel="noopener noreferrer"
@@ -204,7 +278,9 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
             </div>
 
             <div className="flex flex-col gap-4">
-              {!cancelled && (event.priceText || event.access.length > 0) ? (
+              {!cancelled &&
+              !postponed &&
+              (event.priceText || event.access.length > 0) ? (
                 <div className="flex flex-col gap-2">
                   {event.priceText ? (
                     <p className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">

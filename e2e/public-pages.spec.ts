@@ -339,7 +339,8 @@ test.describe("public pages", () => {
     const response = await page.goto(`/e/${CANCELLED.slug}`);
     expect(response?.status()).toBe(200);
 
-    await expect(page.getByRole("status").getByText("Abgesagt")).toBeVisible(SLOW);
+    await expect(page.getByRole("status").getByText("Abgesagt", { exact: true })).toBeVisible(SLOW);
+    await expect(page.getByRole("status")).toContainText("Abgesagter Termin: Sa, 5. Juni 2027");
     await expect(page.getByRole("link", { name: /Zum Ticketanbieter/ })).toHaveCount(0);
 
     const jsonLd = JSON.parse(
@@ -368,11 +369,15 @@ test.describe("public pages", () => {
     await context.close();
   });
 
-  test("an event postponed without a date shows no date", async ({ page }) => {
+  test("an event postponed without a date names the old one and offers no new one", async ({ page }) => {
     await page.goto(`/e/${POSTPONED.slug}`);
 
-    await expect(page.getByRole("status").getByText("Neuer Termin folgt")).toBeVisible(SLOW);
-    await expect(page.getByText(/Sa, 5\. Juni/)).toHaveCount(0);
+    await expect(
+      page.getByRole("status").getByText("Verschoben — neuer Termin folgt"),
+    ).toBeVisible(SLOW);
+    await expect(page.getByRole("status")).toContainText("Bisher angekündigt: Sa, 5. Juni 2027");
+    await expect(page.getByText("Noch offen", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Route öffnen/ })).toHaveCount(0);
 
     const jsonLd = JSON.parse(
       (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",

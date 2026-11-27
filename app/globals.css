@@ -27,6 +27,11 @@
   --warning-soft: #fbf1dc;
   --error-base: #c8202a;
   --error-soft: #faeceb;
+  /* Figma variables accent/accent-purple and red/400: the status panels of the
+     public event page (new date, date to follow, cancelled), black text. */
+  --status-moved: #d7b4ff;
+  --status-stopped: #f87171;
+  --status-ink: #000000;
 
   /* Default platform theme (light only for the scaffold). */
   --background: var(--white);
@@ -84,6 +89,9 @@
   --color-warning-subtle: var(--warning-soft);
   --color-error: var(--error-base);
   --color-error-subtle: var(--error-soft);
+  --color-status-moved: var(--status-moved);
+  --color-status-stopped: var(--status-stopped);
+  --color-status-ink: var(--status-ink);
   --font-sans: var(--font-space-grotesk);
 }
 

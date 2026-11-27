@@ -201,6 +201,7 @@ export type Database = {
           first_approved_revision_id: string | null
           id: string
           organizer_id: string
+          previous_start_at: string | null
           public_status: Database["public"]["Enums"]["event_status"]
           publication_state: Database["public"]["Enums"]["publication_state"]
           published_revision_id: string | null
@@ -218,6 +219,7 @@ export type Database = {
           first_approved_revision_id?: string | null
           id?: string
           organizer_id: string
+          previous_start_at?: string | null
           public_status?: Database["public"]["Enums"]["event_status"]
           publication_state?: Database["public"]["Enums"]["publication_state"]
           published_revision_id?: string | null
@@ -235,6 +237,7 @@ export type Database = {
           first_approved_revision_id?: string | null
           id?: string
           organizer_id?: string
+          previous_start_at?: string | null
           public_status?: Database["public"]["Enums"]["event_status"]
           publication_state?: Database["public"]["Enums"]["publication_state"]
           published_revision_id?: string | null
@@ -763,6 +766,7 @@ export type Database = {
           organizer_id: string | null
           place_name: string | null
           postal_code: string | null
+          previous_start_at: string | null
           price_amount_minor: number | null
           price_max_amount_minor: number | null
           price_fee_model: Database["public"]["Enums"]["price_fee_model"] | null
