@@ -83,6 +83,13 @@ export type PublicEvent = {
   startTime: string | null;
   timeLine: string | null;
   untilLine: string | null;
+  // The date this event no longer takes (PUB-01j to l): the one it was moved
+  // from, postponed from or cancelled on. `date` is "Fr, 23. Oktober 2026",
+  // `line` adds the start time. Null for a scheduled event, and for a
+  // rescheduled one whose old date was not kept.
+  earlier: { date: string; line: string } | null;
+  // "Fr, 30. Oktober 2026 · 22:00 Uhr": the new date of a rescheduled event.
+  newLine: string | null;
   placeName: string | null;
   addressLines: string[];
   // Shown text: "12,00 €", "Free", "Price not known yet" or null (not asked).
@@ -345,13 +352,32 @@ export function toPublicEvent(
     (status === "scheduled" || status === "rescheduled") &&
     now.getTime() >= new Date(archiveAt).getTime();
   const hasDate = status !== "postponed_undated";
-  const thisYear = yearIn(row.timezone, now);
+  // A date that changed always shows its year (Figma PUB-01j to l).
+  const thisYear = status === "scheduled" ? yearIn(row.timezone, now) : 0;
   const view = priceView(row);
   const access = accessFrom(lang, row.access_routes);
   const town = [row.postal_code, row.city].filter(Boolean).join(" ");
   const addressLines = [row.address_line, town].filter((line): line is string =>
     Boolean(line),
   );
+  const dateTime = (date: string, startTime: string) =>
+    t(lang, "Z34.event.dateTime", {
+      date,
+      time: t(lang, "Z34.event.timeFrom", { time: startTime }),
+    });
+  // postponed and cancelled keep the old date in the published revision; a
+  // rescheduled event has it in previous_start_at.
+  const earlierTime =
+    status === "rescheduled"
+      ? row.previous_start_at
+        ? describeEventTime(row.previous_start_at, null, row.timezone)
+        : null
+      : status === "scheduled"
+        ? null
+        : time;
+  const earlierDate = earlierTime
+    ? formatEventDate(lang, earlierTime.startDate, thisYear)
+    : null;
   // A sold-out ticket link is not offered as the way in.
   const ticket = access.find((route) => route.url !== null && !route.soldOut);
 
@@ -381,12 +407,29 @@ export function toPublicEvent(
             date: formatEventDate(lang, time.endDate, thisYear),
           })
         : null,
+    earlier:
+      earlierTime && earlierDate
+        ? {
+            date: earlierDate,
+            line: dateTime(earlierDate, earlierTime.startTime),
+          }
+        : null,
+    newLine:
+      status === "rescheduled"
+        ? dateTime(
+            formatEventDate(lang, time.startDate, thisYear),
+            time.startTime,
+          )
+        : null,
     placeName: row.place_name || null,
     addressLines,
     priceText: priceLabel(lang, view),
     offer: offerFrom(view),
     access,
-    ticketUrl: status === "cancelled" || past ? null : (ticket?.url ?? null),
+    ticketUrl:
+      status === "cancelled" || status === "postponed_undated" || past
+        ? null
+        : (ticket?.url ?? null),
     atmosphereTags: row.atmosphere_tags ?? [],
     atmosphereDescription: row.atmosphere_description || null,
     modules: publicModules(row.modules),

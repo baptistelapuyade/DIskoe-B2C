@@ -16,9 +16,9 @@ const OG_LOCALE: Record<Lang, string> = { de: "de_DE", en: "en_US" };
 export function eventMetadata(lang: Lang, event: PublicEvent): Metadata {
   const when =
     event.status === "cancelled"
-      ? t(lang, "Z34.notice.cancelled.title")
+      ? t(lang, "Z34.notice.cancelled.eyebrow")
       : event.status === "postponed_undated"
-        ? t(lang, "Z34.notice.postponed.title")
+        ? t(lang, "Z34.event.dateTbd")
         : [event.dateLine, event.timeLine].filter(Boolean).join(", ");
   const description = shorten(
     event.description ??

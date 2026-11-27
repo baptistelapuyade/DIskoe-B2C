@@ -1291,20 +1291,31 @@ Texte von `PUB-01a`–`l` und `PUB-06a`–`d`. Deutsch aus Figma, bei fehlenden 
 
 | ID | Deutsch | Englisch | Quelle |
 |---|---|---|---|
-| Z34.notice.rescheduled.title | Neuer Termin | New date | PUB-01c, Hinweis, Titel |
-| Z34.notice.rescheduled.text | Dieses Event wurde verschoben. Der Termin unten ist der neue Termin. | This event was rescheduled. The date below is the new date. | PUB-01c, Hinweis (Wortlaut Founder 03.11.2026) |
-| Z34.notice.postponed.title | Neuer Termin folgt | New date to follow | PUB-01d, Hinweis, Titel |
-| Z34.notice.postponed.text | Dieses Event wurde verschoben. Ein neuer Termin steht noch nicht fest. | This event was postponed. A new date hasn’t been set yet. | PUB-01d, Hinweis (Wortlaut Founder 03.11.2026) |
-| Z34.notice.cancelled.title | Abgesagt | Cancelled | PUB-01b, Hinweis, Titel |
-| Z34.notice.cancelled.text | Dieses Event findet nicht statt. | This event is not taking place. | PUB-01b, Hinweis (Wortlaut Founder 03.11.2026) |
+| Z34.notice.rescheduled.eyebrow | Verschoben — neuer Termin bestätigt | Rescheduled — new date confirmed | PUB-01j, Hinweisfläche, Eyebrow |
+| Z34.notice.rescheduled.headline | Das Event findet an einem neuen Termin statt. | The event is taking place on a new date. | PUB-01j, Hinweisfläche, Satz (fester Satz statt „eine Woche später“, Founder 27.11.2026) |
+| Z34.notice.rescheduled.context | Bisher: {old}. Neu: {new}. | Previously: {old}. Now: {new}. | PUB-01j, Hinweisfläche, Terminzeile; {old} und {new} sind „Fr, 23. Oktober 2026 · 22:00 Uhr“ |
+| Z34.notice.rescheduled.contextNew | Neu: {new}. | Now: {new}. | wie oben, wenn der alte Termin unbekannt ist (vor der Spalte `previous_start_at` verschoben) |
+| Z34.notice.postponed.eyebrow | Verschoben — neuer Termin folgt | Postponed — new date to follow | PUB-01k, Hinweisfläche, Eyebrow |
+| Z34.notice.postponed.headline | Der bisherige Termin findet nicht statt. Ein neuer Termin steht noch nicht fest. | The previous date is not taking place. A new date hasn’t been set yet. | PUB-01k, Hinweisfläche, Satz |
+| Z34.notice.postponed.context | Bisher angekündigt: {old}. | Previously announced: {old}. | PUB-01k, Hinweisfläche, Terminzeile |
+| Z34.notice.cancelled.eyebrow | Abgesagt | Cancelled | PUB-01l, Hinweisfläche, Eyebrow |
+| Z34.notice.cancelled.headline | Dieses Event findet nicht statt. | This event is not taking place. | PUB-01l, Hinweisfläche, Satz |
+| Z34.notice.cancelled.context | Abgesagter Termin: {old}. | Cancelled date: {old}. | PUB-01l, Hinweisfläche, Terminzeile |
 | Z34.notice.past.title | Vorbei | Past | PUB-01e, Hinweis, Titel |
 | Z34.notice.past.text | Dieses Event ist vorbei. | This event is over. | PUB-01e, Hinweis |
 | Z34.event.label | Event | Event | PUB-01, Bereichsname für Screenreader (kein Frame) |
 | Z34.event.by | Von | By | PUB-01a, Zeile unter dem Titel, vor dem Namen des Veranstalters |
 | Z34.event.when | Wann | When | PUB-01a, Eyebrow |
-| Z34.event.wasPlanned | War geplant für | Was planned for | PUB-01b, Eyebrow bei abgesagtem Event |
 | Z34.event.where | Wo | Where | PUB-01a, Eyebrow |
-| Z34.event.dateTbd | Neuer Termin folgt | New date to follow | PUB-01d, Wert unter „Wann“ |
+| Z34.event.dateTbd | Neuer Termin folgt | New date to follow | Profilseite, Terminzeile eines verschobenen Events ohne Datum; Link-Vorschau |
+| Z34.event.newDate | Neuer Termin | New date | PUB-01j, Eyebrow über dem Datum (statt „Wann“); PUB-01k, Eyebrow, Wert „Noch offen“ |
+| Z34.event.cancelledDate | Abgesagter Termin | Cancelled date | PUB-01l, Eyebrow über dem Datum |
+| Z34.event.formerPlace | Bisheriger Ort | Previous venue | PUB-01k, Eyebrow über dem Ort |
+| Z34.event.previously | Bisher: {date} | Previously: {date} | PUB-01j, durchgestrichene Zeile unter der Zeit |
+| Z34.event.originally | Ursprünglich: {time} | Originally: {time} | PUB-01l, Zeile unter dem Datum |
+| Z34.event.cancelledNote | Der Termin wurde abgesagt. | This date was cancelled. | PUB-01l, gedämpfte Zeile unter „Ursprünglich“ |
+| Z34.event.dateOpen | Noch offen | Not set yet | PUB-01k, Wert unter „Neuer Termin“ |
+| Z34.event.dateTime | {date} · {time} | {date} · {time} | Datum und Uhrzeit in der Hinweisfläche |
 | Z34.event.timezone | Berliner Ortszeit | Berlin time | PUB-01a, Zusatz unter der Uhrzeit |
 | Z34.event.until | Bis {date} | Until {date} | PUB-01a, Zusatz bei Ende an einem anderen Tag |
 | Z34.event.timeFrom | {time} Uhr | {time} | PUB-01a, Uhrzeit ohne bekanntes Ende (Figma: „20:00 Uhr“) |

@@ -58,6 +58,7 @@ const eventRow: PublicEventRow = {
   modules: null,
   event_image_path: "events/e1/u1.png",
   published_at: "2026-10-20T10:00:00Z",
+  previous_start_at: null,
 };
 
 const organizer = toPublicProfile(profileRow, MEDIA)!;
@@ -184,6 +185,55 @@ describe("public event shape", () => {
     expect(
       build({ price_model: "fixed", price_amount_minor: 1200 }).priceText,
     ).toBe("12,00 €");
+  });
+
+  describe("the date a changed event no longer takes (PUB-01j to l)", () => {
+    it("names the old date of a rescheduled event, with the year", () => {
+      const event = build({
+        public_status: "rescheduled",
+        // 23.10.2026 22:00 Berlin (CEST until 25.10: UTC+2)
+        previous_start_at: "2026-10-23T20:00:00Z",
+      });
+
+      expect(event.earlier).toEqual({
+        date: "Fr, 23. Oktober 2026",
+        line: "Fr, 23. Oktober 2026 · 22:00 Uhr",
+      });
+      expect(event.newLine).toBe("Sa, 31. Oktober 2026 · 23:00 Uhr");
+      expect(event.dateLine).toBe("Sa, 31. Oktober 2026");
+    });
+
+    it("says nothing about the old date when it was not kept", () => {
+      const event = build({
+        public_status: "rescheduled",
+        previous_start_at: null,
+      });
+
+      expect(event.earlier).toBeNull();
+      expect(event.newLine).toBe("Sa, 31. Oktober 2026 · 23:00 Uhr");
+    });
+
+    it("takes the old date of a postponed or cancelled event from its revision", () => {
+      for (const status of ["postponed_undated", "cancelled"] as const) {
+        const event = build({ public_status: status });
+
+        expect(event.earlier?.line).toBe("Sa, 31. Oktober 2026 · 23:00 Uhr");
+      }
+    });
+
+    it("shows no old date for a scheduled event, and its year only when it is not this year", () => {
+      const event = build({ previous_start_at: "2026-10-23T20:00:00Z" });
+
+      expect(event.earlier).toBeNull();
+      expect(event.newLine).toBeNull();
+      expect(event.dateLine).toBe("Sa, 31. Oktober");
+    });
+
+    it("offers no ticket link for a postponed event", () => {
+      expect(
+        build({ public_status: "postponed_undated" }).ticketUrl,
+      ).toBeNull();
+    });
   });
 
   it("drops a cancelled event's ticket link and keeps its status", () => {
