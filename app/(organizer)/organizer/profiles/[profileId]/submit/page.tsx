@@ -62,9 +62,7 @@ export default async function SubmitChecklistPage({
         lang={lang}
         confirmHref={`${base}/submit/confirm`}
         confirmProfileOnlyHref={`${base}/submit/confirm?event=none`}
-        previewHref={
-          eventId ? `/organizer/events/${eventId}/preview` : `${base}/preview`
-        }
+        previewHref={`${base}/preview/full`}
         newEventHref={`/organizer/events/new?profile=${profileId}`}
         profileCard={
           <SummaryCard

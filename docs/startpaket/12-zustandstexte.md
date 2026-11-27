@@ -1374,3 +1374,41 @@ Texte von `PUB-01a`–`l` und `PUB-06a`–`d`. Deutsch aus Figma, bei fehlenden 
 | Z34.date.weekdays | So,Mo,Di,Mi,Do,Fr,Sa | Sun,Mon,Tue,Wed,Thu,Fri,Sat | Wochentage, Sonntag zuerst, durch Komma getrennt (Datumsformat der Eventseite) |
 | Z34.date.months | Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember | January,February,March,April,May,June,July,August,September,October,November,December | Monatsnamen, durch Komma getrennt (Datumsformat der Eventseite) |
 | Z34.date.dayMonth | {day}. {month} | {day} {month} | Tag und Monat: „23. Oktober“ / „23 October“ |
+
+### Vorschau der Seiten (Z35, Welle 1, VOR-01a/b, Stand 27.11.2026)
+
+Texte der privaten Vorschau (Rahmen um `PUB-06a` und `PUB-01a`). Deutsch aus Figma, bei fehlenden Frames als Vorschlag gekennzeichnet; **Englisch ist ein Vorschlag**.
+
+| ID | Deutsch | Englisch | Quelle |
+|---|---|---|---|
+| Z35.nav.label | Vorschau | Preview | VOR-01, Bereichsname der Tabs für Screenreader (kein Frame) |
+| Z35.tab.profile | Profil | Profile | VOR-01a/b, Tab |
+| Z35.tab.event | Event | Event | VOR-01a/b, Tab |
+| Z35.back.checklist | Zurück zur Prüfliste | Back to the checklist | VOR-01a/b, Zurück-Button (Herkunft Prüfliste) |
+| Z35.back.step | Zurück zur Profilvorschau | Back to the profile preview | VOR-01a, Zurück-Button, wenn die Vorschau aus ORG-06 geöffnet wurde (kein Frame; Vorschlag) |
+| Z35.back.publish | Zurück zur Veröffentlichung | Back to publishing | VOR-01a/b, Zurück-Button, wenn die Vorschau aus NACH-17 geöffnet wurde (kein Frame; Vorschlag) |
+| Z35.notice.title | Das ist eine private Vorschau. | This is a private preview. | VOR-01a/b, Hinweisleiste, Titel |
+| Z35.notice.profile | So sieht dein Profil nach der Freigabe aus. Nur du siehst diese Seite. Follow, Teilen und Ticketlinks sind hier nicht klickbar. | This is how your profile will look once it is approved. Only you can see this page. Follow, share and ticket links cannot be clicked here. | VOR-01a, Hinweisleiste, Satz |
+| Z35.notice.event | So sieht dein Event nach der Freigabe aus. Nur du siehst diese Seite. Follow, Teilen und Ticketlinks sind hier nicht klickbar. | This is how your event will look once it is approved. Only you can see this page. Follow, share and ticket links cannot be clicked here. | VOR-01b, Hinweisleiste, Satz |
+| Z35.notice.eventLater | So sieht dein Event nach der Veröffentlichung aus. Nur du siehst diese Seite. Follow, Teilen und Ticketlinks sind hier nicht klickbar. | This is how your event will look once it is published. Only you can see this page. Follow, share and ticket links cannot be clicked here. | VOR-01b, Hinweisleiste, Satz für ein weiteres Event (das Profil ist freigegeben, es gibt keine Freigabe; kein Frame, Vorschlag) |
+| Z35.link.full | Seite in voller Größe ansehen | View the page at full size | ORG-06, Link zu VOR-01a |
+| Z35.link.preview | Vorschau ansehen | View the preview | NACH-17, Link zu VOR-01b (kein Frame; Vorschlag) |
+
+#### Profilvorschau in späteren Ständen (Z23.late, 27.11.2026)
+
+Die Seite `/organizer/profiles/[id]/preview` zeigt nach der Einreichung (in Prüfung, Rückfrage, Änderungen) den bisherigen einfachen Stand. Die Texte stammen aus dem bisherigen Code und sind jetzt im Katalog; es gibt dafür keine Figma-Frames.
+
+| ID | Deutsch | Englisch | Quelle |
+|---|---|---|---|
+| Z23.late.title | Vorschau | Preview | Profilvorschau in späteren Ständen (keine Figma-Vorlage, bisheriger Code) |
+| Z23.late.lead | {state} · Private Vorschau. Nur du und DISKOE können sie sehen. | {state} · Private preview. Only you and DISKOE can see it. | wie oben |
+| Z23.late.nameMissing | Name fehlt noch | Name still missing | wie oben |
+| Z23.late.introMissing | Kurzvorstellung fehlt noch. | Short introduction still missing. | wie oben |
+| Z23.late.link | Link: {url} | Link: {url} | wie oben |
+| Z23.late.contact | Kontakt: {contact} | Contact: {contact} | wie oben |
+| Z23.late.publishNote | Bis du veröffentlichst, bleibt der bisherige öffentliche Stand sichtbar. | Until you publish, the current public version stays visible. | wie oben |
+| Z23.late.published | Dein Profil ist veröffentlicht. | Your profile is published. | wie oben |
+| Z23.late.inReview | Eingereicht. DISKOE prüft dein Profil. Mit der Freigabe wird es öffentlich. | Submitted. DISKOE is reviewing your profile. It goes public once approved. | wie oben |
+| Z23.late.question | DISKOE hat eine Frage zu diesem Stand: | DISKOE has a question about this version: | wie oben |
+| Z23.late.questionLink | Frage ansehen | View the question | wie oben |
+| Z23.late.imageTitle | Bild noch nicht öffentlich | Image not public yet | wie oben |

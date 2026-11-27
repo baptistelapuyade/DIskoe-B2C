@@ -30,7 +30,9 @@ export async function getPublicProfileBySlug(
   return data ? toPublicProfile(data, mediaBase()) : null;
 }
 
-async function getPublicProfileById(id: string): Promise<PublicProfile | null> {
+export async function getPublicProfileById(
+  id: string,
+): Promise<PublicProfile | null> {
   const { data, error } = await publicClient()
     .from("public_profiles")
     .select("*")

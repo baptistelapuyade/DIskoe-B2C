@@ -246,6 +246,69 @@ test.describe("first publication: profile and first event together", () => {
     );
   });
 
+  test("the private preview shows both draft pages inside the frame (VOR-01a/b)", async ({
+    browser,
+  }) => {
+    const context = await germanContext(browser, { baseURL: BASE_URL });
+    const page = await context.newPage();
+
+    await clearMailbox(emails.owner);
+    await page.goto("/login");
+    await page.getByLabel("E-Mail-Adresse").fill(emails.owner);
+    await page.getByRole("button", { name: "Code senden" }).click();
+    await page
+      .getByLabel("Code aus der E-Mail")
+      .fill(await waitForCode(emails.owner));
+    await page.getByRole("button", { name: "Anmelden", exact: true }).click();
+    await page.waitForURL("**/organizer");
+
+    // VOR-01a: the real profile page with the draft, inside the frame.
+    await page.goto(`/organizer/profiles/${profileId}/preview/full`);
+    await expect(page.getByText("Das ist eine private Vorschau.")).toBeVisible({
+      timeout: 20_000,
+    });
+    await expect(
+      page.getByRole("heading", { name: "Gamma Kollektiv", level: 1 }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Zurück zur Prüfliste" }),
+    ).toHaveAttribute("href", `/organizer/profiles/${profileId}/submit`);
+    const tabs = page.getByRole("navigation", { name: "Vorschau" });
+    await expect(tabs.getByRole("link", { name: "Profil" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      /noindex/,
+    );
+
+    // VOR-01b: the event page with the draft. What leaves the page is not
+    // operable: "Teilen" is disabled and nothing links to the public profile.
+    await tabs.getByRole("link", { name: "Event" }).click();
+    await page.waitForURL(`**/organizer/events/${first.eventId}/preview`);
+    await expect(
+      page.getByRole("heading", { name: FIRST_TITLE, level: 1 }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("So sieht dein Event nach der Freigabe aus.", {
+        exact: false,
+      }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Teilen" })).toBeDisabled();
+    await expect(page.locator(`a[href="/${slug}"]`)).toHaveCount(0);
+    await expect(
+      page.getByRole("navigation", { name: "Vorschau" }).getByRole("link", {
+        name: "Event",
+      }),
+    ).toHaveAttribute("aria-current", "page");
+
+    // The draft is private: the public address of the profile does not exist.
+    expect((await page.goto(`/${slug}`))?.status()).toBe(404);
+
+    await context.close();
+  });
+
   test("the owner submits profile and first event together", async () => {
     const submit = await ownerApi.rpc("submit_first_publication", {
       p_profile_id: profileId,

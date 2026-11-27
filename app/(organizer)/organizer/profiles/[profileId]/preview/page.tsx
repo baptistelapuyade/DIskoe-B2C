@@ -36,6 +36,7 @@ export default async function PreviewProfilePage({
     `/organizer/profiles/${profileId}/preview`,
   );
   const { revision, image } = view;
+  const lang = await getLang();
 
   // A live profile: its changes have their own screens (Figma LPA-03a). The
   // old screen stays only for a picture that is not public yet.
@@ -47,11 +48,14 @@ export default async function PreviewProfilePage({
   // ORG-06). Later states (in review, question, changes to a live profile)
   // keep the older screen until their own slices are built.
   if (view.status === "incomplete" || view.status === "ready") {
-    const lang = await getLang();
     const base = `/organizer/profiles/${profileId}`;
     const supabase = await createClient();
     const { data: use } = image
-      ? await supabase.from("media_uses").select("crop").eq("id", image.useId).maybeSingle()
+      ? await supabase
+          .from("media_uses")
+          .select("crop")
+          .eq("id", image.useId)
+          .maybeSingle()
       : { data: null };
     const firstGap = view.gaps[0];
 
@@ -66,7 +70,10 @@ export default async function PreviewProfilePage({
       >
         <div className="max-w-[1032px]">
           {/* The large hint of ORG-06: blue brand surface, larger title. */}
-          <div role="status" className="bg-brand-blue text-foreground flex items-start gap-3 rounded-xl p-4">
+          <div
+            role="status"
+            className="bg-brand-blue text-foreground flex items-start gap-3 rounded-xl p-4"
+          >
             <svg
               aria-hidden="true"
               viewBox="0 0 16 16"
@@ -80,8 +87,12 @@ export default async function PreviewProfilePage({
               <path d="M8 7.25v3.5M8 5.25h.01" />
             </svg>
             <div className="flex min-w-0 flex-col gap-1">
-              <p className="text-[22px] leading-7 font-medium md:text-xl md:leading-6">{t(lang, "Z23.preview.notice.title")}</p>
-              <p className="text-base leading-6 md:text-sm md:leading-5">{t(lang, "Z23.preview.notice.line")}</p>
+              <p className="text-[22px] leading-7 font-medium md:text-xl md:leading-6">
+                {t(lang, "Z23.preview.notice.title")}
+              </p>
+              <p className="text-base leading-6 md:text-sm md:leading-5">
+                {t(lang, "Z23.preview.notice.line")}
+              </p>
             </div>
           </div>
         </div>
@@ -103,7 +114,11 @@ export default async function PreviewProfilePage({
             />
             <div>
               <LinkButton
-                href={firstGap === "profile_image" ? `${base}/image` : `${base}/edit`}
+                href={
+                  firstGap === "profile_image"
+                    ? `${base}/image`
+                    : `${base}/edit`
+                }
                 variant="primaryLg"
               >
                 {t(lang, "Z22.a.action")}
@@ -118,6 +133,12 @@ export default async function PreviewProfilePage({
             <LinkButton href={`${base}/submit`} variant="ghostLg">
               {t(lang, "Z23.preview.submit")}
             </LinkButton>
+            <Link
+              href={`${base}/preview/full?from=step`}
+              className="focus-visible:outline-ring inline-flex min-h-11 items-center text-sm leading-5 font-medium underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              {t(lang, "Z35.link.full")}
+            </Link>
           </div>
         )}
       </StepShell>
@@ -132,13 +153,19 @@ export default async function PreviewProfilePage({
   return (
     <main className="mx-auto max-w-3xl space-y-10 px-6 py-12">
       <header className="space-y-3">
-        <Link href="/organizer" className="text-muted-foreground inline-flex min-h-11 items-center text-sm">
-          ← Deine Profile
+        <Link
+          href="/organizer"
+          className="text-muted-foreground inline-flex min-h-11 items-center text-sm"
+        >
+          ← {t(lang, "Z22.home.titleMany")}
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight">Vorschau</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {t(lang, "Z23.late.title")}
+        </h1>
         <p className="text-muted-foreground">
-          {stateLabel(view.status, view.live)} · Private Vorschau. Nur du und
-          DISKOE können sie sehen.
+          {t(lang, "Z23.late.lead", {
+            state: stateLabel(view.status, view.live),
+          })}
         </p>
         <ProfileNav profileId={profileId} active="preview" />
       </header>
@@ -155,15 +182,19 @@ export default async function PreviewProfilePage({
           />
         ) : null}
         <h2 className="text-2xl font-bold">
-          {revision?.name || "Name fehlt noch"}
+          {revision?.name || t(lang, "Z23.late.nameMissing")}
         </h2>
         <p className="leading-7 whitespace-pre-line">
-          {revision?.shortIntro || "Kurzvorstellung fehlt noch."}
+          {revision?.shortIntro || t(lang, "Z23.late.introMissing")}
         </p>
         <ul className="text-sm">
-          {revision?.officialUrl ? <li>Link: {revision.officialUrl}</li> : null}
+          {revision?.officialUrl ? (
+            <li>{t(lang, "Z23.late.link", { url: revision.officialUrl })}</li>
+          ) : null}
           {revision?.publicContact ? (
-            <li>Kontakt: {revision.publicContact}</li>
+            <li>
+              {t(lang, "Z23.late.contact", { contact: revision.publicContact })}
+            </li>
           ) : null}
         </ul>
       </article>
@@ -171,29 +202,25 @@ export default async function PreviewProfilePage({
       {canPublish ? (
         <section aria-labelledby="publish-heading" className="space-y-4">
           <h2 id="publish-heading" className="text-xl font-semibold">
-            Änderungen veröffentlichen
+            {t(lang, "Z29.changes.publish")}
           </h2>
           <p className="text-muted-foreground">
-            Bis du veröffentlichst, bleibt der bisherige öffentliche Stand
-            sichtbar.
+            {t(lang, "Z23.late.publishNote")}
           </p>
-          <PublishForm
-            action={publishProfile.bind(null, profileId)}
-            update
-          />
+          <PublishForm action={publishProfile.bind(null, profileId)} update />
         </section>
       ) : view.status === "published" && !imageMissingPublicly ? (
-        <p role="status">Dein Profil ist veröffentlicht.</p>
+        <p role="status">{t(lang, "Z23.late.published")}</p>
       ) : view.status === "in_review" ? (
-        <p role="status">
-          Eingereicht. DISKOE prüft dein Profil. Mit der Freigabe wird es
-          öffentlich.
-        </p>
+        <p role="status">{t(lang, "Z23.late.inReview")}</p>
       ) : view.status === "question" ? (
         <p role="status">
-          DISKOE hat eine Frage zu diesem Stand:{" "}
-          <Link href={`/organizer/profiles/${profileId}/status`} className="underline">
-            Frage ansehen
+          {t(lang, "Z23.late.question")}{" "}
+          <Link
+            href={`/organizer/profiles/${profileId}/status`}
+            className="underline"
+          >
+            {t(lang, "Z23.late.questionLink")}
           </Link>
         </p>
       ) : null}
@@ -201,7 +228,7 @@ export default async function PreviewProfilePage({
       {imageMissingPublicly ? (
         <section aria-labelledby="retry-heading" className="space-y-3">
           <h2 id="retry-heading" className="text-xl font-semibold">
-            Bild noch nicht öffentlich
+            {t(lang, "Z23.late.imageTitle")}
           </h2>
           <RetryImageForm action={retryImagePublish.bind(null, profileId)} />
         </section>

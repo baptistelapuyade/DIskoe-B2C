@@ -154,22 +154,12 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   expect(field("start_state")).toBe("unanswered");
   expect(field("price_state")).toBe("unanswered");
 
-  // 2. P01/P05: the check names every gap that is still open.
+  // 2. P01/P05: the private preview (VOR-01b) shows no page for an incomplete
+  // event. It sends the owner back to the checklist, which names the gaps; the
+  // profile is still a shell, so that in turn ends at the profile step. The gap
+  // texts themselves are covered by the unit tests of describeEventGaps.
   await page.goto(`${base}/preview`);
-  await expect(
-    page.getByRole("heading", { name: "Noch Angaben offen" }),
-  ).toBeVisible(SLOW);
-  await expect(
-    page.getByText("Datum und Uhrzeit des Beginns fehlen."),
-  ).toBeVisible();
-  await expect(
-    page.getByText("Der Ort mit Adresse und Stadt fehlt."),
-  ).toBeVisible();
-  await expect(page.getByText(/^Eventbild fehlt\. Speichern/)).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Zur Prüfung einreichen" }),
-  ).toBeDisabled();
-  await shot(page, "03-check-luecken");
+  await page.waitForURL(/\/organizer\/profiles\/[^/]+\/preview$/, SLOW);
 
   // 3. Step 2 "Wann findet es statt?" (EVT-02a): a night event (P11), UTC
   // instants. Date typed, time as time.
@@ -388,11 +378,6 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await page.getByRole("checkbox", { name: "Online-Ticket" }).check();
   await page.getByRole("button", { name: "Weiter zum Eventbild" }).click();
   await page.waitForURL("**/edit/image", SLOW);
-  await page.goto(`${base}/preview`);
-  await expect(
-    page.getByText("Für den Online-Zugang fehlt ein gültiger Link."),
-  ).toBeVisible(SLOW);
-  await expect(page.getByText("Der Ort mit Adresse fehlt.")).toHaveCount(0);
   await page.goto(`${base}/edit/price`);
   await page
     .getByLabel("Link zum Ticketverkauf")
@@ -415,8 +400,6 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
 
   // 8. P07: the price. Unanswered is a gap; "unknown" is its own state and is
   // never shown as "Frei".
-  await page.goto(`${base}/preview`);
-  await expect(page.getByText("Der Preis fehlt.")).toBeVisible(SLOW);
   await page.goto(`${base}/edit/price`);
   await page.getByRole("combobox", { name: "Preisform" }).click();
   await page.getByRole("option", { name: "Noch nicht bekannt" }).click();
@@ -450,19 +433,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   await shot(page, "07-preis-fest");
 
   // 9. Only the image is missing now (P05: it gates publishing, not the draft).
-  await page.goto(`${base}/preview`);
-  await expect(
-    page.getByRole("heading", { name: "Prüft euren öffentlichen Auftritt" }),
-  ).toBeVisible(SLOW);
-  await expect(
-    page.getByRole("heading", { name: "Eventbild fehlt" }),
-  ).toBeVisible();
-  await expect(page.getByText(/Pflichtlücke/)).toHaveCount(0);
-  await shot(page, "08-check-bild-fehlt");
-
   // 10. The image (EVT-05): chosen and uploaded at once, the description is
   // optional. The rights are confirmed at submission (EIN-01), not here.
-  await page.getByRole("link", { name: "Eventbild ergänzen" }).click();
+  await page.goto(`${base}/edit/image`);
   await expect(
     page.getByRole("heading", { name: "Zeig dein Event" }),
   ).toBeVisible(SLOW);
@@ -494,17 +467,10 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
 
   // 11. The event is complete, but the profile is still a shell, so the joint
   // submission is not available yet.
+  // The private preview (VOR-01b) waits for the profile as well: it goes back
+  // to the checklist, which ends at the profile step.
   await page.goto(`${base}/preview`);
-  await expect(
-    page.getByRole("heading", { name: "Pflichtangaben vollständig" }),
-  ).toBeVisible(SLOW);
-  await expect(
-    page.getByRole("button", { name: "Zur Prüfung einreichen" }),
-  ).toBeDisabled();
-  await expect(
-    page.getByText(/Zum Einreichen fehlen noch Angaben am Profil/),
-  ).toBeVisible();
-  await shot(page, "10-check-vollstaendig");
+  await page.waitForURL(/\/organizer\/profiles\/[^/]+\/preview$/, SLOW);
 
   // Mobile frames (Figma M01 to M03).
   await page.setViewportSize({ width: 390, height: 844 });
@@ -517,7 +483,6 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
     ["edit/image", "m2-eventbild"],
     ["edit/atmosphere", "m2-atmosphaere"],
     ["edit/more", "m2-mehr"],
-    ["preview", "m3-check"],
   ]) {
     await page.goto(`${base}/${path}`);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible(SLOW);
@@ -528,7 +493,9 @@ test("the event draft: incomplete saves, concrete gaps, price, time, access, ima
   // 12. The draft appears in the event list, privately (EVL-01a).
   await page.goto("/organizer/events");
   await expect(page.getByText(TITLE, { exact: true })).toBeVisible(SLOW);
-  await expect(page.getByText("Privater Entwurf", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Privater Entwurf", { exact: true }),
+  ).toBeVisible();
   expect(
     sql(`select publication_state from public.events where id = '${eventId}'`),
   ).toBe("private");

@@ -1314,6 +1314,36 @@ export const de = {
   "Z34.date.months":
     "Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember",
   "Z34.date.dayMonth": "{day}. {month}",
+  "Z35.nav.label": "Vorschau",
+  "Z35.tab.profile": "Profil",
+  "Z35.tab.event": "Event",
+  "Z35.back.checklist": "Zurück zur Prüfliste",
+  "Z35.back.step": "Zurück zur Profilvorschau",
+  "Z35.back.publish": "Zurück zur Veröffentlichung",
+  "Z35.notice.title": "Das ist eine private Vorschau.",
+  "Z35.notice.profile":
+    "So sieht dein Profil nach der Freigabe aus. Nur du siehst diese Seite. Follow, Teilen und Ticketlinks sind hier nicht klickbar.",
+  "Z35.notice.event":
+    "So sieht dein Event nach der Freigabe aus. Nur du siehst diese Seite. Follow, Teilen und Ticketlinks sind hier nicht klickbar.",
+  "Z35.notice.eventLater":
+    "So sieht dein Event nach der Veröffentlichung aus. Nur du siehst diese Seite. Follow, Teilen und Ticketlinks sind hier nicht klickbar.",
+  "Z35.link.full": "Seite in voller Größe ansehen",
+  "Z35.link.preview": "Vorschau ansehen",
+  "Z23.late.title": "Vorschau",
+  "Z23.late.lead":
+    "{state} · Private Vorschau. Nur du und DISKOE können sie sehen.",
+  "Z23.late.nameMissing": "Name fehlt noch",
+  "Z23.late.introMissing": "Kurzvorstellung fehlt noch.",
+  "Z23.late.link": "Link: {url}",
+  "Z23.late.contact": "Kontakt: {contact}",
+  "Z23.late.publishNote":
+    "Bis du veröffentlichst, bleibt der bisherige öffentliche Stand sichtbar.",
+  "Z23.late.published": "Dein Profil ist veröffentlicht.",
+  "Z23.late.inReview":
+    "Eingereicht. DISKOE prüft dein Profil. Mit der Freigabe wird es öffentlich.",
+  "Z23.late.question": "DISKOE hat eine Frage zu diesem Stand:",
+  "Z23.late.questionLink": "Frage ansehen",
+  "Z23.late.imageTitle": "Bild noch nicht öffentlich",
 } as const;
 
 export type MessageId = keyof typeof de;

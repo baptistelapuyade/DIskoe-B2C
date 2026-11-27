@@ -7,7 +7,10 @@ import {
   PageShell,
   Workspace,
 } from "@/components/ui/page-shell";
+import { LinkButton } from "@/components/ui/button";
 import { loadPublicationView } from "@/lib/event/publication";
+import { t } from "@/lib/i18n";
+import { getLang } from "@/lib/i18n/server";
 import { placeText, whenText } from "@/lib/event/summary";
 
 import { publishLaterEvent } from "../../actions";
@@ -32,6 +35,7 @@ export default async function PublishLaterEventPage({
   if (view.status !== "ready") redirect(`${base}/preview`);
 
   const name = view.event.profileName;
+  const lang = await getLang();
 
   return (
     <PageShell
@@ -50,6 +54,11 @@ export default async function PublishLaterEventPage({
                 <br />
                 {placeText(view.event.form)}
               </p>
+              <div>
+                <LinkButton href={`${base}/preview`}>
+                  {t(lang, "Z35.link.preview")}
+                </LinkButton>
+              </div>
             </ContextCard>
             <ContextCard title="Das wird öffentlich">
               <MutedText>
