@@ -1284,3 +1284,83 @@ Deutsch aus den Figma-Frames EVV-01 bis 05 und EVA-01 und 02; Englisch ist Vorsc
 | MAIL-14 Neue Events gebündelt | Neue Events von {Profil} / New events from {profile} | Neue Events / New events · {Profil} hat {n} neue Events (1: „hat 1 neues Event“ / „has 1 new event“) / {profile} has {n} new events · je Event eine Zeile: {Datum} · {Uhrzeit} · {Event} | Zu den Events / View events | Wir bündeln neue Events in einer Mail. / We bundle new events in one email. |
 
 **Offen:** Durchsicht der englischen Fassung durch den Founder (Begriffe „suspended“ für „gesperrt“, „hidden“ für „ausgeblendet“, „place“ für „Ort“, „Follower“ in der Fußzeile). Die Betreffzeilen sind in den Frames nicht überall gleich lang geprüft (E-Mail-Programme kürzen ab etwa 60 Zeichen). `MAIL-01` bis `03` werden zuerst gebaut (Welle 1).
+
+### Öffentliche Eventseite und Profilseite (Z34, Welle 1, Stand 26.11.2026)
+
+Texte von `PUB-01a`–`l` und `PUB-06a`–`d`. Deutsch aus Figma, bei fehlenden Frames aus dem bisherigen Code; **Englisch ist ein Vorschlag**. Texte der Organizer (Titel, Beschreibung, Atmosphäre in eigenen Worten, Kurzvorstellung) werden nicht übersetzt. Namen der Atmosphärebegriffe: `Z25.atmo.*`, Musikrichtungen und Sprachangaben: `Z26.*`, Zugangswege und Preise: `Z25.access.*`, `Z27.price.*`.
+
+| ID | Deutsch | Englisch | Quelle |
+|---|---|---|---|
+| Z34.notice.rescheduled.title | Neuer Termin | New date | PUB-01c, Hinweis, Titel |
+| Z34.notice.rescheduled.text | Dieses Event wurde verschoben. Der Termin unten ist der neue Termin. | This event was rescheduled. The date below is the new date. | PUB-01c, Hinweis (Wortlaut Founder 03.11.2026) |
+| Z34.notice.postponed.title | Neuer Termin folgt | New date to follow | PUB-01d, Hinweis, Titel |
+| Z34.notice.postponed.text | Dieses Event wurde verschoben. Ein neuer Termin steht noch nicht fest. | This event was postponed. A new date hasn’t been set yet. | PUB-01d, Hinweis (Wortlaut Founder 03.11.2026) |
+| Z34.notice.cancelled.title | Abgesagt | Cancelled | PUB-01b, Hinweis, Titel |
+| Z34.notice.cancelled.text | Dieses Event findet nicht statt. | This event is not taking place. | PUB-01b, Hinweis (Wortlaut Founder 03.11.2026) |
+| Z34.notice.past.title | Vorbei | Past | PUB-01e, Hinweis, Titel |
+| Z34.notice.past.text | Dieses Event ist vorbei. | This event is over. | PUB-01e, Hinweis |
+| Z34.event.label | Event | Event | PUB-01, Bereichsname für Screenreader (kein Frame) |
+| Z34.event.by | Von | By | PUB-01a, Zeile unter dem Titel, vor dem Namen des Veranstalters |
+| Z34.event.when | Wann | When | PUB-01a, Eyebrow |
+| Z34.event.wasPlanned | War geplant für | Was planned for | PUB-01b, Eyebrow bei abgesagtem Event |
+| Z34.event.where | Wo | Where | PUB-01a, Eyebrow |
+| Z34.event.dateTbd | Neuer Termin folgt | New date to follow | PUB-01d, Wert unter „Wann“ |
+| Z34.event.timezone | Berliner Ortszeit | Berlin time | PUB-01a, Zusatz unter der Uhrzeit |
+| Z34.event.until | Bis {date} | Until {date} | PUB-01a, Zusatz bei Ende an einem anderen Tag |
+| Z34.event.timeFrom | {time} Uhr | {time} | PUB-01a, Uhrzeit ohne bekanntes Ende (Figma: „20:00 Uhr“) |
+| Z34.event.route | Route öffnen ↗ | Get directions ↗ | PUB-01a, Link unter der Adresse |
+| Z34.event.ticket | Zum Ticketanbieter ↗ | Go to ticket provider ↗ | PUB-01a, Hauptaktion |
+| Z34.event.register | Zur Anmeldung ↗ | Go to registration ↗ | PUB-01a, Hauptaktion bei Online-Anmeldung (kein Frame) |
+| Z34.event.sectionLabel | Beschreibung und Atmosphäre | Description and atmosphere | PUB-01a, Bereichsname für Screenreader (kein Frame) |
+| Z34.event.about | Über das Event | About the event | PUB-01a, Überschrift der Beschreibung |
+| Z34.event.feel | Wie es sich anfühlt | How it feels | PUB-01a, Überschrift der Atmosphäre |
+| Z34.event.feel.note | Atmosphäre nach Einschätzung des Veranstalters. | Atmosphere as described by the organizer. | PUB-01a, Hinweis unter der Überschrift |
+| Z34.event.music | Musik | Music | PUB-01a, Zwischenüberschrift in „Wie es sich anfühlt“ |
+| Z34.event.organizerLabel | Veranstalter | Organizer | PUB-01a, Bereichsname für Screenreader (kein Frame) |
+| Z34.event.organizerEyebrow | Veranstaltet von | Hosted by | PUB-01a, Eyebrow im Organizer-Block |
+| Z34.event.profileLink | Zum Profil ↗ | View profile ↗ | PUB-01a, Link im Organizer-Block |
+| Z34.event.source | Angaben von {name} | Details from {name} | PUB-01a, Herkunftszeile |
+| Z34.event.confirmed | Zuletzt bestätigt am {date} | Last confirmed on {date} | PUB-01a, Herkunftszeile |
+| Z34.know.title | Gut zu wissen | Good to know | PUB-01a, Überschrift der Info-Balken |
+| Z34.know.lead | Was du vor dem Besuch wissen willst. Wir fragen es extra beim Veranstalter ab. | What you’ll want to know before you go. We ask the organizer for these details separately. | PUB-01a, Einleitung (Wortlaut des Frames; vorher „ihr“) |
+| Z34.bar.entry | Eintritt | Admission | PUB-01a, Balken |
+| Z34.bar.doors | Einlass | Doors | PUB-01g, Balken |
+| Z34.bar.doors.start | Beginn um {time} Uhr | Starts at {time} | PUB-01g, Detail des Balkens Einlass |
+| Z34.bar.window | Zeitfenster | Time window | PUB-01f, Balken |
+| Z34.bar.window.range | {from}–{to} Uhr | {from}–{to} | PUB-01f, Wert des Balkens Zeitfenster |
+| Z34.bar.window.from | ab {from} Uhr | from {from} | Zeitfenster ohne Ende (kein Frame) |
+| Z34.bar.window.dropIn | Kommt, wann ihr wollt. | Drop in any time. | PUB-01f, Detail (Frame hat zusätzlich einen freien Satz zur Dauer) |
+| Z34.bar.window.both | Gemeinsamer Beginn oder flexibel vorbeikommen. | Shared start, or drop in any time. | Zeitfenster bei Besuchsmodus „Beides“ (kein Frame) |
+| Z34.bar.window.short.ok | Ein kurzer Besuch genügt. | A short visit is fine. | Zeitfenster, Zusatz (kein Frame) |
+| Z34.bar.window.short.longer | Eher eine längere Teilnahme. | Better suited to a longer visit. | Zeitfenster, Zusatz (kein Frame) |
+| Z34.bar.age | Alter | Age | PUB-01g, Balken |
+| Z34.bar.age.min | Ab {n} | {n}+ | PUB-01g, Wert des Balkens Alter |
+| Z34.bar.age.all | Für alle Altersgruppen | All ages | Balken Alter ohne Beschränkung (kein Frame) |
+| Z34.bar.age.minDetail | Zutritt ab {n} Jahren. | Ages {n} and over. | PUB-01g, Detail des Balkens Alter |
+| Z34.bar.language | Sprache | Language | PUB-01g, Balken |
+| Z34.bar.accessibility | Zugänglichkeit | Accessibility | PUB-01a, Balken |
+| Z34.bar.accessibility.value | Noch keine Angaben | No details yet | PUB-01a, Wert ohne Angaben |
+| Z34.bar.accessibility.detail | Der Veranstalter hat dazu nichts bestätigt. Das heißt nicht, dass der Ort nicht zugänglich ist. | The organizer hasn’t confirmed any details. That doesn’t mean the venue isn’t accessible. | PUB-01a, Detail ohne Angaben |
+| Z34.bar.accessibility.ask | Veranstalter fragen | Ask the organizer | PUB-01a, Button, nur mit öffentlichem Kontakt |
+| Z34.share.button | Teilen | Share | PUB-01a, Button |
+| Z34.share.copied | Link kopiert. | Link copied. | PUB-01a, Rückmeldung nach dem Kopieren |
+| Z34.share.failed | Der Link konnte nicht kopiert werden. | The link couldn’t be copied. | PUB-01a, Fehler beim Kopieren |
+| Z34.profile.eyebrow | Veranstalter | Organizer | PUB-06a, Eyebrow |
+| Z34.profile.upcoming | Kommende Events | Upcoming events | PUB-06a, Überschrift |
+| Z34.profile.none | Neue Termine folgen. | New dates to follow. | PUB-06b, Leerzustand |
+| Z34.profile.more | Mehr anzeigen ({n}) | Show more ({n}) | PUB-06c, Aufklapper ab dem vierten Eintrag |
+| Z34.profile.links | Links und Kontakt | Links and contact | PUB-06a, Überschrift |
+| Z34.profile.instagram | Instagram @{handle} ↗ | Instagram @{handle} ↗ | PUB-06a, Link |
+| Z34.profile.rescheduled | Neuer Termin | New date | PUB-06a, Kennzeichen am verschobenen Event |
+| Z34.format.concert | Konzert / Live-Musik | Concert / live music | PUB-01, Format-Tag (Name im Design) |
+| Z34.format.djSet | DJ-Set | DJ set | PUB-01, Format-Tag |
+| Z34.format.clubNight | Party / Clubabend | Party / club night | PUB-01a, Format-Tag |
+| Z34.format.listeningSession | Listening-Session | Listening session | PUB-01, Format-Tag |
+| Z34.format.opening | Vernissage | Opening | PUB-01, Format-Tag |
+| Z34.format.exhibition | Ausstellungsabend / Offspace | Exhibition night / project space | PUB-01, Format-Tag |
+| Z34.format.screening | Filmabend / Screening | Film night / screening | PUB-01, Format-Tag |
+| Z34.meta.notFound | Nicht gefunden | Not found | Seitentitel bei unbekannter Adresse |
+| Z34.meta.profileDescription | Events von {name} | Events by {name} | Beschreibung der Profilseite ohne Kurzvorstellung (Meta-Tag) |
+| Z34.date.weekdays | So,Mo,Di,Mi,Do,Fr,Sa | Sun,Mon,Tue,Wed,Thu,Fri,Sat | Wochentage, Sonntag zuerst, durch Komma getrennt (Datumsformat der Eventseite) |
+| Z34.date.months | Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember | January,February,March,April,May,June,July,August,September,October,November,December | Monatsnamen, durch Komma getrennt (Datumsformat der Eventseite) |
+| Z34.date.dayMonth | {day}. {month} | {day} {month} | Tag und Monat: „23. Oktober“ / „23 October“ |

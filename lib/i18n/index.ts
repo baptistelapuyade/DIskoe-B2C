@@ -18,6 +18,32 @@ export function parseLang(value: unknown): Lang {
   return value === "de" || value === "en" ? value : DEFAULT_LANG;
 }
 
+// The language a browser asks for ("de-DE,de;q=0.9,en;q=0.8"): the first
+// supported language by weight. Used only when no choice is stored in the
+// cookie. Anything else (no header, other languages only) gives the default.
+export function langFromAcceptLanguage(
+  header: string | null | undefined,
+): Lang {
+  const ranked = (header ?? "")
+    .split(",")
+    .map((part, index) => {
+      const [tag, ...params] = part.trim().toLowerCase().split(";");
+      const weight = params
+        .map((param) => /^\s*q\s*=\s*([0-9.]+)\s*$/.exec(param)?.[1])
+        .find((value) => value !== undefined);
+      const q = weight === undefined ? 1 : Number(weight);
+
+      return { primary: tag.split("-")[0], q: Number.isNaN(q) ? 0 : q, index };
+    })
+    .filter(
+      (entry) =>
+        entry.q > 0 && (entry.primary === "de" || entry.primary === "en"),
+    )
+    .sort((a, b) => b.q - a.q || a.index - b.index);
+
+  return ranked.length > 0 ? (ranked[0].primary as Lang) : DEFAULT_LANG;
+}
+
 export type Params = Record<string, string | number>;
 
 // Looks up a catalog text and fills {placeholders}. A placeholder without a

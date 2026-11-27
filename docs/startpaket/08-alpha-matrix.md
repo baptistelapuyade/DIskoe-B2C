@@ -57,8 +57,8 @@ Die Gruppen folgen dem Weg des ersten Organizers. Alpha: **Ja** heißt in der Al
 |---|---|---|---|---|---|
 | Vorschau, ausdrückliche Bestätigung, Veröffentlichen (nur ein bestätigter Stand wird öffentlich) | PUBLISH-04, Slice 5 | Ja | gebaut | ORG-D, GELTEND | – |
 | Absagen, Verschieben mit und ohne neuen Termin, Datum ändern | PUBLISH-05, Slice 5 | Ja | teilweise: Absagen und Verschieben gebaut | NACH-C, GELTEND | Änderung von Ort und von Texten an einem live Event (NACH-B) ist laut Slice 5 nicht gebaut |
-| Öffentliche Eventseite `/e/[slug]` mit Statuszuständen, JSON-LD, Sitemap | PUBLIC-02, PUBLIC-03, Slice 6 | Ja | gebaut, optisch noch nicht wie Figma | PUB-01, GELTEND | Screen-für-Screen-Abgleich mit dem Founder |
-| Öffentliche Profilseite `/[slug]` mit kommenden Events und Leerzustand | PUBLIC-01, Slice 6 | Ja | gebaut | PUB-06, GELTEND | `PUB-06b` ist noch im alten Stil |
+| Öffentliche Eventseite `/e/[slug]` mit Statuszuständen, JSON-LD, Sitemap | PUBLIC-02, PUBLIC-03, Slice 6 | Ja | gebaut, zweisprachig (26.11.), Welle-1-Teile wie Figma; Merken, Kalender, Follow fehlen bis Welle 3 | PUB-01, GELTEND | Balken aus „Mehr zum Abend“ brauchen die Migration `20261126100000` auf Dev; Abnahme mit dem Founder |
+| Öffentliche Profilseite `/[slug]` mit kommenden Events und Leerzustand | PUBLIC-01, Slice 6 | Ja | gebaut, zweisprachig (26.11.), schlichter Stil | PUB-06, GELTEND | `PUB-06a` zeigt den Profilstil der Welle 6; `PUB-06b` noch im alten Stil |
 | Teilen per Systemdialog oder Link kopieren | SHARE-01 | Ja | gebaut | PUB-01 m–o, GELTEND (Vorschlag 10.11.: ersetzt durch `PUB-01q`/`r`, Zustände statt Dialog, Abnahme offen) | QR-Download und Textvarianten sind laut Notion Plus |
 | Impressum und Datenschutzerklärung | Founder 05.11. | Ja, vor dem ersten Organizer | Platzhalterseiten | nicht belegt | Claude entwirft die Texte aus den echten Datenflüssen |
 

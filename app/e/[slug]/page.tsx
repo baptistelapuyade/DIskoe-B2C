@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { EventView } from "@/components/public/event-view";
 import { eventJsonLd, serializeJsonLd } from "@/lib/public/json-ld";
 import { eventMetadata } from "@/lib/public/metadata";
+import { t } from "@/lib/i18n";
 import { getLang } from "@/lib/i18n/server";
 import { getPublicEvent } from "@/lib/public/queries";
 import { siteUrl } from "@/lib/public/site";
@@ -16,14 +17,18 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const event = await getPublicEvent(await getLang(), slug);
+  const lang = await getLang();
+  const event = await getPublicEvent(lang, slug);
 
-  return event ? eventMetadata(event) : { title: "Nicht gefunden" };
+  return event
+    ? eventMetadata(lang, event)
+    : { title: t(lang, "Z34.meta.notFound") };
 }
 
 export default async function EventPage({ params }: Props) {
   const { slug } = await params;
-  const event = await getPublicEvent(await getLang(), slug);
+  const lang = await getLang();
+  const event = await getPublicEvent(lang, slug);
 
   if (!event) {
     notFound();
@@ -37,7 +42,7 @@ export default async function EventPage({ params }: Props) {
           __html: serializeJsonLd(eventJsonLd(event, siteUrl())),
         }}
       />
-      <EventView event={event} />
+      <EventView lang={lang} event={event} />
     </>
   );
 }

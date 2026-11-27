@@ -1,57 +1,74 @@
 import Link from "next/link";
 
 import { buttonClass } from "@/components/ui/button";
+import { GENRE_ID } from "@/lib/event/module-summary";
+import { t, type Lang, type MessageId } from "@/lib/i18n";
 import type { PublicEvent } from "@/lib/public/dto";
+import { formatConfirmedDate } from "@/lib/public/format";
 import { infoBars, type InfoBar } from "@/lib/public/info-bars";
 import { routeHref } from "@/lib/public/route-link";
 import { siteUrl } from "@/lib/public/site";
 
-import { BadgeEuroIcon, CircleHelpIcon } from "./icons";
+import {
+  BadgeEuroIcon,
+  CircleHelpIcon,
+  ClockIcon,
+  MessageCircleIcon,
+  UserIcon,
+} from "./icons";
 import { ShareButton } from "./share-button";
 
 import {
   AtmosphereTag,
   Band,
   Eyebrow,
-  formatPublishedDate,
   FormatTag,
   ProfileImage,
   LegalFooter,
   SiteBar,
 } from "./parts";
 
-// Texts of the status variants (PUB-19, 23, 24). Wording confirmed by the
-// founder on 2026-11-03 (the Figma originals were overwritten on 2026-11-02).
+// The status variants (PUB-01b to d, e). Wording confirmed by the founder on
+// 2026-11-03; now in the catalog (Z34.notice.*).
 const STATUS_NOTICE: Record<
   Exclude<PublicEvent["status"], "scheduled">,
-  { title: string; text: string }
+  { title: MessageId; text: MessageId }
 > = {
   rescheduled: {
-    title: "Neuer Termin",
-    text: "Dieses Event wurde verschoben. Der Termin unten ist der neue Termin.",
+    title: "Z34.notice.rescheduled.title",
+    text: "Z34.notice.rescheduled.text",
   },
   postponed_undated: {
-    title: "Neuer Termin folgt",
-    text: "Dieses Event wurde verschoben. Ein neuer Termin steht noch nicht fest.",
+    title: "Z34.notice.postponed.title",
+    text: "Z34.notice.postponed.text",
   },
   cancelled: {
-    title: "Abgesagt",
-    text: "Dieses Event findet nicht statt.",
+    title: "Z34.notice.cancelled.title",
+    text: "Z34.notice.cancelled.text",
   },
 };
 
+const PAST_NOTICE = {
+  title: "Z34.notice.past.title",
+  text: "Z34.notice.past.text",
+} as const;
+
 const BAR_ICON: Record<InfoBar["key"], React.ReactNode> = {
+  doors: <ClockIcon />,
+  window: <ClockIcon />,
   entry: <BadgeEuroIcon />,
+  age: <UserIcon />,
+  language: <MessageCircleIcon />,
   accessibility: <CircleHelpIcon />,
 };
 
-const PAST_NOTICE = { title: "Vorbei", text: "Dieses Event ist vorbei." };
-
-function ticketLabel(kind: string): string {
-  return kind === "online_registration" ? "Zur Anmeldung ↗" : "Zum Ticketanbieter ↗";
+function ticketLabel(kind: string): MessageId {
+  return kind === "online_registration"
+    ? "Z34.event.register"
+    : "Z34.event.ticket";
 }
 
-export function EventView({ event }: { event: PublicEvent }) {
+export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
   const notice = event.past
     ? PAST_NOTICE
     : event.status === "scheduled"
@@ -61,7 +78,18 @@ export function EventView({ event }: { event: PublicEvent }) {
   const ticketRoute = event.ticketUrl
     ? event.access.find((route) => route.url === event.ticketUrl)
     : undefined;
-  const confirmed = formatPublishedDate(event.publishedAt);
+  const confirmed = formatConfirmedDate(
+    lang,
+    event.publishedAt,
+    event.timezone,
+  );
+  const music = event.modules.music;
+  const musicLines = [
+    ...(music?.precision ? [music.precision] : []),
+    ...(music && music.genres.length > 0
+      ? [music.genres.map((genre) => t(lang, GENRE_ID[genre])).join(" · ")]
+      : []),
+  ];
   const hasWhen = event.dateLine !== null;
   const hasPlace = event.placeName !== null || event.addressLines.length > 0;
   const routeUrl = routeHref(event.placeName, event.addressLines);
@@ -69,16 +97,22 @@ export function EventView({ event }: { event: PublicEvent }) {
 
   return (
     <main>
-      <SiteBar wide back={{ href: `/${event.organizer.slug}`, label: event.organizer.name }} />
+      <SiteBar
+        lang={lang}
+        wide
+        back={{ href: `/${event.organizer.slug}`, label: event.organizer.name }}
+      />
 
-      <Band tone="neutral100" label="Event" wide>
+      <Band tone="neutral100" label={t(lang, "Z34.event.label")} wide>
         {notice ? (
           <div
             role="status"
             className={`${cancelled ? "bg-error-subtle text-error" : event.past ? "bg-background text-foreground border-border border" : "bg-warning-subtle text-warning"} mb-6 flex flex-col gap-1 rounded-lg px-5 py-4`}
           >
-            <p className="text-lg leading-6 font-bold">{notice.title}</p>
-            <p className="text-base leading-6">{notice.text}</p>
+            <p className="text-lg leading-6 font-bold">
+              {t(lang, notice.title)}
+            </p>
+            <p className="text-base leading-6">{t(lang, notice.text)}</p>
           </div>
         ) : null}
 
@@ -87,12 +121,15 @@ export function EventView({ event }: { event: PublicEvent }) {
         <div className="grid gap-6 lg:grid-cols-[5fr_8fr] lg:items-start lg:gap-x-16 lg:gap-y-7">
           <div className="flex flex-col gap-3 lg:col-start-2 lg:row-start-1">
             <FormatTag format={event.format} label={event.formatLabel} />
-            <h1 className="text-[40px] leading-[44px] font-bold tracking-[-0.8px] lg:text-[56px] lg:leading-[60px] lg:tracking-[-1.5px]">
+            <h1 className="text-[40px] leading-[44px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere] lg:text-[56px] lg:leading-[60px] lg:tracking-[-1.5px]">
               {event.title}
             </h1>
             <p className="text-base leading-6">
-              Von{" "}
-              <Link href={`/${event.organizer.slug}`} className="underline underline-offset-4">
+              {t(lang, "Z34.event.by")}{" "}
+              <Link
+                href={`/${event.organizer.slug}`}
+                className="-my-3 inline-block py-3 underline underline-offset-4"
+              >
                 {event.organizer.name} ↗
               </Link>
             </p>
@@ -111,31 +148,38 @@ export function EventView({ event }: { event: PublicEvent }) {
             <div className="grid gap-6 md:grid-cols-[minmax(0,352fr)_minmax(0,384fr)] md:gap-8">
               {hasWhen ? (
                 <div className="flex flex-col gap-2">
-                  <Eyebrow>{cancelled ? "War geplant für" : "Wann"}</Eyebrow>
-                  <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px]">
+                  <Eyebrow>
+                    {t(
+                      lang,
+                      cancelled ? "Z34.event.wasPlanned" : "Z34.event.when",
+                    )}
+                  </Eyebrow>
+                  <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere]">
                     {event.dateLine}
                   </p>
                   <p className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">
                     {event.timeLine}
                   </p>
                   <p className="text-muted-foreground text-sm leading-5">
-                    {[event.untilLine, "Berliner Ortszeit"].filter(Boolean).join(" · ")}
+                    {[event.untilLine, t(lang, "Z34.event.timezone")]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
-                  <Eyebrow>Wann</Eyebrow>
-                  <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px]">
-                    Neuer Termin folgt
+                  <Eyebrow>{t(lang, "Z34.event.when")}</Eyebrow>
+                  <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere]">
+                    {t(lang, "Z34.event.dateTbd")}
                   </p>
                 </div>
               )}
 
               {hasPlace ? (
                 <div className="flex flex-col gap-2">
-                  <Eyebrow>Wo</Eyebrow>
+                  <Eyebrow>{t(lang, "Z34.event.where")}</Eyebrow>
                   {event.placeName ? (
-                    <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px]">
+                    <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere]">
                       {event.placeName}
                     </p>
                   ) : null}
@@ -152,7 +196,7 @@ export function EventView({ event }: { event: PublicEvent }) {
                       rel="noopener noreferrer"
                       className="inline-flex min-h-11 w-fit items-center text-sm leading-5 font-medium underline underline-offset-4"
                     >
-                      Route öffnen ↗
+                      {t(lang, "Z34.event.route")}
                     </a>
                   ) : null}
                 </div>
@@ -182,59 +226,79 @@ export function EventView({ event }: { event: PublicEvent }) {
                     rel="noopener noreferrer nofollow"
                     className={buttonClass("primary", "min-h-11 w-full px-6")}
                   >
-                    {ticketLabel(ticketRoute.kind)}
+                    {t(lang, ticketLabel(ticketRoute.kind))}
                   </a>
                 ) : null}
-                <div className="grid grid-cols-2 gap-3">
-                  {/* "Merken" comes after the alpha: a visible placeholder so
-                      it is not forgotten, without a function. */}
-                  <button
-                    type="button"
-                    disabled
-                    aria-describedby="merken-hint"
-                    className={buttonClass("secondary", "w-full")}
-                  >
-                    Merken
-                  </button>
-                  <ShareButton url={shareUrl} title={event.title} />
+                {/* "Merken" is wave 3 (Figma PUB-01a): it comes back with the
+                    saved list, not as a button without a function. */}
+                <div className="grid gap-3">
+                  <ShareButton
+                    url={shareUrl}
+                    title={event.title}
+                    labels={{
+                      share: t(lang, "Z34.share.button"),
+                      copied: t(lang, "Z34.share.copied"),
+                      failed: t(lang, "Z34.share.failed"),
+                    }}
+                  />
                 </div>
-                <p id="merken-hint" className="text-muted-foreground text-sm leading-5">
-                  „Merken“ kommt nach der Alpha.
-                </p>
               </div>
             </div>
           </div>
         </div>
       </Band>
 
-      {event.description || event.atmosphereTags.length > 0 || event.atmosphereDescription ? (
+      {event.description ||
+      event.atmosphereTags.length > 0 ||
+      event.atmosphereDescription ||
+      musicLines.length > 0 ? (
         <section
-          aria-label="Beschreibung und Atmosphäre"
+          aria-label={t(lang, "Z34.event.sectionLabel")}
           className="border-foreground flex flex-col border-y lg:flex-row"
         >
           {event.description ? (
-            <div className="bg-neutral-800 text-background border-foreground flex flex-col gap-5 px-6 py-8 lg:flex-[560] lg:border-r lg:px-10 lg:py-12">
+            <div className="text-background border-foreground flex flex-col gap-5 bg-neutral-800 px-6 py-8 lg:flex-[560] lg:border-r lg:px-10 lg:py-12">
               <h2 className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] lg:text-[40px] lg:leading-[44px]">
-                Über das Event
+                {t(lang, "Z34.event.about")}
               </h2>
-              <p className="text-base leading-6 whitespace-pre-line">{event.description}</p>
+              <p className="text-base leading-6 [overflow-wrap:anywhere] whitespace-pre-line">
+                {event.description}
+              </p>
             </div>
           ) : null}
 
-          {event.atmosphereTags.length > 0 || event.atmosphereDescription ? (
+          {event.atmosphereTags.length > 0 ||
+          event.atmosphereDescription ||
+          musicLines.length > 0 ? (
             <div className="bg-brand-lavender text-foreground flex flex-col gap-5 px-6 py-8 lg:flex-[464] lg:px-10 lg:py-12">
               <h2 className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] lg:text-[40px] lg:leading-[44px]">
-                Wie es sich anfühlt
+                {t(lang, "Z34.event.feel")}
               </h2>
-              {event.atmosphereDescription ? (
-                <p className="text-base leading-6">{event.atmosphereDescription}</p>
+              {musicLines.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  <p className="text-2xl leading-[30px] font-medium tracking-[-0.4px] uppercase">
+                    {t(lang, "Z34.event.music")}
+                  </p>
+                  {musicLines.map((line) => (
+                    <p key={line} className="text-base leading-6">
+                      {line}
+                    </p>
+                  ))}
+                </div>
               ) : null}
-              <p className="text-sm leading-5">Atmosphäre nach Einschätzung des Veranstalters.</p>
+              {event.atmosphereDescription ? (
+                <p className="text-base leading-6">
+                  {event.atmosphereDescription}
+                </p>
+              ) : null}
+              <p className="text-sm leading-5">
+                {t(lang, "Z34.event.feel.note")}
+              </p>
               {event.atmosphereTags.length > 0 ? (
                 <ul className="flex flex-wrap gap-3">
                   {event.atmosphereTags.map((tag) => (
                     <li key={tag}>
-                      <AtmosphereTag tag={tag} />
+                      <AtmosphereTag lang={lang} tag={tag} />
                     </li>
                   ))}
                 </ul>
@@ -244,24 +308,24 @@ export function EventView({ event }: { event: PublicEvent }) {
         </section>
       ) : null}
 
-      <section aria-label="Gut zu wissen">
+      <section aria-label={t(lang, "Z34.know.title")}>
         <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-2 px-6 pt-10 pb-6 sm:px-8 lg:px-16 lg:pt-16 lg:pb-9">
           <h2 className="text-[32px] leading-[35px] font-bold lg:text-[40px] lg:leading-[44px]">
-            Gut zu wissen
+            {t(lang, "Z34.know.title")}
           </h2>
           <p className="text-muted-foreground text-[15px] leading-[21px] lg:text-lg lg:leading-[25px]">
-            Was ihr vor dem Besuch wissen wollt. Wir fragen es extra beim Veranstalter ab.
+            {t(lang, "Z34.know.lead")}
           </p>
         </div>
-        <ul className="bg-foreground flex flex-col gap-px py-px mb-10 lg:mb-16">
-          {infoBars(event).map((bar) => (
+        <ul className="bg-foreground mb-10 flex flex-col gap-px py-px lg:mb-16">
+          {infoBars(lang, event).map((bar) => (
             <li key={bar.key} className="bg-secondary">
               <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-2.5 px-6 py-[18px] sm:px-8 lg:flex-row lg:items-center lg:gap-7 lg:px-16 lg:py-[22px]">
                 <p className="flex items-center gap-2.5 text-xs font-bold tracking-[1.2px] uppercase lg:w-[210px] lg:shrink-0 lg:text-[13px] lg:tracking-[1.3px]">
                   {BAR_ICON[bar.key]}
                   {bar.label}
                 </p>
-                <p className="text-[26px] leading-[29px] font-bold lg:leading-[33px]">
+                <p className="text-[26px] leading-[29px] font-bold [overflow-wrap:anywhere] lg:leading-[33px]">
                   {bar.value}
                 </p>
                 {bar.pills.length > 0 ? (
@@ -282,7 +346,10 @@ export function EventView({ event }: { event: PublicEvent }) {
                   </p>
                 ) : null}
                 {bar.action ? (
-                  <a href={bar.action.href} className={buttonClass("outline", "w-fit lg:shrink-0")}>
+                  <a
+                    href={bar.action.href}
+                    className={buttonClass("outline", "w-fit lg:shrink-0")}
+                  >
                     {bar.action.label}
                   </a>
                 ) : null}
@@ -292,34 +359,37 @@ export function EventView({ event }: { event: PublicEvent }) {
         </ul>
       </section>
 
-      <Band tone="neutral900" label="Veranstalter" wide>
+      <Band tone="neutral900" label={t(lang, "Z34.event.organizerLabel")} wide>
         <div className="flex max-w-[720px] flex-col gap-4 lg:gap-4">
-          <Eyebrow>Veranstaltet von</Eyebrow>
+          <Eyebrow>{t(lang, "Z34.event.organizerEyebrow")}</Eyebrow>
           <ProfileImage url={event.organizer.imageUrl} size={64} />
-          <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] lg:text-[40px] lg:leading-[44px]">
+          <p className="text-[32px] leading-[38px] font-bold tracking-[-0.8px] [overflow-wrap:anywhere] lg:text-[40px] lg:leading-[44px]">
             {event.organizer.name}
           </p>
           {event.organizer.shortIntro ? (
             <p className="text-base leading-6">{event.organizer.shortIntro}</p>
           ) : null}
-          <Link href={`/${event.organizer.slug}`} className="inline-flex min-h-11 w-fit items-center text-sm leading-5 font-medium underline underline-offset-4">
-            Zum Profil ↗
+          <Link
+            href={`/${event.organizer.slug}`}
+            className="inline-flex min-h-11 w-fit items-center text-sm leading-5 font-medium underline underline-offset-4"
+          >
+            {t(lang, "Z34.event.profileLink")}
           </Link>
         </div>
       </Band>
 
       <footer className="mx-auto w-full max-w-[1440px] px-6 py-8 sm:px-8 lg:px-16 lg:py-16">
         <p className="text-muted-foreground text-sm leading-5">
-          Angaben von {event.organizer.name}
+          {t(lang, "Z34.event.source", { name: event.organizer.name })}
           {confirmed ? (
             <>
               <br />
-              Zuletzt bestätigt am {confirmed}
+              {t(lang, "Z34.event.confirmed", { date: confirmed })}
             </>
           ) : null}
         </p>
       </footer>
-      <LegalFooter />
+      <LegalFooter lang={lang} wide />
     </main>
   );
 }

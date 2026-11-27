@@ -1,7 +1,13 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { atmosphereTagClass, FORMAT_TAG_CLASS } from "@/lib/public/tags";
+import { LanguageSwitch } from "@/components/layout/language-switch";
+import { t, type Lang } from "@/lib/i18n";
+import {
+  atmosphereLabel,
+  atmosphereTagClass,
+  FORMAT_TAG_CLASS,
+} from "@/lib/public/tags";
 import type { PrimaryFormat } from "@/lib/domain/event-publication";
 import type { Crop } from "@/lib/domain/profile-publication";
 import { CroppedSquare } from "@/components/ui/cropped-image";
@@ -34,7 +40,10 @@ export function Band({
   }[tone];
 
   return (
-    <section aria-label={label} className={`${toneClass} border-y border-foreground`}>
+    <section
+      aria-label={label}
+      className={`${toneClass} border-foreground border-y`}
+    >
       <div
         className={
           wide
@@ -48,20 +57,33 @@ export function Band({
   );
 }
 
+// DISKOE / Gäste-Kopfzeile (Figma NAV-01a, without "Gemerkt": that button
+// belongs to wave 3): wordmark on the left, language switch on the right, the
+// way back below.
 export function SiteBar({
+  lang,
   back,
   wide = false,
 }: {
+  lang: Lang;
   back?: { href: string; label: string };
   wide?: boolean;
 }) {
   return (
     <header
-      className={`${wide ? CONTAINER_WIDE : CONTAINER} flex flex-col gap-5 py-5 lg:py-8`}
+      className={`${wide ? CONTAINER_WIDE : CONTAINER} flex flex-col gap-3 py-4 lg:gap-6 lg:py-8`}
     >
-      <p className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">DISKOE</p>
+      <div className="flex min-h-[50px] items-center justify-between lg:min-h-[76px]">
+        <p className="text-[28px] leading-[26px] font-bold tracking-[1.68px]">
+          DISKOE
+        </p>
+        <LanguageSwitch lang={lang} />
+      </div>
       {back ? (
-        <Link href={back.href} className="inline-flex min-h-11 w-fit items-center text-sm leading-5 underline-offset-4 hover:underline">
+        <Link
+          href={back.href}
+          className="inline-flex min-h-11 w-fit items-center text-sm leading-5 underline-offset-4 hover:underline"
+        >
           ← {back.label}
         </Link>
       ) : null}
@@ -77,7 +99,13 @@ export function Eyebrow({ children }: { children: ReactNode }) {
   );
 }
 
-export function FormatTag({ format, label }: { format: PrimaryFormat; label: string }) {
+export function FormatTag({
+  format,
+  label,
+}: {
+  format: PrimaryFormat;
+  label: string;
+}) {
   return (
     <span
       className={`${FORMAT_TAG_CLASS[format]} border-foreground inline-flex w-fit items-center rounded-full border px-5 py-2.5 text-[17px] font-medium`}
@@ -87,12 +115,12 @@ export function FormatTag({ format, label }: { format: PrimaryFormat; label: str
   );
 }
 
-export function AtmosphereTag({ tag }: { tag: string }) {
+export function AtmosphereTag({ lang, tag }: { lang: Lang; tag: string }) {
   return (
     <span
       className={`${atmosphereTagClass(tag)} border-foreground inline-flex items-center rounded-full border px-5 py-2.5 text-[17px] font-medium`}
     >
-      {tag}
+      {atmosphereLabel(lang, tag)}
     </span>
   );
 }
@@ -108,31 +136,39 @@ export function ProfileImage({
 }) {
   if (!url) return null;
 
-  return <CroppedSquare url={url} crop={crop} size={size} className="rounded-[10px]" />;
+  return (
+    <CroppedSquare
+      url={url}
+      crop={crop}
+      size={size}
+      className="rounded-[10px]"
+    />
+  );
 }
 
-export function formatPublishedDate(iso: string | null): string | null {
-  if (!iso) return null;
-
-  return new Date(iso).toLocaleDateString("de-DE", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Europe/Berlin",
-  });
-}
-
-export function LegalFooter() {
+export function LegalFooter({
+  lang,
+  wide = false,
+}: {
+  lang: Lang;
+  wide?: boolean;
+}) {
   return (
     <nav
-      aria-label="Rechtliches"
-      className="mx-auto flex w-full max-w-[1128px] gap-6 px-6 pb-8 text-sm leading-5 sm:px-8"
+      aria-label={t(lang, "Z20.legal.nav")}
+      className={`${wide ? CONTAINER_WIDE : CONTAINER} flex gap-6 pb-8 text-sm leading-5`}
     >
-      <Link href="/impressum" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
-        Impressum
+      <Link
+        href="/impressum"
+        className="inline-flex min-h-11 items-center underline-offset-4 hover:underline"
+      >
+        {t(lang, "Z20.legal.imprint")}
       </Link>
-      <Link href="/datenschutz" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
-        Datenschutz
+      <Link
+        href="/datenschutz"
+        className="inline-flex min-h-11 items-center underline-offset-4 hover:underline"
+      >
+        {t(lang, "Z20.legal.privacy")}
       </Link>
     </nav>
   );
