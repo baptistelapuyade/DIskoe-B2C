@@ -1233,8 +1233,7 @@ export const de = {
   "Z34.notice.rescheduled.context": "Bisher: {old}. Neu: {new}.",
   "Z34.notice.rescheduled.contextNew": "Neu: {new}.",
   "Z34.notice.postponed.eyebrow": "Verschoben — neuer Termin folgt",
-  "Z34.notice.postponed.headline":
-    "Der bisherige Termin findet nicht statt. Ein neuer Termin steht noch nicht fest.",
+  "Z34.notice.postponed.headline": "Der bisherige Termin findet nicht statt.",
   "Z34.notice.postponed.context": "Bisher angekündigt: {old}.",
   "Z34.notice.cancelled.eyebrow": "Abgesagt",
   "Z34.notice.cancelled.headline": "Dieses Event findet nicht statt.",
@@ -1251,7 +1250,6 @@ export const de = {
   "Z34.event.formerPlace": "Bisheriger Ort",
   "Z34.event.previously": "Bisher: {date}",
   "Z34.event.originally": "Ursprünglich: {time}",
-  "Z34.event.cancelledNote": "Der Termin wurde abgesagt.",
   "Z34.event.dateOpen": "Noch offen",
   "Z34.event.dateTime": "{date} · {time}",
   "Z34.event.timezone": "Berliner Ortszeit",

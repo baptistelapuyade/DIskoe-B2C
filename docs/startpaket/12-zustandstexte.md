@@ -1296,7 +1296,7 @@ Texte von `PUB-01a`–`l` und `PUB-06a`–`d`. Deutsch aus Figma, bei fehlenden 
 | Z34.notice.rescheduled.context | Bisher: {old}. Neu: {new}. | Previously: {old}. Now: {new}. | PUB-01j, Hinweisfläche, Terminzeile; {old} und {new} sind „Fr, 23. Oktober 2026 · 22:00 Uhr“ |
 | Z34.notice.rescheduled.contextNew | Neu: {new}. | Now: {new}. | wie oben, wenn der alte Termin unbekannt ist (vor der Spalte `previous_start_at` verschoben) |
 | Z34.notice.postponed.eyebrow | Verschoben — neuer Termin folgt | Postponed — new date to follow | PUB-01k, Hinweisfläche, Eyebrow |
-| Z34.notice.postponed.headline | Der bisherige Termin findet nicht statt. Ein neuer Termin steht noch nicht fest. | The previous date is not taking place. A new date hasn’t been set yet. | PUB-01k, Hinweisfläche, Satz |
+| Z34.notice.postponed.headline | Der bisherige Termin findet nicht statt. | The previous date is not taking place. | PUB-01k, Hinweisfläche, Satz (gekürzt gegenüber Figma, Founder 27.11.2026: „Neuer Termin folgt“ steht schon in Eyebrow und unter „Wann“) |
 | Z34.notice.postponed.context | Bisher angekündigt: {old}. | Previously announced: {old}. | PUB-01k, Hinweisfläche, Terminzeile |
 | Z34.notice.cancelled.eyebrow | Abgesagt | Cancelled | PUB-01l, Hinweisfläche, Eyebrow |
 | Z34.notice.cancelled.headline | Dieses Event findet nicht statt. | This event is not taking place. | PUB-01l, Hinweisfläche, Satz |
@@ -1313,7 +1313,6 @@ Texte von `PUB-01a`–`l` und `PUB-06a`–`d`. Deutsch aus Figma, bei fehlenden 
 | Z34.event.formerPlace | Bisheriger Ort | Previous venue | PUB-01k, Eyebrow über dem Ort |
 | Z34.event.previously | Bisher: {date} | Previously: {date} | PUB-01j, durchgestrichene Zeile unter der Zeit |
 | Z34.event.originally | Ursprünglich: {time} | Originally: {time} | PUB-01l, Zeile unter dem Datum |
-| Z34.event.cancelledNote | Der Termin wurde abgesagt. | This date was cancelled. | PUB-01l, gedämpfte Zeile unter „Ursprünglich“ |
 | Z34.event.dateOpen | Noch offen | Not set yet | PUB-01k, Wert unter „Neuer Termin“ |
 | Z34.event.dateTime | {date} · {time} | {date} · {time} | Datum und Uhrzeit in der Hinweisfläche |
 | Z34.event.timezone | Berliner Ortszeit | Berlin time | PUB-01a, Zusatz unter der Uhrzeit |

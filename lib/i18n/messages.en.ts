@@ -1195,8 +1195,7 @@ export const en: Record<MessageId, string> = {
   "Z34.notice.rescheduled.context": "Previously: {old}. Now: {new}.",
   "Z34.notice.rescheduled.contextNew": "Now: {new}.",
   "Z34.notice.postponed.eyebrow": "Postponed — new date to follow",
-  "Z34.notice.postponed.headline":
-    "The previous date is not taking place. A new date hasn’t been set yet.",
+  "Z34.notice.postponed.headline": "The previous date is not taking place.",
   "Z34.notice.postponed.context": "Previously announced: {old}.",
   "Z34.notice.cancelled.eyebrow": "Cancelled",
   "Z34.notice.cancelled.headline": "This event is not taking place.",
@@ -1213,7 +1212,6 @@ export const en: Record<MessageId, string> = {
   "Z34.event.formerPlace": "Previous venue",
   "Z34.event.previously": "Previously: {date}",
   "Z34.event.originally": "Originally: {time}",
-  "Z34.event.cancelledNote": "This date was cancelled.",
   "Z34.event.dateOpen": "Not set yet",
   "Z34.event.dateTime": "{date} · {time}",
   "Z34.event.timezone": "Berlin time",

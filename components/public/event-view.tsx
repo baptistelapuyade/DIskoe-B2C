@@ -210,16 +210,11 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
                     {event.dateLine}
                   </p>
                   {cancelled ? (
-                    <>
-                      <p className="text-base leading-6">
-                        {t(lang, "Z34.event.originally", {
-                          time: event.timeLine ?? "",
-                        })}
-                      </p>
-                      <p className="text-muted-foreground text-sm leading-5">
-                        {t(lang, "Z34.event.cancelledNote")}
-                      </p>
-                    </>
+                    <p className="text-base leading-6">
+                      {t(lang, "Z34.event.originally", {
+                        time: event.timeLine ?? "",
+                      })}
+                    </p>
                   ) : (
                     <>
                       <p className="text-2xl leading-[30px] font-medium tracking-[-0.4px]">
