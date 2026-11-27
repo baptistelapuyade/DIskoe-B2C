@@ -99,10 +99,13 @@ export async function saveEventModules(request: {
     revalidatePath(`/organizer/events/${eventId}`, "layout");
     revalidatePath("/organizer");
 
-    // The last step of the event leads to the submit checklist (EIN-01).
+    // The last step of the event leads on by where the profile stands: the
+    // submit checklist (EIN-01) for the first submission, the publish screen
+    // (NACH-17) for a further event of an approved profile. The address below
+    // decides that.
     return {
       status: "saved",
-      next: `/organizer/profiles/${event.organizerId}/submit`,
+      next: `/organizer/events/${eventId}/submit`,
     };
   } catch (error) {
     // The framework signals redirect() and notFound() by throwing; those must

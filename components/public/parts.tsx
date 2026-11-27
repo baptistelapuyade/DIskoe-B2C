@@ -66,7 +66,8 @@ export function SiteBar({
   wide = false,
 }: {
   lang: Lang;
-  back?: { href: string; label: string };
+  // inert: the private preview; the target is not public (yet).
+  back?: { href: string; label: string; inert?: boolean };
   wide?: boolean;
 }) {
   return (
@@ -79,7 +80,11 @@ export function SiteBar({
         </p>
         <LanguageSwitch lang={lang} />
       </div>
-      {back ? (
+      {back && back.inert ? (
+        <span className="inline-flex min-h-11 w-fit items-center text-sm leading-5">
+          ← {back.label}
+        </span>
+      ) : back ? (
         <Link
           href={back.href}
           className="inline-flex min-h-11 w-fit items-center text-sm leading-5 underline-offset-4 hover:underline"

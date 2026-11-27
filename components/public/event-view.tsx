@@ -98,7 +98,19 @@ function ticketLabel(kind: string): MessageId {
     : "Z34.event.ticket";
 }
 
-export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
+// In the owner's private preview (VOR-01b) the page is the same, but what
+// leaves it is not operable: the ticket link, "Teilen" and the link to the
+// organizer's public page (a draft has none). The buttons stay visible and
+// are disabled, so the owner sees where they will be.
+export function EventView({
+  lang,
+  event,
+  preview = false,
+}: {
+  lang: Lang;
+  event: PublicEvent;
+  preview?: boolean;
+}) {
   const panel =
     event.status === "scheduled" ? null : STATUS_PANEL[event.status];
   const cancelled = event.status === "cancelled";
@@ -129,7 +141,11 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
       <SiteBar
         lang={lang}
         wide
-        back={{ href: `/${event.organizer.slug}`, label: event.organizer.name }}
+        back={{
+          href: `/${event.organizer.slug}`,
+          label: event.organizer.name,
+          inert: preview,
+        }}
       />
 
       <Band tone="neutral100" label={t(lang, "Z34.event.label")} wide>
@@ -172,12 +188,18 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
             </h1>
             <p className="text-base leading-6">
               {t(lang, "Z34.event.by")}{" "}
-              <Link
-                href={`/${event.organizer.slug}`}
-                className="-my-3 inline-block py-3 underline underline-offset-4"
-              >
-                {event.organizer.name} ↗
-              </Link>
+              {preview ? (
+                <span className="-my-3 inline-block py-3 underline underline-offset-4">
+                  {event.organizer.name} ↗
+                </span>
+              ) : (
+                <Link
+                  href={`/${event.organizer.slug}`}
+                  className="-my-3 inline-block py-3 underline underline-offset-4"
+                >
+                  {event.organizer.name} ↗
+                </Link>
+              )}
             </p>
           </div>
 
@@ -297,26 +319,46 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
 
               <div className="flex w-full flex-col gap-3 sm:max-w-[336px]">
                 {!cancelled && ticketRoute?.url ? (
-                  <a
-                    href={ticketRoute.url}
-                    rel="noopener noreferrer nofollow"
-                    className={buttonClass("primary", "min-h-11 w-full px-6")}
-                  >
-                    {t(lang, ticketLabel(ticketRoute.kind))}
-                  </a>
+                  preview ? (
+                    <button
+                      type="button"
+                      disabled
+                      className={buttonClass("primary", "min-h-11 w-full px-6")}
+                    >
+                      {t(lang, ticketLabel(ticketRoute.kind))}
+                    </button>
+                  ) : (
+                    <a
+                      href={ticketRoute.url}
+                      rel="noopener noreferrer nofollow"
+                      className={buttonClass("primary", "min-h-11 w-full px-6")}
+                    >
+                      {t(lang, ticketLabel(ticketRoute.kind))}
+                    </a>
+                  )
                 ) : null}
                 {/* "Merken" is wave 3 (Figma PUB-01a): it comes back with the
                     saved list, not as a button without a function. */}
                 <div className="grid gap-3">
-                  <ShareButton
-                    url={shareUrl}
-                    title={event.title}
-                    labels={{
-                      share: t(lang, "Z34.share.button"),
-                      copied: t(lang, "Z34.share.copied"),
-                      failed: t(lang, "Z34.share.failed"),
-                    }}
-                  />
+                  {preview ? (
+                    <button
+                      type="button"
+                      disabled
+                      className={buttonClass("secondary", "w-full")}
+                    >
+                      {t(lang, "Z34.share.button")}
+                    </button>
+                  ) : (
+                    <ShareButton
+                      url={shareUrl}
+                      title={event.title}
+                      labels={{
+                        share: t(lang, "Z34.share.button"),
+                        copied: t(lang, "Z34.share.copied"),
+                        failed: t(lang, "Z34.share.failed"),
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -445,12 +487,18 @@ export function EventView({ lang, event }: { lang: Lang; event: PublicEvent }) {
           {event.organizer.shortIntro ? (
             <p className="text-base leading-6">{event.organizer.shortIntro}</p>
           ) : null}
-          <Link
-            href={`/${event.organizer.slug}`}
-            className="inline-flex min-h-11 w-fit items-center text-sm leading-5 font-medium underline underline-offset-4"
-          >
-            {t(lang, "Z34.event.profileLink")}
-          </Link>
+          {preview ? (
+            <span className="inline-flex min-h-11 w-fit items-center text-sm leading-5 font-medium underline underline-offset-4">
+              {t(lang, "Z34.event.profileLink")}
+            </span>
+          ) : (
+            <Link
+              href={`/${event.organizer.slug}`}
+              className="inline-flex min-h-11 w-fit items-center text-sm leading-5 font-medium underline underline-offset-4"
+            >
+              {t(lang, "Z34.event.profileLink")}
+            </Link>
+          )}
         </div>
       </Band>
 

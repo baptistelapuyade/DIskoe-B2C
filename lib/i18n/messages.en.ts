@@ -1276,4 +1276,33 @@ export const en: Record<MessageId, string> = {
   "Z34.date.months":
     "January,February,March,April,May,June,July,August,September,October,November,December",
   "Z34.date.dayMonth": "{day} {month}",
+  "Z35.nav.label": "Preview",
+  "Z35.tab.profile": "Profile",
+  "Z35.tab.event": "Event",
+  "Z35.back.checklist": "Back to the checklist",
+  "Z35.back.step": "Back to the profile preview",
+  "Z35.back.publish": "Back to publishing",
+  "Z35.notice.title": "This is a private preview.",
+  "Z35.notice.profile":
+    "This is how your profile will look once it is approved. Only you can see this page. Follow, share and ticket links cannot be clicked here.",
+  "Z35.notice.event":
+    "This is how your event will look once it is approved. Only you can see this page. Follow, share and ticket links cannot be clicked here.",
+  "Z35.notice.eventLater":
+    "This is how your event will look once it is published. Only you can see this page. Follow, share and ticket links cannot be clicked here.",
+  "Z35.link.full": "View the page at full size",
+  "Z35.link.preview": "View the preview",
+  "Z23.late.title": "Preview",
+  "Z23.late.lead": "{state} · Private preview. Only you and DISKOE can see it.",
+  "Z23.late.nameMissing": "Name still missing",
+  "Z23.late.introMissing": "Short introduction still missing.",
+  "Z23.late.link": "Link: {url}",
+  "Z23.late.contact": "Contact: {contact}",
+  "Z23.late.publishNote":
+    "Until you publish, the current public version stays visible.",
+  "Z23.late.published": "Your profile is published.",
+  "Z23.late.inReview":
+    "Submitted. DISKOE is reviewing your profile. It goes public once approved.",
+  "Z23.late.question": "DISKOE has a question about this version:",
+  "Z23.late.questionLink": "View the question",
+  "Z23.late.imageTitle": "Image not public yet",
 };
