@@ -6,6 +6,7 @@
 import type { Crop } from "../domain/profile-publication";
 import type { EventGapCode } from "../domain/event-publication";
 import { t, type Lang, type MessageId } from "../i18n";
+import type { OwnerEventView } from "../event/load";
 import type { SubmitData } from "./load";
 import {
   accessSummary,
@@ -158,23 +159,25 @@ export function profileRows(lang: Lang, data: SubmitData): SummaryRow[] {
 }
 
 export function eventRows(lang: Lang, data: SubmitData): SummaryRow[] {
-  const event = data.event;
+  return data.event ? eventRowsOf(lang, data.event, data.eventGapCodes) : [];
+}
 
-  if (!event) return [];
-
+// The same rows for one event outside the checklist (publishing a further
+// event, NACH-17).
+export function eventRowsOf(
+  lang: Lang,
+  event: OwnerEventView,
+  gapCodes: readonly EventGapCode[],
+): SummaryRow[] {
   const { form, image, modules } = event;
   const eventId = event.event.id;
   const gaps = new Map<RowKey, EventGapCode>();
 
-  for (const code of data.eventGapCodes) {
+  for (const code of gapCodes) {
     if (!gaps.has(GAP[code].row)) gaps.set(GAP[code].row, code);
   }
 
-  function row(
-    key: RowKey,
-    label: MessageId,
-    text: string | null,
-  ): SummaryRow {
+  function row(key: RowKey, label: MessageId, text: string | null): SummaryRow {
     const gap = gaps.get(key);
 
     if (gap) {

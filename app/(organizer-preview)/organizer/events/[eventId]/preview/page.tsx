@@ -4,6 +4,7 @@ import { EventView } from "@/components/public/event-view";
 import { PreviewFrame } from "@/components/public/preview-frame";
 import { getLang } from "@/lib/i18n/server";
 import { loadEventPreview } from "@/lib/public/preview-load";
+import { gapHref } from "@/lib/submit/rows";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,7 @@ export default async function EventPreviewPage({
   const { eventId } = await params;
   const base = `/organizer/events/${eventId}`;
   const lang = await getLang();
-  const { event, organizerId, mode } = await loadEventPreview(
+  const { event, organizerId, mode, firstGap } = await loadEventPreview(
     lang,
     eventId,
     `${base}/preview`,
@@ -32,7 +33,12 @@ export default async function EventPreviewPage({
   const profile = `/organizer/profiles/${organizerId}`;
   const backHref = later ? `${base}/publish` : `${profile}/submit`;
 
-  if (!event) redirect(backHref);
+  if (!event) {
+    // A further event has no checklist and its publish screen sends incomplete
+    // details back here: go to the step that names the gap instead.
+    if (later) redirect(firstGap ? gapHref(eventId, firstGap) : `${base}/edit`);
+    redirect(backHref);
+  }
 
   return (
     <PreviewFrame

@@ -19,10 +19,7 @@ const SCAN_DIRS = ["app", "components", "lib"];
 
 const LEGACY: Record<string, string> = {
   // Old wireframe pages, replaced by their Figma flows (see docs/STATUS.md).
-  "app/(organizer)/organizer/events/[eventId]/publish/page.tsx": "NACH-17",
-  "app/(organizer)/organizer/events/[eventId]/published/page.tsx": "NACH-18",
   "app/(organizer)/organizer/events/[eventId]/edit/page.tsx": "draft hub",
-  "app/(organizer)/organizer/events/actions.ts": "draft actions",
   "app/(organizer)/organizer/profiles/[profileId]/status/page.tsx":
     "profile status",
   "app/(organizer)/organizer/profiles/[profileId]/actions.ts":
@@ -30,7 +27,6 @@ const LEGACY: Record<string, string> = {
   "components/profile/status.tsx": "profile status",
   "components/profile/forms.tsx": "profile forms",
   "components/profile/approve-form.tsx": "founder area",
-  "components/event/confirm-form.tsx": "event confirm form",
   // Founder area (internal), German until the Founder-Bereich is built.
   "app/(internal)/internal/approvals/page.tsx": "founder area",
   "app/(internal)/internal/approvals/actions.ts": "founder area",

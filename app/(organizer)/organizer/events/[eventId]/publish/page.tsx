@@ -1,87 +1,67 @@
 import { redirect } from "next/navigation";
 
-import { ConfirmForm } from "@/components/event/confirm-form";
-import {
-  ContextCard,
-  MutedText,
-  PageShell,
-  Workspace,
-} from "@/components/ui/page-shell";
-import { LinkButton } from "@/components/ui/button";
+import { PublishEventScreen } from "@/components/event/publish-screens";
+import { loadEventRevisionVersion } from "@/lib/event/draft";
 import { loadPublicationView } from "@/lib/event/publication";
-import { t } from "@/lib/i18n";
 import { getLang } from "@/lib/i18n/server";
-import { placeText, whenText } from "@/lib/event/summary";
+import { eventRowsOf, gapHref } from "@/lib/submit/rows";
+import { createClient } from "@/lib/supabase/server";
 
 import { publishLaterEvent } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
-// Figma S5-C "Weiteres Event, selbst veröffentlichen" (2855:38933): the
-// profile is approved, so the owner publishes this event himself with the same
-// two confirmations as at the first submission, without a review.
+// Figma NACH-17 "Weiteres Event — selbst veröffentlichen" (2855:38933, the
+// old S5-C frame), built in the v2 pattern. The profile is approved, so the
+// owner publishes this event himself with the same two confirmations as at the
+// first submission, without a review. `?stale=1`: the draft changed on the way
+// here (the action refused to publish it).
 export default async function PublishLaterEventPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ eventId: string }>;
+  searchParams: Promise<{ stale?: string }>;
 }) {
   const { eventId } = await params;
+  const { stale } = await searchParams;
   const base = `/organizer/events/${eventId}`;
+  const lang = await getLang();
   const view = await loadPublicationView(eventId, `${base}/publish`);
+  const { event } = view;
 
-  if (view.mode === "first") redirect(`${base}/preview`);
+  if (view.mode === "first") {
+    redirect(`/organizer/profiles/${event.event.organizerId}/submit`);
+  }
   if (view.mode === "approved") redirect(`${base}/manage`);
   if (view.status === "published") redirect(`${base}/published`);
-  if (view.status !== "ready") redirect(`${base}/preview`);
 
-  const name = view.event.profileName;
-  const lang = await getLang();
+  // Missing details: the step that names the first of them.
+  if (view.status !== "ready") {
+    const gap = event.gaps[0];
+
+    redirect(gap ? gapHref(eventId, gap.code) : `${base}/edit`);
+  }
+
+  const draftId = event.event.draftRevisionId;
+
+  if (!draftId) redirect(`${base}/edit`);
+
+  const supabase = await createClient();
+  const draftVersion = await loadEventRevisionVersion(supabase, draftId);
 
   return (
-    <PageShell
-      context={`DISKOE / ${name} · Neues Event`}
-      title="Neues Event veröffentlichen?"
-      subtitle="Euer Profil ist freigegeben. Dieses Event veröffentlicht ihr selbst, ohne zusätzliche Prüfung."
-    >
-      <Workspace
-        main={
-          <>
-            <ContextCard
-              title={`Euer Event: ${view.event.form.title || "Event ohne Titel"}`}
-            >
-              <p className="text-base leading-6">
-                {whenText(view.event.form)}
-                <br />
-                {placeText(view.event.form)}
-              </p>
-              <div>
-                <LinkButton href={`${base}/preview`}>
-                  {t(lang, "Z35.link.preview")}
-                </LinkButton>
-              </div>
-            </ContextCard>
-            <ContextCard title="Das wird öffentlich">
-              <MutedText>
-                Titel, Beschreibung, Termin, Ort, Atmosphäre, Eintritt, Zugang
-                und Eventbild auf der Eventseite und im Profil.
-              </MutedText>
-            </ContextCard>
-            <ContextCard title="Eure Bestätigung">
-              <MutedText>
-                Wie bei der ersten Einreichung bestätigt ihr zwei Punkte:
-                Angaben geprüft und berechtigt zu veröffentlichen, und die
-                nötigen Freigaben für Texte und Bilder vorhanden.
-              </MutedText>
-            </ContextCard>
-            <ConfirmForm
-              action={publishLaterEvent.bind(null, eventId)}
-              submitLabel="Event veröffentlichen"
-              pendingLabel="Veröffentlicht …"
-              backHref={`${base}/preview`}
-            />
-          </>
-        }
-      />
-    </PageShell>
+    <PublishEventScreen
+      lang={lang}
+      base={base}
+      rows={eventRowsOf(lang, event, [])}
+      stale={stale === "1"}
+      action={publishLaterEvent.bind(null, eventId, {
+        draftId,
+        draftVersion,
+        stateVersion: event.event.stateVersion,
+        status: event.event.publicStatus,
+      })}
+    />
   );
 }

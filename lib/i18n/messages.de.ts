@@ -1344,6 +1344,30 @@ export const de = {
   "Z23.late.question": "DISKOE hat eine Frage zu diesem Stand:",
   "Z23.late.questionLink": "Frage ansehen",
   "Z23.late.imageTitle": "Bild noch nicht öffentlich",
+  "Z36.publish.eyebrow": "Neues Event · Veröffentlichen",
+  "Z36.publish.title": "Neues Event veröffentlichen?",
+  "Z36.publish.lead":
+    "Dein Profil ist freigegeben. Dieses Event veröffentlichst du selbst, ohne zusätzliche Prüfung.",
+  "Z36.publish.fail.line":
+    "Das Event ist noch nicht veröffentlicht. Deine Angaben sind gespeichert. Versuche es noch einmal.",
+  "Z36.stale.title": "Das Event hat sich geändert.",
+  "Z36.stale.line": "Prüfe die Angaben noch einmal, bevor du veröffentlichst.",
+  "Z36.done.eyebrow": "Neues Event · Veröffentlicht",
+  "Z36.done.title": "Dein Event ist veröffentlicht",
+  "Z36.done.lead":
+    "„{title}“ ist jetzt öffentlich, ohne zusätzliche Prüfung. Du kannst die Eventseite jetzt ansehen und teilen.",
+  "Z36.done.note.title": "Spätere Änderungen bleiben zunächst privat.",
+  "Z36.done.note.line":
+    "Erst deine Bestätigung ändert die öffentliche Fassung.",
+  "Z36.done.view": "Öffentliche Eventseite ansehen",
+  "Z36.done.another": "Weiteres Event anlegen",
+  "Z36.image.title": "Das Eventbild ist noch nicht öffentlich.",
+  "Z36.image.line":
+    "Das Event ist veröffentlicht, das Bild wird noch kopiert. Versuche es noch einmal.",
+  "Z36.image.retry": "Bild noch einmal veröffentlichen",
+  "Z36.image.pending": "Versuche es …",
+  "Z36.image.fail":
+    "Das Bild konnte nicht veröffentlicht werden. Versuche es später noch einmal.",
 } as const;
 
 export type MessageId = keyof typeof de;
