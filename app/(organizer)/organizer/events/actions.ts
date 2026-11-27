@@ -4,101 +4,68 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 
-import { describeGaps, parseGapDetail } from "@/lib/domain/profile-publication";
-import { describeEventGaps } from "@/lib/domain/event-publication";
+import type { PublishEventState } from "@/app/(organizer)/organizer/events/[eventId]/changes/actions";
+import type { RetryImageState } from "@/components/event/retry-image-form";
 import { copyPublishedEventImage } from "@/lib/event/publish";
 import { DISCARDED_COOKIE } from "@/lib/event/discard-cookie";
 import { loadEventRevision } from "@/lib/event/draft";
 import { requireOwnedEvent } from "@/lib/event/load";
 import { createClient } from "@/lib/supabase/server";
 
-const GENERIC_ERROR =
-  "Das hat leider nicht geklappt. Bitte versuche es noch einmal.";
-
 // ---------------------------------------------------------------------------
-// Publication (Slice 5)
+// Publish a further event (Figma NACH-17, NACH-18)
 // ---------------------------------------------------------------------------
-export type PublishFormState = {
-  ok: boolean;
-  message?: string;
-  errors?: { rights?: string };
-  gaps?: string[];
-};
-
-const DECLARATIONS_MISSING =
-  "Bitte bestätigt beide Punkte ausdrücklich, bevor es weitergeht.";
-
-// DETAIL of a DK002 error: "profile.<code>,event.<code>" (joint submission)
-// or "<code>" (single event).
-function gapMessages(details: string | null | undefined): string[] {
-  const codes = parseGapDetail(details);
-  const profile = codes
-    .filter((code) => code.startsWith("profile."))
-    .map((code) => code.slice("profile.".length));
-  const event = codes.map((code) =>
-    code.startsWith("event.") ? code.slice("event.".length) : code,
-  );
-
-  return [
-    ...describeGaps(profile).map((gap) => `Profil: ${gap.message}`),
-    ...describeEventGaps(
-      event.filter((code) => !code.startsWith("profile.")),
-    ).map((gap) => gap.message),
-  ];
-}
-
+// The profile is approved, so the owner publishes the event himself with the
+// two confirmations. `expected` is the stand the owner reviewed; the database
+// refuses anything else. Nothing a person typed is logged.
 export async function publishLaterEvent(
   eventId: string,
-  _previous: PublishFormState,
+  expected: {
+    draftId: string;
+    draftVersion: number | null;
+    stateVersion: number;
+    status: "scheduled" | "rescheduled" | "postponed_undated" | "cancelled";
+  },
+  _previous: PublishEventState,
   formData: FormData,
-): Promise<PublishFormState> {
-  const path = `/organizer/events/${eventId}/publish`;
-  const { event } = await requireOwnedEvent(eventId, path);
+): Promise<PublishEventState> {
+  const base = `/organizer/events/${eventId}`;
+
+  await requireOwnedEvent(eventId, `${base}/publish`);
 
   const rights = formData.get("rights") === "on";
   const usage = formData.get("usage") === "on";
 
   if (!rights || !usage) {
-    return { ok: false, errors: { rights: DECLARATIONS_MISSING } };
-  }
-
-  if (!event.draftRevisionId) {
-    return { ok: false, message: GENERIC_ERROR };
+    return { status: "missing", rights, usage };
   }
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("publish_event", {
     p_event_id: eventId,
-    p_expected_draft_revision_id: event.draftRevisionId,
-    p_expected_published_revision_id: event.publishedRevisionId as string,
-    p_expected_state_version: event.stateVersion,
-    p_expected_status: event.publicStatus,
+    p_expected_draft_revision_id: expected.draftId,
+    p_expected_draft_version: expected.draftVersion ?? undefined,
+    // A further event has no published revision yet.
+    p_expected_published_revision_id: null as unknown as string,
+    p_expected_state_version: expected.stateVersion,
+    p_expected_status: expected.status,
     p_confirmed_rights: rights,
     p_confirmed_usage: usage,
   });
 
   if (error) {
     switch (error.code) {
+      // The draft is not the one that was reviewed: the page opens again with
+      // a hint.
       case "DK001":
-        return {
-          ok: false,
-          message:
-            "Das Event hat sich zwischenzeitlich geändert. Bitte ladet die Seite neu und prüft die Vorschau noch einmal.",
-        };
+        redirect(`${base}/publish?stale=1`);
+      // Details are missing, or this is not possible any more (profile not
+      // approved, nothing new): the page sends the owner where it belongs.
       case "DK002":
-        return {
-          ok: false,
-          message: "Es fehlen noch Angaben.",
-          gaps: gapMessages(error.details),
-        };
       case "DK003":
-        return {
-          ok: false,
-          message:
-            "Veröffentlichen ist gerade nicht möglich: Euer Profil ist noch nicht von DISKOE freigegeben, oder es gibt nichts Neues.",
-        };
+        redirect(`${base}/publish`);
       default:
-        return { ok: false, message: GENERIC_ERROR };
+        return { status: "failed" };
     }
   }
 
@@ -108,26 +75,21 @@ export async function publishLaterEvent(
 
   revalidatePath("/organizer");
   revalidatePath(`/organizer/events/${eventId}`, "layout");
-  redirect(`/organizer/events/${eventId}/published`);
+  redirect(`${base}/published`);
 }
 
 export async function retryEventImagePublish(
   eventId: string,
-  _previous: PublishFormState,
-): Promise<PublishFormState> {
+  _previous: RetryImageState,
+): Promise<RetryImageState> {
   await requireOwnedEvent(eventId, `/organizer/events/${eventId}/published`);
 
   const supabase = await createClient();
   const result = await copyPublishedEventImage(supabase, eventId);
 
   revalidatePath(`/organizer/events/${eventId}/published`);
-  return result === "copied"
-    ? { ok: true, message: "Das Eventbild ist jetzt öffentlich." }
-    : {
-        ok: false,
-        message:
-          "Das Bild konnte nicht veröffentlicht werden. Bitte versucht es später noch einmal.",
-      };
+
+  return result === "copied" ? { status: "idle" } : { status: "failed" };
 }
 
 // ---------------------------------------------------------------------------

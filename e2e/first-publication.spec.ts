@@ -538,4 +538,65 @@ test.describe("first publication: profile and first event together", () => {
       ),
     ).toBe("published");
   });
+  test("the owner publishes a further event on the screen (NACH-17/18)", async ({
+    browser,
+  }) => {
+    const screenTitle = `${LATER_TITLE} am Bildschirm`;
+    const later = await createCompleteEvent(
+      ownerApi,
+      ownerId,
+      profileId,
+      screenTitle,
+      "Eine Tanzfläche",
+    );
+    const context = await germanContext(browser, { baseURL: BASE_URL });
+    const page = await context.newPage();
+
+    await clearMailbox(emails.owner);
+    await page.goto("/login");
+    await page.getByLabel("E-Mail-Adresse").fill(emails.owner);
+    await page.getByRole("button", { name: "Code senden" }).click();
+    await page
+      .getByLabel("Code aus der E-Mail")
+      .fill(await waitForCode(emails.owner));
+    await page.getByRole("button", { name: "Anmelden", exact: true }).click();
+    await page.waitForURL("**/organizer**", SLOW);
+
+    await page.goto(`/organizer/events/${later.eventId}/publish`);
+    await expect(
+      page.getByRole("heading", { name: "Neues Event veröffentlichen?" }),
+    ).toBeVisible();
+    await expect(page.getByText(screenTitle).first()).toBeVisible();
+
+    // Without the two confirmations nothing goes live.
+    await page.getByRole("button", { name: "Jetzt veröffentlichen" }).click();
+    await expect(page).toHaveURL(/\/publish$/);
+    expect(
+      sql(
+        `select publication_state from public.events where id = '${later.eventId}'`,
+      ),
+    ).not.toBe("published");
+
+    for (const box of await page.getByRole("checkbox").all()) {
+      await box.check();
+    }
+    await page.getByRole("button", { name: "Jetzt veröffentlichen" }).click();
+    await expect(page).toHaveURL(
+      new RegExp(`/organizer/events/${later.eventId}/published$`),
+      SLOW,
+    );
+    await expect(
+      page.getByRole("heading", { name: "Dein Event ist veröffentlicht" }),
+    ).toBeVisible();
+    expect(
+      sql(
+        `select publication_state from public.events where id = '${later.eventId}'`,
+      ),
+    ).toBe("published");
+
+    // A published event has no publish screen any more.
+    await page.goto(`/organizer/events/${later.eventId}/publish`);
+    await expect(page).toHaveURL(/\/published$/);
+    await context.close();
+  });
 });

@@ -1412,3 +1412,28 @@ Die Seite `/organizer/profiles/[id]/preview` zeigt nach der Einreichung (in Prü
 | Z23.late.question | DISKOE hat eine Frage zu diesem Stand: | DISKOE has a question about this version: | wie oben |
 | Z23.late.questionLink | Frage ansehen | View the question | wie oben |
 | Z23.late.imageTitle | Bild noch nicht öffentlich | Image not public yet | wie oben |
+
+### Weiteres Event veröffentlichen (Z36, Welle 1, NACH-17 und NACH-18, Stand 27.11.2026)
+
+Die Frames `NACH-17` (2855:38933) und `NACH-18` (2896:735, vorher S5-C und S5-F) sind im alten Stil (Ihr-Form, Seitenspalte, nur Desktop). Gebaut im v2-Muster der Änderungen am Live-Event (Z31); die Texte folgen den Frames in der Du-Form. Wiederverwendet: `Z31.publish.card` („Das wird öffentlich“), `Z27.confirm.rights/usage`, `Z29.publish.go/pending/retry/err.*`, `Z31.toManage`, `Z35.link.preview`. **Englisch ist ein Vorschlag.**
+
+| ID | Deutsch | Englisch | Quelle |
+|---|---|---|---|
+| Z36.publish.eyebrow | Neues Event · Veröffentlichen | New event · Publish | NACH-17, Eyebrow (Figma: „DISKOE / Profil · Neues Event“, alter Rahmen) |
+| Z36.publish.title | Neues Event veröffentlichen? | Publish the new event? | NACH-17, Titel |
+| Z36.publish.lead | Dein Profil ist freigegeben. Dieses Event veröffentlichst du selbst, ohne zusätzliche Prüfung. | Your profile is approved. You publish this event yourself, with no further review. | NACH-17, Einführung (Du-Form statt „Euer“) |
+| Z36.publish.fail.line | Das Event ist noch nicht veröffentlicht. Deine Angaben sind gespeichert. Versuche es noch einmal. | The event isn’t published yet. Your details are saved. Try again. | NACH-17, Fehlerzeile (kein Frame; Vorschlag) |
+| Z36.stale.title | Das Event hat sich geändert. | The event has changed. | NACH-17, Hinweis, wenn der Entwurf zwischenzeitlich geändert wurde (kein Frame; Vorschlag) |
+| Z36.stale.line | Prüfe die Angaben noch einmal, bevor du veröffentlichst. | Check the details again before you publish. | wie oben |
+| Z36.done.eyebrow | Neues Event · Veröffentlicht | New event · Published | NACH-18, Eyebrow |
+| Z36.done.title | Dein Event ist veröffentlicht | Your event is published | NACH-18, Titel |
+| Z36.done.lead | „{title}“ ist jetzt öffentlich, ohne zusätzliche Prüfung. Du kannst die Eventseite jetzt ansehen und teilen. | “{title}” is public now, with no further review. You can view and share the event page. | NACH-18, Einführung |
+| Z36.done.note.title | Spätere Änderungen bleiben zunächst privat. | Later changes stay private at first. | NACH-18, Hinweis („Euer Profil bleibt gleich“, jetzt als Zeile) |
+| Z36.done.note.line | Erst deine Bestätigung ändert die öffentliche Fassung. | Only your confirmation changes the public version. | NACH-18, Hinweis |
+| Z36.done.view | Öffentliche Eventseite ansehen | View the public event page | NACH-18, Button |
+| Z36.done.another | Weiteres Event anlegen | Add another event | NACH-18, Button |
+| Z36.image.title | Das Eventbild ist noch nicht öffentlich. | The event image isn’t public yet. | NACH-18, Hinweis (kein Frame; Vorschlag) |
+| Z36.image.line | Das Event ist veröffentlicht, das Bild wird noch kopiert. Versuche es noch einmal. | The event is published, the image is still being copied. Try again. | wie oben |
+| Z36.image.retry | Bild noch einmal veröffentlichen | Publish the image again | wie oben, Button |
+| Z36.image.pending | Versuche es … | Trying … | wie oben, Button während der Anfrage |
+| Z36.image.fail | Das Bild konnte nicht veröffentlicht werden. Versuche es später noch einmal. | The image couldn’t be published. Try again later. | wie oben, Fehlerzeile |

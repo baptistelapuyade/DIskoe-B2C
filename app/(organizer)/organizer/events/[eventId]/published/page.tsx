@@ -1,26 +1,19 @@
 import { redirect } from "next/navigation";
 
-import { RetryImageButton } from "@/components/event/confirm-form";
-import { LinkButton } from "@/components/ui/button";
-import {
-  ContextCard,
-  MutedText,
-  PageShell,
-  Workspace,
-} from "@/components/ui/page-shell";
+import { EventPublishedScreen } from "@/components/event/publish-screens";
 import { wasEventApprovedByFounder } from "@/lib/event/draft";
 import { isPublishedEventImagePublic } from "@/lib/event/publish";
 import { loadPublicationView } from "@/lib/event/publication";
-import { placeText, whenText } from "@/lib/event/summary";
+import { getLang } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 
 import { retryEventImagePublish } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
-// Figma "Freigabe, Profil und erstes Event öffentlich" (2859:40238) after the
-// founder's approval, and S5-F "Weiteres Event, veröffentlicht" (2896:735)
-// after the owner published a later event himself.
+// Figma NACH-18 "Weiteres Event — veröffentlicht" (2896:735, the old S5-F
+// frame), built in the v2 pattern. After the founder's first approval the
+// screen belongs to the profile (LIV-01).
 export default async function EventPublishedPage({
   params,
 }: {
@@ -28,105 +21,32 @@ export default async function EventPublishedPage({
 }) {
   const { eventId } = await params;
   const base = `/organizer/events/${eventId}`;
+  const lang = await getLang();
   const view = await loadPublicationView(eventId, `${base}/published`);
+  const { event } = view;
 
-  if (view.event.event.publishedRevisionId === null)
-    redirect(`${base}/preview`);
+  if (event.event.publishedRevisionId === null) redirect(`${base}/publish`);
 
   const supabase = await createClient();
-  const byFounder = await wasEventApprovedByFounder(supabase, eventId);
-  // After the founder's first approval the screen belongs to the profile
-  // (Figma LIV-01).
-  if (byFounder) {
-    redirect(`/organizer/profiles/${view.event.event.organizerId}/live`);
+
+  if (await wasEventApprovedByFounder(supabase, eventId)) {
+    redirect(`/organizer/profiles/${event.event.organizerId}/live`);
   }
 
   const imagePublic = await isPublishedEventImagePublic(supabase, eventId);
-  const name = view.event.profileName;
-  const title = view.event.form.title || "Event ohne Titel";
-  const when = [whenText(view.event.form), placeText(view.event.form)]
-    .filter(Boolean)
-    .join(" · ");
 
   return (
-    <PageShell
-      context={`DISKOE / ${name} · ${byFounder ? "Veröffentlicht" : "Event veröffentlicht"}`}
-      title={
-        byFounder
-          ? "Eure Seiten sind veröffentlicht"
-          : "Euer Event ist veröffentlicht"
+    <EventPublishedScreen
+      lang={lang}
+      base={base}
+      title={event.form.title}
+      publicPath={`/e/${event.event.slug}`}
+      newEventHref={`/organizer/events/new?profile=${event.event.organizerId}`}
+      retryImage={
+        imagePublic === false
+          ? retryEventImagePublish.bind(null, eventId)
+          : null
       }
-      subtitle={
-        byFounder
-          ? "Profil und erstes Event sind freigegeben."
-          : `„${title}“ ist jetzt öffentlich, ohne zusätzliche Prüfung.`
-      }
-    >
-      <Workspace
-        main={
-          <>
-            <ContextCard title={byFounder ? "Öffentlicher Stand" : title}>
-              <p className="text-base leading-6">
-                {byFounder ? (
-                  <>
-                    {name}
-                    <br />
-                    {title}
-                    <br />
-                  </>
-                ) : null}
-                {when}
-              </p>
-              {!byFounder ? (
-                <MutedText>
-                  Öffentlich auf der Eventseite und im Profil.
-                </MutedText>
-              ) : null}
-            </ContextCard>
-            <ContextCard
-              title={
-                byFounder
-                  ? "Ihr behaltet die Kontrolle"
-                  : "Euer Profil bleibt gleich"
-              }
-            >
-              <MutedText>
-                {byFounder
-                  ? "Weitere Bearbeitungen bleiben zunächst privat. Erst eure Bestätigung ändert die öffentliche Fassung."
-                  : "Spätere Änderungen an diesem Event bleiben zunächst privat. Erst eure Bestätigung ändert die öffentliche Fassung."}
-              </MutedText>
-            </ContextCard>
-            {imagePublic === false ? (
-              <ContextCard
-                title="Eventbild noch nicht öffentlich"
-                tone="warning"
-              >
-                <MutedText>
-                  Das Event ist veröffentlicht, das Bild wird noch kopiert.
-                  Versucht es erneut.
-                </MutedText>
-                <RetryImageButton
-                  action={retryEventImagePublish.bind(null, eventId)}
-                />
-              </ContextCard>
-            ) : null}
-            <div className="flex flex-wrap gap-4">
-              <LinkButton href={`${base}/manage`} variant="primary">
-                Event verwalten
-              </LinkButton>
-              <LinkButton
-                href={`/organizer/events/new?profile=${view.event.event.organizerId}`}
-              >
-                Weiteres Event anlegen
-              </LinkButton>
-            </div>
-            <MutedText>
-              Die öffentlichen Seiten selbst werden in einem späteren Schritt
-              gebaut; einen Link zum Ansehen gibt es deshalb noch nicht.
-            </MutedText>
-          </>
-        }
-      />
-    </PageShell>
+    />
   );
 }

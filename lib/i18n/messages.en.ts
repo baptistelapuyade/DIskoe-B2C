@@ -1305,4 +1305,26 @@ export const en: Record<MessageId, string> = {
   "Z23.late.question": "DISKOE has a question about this version:",
   "Z23.late.questionLink": "View the question",
   "Z23.late.imageTitle": "Image not public yet",
+  "Z36.publish.eyebrow": "New event · Publish",
+  "Z36.publish.title": "Publish the new event?",
+  "Z36.publish.lead":
+    "Your profile is approved. You publish this event yourself, with no further review.",
+  "Z36.publish.fail.line":
+    "The event isn’t published yet. Your details are saved. Try again.",
+  "Z36.stale.title": "The event has changed.",
+  "Z36.stale.line": "Check the details again before you publish.",
+  "Z36.done.eyebrow": "New event · Published",
+  "Z36.done.title": "Your event is published",
+  "Z36.done.lead":
+    "“{title}” is public now, with no further review. You can view and share the event page.",
+  "Z36.done.note.title": "Later changes stay private at first.",
+  "Z36.done.note.line": "Only your confirmation changes the public version.",
+  "Z36.done.view": "View the public event page",
+  "Z36.done.another": "Add another event",
+  "Z36.image.title": "The event image isn’t public yet.",
+  "Z36.image.line":
+    "The event is published, the image is still being copied. Try again.",
+  "Z36.image.retry": "Publish the image again",
+  "Z36.image.pending": "Trying …",
+  "Z36.image.fail": "The image couldn’t be published. Try again later.",
 };

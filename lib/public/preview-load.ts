@@ -6,6 +6,7 @@
 
 import { notFound } from "next/navigation";
 
+import type { EventGapCode } from "@/lib/domain/event-publication";
 import { loadOwnerEvents } from "@/lib/event/load";
 import {
   loadPublicationView,
@@ -107,6 +108,9 @@ export type EventPreview = {
   event: PublicEvent | null;
   organizerId: string;
   mode: PublicationMode;
+  // The first missing detail, so a further event (no checklist) can send the
+  // owner straight to the step that names it.
+  firstGap: EventGapCode | null;
 };
 
 export async function loadEventPreview(
@@ -118,7 +122,8 @@ export async function loadEventPreview(
   const { event: view, profile: profileView, mode } = publication;
   const organizerId = view.event.organizerId;
   const revisionId = view.event.draftRevisionId;
-  const none = { event: null, organizerId, mode };
+  const firstGap = view.gaps[0]?.code ?? null;
+  const none = { event: null, organizerId, mode, firstGap };
 
   if (view.gaps.length > 0 || !revisionId) return none;
 
@@ -144,5 +149,5 @@ export async function loadEventPreview(
     imageUrl: view.image?.signedUrl ?? null,
   });
 
-  return { event, organizerId, mode };
+  return { event, organizerId, mode, firstGap };
 }
